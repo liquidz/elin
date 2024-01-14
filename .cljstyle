@@ -1,0 +1,12 @@
+{:rules {:indentation {:list-indent 1
+                       :indents {s/def [[:inner 0]]
+                                 s/defn [[:inner 0]]
+                                 s/defschema [[:inner 0]]
+                                 s/defrecord [[:inner 0] [:inner 1]]}}
+
+         :blank-lines {:insert-padding? false}
+         :functions {:enabled? false}
+         :types {:enabled? false}
+         :namespaces {:indent-size 1}}
+ :files {:ignore #{"target"}}}
+; vim:ft=clojure

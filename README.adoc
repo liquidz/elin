@@ -1,0 +1,6 @@
+= vim-elin
+
+[quote,Nahoko Uehashi,The Beast Player]
+Joeun smiled. “Elin, the wild apple that grows in the mountains. What a nice name.”
+
+Work in progress

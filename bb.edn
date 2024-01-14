@@ -1,0 +1,14 @@
+{:paths ["src"]
+ :deps {clojure-msgpack/clojure-msgpack {:mvn/version "1.2.1"}
+        com.github.liquidz/merr {:mvn/version "0.4.193"}
+        com.stuartsierra/component {:mvn/version "1.1.0"}
+        exoscale/interceptor {:mvn/version "0.1.16"}
+        metosin/malli {:mvn/version "0.13.0"}
+        prismatic/schema {:mvn/version "1.4.1"}}
+
+ :tasks
+ {start-server {:task (shell "bb -m elin.core")}
+  repl {:override-builtin true
+        :extra-paths ["dev"]
+        :requires ([elin.task.nrepl :as elin.t.nrepl])
+        :task (elin.t.nrepl/-main)}}}
