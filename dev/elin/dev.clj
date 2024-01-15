@@ -1,11 +1,8 @@
-(ns user
+(ns elin.dev
   (:require
    [com.stuartsierra.component :as component]
    [elin.system :as elin.system]
-   [malli.dev :as m.dev]
-   [schema.core :as s]))
-
-(s/set-fn-validation! true)
+   [malli.dev :as m.dev]))
 
 (def system-map
   (elin.system/new-system))

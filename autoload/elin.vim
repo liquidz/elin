@@ -22,7 +22,10 @@ function! s:callback(...) abort
   echom printf('FIXME callback %s', a:000)
 endfunction
 
-function! elin#test(method, params) abort
+function! elin#callback_test(method, params) abort
   call elin#notify(a:method, a:params, funcref('s:callback'))
 endfunction
 
+function! elin#plus_test(a, b) abort
+  return a:a + a:b
+endfunction

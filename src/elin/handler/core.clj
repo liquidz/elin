@@ -43,3 +43,8 @@
         resp (async/<!! (e.p.nrepl/eval-op client-manager code {}))]
     (e.log/log "FIXME resp" resp)
     (pr-str resp)))
+
+(defmethod handler* :plus
+  [{:as req-map :keys [params]}]
+  (let [res (async/<!! (e.p.rpc/call-function req-map "elin#plus_test" params))]
+    (e.log/info "FIXME plus result" (pr-str res))))

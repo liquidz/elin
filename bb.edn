@@ -9,6 +9,8 @@
  :tasks
  {start-server {:task (shell "bb -m elin.core")}
   repl {:override-builtin true
-        :extra-paths ["dev"]
-        :requires ([elin.task.nrepl :as elin.t.nrepl])
-        :task (elin.t.nrepl/-main)}}}
+        :extra-paths ["dev" "test"]
+        :requires ([elin.dev]
+                   [elin.test-helper])
+        ;; :task (elin.t.nrepl/-main)
+        :task (exec 'elin.task.nrepl/-main)}
