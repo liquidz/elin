@@ -68,7 +68,15 @@
 
   e.p.rpc/IHost
   (call-function [this method params]
-    (e.p.rpc/request! this ["call" method params (e.u.id/next-id)])))
+    (e.p.rpc/request! this ["call" method params (e.u.id/next-id)]))
+
+  (echo-text [this text]
+    (e.p.rpc/notify! this ["ex" "echo" (format "'%s'" text)]))
+
+  (echo-message [this text]
+    (e.p.rpc/echo-message this text "Normal"))
+  (echo-message [this text highlight]
+    (e.p.rpc/notify! this ["call" "elin#internal#rpc#echom" [text highlight]])))
 
 (defn start-server
   [{:keys [host server-socket handler]}]

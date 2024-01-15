@@ -11,17 +11,13 @@
 (def client-manager
   (e.n.c.manager/new-manager))
 
-(defn- echo* [req-map s & [hl]]
-  (let [hl (or hl "Normal")]
-    (e.p.rpc/notify! req-map "nvim_echo" [[[s hl]] true {}])))
-
 (defmulti handler* :method)
-
 (defmethod handler* :default [_] nil)
 
 (defmethod handler* :echo
   [{:as req-map :keys [params]}]
-  (echo* req-map (str "echo:" params) "ErrorMsg")
+  (e.log/info "FIXME echo kiteruyo" params)
+  (e.p.rpc/echo-message req-map (str "echo:" params) "ErrorMsg")
   true)
 
 (defmethod handler* :connect

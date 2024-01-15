@@ -64,7 +64,15 @@
 
   e.p.rpc/IHost
   (call-function [this method params]
-    (e.p.rpc/request! this ["nvim_call_function" [method params]])))
+    (e.p.rpc/request! this ["nvim_call_function" [method params]]))
+
+  (echo-text [this text]
+    (e.p.rpc/notify! this ["nvim_echo" [[text "Normal"]] false {}]))
+
+  (echo-message [this text]
+    (e.p.rpc/echo-message this text "Normal"))
+  (echo-message [this text highlight]
+    (e.p.rpc/notify! this ["nvim_echo" [[[text highlight]] true {}]])))
 
 (defn start-server
   [{:keys [host server-socket handler]}]
