@@ -14,7 +14,6 @@ function! elin#callback#unregister(id) abort
 endfunction
 
 function! elin#callback#call(id, ...) abort
-  echom printf('FIXME clalback#call kiteruyo: %s', a:id)
   if !has_key(s:registry, a:id)
 		throw printf('Callback id does not exists: %s', a:id)
   endif
