@@ -3,8 +3,8 @@
    [bencode.core :as b]
    [clojure.core.async :as async]
    [elin.nrepl.message :as e.n.message]
-   [elin.nrepl.protocol :as e.n.protocol]
    [elin.nrepl.response :as e.n.response]
+   [elin.protocol.nrepl :as e.p.nrepl]
    [elin.util.id :as e.u.id]
    [elin.util.schema :as e.u.schema]
    [malli.core :as m])
@@ -37,7 +37,7 @@
    output-channel
    response-manager]
 
-  e.n.protocol/IConnection
+  e.p.nrepl/IConnection
   (disconnect [_]
     (when-not (.isClosed socket)
       (.close socket)
@@ -48,12 +48,12 @@
     (.isClosed socket))
 
   (notify [this msg]
-    (when-not (e.n.protocol/disconnected? this)
+    (when-not (e.p.nrepl/disconnected? this)
       (->> (update-keys msg (comp str symbol))
            (b/write-bencode write-stream))))
 
   (request [this msg]
-    (if (e.n.protocol/disconnected? this)
+    (if (e.p.nrepl/disconnected? this)
       (async/go nil)
       (let [id (or (:id msg) (e.u.id/next-id))
             msg (assoc msg :id id)]
@@ -102,10 +102,10 @@
     (try
       (println "connected")
       (let [{:keys [new-session]} (e.n.message/merge-messages
-                                    (async/<!! (e.n.protocol/request conn {:op "clone"})))]
+                                    (async/<!! (e.p.nrepl/request conn {:op "clone"})))]
         (println "resp"
                  (e.n.message/merge-messages
-                   (async/<!! (e.n.protocol/request conn {:op "eval" :code "(+ 1 2 3)" :session new-session})))))
+                   (async/<!! (e.p.nrepl/request conn {:op "eval" :code "(+ 1 2 3)" :session new-session})))))
 
       (finally
-        (e.n.protocol/disconnect conn)))))
+        (e.p.nrepl/disconnect conn)))))

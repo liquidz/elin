@@ -1,5 +1,4 @@
-(ns elin.nrepl.protocol
-  (:refer-clojure :exclude [eval load-file]))
+(ns elin.protocol.nrepl)
 
 (defprotocol IConnection
   (disconnect [this])

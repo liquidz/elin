@@ -3,7 +3,7 @@
    [clojure.core.async :as async]
    [elin.log :as e.log]
    [elin.nrepl.client.manager :as e.n.c.manager]
-   [elin.nrepl.protocol :as e.n.protocol]
+   [elin.protocol.nrepl :as e.p.nrepl]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.interceptor :as e.u.interceptor]
    [malli.core :as m]))
@@ -25,15 +25,14 @@
   true)
 
 (defmethod handler* :connect
-  [{:as req-map :keys [params]}]
+  [{:keys [params]}]
   (let [[host port] params]
     (-> {:host host :port port}
         (e.u.interceptor/execute
          []
          (fn [{:as ctx :keys [host port]}]
-           (let [client (e.n.protocol/add-client! client-manager host port)]
-             ;; (echo* req-map (str "KITERUYO:" client))
-             (e.n.protocol/switch-client! client-manager client)
+           (let [client (e.p.nrepl/add-client! client-manager host port)]
+             (e.p.nrepl/switch-client! client-manager client)
              (assoc ctx :client client)))))
     (e.log/info "Connected")
     "Connected"))
@@ -41,6 +40,6 @@
 (defmethod handler* :evaluate
   [{:keys [params]}]
   (let [[code] params
-        resp (async/<!! (e.n.protocol/eval-op client-manager code {}))]
+        resp (async/<!! (e.p.nrepl/eval-op client-manager code {}))]
     (e.log/log "FIXME resp" resp)
     (pr-str resp)))

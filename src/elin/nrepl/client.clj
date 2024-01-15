@@ -4,10 +4,8 @@
    [elin.nrepl.connection :as e.n.connection]
    [elin.nrepl.constant :as e.n.constant]
    [elin.nrepl.message :as e.n.message]
-   [elin.nrepl.protocol :as e.n.protocol]
+   [elin.protocol.nrepl :as e.p.nrepl]
    [malli.core :as m]))
-
-
 
 (defprotocol IClient
   (disconnect [this])
@@ -30,57 +28,57 @@
    initial-namespace
    versions]
 
-  e.n.protocol/IConnection
+  e.p.nrepl/IConnection
   (disconnect [_]
-    (e.n.protocol/disconnect connection))
+    (e.p.nrepl/disconnect connection))
   (disconnected? [_]
-    (e.n.protocol/disconnected? connection))
+    (e.p.nrepl/disconnected? connection))
   (notify [this msg]
-    (when-not (e.n.protocol/supported-op? this (:op msg))
+    (when-not (e.p.nrepl/supported-op? this (:op msg))
       (throw (Exception. "FIXME not supported op")))
     (let [msg (if (contains? msg :session)
                 msg
                 (assoc msg :session session))]
-      (e.n.protocol/notify connection msg)))
+      (e.p.nrepl/notify connection msg)))
   (request [this msg]
-    (when-not (e.n.protocol/supported-op? this (:op msg))
+    (when-not (e.p.nrepl/supported-op? this (:op msg))
       (throw (Exception. "FIXME not supported op")))
     (let [msg (if (contains? msg :session)
                 msg
                 (assoc msg :session session))]
-      (e.n.protocol/request connection msg)))
+      (e.p.nrepl/request connection msg)))
 
-  e.n.protocol/IClient
+  e.p.nrepl/IClient
   (supported-op? [_ op]
     (contains? supported-ops (keyword op)))
 
-  e.n.protocol/INreplOp
+  e.p.nrepl/INreplOp
   (close-op [this]
-    (e.n.protocol/request this {:op "close" :session session}))
+    (e.p.nrepl/request this {:op "close" :session session}))
 
   (eval-op [this code options]
     (->> (merge (select-keys options e.n.constant/eval-option-keys)
                 {:op "eval" :session session :code code})
-         (e.n.protocol/request this)))
+         (e.p.nrepl/request this)))
 
   (interrupt-op [this options]
     (->> (merge (select-keys options #{:interrupt-id})
                 {:op "interrupt" :session session})
-         (e.n.protocol/request this)))
+         (e.p.nrepl/request this)))
 
   (load-file-op [this file options]
     (->> (merge (select-keys options e.n.constant/load-file-option-keys)
                 {:op "load-file" :session session :file file})
-         (e.n.protocol/request this))))
+         (e.p.nrepl/request this))))
 
 (m/=> connect [:=> [:cat string? int?] ?Client])
 (defn connect
   [host port]
   (let [conn (e.n.connection/connect host port)
         clone-resp (e.n.message/merge-messages
-                    (async/<!! (e.n.protocol/request conn {:op "clone"})))
+                    (async/<!! (e.p.nrepl/request conn {:op "clone"})))
         describe-resp (e.n.message/merge-messages
-                       (async/<!! (e.n.protocol/request conn {:op "describe"})))]
+                       (async/<!! (e.p.nrepl/request conn {:op "describe"})))]
     (println (pr-str describe-resp))
     (map->Client
      {:connection conn
@@ -93,7 +91,7 @@
   (let [client (connect "localhost" 61081)]
     (try
       (println "connected")
-      (println "resp" (async/<!! (e.n.protocol/request client {:op "eval" :code "(+ 1 2 3)"})))
+      (println "resp" (async/<!! (e.p.nrepl/request client {:op "eval" :code "(+ 1 2 3)"})))
       (finally
-        (e.n.protocol/disconnect client)))))
+        (e.p.nrepl/disconnect client)))))
 
