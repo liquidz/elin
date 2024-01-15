@@ -2,6 +2,7 @@
 
 (defprotocol IRpc
   (request? [this])
+  (response? [this])
   (parse-request [this])
   (request! [this content])
   (notify! [this content])
