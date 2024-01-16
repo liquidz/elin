@@ -9,7 +9,7 @@ Work in progress
 [source,vim]
 ----
 " evaluation
-:echo elin#request('connect', ['localhost', 61081])
+:echo elin#notify('connect', ['localhost', 61081])
 :echo elin#callback_test('evaluate', ['(+ 1 2 3)'])
 
 " request from server
