@@ -21,8 +21,7 @@
           (try
             (e.p.rpc/call-function msg "elin#callback#call" [callback resp])
             (catch Exception ex
-              (e.log/log (str "FIXME callback error"
-                              (ex-message ex))))))))))
+              (e.log/error msg "Failed to callback" (ex-message ex)))))))))
 
 (defrecord Handler
   []

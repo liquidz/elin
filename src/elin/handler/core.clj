@@ -43,4 +43,4 @@
 (defmethod handler* :plus
   [{:as msg :keys [params]}]
   (let [res (async/<!! (e.p.rpc/call-function msg "elin#plus_test" params))]
-    (e.log/info "FIXME plus result" (pr-str res))))
+    (e.log/info msg "FIXME plus result" (pr-str res))))
