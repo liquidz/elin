@@ -10,16 +10,16 @@
 
 (m/=> handler [:=> [:cat e.u.schema/?RequestMap] any?])
 (defn- handler
-  [req-map]
-  (let [{:as arg :keys [async?]} (merge req-map
-                                        (e.p.rpc/parse-request req-map))]
+  [msg]
+  (let [{:as arg :keys [async?]} (merge msg
+                                        (e.p.rpc/parse-message msg))]
     (if-not async?
       (e.h.core/handler* arg)
       (future
         (let [resp (e.h.core/handler* arg)
               {:keys [callback]} arg]
           (try
-            (e.p.rpc/call-function req-map "elin#callback#call" [callback resp])
+            (e.p.rpc/call-function msg "elin#callback#call" [callback resp])
             (catch Exception ex
               (e.log/log (str "FIXME callback error"
                               (ex-message ex))))))))))

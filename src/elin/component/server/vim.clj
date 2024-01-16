@@ -11,30 +11,30 @@
   (:import
    java.io.EOFException))
 
-(defrecord VimRequestMap
-  [host request output-stream response-manager]
+(defrecord VimMessage
+  [host message output-stream response-manager]
   e.p.rpc/IRpc
   (request? [_]
-    (and (sequential? request)
-         (int? (first request))
-         (not= 0 (first request))
-         (not (contains? @response-manager (first request)))))
+    (and (sequential? message)
+         (int? (first message))
+         (not= 0 (first message))
+         (not (contains? @response-manager (first message)))))
 
   (response? [_]
-    (and (sequential? request)
-         (= 2 (count request))
-         (int? (first request))
-         (contains? @response-manager (first request))))
+    (and (sequential? message)
+         (= 2 (count message))
+         (int? (first message))
+         (contains? @response-manager (first message))))
 
-  (parse-request [this]
+  (parse-message [this]
     (cond
       (e.p.rpc/response? this)
-      (let [[id result] request]
+      (let [[id result] message]
         {:id id
          :result result})
 
       (e.p.rpc/request? this)
-      (let [[id [method params]] request]
+      (let [[id [method params]] message]
         {:id id
          :method (keyword method)
          :async? false
@@ -42,7 +42,7 @@
 
       ;; notify
       :else
-      (let [[_ [method params callback]] request]
+      (let [[_ [method params callback]] message]
         {:method (keyword method)
          :async? (some? callback)
          :params params
@@ -62,7 +62,7 @@
     (json/generate-stream content (io/writer output-stream)))
 
   (response! [this error result]
-    (when-let [id (:id (e.p.rpc/parse-request this))]
+    (when-let [id (:id (e.p.rpc/parse-message this))]
       (-> [id (or error result)]
           (json/generate-stream  (io/writer output-stream)))))
 
@@ -87,26 +87,26 @@
           (let [output-stream (.getOutputStream client-sock)
                 input-stream (io/reader (.getInputStream client-sock))]
             (loop []
-              (let [req (json/parse-stream input-stream)
-                    req-map (map->VimRequestMap {:host host
-                                                 :request req
-                                                 :output-stream output-stream
-                                                 :response-manager response-manager})
-                    _ (e.log/info "received" (pr-str req))]
-                (if (e.p.rpc/response? req-map)
-                  (let [{:keys [id result]} (e.p.rpc/parse-request req-map)]
+              (let [raw-msg (json/parse-stream input-stream)
+                    msg (map->VimMessage {:host host
+                                          :message raw-msg
+                                          :output-stream output-stream
+                                          :response-manager response-manager})
+                    _ (e.log/info "received" (pr-str raw-msg))]
+                (if (e.p.rpc/response? msg)
+                  (let [{:keys [id result]} (e.p.rpc/parse-message msg)]
                     (when-let [ch (get @response-manager id)]
                       (swap! response-manager dissoc id)
                       (async/go (async/>! ch result))))
-                  (let [[res err] (when-not (e.p.rpc/response? req-map)
+                  (let [[res err] (when-not (e.p.rpc/response? msg)
                                     (try
-                                      (when (sequential? req)
-                                        [(handler req-map)])
+                                      (when (sequential? raw-msg)
+                                        [(handler msg)])
                                       (catch Exception ex
                                         [nil (ex-message ex)])))]
 
-                    (when (e.p.rpc/request? req-map)
-                      (e.p.rpc/response! req-map err res)
+                    (when (e.p.rpc/request? msg)
+                      (e.p.rpc/response! msg err res)
                       (.flush output-stream)))))
               (when-not (.isClosed client-sock)
                 (recur))))

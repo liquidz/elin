@@ -12,30 +12,30 @@
     DataInputStream
     EOFException)))
 
-(defrecord NvimRequestMap
-  [host request output-stream response-manager]
+(defrecord NvimMessage
+  [host message output-stream response-manager]
   e.p.rpc/IRpc
   (request? [_]
-    (= 0 (first request)))
+    (= 0 (first message)))
 
   (response? [_]
-    (= 1 (first request)))
+    (= 1 (first message)))
 
-  (parse-request [_]
-    (condp = (first request)
+  (parse-message [_]
+    (condp = (first message)
       ;; request
-      0 (let [[_ id method [params]] request]
+      0 (let [[_ id method [params]] message]
           {:id id
            :method (keyword method)
            :async? false
            :params params})
       ;; response
-      1 (let [[_ id error result] request]
+      1 (let [[_ id error result] message]
           {:id id
            :error error
            :result result})
       ;; notify
-      2 (let [[_ method [params callback]] request]
+      2 (let [[_ method [params callback]] message]
           {:method (keyword method)
            :async? (some? callback)
            :params params
@@ -57,7 +57,7 @@
          (.write output-stream)))
 
   (response! [this error result]
-    (when-let [id (:id (e.p.rpc/parse-request this))]
+    (when-let [id (:id (e.p.rpc/parse-message this))]
       (->> [1 id error result]
            (msg/pack)
            (.write output-stream))))
@@ -83,28 +83,28 @@
           (let [output-stream (.getOutputStream client-sock)
                 data-input-stream (DataInputStream. (.getInputStream client-sock))]
             (loop []
-              (let [req (msg/unpack-stream data-input-stream)
-                    _ (e.log/info "received" (pr-str req))
-                    req-map (map->NvimRequestMap {:host host
-                                                  :request req
-                                                  :output-stream output-stream
-                                                  :response-manager response-manager})]
-                (if (e.p.rpc/response? req-map)
-                  (let [{:keys [id error result]} (e.p.rpc/parse-request req-map)]
+              (let [raw-msg (msg/unpack-stream data-input-stream)
+                    _ (e.log/info "received" (pr-str raw-msg))
+                    msg (map->NvimMessage {:host host
+                                           :message raw-msg
+                                           :output-stream output-stream
+                                           :response-manager response-manager})]
+                (if (e.p.rpc/response? msg)
+                  (let [{:keys [id error result]} (e.p.rpc/parse-message msg)]
                     (if error
                       ;; FIXME
-                      (do nil)
+                      nil
                       (when-let [ch (get @response-manager id)]
                         (swap! response-manager dissoc id)
                         (async/go (async/>! ch result))))
                     (swap! response-manager dissoc id))
                   (let [[res err] (try
-                                    (when (sequential? req)
-                                      [(handler req-map)])
+                                    (when (sequential? raw-msg)
+                                      [(handler msg)])
                                     (catch Exception ex
                                       [nil (ex-message ex)]))]
-                    (when (e.p.rpc/request? req-map)
-                      (e.p.rpc/response! req-map err res)
+                    (when (e.p.rpc/request? msg)
+                      (e.p.rpc/response! msg err res)
                       (.flush output-stream)))))
               (when-not (.isClosed client-sock)
                 (recur))))
