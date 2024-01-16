@@ -6,7 +6,6 @@ let g:loaded_vim_elin = 1
 let g:elin_home = expand('<sfile>:p:h:h')
 
 function! s:init() abort
-  echom "elin init kiteruyo"
   call elin#server#start()
 endfunction
 
