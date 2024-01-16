@@ -5,10 +5,11 @@
    [elin.log :as log]))
 
 (defn -main
-  [host port]
+  [host port cwd]
   (log/log "elin.core args" (pr-str port) "\n\n\n")
   (let [port (Long/parseLong port)
         sys-map (elin.system/new-system {:server {:host host
-                                                  :port port}})]
+                                                  :port port
+                                                  :cwd cwd}})]
     (component/start-system sys-map)
     (deref (promise))))

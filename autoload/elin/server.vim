@@ -1,6 +1,7 @@
 let s:job = v:null
 let s:port = v:null
 let s:conn = v:null
+let s:host = has('nvim') ? 'nvim' : 'vim'
 
 function! elin#server#start() abort
   call elin#script#empty_port(funcref('s:start'))
@@ -32,22 +33,20 @@ function! elin#server#connection() abort
   return s:conn
 endfunction
 
-" if has('nvim')
-  function! s:start(port) abort
-    let s:port = a:port
-    let command = [g:elin#babashka, '-m', 'elin.core', has('nvim') ? 'nvim' : 'vim', a:port]
-    let options = {
-          \ 'cwd': g:elin_home,
-          \ }
-    let s:job = elin#compat#job#start(command, options)
-  endfunction
+function! s:start(port) abort
+  let s:port = a:port
+  let command = [g:elin#babashka, '-m', 'elin.core', s:host, a:port, getcwd()]
+  let options = {
+        \ 'cwd': g:elin_home,
+        \ }
+  let s:job = elin#compat#job#start(command, options)
+endfunction
 
-  function! s:stop() abort
-    if s:job is# v:null
-      return
-    endif
+function! s:stop() abort
+  if s:job is# v:null
+    return
+  endif
 
-    call elin#compat#job#stop(s:job)
-    let s:job = v:null
-  endfunction
-" endif
+  call elin#compat#job#stop(s:job)
+  let s:job = v:null
+endfunction

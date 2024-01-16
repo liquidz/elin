@@ -28,23 +28,23 @@
         (.flush (:output-stream message))))))
 
 (defrecord Server
-  [host port server-socket server]
+  [host port cwd server-socket server]
   component/Lifecycle
   (start [this]
     (when-not server
-      (let [server-sock (ServerSocket. port)
+      (let [server-socket (ServerSocket. port)
             handler (:handler (:handler this))
             server-arg {:host host
-                        :server-socket server-sock
+                        :cwd cwd
+                        :server-socket server-socket
                         :on-accept (partial on-accept handler)}
-            ;; :handler handler}
             server (future
                      (if (= e.c.host/nvim host)
                        (e.c.s.nvim/start-server server-arg)
                        (e.c.s.vim/start-server server-arg)))]
         (assoc this
                :server server
-               :server-socket server-sock))))
+               :server-socket server-socket))))
 
   (stop [this]
     (when server
