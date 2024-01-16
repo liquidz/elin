@@ -1,6 +1,7 @@
 (ns elin.handler.core
   (:require
    [clojure.core.async :as async]
+   [elin.interceptor.connect :as e.i.connect]
    [elin.log :as e.log]
    [elin.nrepl.client.manager :as e.n.c.manager]
    [elin.protocol.nrepl :as e.p.nrepl]
@@ -21,17 +22,23 @@
   true)
 
 (defmethod handler* :connect
-  [{:keys [params]}]
-  (let [[host port] params]
-    (-> {:host host :port port}
-        (e.u.interceptor/execute
-         []
-         (fn [{:as ctx :keys [host port]}]
-           (let [client (e.p.nrepl/add-client! client-manager host port)]
-             (e.p.nrepl/switch-client! client-manager client)
-             (assoc ctx :client client)))))
-    (e.log/info "Connected")
-    "Connected"))
+  [{:as msg :keys [cwd params]}]
+  (let [[host port] (condp = (count params)
+                      0 [nil nil]
+                      1 [nil (first params)]
+                      params)
+        result (-> {:cwd cwd :host host :port port}
+                   (e.u.interceptor/execute
+                    [e.i.connect/port-auto-detecting-interceptor]
+                    (fn [{:as ctx :keys [host port]}]
+                      (if (and host port)
+                        (let [client (e.p.nrepl/add-client! client-manager host port)]
+                          (e.p.nrepl/switch-client! client-manager client)
+                          (assoc ctx :client client))
+                        ctx))))]
+    (if (contains? result :client)
+      (e.log/info msg (format "Connected to %s:%s" (:host result) (:port result)))
+      (e.log/warning msg "Host or port is not specified." (pr-str (select-keys result [:host :port]))))))
 
 (defmethod handler* :evaluate
   [{:keys [params]}]

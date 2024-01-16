@@ -1,10 +1,15 @@
 (ns elin.interceptor.connect
   (:require
-   [elin.protocol.nrepl :as e.p.nrepl]))
+   [elin.util.file :as e.u.file]))
 
-(def connect-interceptor
-  {:name ::connect
-   :enter (fn [{:as ctx :keys [client-manager host port]}]
-            (let [client (e.p.nrepl/add-client! client-manager host port)]
-              (e.p.nrepl/switch-client! client-manager client)
-              (assoc ctx :client client)))})
+(def port-auto-detecting-interceptor
+  {:name ::port-auto-detecting-interceptor
+   :enter (fn [{:as ctx :keys [cwd host port]}]
+            (if (and host port)
+              ctx
+              (let [nrepl-port-file (e.u.file/find-file-in-parent-directories cwd ".nrepl-port")
+                    host' (or host "localhost")
+                    port' (some-> nrepl-port-file
+                                  (slurp)
+                                  (Long/parseLong))]
+                (assoc ctx :host host' :port port'))))})
