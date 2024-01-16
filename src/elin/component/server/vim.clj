@@ -31,6 +31,7 @@
       (e.p.rpc/response? this)
       (let [[id result] message]
         {:id id
+         :error nil
          :result result})
 
       (e.p.rpc/request? this)
@@ -55,14 +56,17 @@
           maybe-ch (when id (async/chan))]
       (when (and id maybe-ch)
         (swap! response-manager assoc id maybe-ch))
+      (e.log/info "FIXME request!" (pr-str content))
       (json/generate-stream content (io/writer output-stream))
       maybe-ch))
 
   (notify! [_ content]
+    (e.log/info "FIXME notify! " (pr-str content))
     (json/generate-stream content (io/writer output-stream)))
 
   (response! [this error result]
     (when-let [id (:id (e.p.rpc/parse-message this))]
+      (e.log/info "FIXME" (pr-str [id (or error result)]))
       (-> [id (or error result)]
           (json/generate-stream  (io/writer output-stream)))))
 
@@ -79,41 +83,28 @@
     (e.p.rpc/notify! this ["call" "elin#internal#rpc#echom" [text highlight]])))
 
 (defn start-server
-  [{:keys [host server-socket handler]}]
+  [{:keys [host server-socket on-accept]}]
   (let [response-manager (atom {})]
+    ;; Client accepting loop
     (loop []
       (try
         (with-open [client-sock (.accept server-socket)]
           (let [output-stream (.getOutputStream client-sock)
                 input-stream (io/reader (.getInputStream client-sock))]
+            ;; Client message reading loop
             (loop []
-              (let [raw-msg (json/parse-stream input-stream)
-                    msg (map->VimMessage {:host host
-                                          :message raw-msg
-                                          :output-stream output-stream
-                                          :response-manager response-manager})
-                    _ (e.log/info "received" (pr-str raw-msg))]
-                (if (e.p.rpc/response? msg)
-                  (let [{:keys [id result]} (e.p.rpc/parse-message msg)]
-                    (when-let [ch (get @response-manager id)]
-                      (swap! response-manager dissoc id)
-                      (async/go (async/>! ch result))))
-                  (let [[res err] (when-not (e.p.rpc/response? msg)
-                                    (try
-                                      (when (sequential? raw-msg)
-                                        [(handler msg)])
-                                      (catch Exception ex
-                                        [nil (ex-message ex)])))]
-
-                    (when (e.p.rpc/request? msg)
-                      (e.p.rpc/response! msg err res)
-                      (.flush output-stream)))))
+              (let [raw-msg (json/parse-stream input-stream)]
+                (e.log/debug "Vim server received message:" (pr-str raw-msg))
+                (on-accept (map->VimMessage {:host host
+                                             :message raw-msg
+                                             :output-stream output-stream
+                                             :response-manager response-manager})))
               (when-not (.isClosed client-sock)
                 (recur))))
-          (e.log/info "FIXME client-sock closed..."))
+          (e.log/debug "Client socket is closed"))
         (catch EOFException _
           nil)
         (catch Exception ex
-          (println "closed client connection: " (ex-message ex))))
+          (e.log/debug "Client connection is closed" (ex-message ex))))
       (when-not (.isClosed server-socket)
         (recur)))))

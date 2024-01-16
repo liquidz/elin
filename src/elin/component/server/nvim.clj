@@ -75,43 +75,28 @@
     (e.p.rpc/notify! this ["nvim_echo" [[[text highlight]] true {}]])))
 
 (defn start-server
-  [{:keys [host server-socket handler]}]
+  [{:keys [host server-socket on-accept]}]
   (let [response-manager (atom {})]
+    ;; Client accepting loop
     (loop []
       (try
         (with-open [client-sock (.accept server-socket)]
           (let [output-stream (.getOutputStream client-sock)
                 data-input-stream (DataInputStream. (.getInputStream client-sock))]
+            ;; Client message reading loop
             (loop []
-              (let [raw-msg (msg/unpack-stream data-input-stream)
-                    _ (e.log/info "received" (pr-str raw-msg))
-                    msg (map->NvimMessage {:host host
-                                           :message raw-msg
-                                           :output-stream output-stream
-                                           :response-manager response-manager})]
-                (if (e.p.rpc/response? msg)
-                  (let [{:keys [id error result]} (e.p.rpc/parse-message msg)]
-                    (if error
-                      ;; FIXME
-                      nil
-                      (when-let [ch (get @response-manager id)]
-                        (swap! response-manager dissoc id)
-                        (async/go (async/>! ch result))))
-                    (swap! response-manager dissoc id))
-                  (let [[res err] (try
-                                    (when (sequential? raw-msg)
-                                      [(handler msg)])
-                                    (catch Exception ex
-                                      [nil (ex-message ex)]))]
-                    (when (e.p.rpc/request? msg)
-                      (e.p.rpc/response! msg err res)
-                      (.flush output-stream)))))
+              (let [raw-msg (msg/unpack-stream data-input-stream)]
+                (e.log/debug "Neovim server received message:" (pr-str raw-msg))
+                (on-accept (map->NvimMessage {:host host
+                                              :message raw-msg
+                                              :output-stream output-stream
+                                              :response-manager response-manager})))
               (when-not (.isClosed client-sock)
                 (recur))))
-          (e.log/info "FIXME client-sock closed..."))
+          (e.log/debug "Client socket is closed"))
         (catch EOFException _
           nil)
         (catch Exception ex
-          (println "closed client connection: " (ex-message ex))))
+          (e.log/debug "Client connection is closed" (ex-message ex))))
       (when-not (.isClosed server-socket)
         (recur)))))
