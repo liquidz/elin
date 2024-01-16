@@ -16,8 +16,8 @@
    {:type ::not-bytes
     :pred #(not (bytes? %))}))
 
-(def ?RequestMap
+(def ?ClientMessage
   [:map
    [:host string?]
-   [:req [:sequential any?]]
+   [:message [:sequential any?]]
    [:output-stream (?instance java.io.OutputStream)]])

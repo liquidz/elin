@@ -8,7 +8,7 @@
    [malli.core :as m]
    [msgpack.clojure-extensions]))
 
-(m/=> handler [:=> [:cat e.u.schema/?RequestMap] any?])
+(m/=> handler [:=> [:cat e.u.schema/?ClientMessage] any?])
 (defn- handler
   [msg]
   (let [{:as arg :keys [async?]} (merge msg
