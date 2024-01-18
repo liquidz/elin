@@ -27,7 +27,6 @@
       0 (let [[_ id method [params]] message]
           {:id id
            :method (keyword method)
-           :async? false
            :params params})
       ;; response
       1 (let [[_ id error result] message]
@@ -37,7 +36,6 @@
       ;; notify
       2 (let [[_ method [params callback]] message]
           {:method (keyword method)
-           :async? (some? callback)
            :params params
            :callback callback})
       {}))

@@ -38,14 +38,12 @@
       (let [[id [method params]] message]
         {:id id
          :method (keyword method)
-         :async? false
          :params params})
 
       ;; notify
       :else
       (let [[_ [method params callback]] message]
         {:method (keyword method)
-         :async? (some? callback)
          :params params
          :callback callback})))
 
