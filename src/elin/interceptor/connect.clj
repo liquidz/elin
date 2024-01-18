@@ -1,5 +1,7 @@
 (ns elin.interceptor.connect
   (:require
+   [clojure.core.async :as async]
+   [elin.protocol.rpc :as e.p.rpc]
    [elin.util.file :as e.u.file]))
 
 (def port-auto-detecting-interceptor
@@ -13,3 +15,16 @@
                                   (slurp)
                                   (Long/parseLong))]
                 (assoc ctx :host host' :port port'))))})
+
+(def output-channel-interceptor
+  {:name ::output-channel-interceptor
+   :leave (fn [{:as ctx :keys [message client]}]
+            (when client
+              (async/go-loop []
+                (let [ch (get-in client [:connection :output-channel])
+                      {:keys [text]} (async/<! ch)]
+                  (when text
+                    ;; TODO FIXME
+                    (e.p.rpc/echo-message message (str "OUTPUT: " text) "ErrorMsg")
+                    (recur)))))
+            ctx)})

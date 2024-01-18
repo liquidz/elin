@@ -30,9 +30,10 @@
                       0 [nil nil]
                       1 [nil (first params)]
                       params)
-        result (-> {:cwd cwd :host host :port port}
+        result (-> {:message msg :cwd cwd :host host :port port}
                    (e.u.interceptor/execute
-                    [e.i.connect/port-auto-detecting-interceptor]
+                    [e.i.connect/port-auto-detecting-interceptor
+                     e.i.connect/output-channel-interceptor]
                     (fn [{:as ctx :keys [host port]}]
                       (if (and host port)
                         (let [client (e.p.nrepl/add-client! client-manager host port)]
