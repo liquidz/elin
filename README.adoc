@@ -11,6 +11,7 @@ Work in progress
 " evaluation
 :echo elin#notify('connect', ['localhost', 61081])
 :echo elin#callback_test('evaluate', ['(+ 1 2 3)'])
+:echo elin#request('evaluate-current-top-list', [])
 
 " request from server
 :echo elin#notify('plus', [123, 456])

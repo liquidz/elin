@@ -1,9 +1,12 @@
 (ns elin.handler.core
   (:require
    [clojure.core.async :as async]
+   [elin.function.host :as e.f.host]
+   [elin.function.sexp :as e.f.sexp]
    [elin.interceptor.connect :as e.i.connect]
    [elin.log :as e.log]
    [elin.nrepl.client.manager :as e.n.c.manager]
+   [elin.nrepl.message :as e.n.message]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.interceptor :as e.u.interceptor]
@@ -40,14 +43,27 @@
       (e.log/info msg (format "Connected to %s:%s" (:host result) (:port result)))
       (e.log/warning msg "Host or port is not specified." (pr-str (select-keys result [:host :port]))))))
 
+(defn- evaluation* [code & [options]]
+  (-> {:code code :options (or options {})}
+      (e.u.interceptor/execute
+       []
+       (fn [{:as ctx :keys [code options]}]
+         (let [resp (async/<!! (e.p.nrepl/eval-op client-manager code options))
+               resp (e.n.message/merge-messages resp)]
+           (assoc ctx :response resp))))
+      (get-in [:response :value])))
+
 (defmethod handler* :evaluate
   [{:keys [params]}]
-  (let [[code] params
-        resp (async/<!! (e.p.nrepl/eval-op client-manager code {}))]
-    (e.log/log "FIXME resp" resp)
-    (pr-str resp)))
+  (evaluation* (first params)))
 
 (defmethod handler* :plus
   [{:as msg :keys [params]}]
   (let [res (async/<!! (e.p.rpc/call-function msg "elin#plus_test" params))]
     (e.log/info msg "FIXME plus result" (pr-str res))))
+
+(defmethod handler* :evaluate-current-top-list
+  [msg]
+  (let [{:keys [lnum col]} (e.f.host/getcurpos msg)
+        code (e.f.sexp/get-current-top-list msg lnum col)]
+    (evaluation* code)))
