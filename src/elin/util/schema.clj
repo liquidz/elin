@@ -15,9 +15,3 @@
   (m/-simple-schema
    {:type ::not-bytes
     :pred #(not (bytes? %))}))
-
-(def ?ClientMessage
-  [:map
-   [:host string?]
-   [:message [:sequential any?]]
-   [:output-stream (?instance java.io.OutputStream)]])

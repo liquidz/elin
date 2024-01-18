@@ -4,11 +4,11 @@
    [elin.handler.core :as e.h.core]
    [elin.log :as e.log]
    [elin.protocol.rpc :as e.p.rpc]
-   [elin.util.schema :as e.u.schema]
+   [elin.schema.server :as e.s.server]
    [malli.core :as m]
    [msgpack.clojure-extensions]))
 
-(m/=> handler [:=> [:cat e.u.schema/?ClientMessage] any?])
+(m/=> handler [:=> [:cat e.s.server/?Message] any?])
 (defn- handler
   [msg]
   (let [msg' (merge msg
