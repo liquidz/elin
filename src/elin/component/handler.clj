@@ -11,17 +11,15 @@
 (m/=> handler [:=> [:cat e.u.schema/?ClientMessage] any?])
 (defn- handler
   [msg]
-  (let [{:as arg :keys [async?]} (merge msg
-                                        (e.p.rpc/parse-message msg))]
-    (if-not async?
-      (e.h.core/handler* arg)
-      (future
-        (let [resp (e.h.core/handler* arg)
-              {:keys [callback]} arg]
-          (try
-            (e.p.rpc/call-function msg "elin#callback#call" [callback resp])
-            (catch Exception ex
-              (e.log/error msg "Failed to callback" (ex-message ex)))))))))
+  (let [msg' (merge msg
+                    (e.p.rpc/parse-message msg))
+        resp (e.h.core/handler* msg')]
+    (if-let [callback (:callback msg')]
+      (try
+        (e.p.rpc/call-function msg "elin#callback#call" [callback resp])
+        (catch Exception ex
+          (e.log/error msg "Failed to callback" (ex-message ex))))
+      resp)))
 
 (defrecord Handler
   []

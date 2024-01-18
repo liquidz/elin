@@ -12,20 +12,22 @@
 (defn on-accept
   [handler message]
   (if (e.p.rpc/response? message)
+    ;; Receive response
     (let [{:keys [response-manager]} message
           {:keys [id error result]} (e.p.rpc/parse-message message)]
       (when-let [ch (get @response-manager id)]
         (swap! response-manager dissoc id)
         (async/go (async/>! ch {:result result :error error}))))
-    (let [[res err] (when-not (e.p.rpc/response? message)
-                      (try
-                        (when (sequential? (:message message))
-                          [(handler message)])
+
+    ;; Receive request/notify
+    (future
+      (let [[res err] (try
+                        [(handler message)]
                         (catch Exception ex
-                          [nil (ex-message ex)])))]
-      (when (e.p.rpc/request? message)
-        (e.p.rpc/response! message err res)
-        (.flush (:output-stream message))))))
+                          [nil (ex-message ex)]))]
+        (when (e.p.rpc/request? message)
+          (e.p.rpc/response! message err res)
+          (.flush (:output-stream message)))))))
 
 (defrecord Server
   [host port cwd server-socket server]
