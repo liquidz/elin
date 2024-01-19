@@ -65,6 +65,6 @@
 
 (defmethod handler* :evaluate-current-top-list
   [msg]
-  (let [{:keys [lnum col]} (e.f.host/getcurpos msg)
+  (let [{:keys [lnum col]} (e.f.host/get-cursor-position msg)
         code (e.f.sexp/get-current-top-list msg lnum col)]
     (evaluation* code)))

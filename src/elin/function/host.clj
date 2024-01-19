@@ -17,7 +17,7 @@
                                                  :error error}))
       result)))
 
-(defn getcurpos
+(defn get-cursor-position
   [msg & extra-params]
   (let [params (or extra-params [])
         [bufnum lnum col off curswant] (call-function msg "getcurpos" params)]
