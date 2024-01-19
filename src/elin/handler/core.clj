@@ -25,11 +25,12 @@
   true)
 
 (defmethod handler* :connect
-  [{:as msg :keys [cwd params]}]
+  [{:as msg :keys [params]}]
   (let [[host port] (condp = (count params)
                       0 [nil nil]
                       1 [nil (first params)]
                       params)
+        cwd (e.f.host/get-current-working-directory msg)
         result (-> {:message msg :cwd cwd :host host :port port}
                    (e.u.interceptor/execute
                     [e.i.connect/port-auto-detecting-interceptor
