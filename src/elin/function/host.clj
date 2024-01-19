@@ -17,6 +17,11 @@
                                                  :error error}))
       result)))
 
+(defn get-current-working-directory
+  [msg & extra-params]
+  (let [params (or extra-params [])]
+    (call-function msg "getcwd" params)))
+
 (defn get-cursor-position
   [msg & extra-params]
   (let [params (or extra-params [])
