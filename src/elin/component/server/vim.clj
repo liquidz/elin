@@ -78,7 +78,7 @@
   (echo-message [this text]
     (e.p.rpc/echo-message this text "Normal"))
   (echo-message [this text highlight]
-    (e.p.rpc/notify! this ["call" "elin#internal#rpc#echom" [text highlight]])))
+    (e.p.rpc/notify! this ["call" "elin#internal#echom" [text highlight]])))
 
 (defn start-server
   [{:keys [host server-socket on-accept]}]
