@@ -12,7 +12,7 @@
    java.io.EOFException))
 
 (defrecord VimMessage
-  [host cwd message output-stream response-manager]
+  [host message output-stream response-manager]
   e.p.rpc/IRpc
   (request? [_]
     (and (sequential? message)
@@ -81,7 +81,7 @@
     (e.p.rpc/notify! this ["call" "elin#internal#rpc#echom" [text highlight]])))
 
 (defn start-server
-  [{:keys [host cwd server-socket on-accept]}]
+  [{:keys [host server-socket on-accept]}]
   (let [response-manager (atom {})]
     ;; Client accepting loop
     (loop []
@@ -94,7 +94,6 @@
               (let [raw-msg (json/parse-stream input-stream)]
                 (e.log/debug "Vim server received message:" (pr-str raw-msg))
                 (on-accept (map->VimMessage {:host host
-                                             :cwd cwd
                                              :message raw-msg
                                              :output-stream output-stream
                                              :response-manager response-manager})))

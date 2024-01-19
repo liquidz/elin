@@ -49,10 +49,8 @@ endfunction
 
 function! s:start(port) abort
   let s:port = a:port
-  let command = [g:elin#babashka, '-m', 'elin.core', s:host, a:port, getcwd()]
-  let options = {
-        \ 'cwd': g:elin_home,
-        \ }
+  let command = [g:elin#babashka, '-m', 'elin.core', s:host, a:port]
+  let options = {'cwd': g:elin_home}
   let s:job = elin#compat#job#start(command, options)
 endfunction
 

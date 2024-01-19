@@ -13,7 +13,7 @@
     EOFException)))
 
 (defrecord NvimMessage
-  [host cwd message output-stream response-manager]
+  [host message output-stream response-manager]
   e.p.rpc/IRpc
   (request? [_]
     (= 0 (first message)))
@@ -73,7 +73,7 @@
     (e.p.rpc/notify! this ["nvim_echo" [[[text highlight]] true {}]])))
 
 (defn start-server
-  [{:keys [host cwd server-socket on-accept]}]
+  [{:keys [host server-socket on-accept]}]
   (let [response-manager (atom {})]
     ;; Client accepting loop
     (loop []
@@ -86,7 +86,6 @@
               (let [raw-msg (msg/unpack-stream data-input-stream)]
                 (e.log/debug "Neovim server received message:" (pr-str raw-msg))
                 (on-accept (map->NvimMessage {:host host
-                                              :cwd cwd
                                               :message raw-msg
                                               :output-stream output-stream
                                               :response-manager response-manager})))

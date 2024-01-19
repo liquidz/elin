@@ -30,14 +30,13 @@
           (.flush (:output-stream message)))))))
 
 (defrecord Server
-  [host port cwd server-socket server]
+  [host port server-socket server]
   component/Lifecycle
   (start [this]
     (when-not server
       (let [server-socket (ServerSocket. port)
             handler (:handler (:handler this))
             server-arg {:host host
-                        :cwd cwd
                         :server-socket server-socket
                         :on-accept (partial on-accept handler)}
             server (future
