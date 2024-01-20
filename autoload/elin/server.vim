@@ -38,6 +38,7 @@ function! s:try_connecting(port, timer_id) abort
 
   echom printf("Trying to connect to Elin Server: %s", port)
   if s:connect(port)
+    call elin#notify('initialize', [])
     echom printf("Connected to Elin Server: %s", port)
     return timer_stop(a:timer_id)
   endif
