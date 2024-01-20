@@ -30,7 +30,12 @@
   (remove-client!
     [_ client]
     (swap! clients dissoc (client-key client))
-    (e.n.client/disconnect client))
+    (e.p.nrepl/disconnect client))
+
+  (remove-all!
+    [this]
+    (doseq [c (vals @clients)]
+      (e.p.nrepl/remove-client! this c)))
 
   (get-client
     [this host port]
