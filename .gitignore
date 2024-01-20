@@ -6,3 +6,4 @@ cov
 .cache
 .cpcache
 .nrepl-port
+dev/elin/config.edn
