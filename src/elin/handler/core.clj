@@ -20,8 +20,7 @@
 
 (defmethod handler* :connect
   [{:component/keys [nrepl interceptor] :keys [message]}]
-  (let [{:keys [client-manager]} nrepl
-        {:keys [params]} message
+  (let [{:keys [params]} message
         [host port] (condp = (count params)
                       0 [nil nil]
                       1 [nil (first params)]
@@ -33,8 +32,8 @@
                       interceptor e.c.kind/connect ctx
                       (fn [{:as ctx :keys [host port]}]
                         (if (and host port)
-                          (let [client (e.p.nrepl/add-client! client-manager host port)]
-                            (e.p.nrepl/switch-client! client-manager client)
+                          (let [client (e.p.nrepl/add-client! nrepl host port)]
+                            (e.p.nrepl/switch-client! nrepl client)
                             (assoc ctx :client client))
                           ctx)))))]
     (if (contains? result :client)
@@ -43,16 +42,14 @@
 
 (defn- evaluation*
   [{:component/keys [nrepl interceptor]} code & [options]]
-
   (-> {:code code :options (or options {})}
       (as-> ctx
-         (e.p.interceptor/execute
-           interceptor e.c.kind/evaluate ctx
-           (fn [{:as ctx :keys [code options]}]
-             (let [{:keys [client-manager]} nrepl
-                   resp (async/<!! (e.p.nrepl/eval-op client-manager code options))
-                   resp (e.n.message/merge-messages resp)]
-               (assoc ctx :response resp)))))
+        (e.p.interceptor/execute
+         interceptor e.c.kind/evaluate ctx
+         (fn [{:as ctx :keys [code options]}]
+           (let [resp (async/<!! (e.p.nrepl/eval-op nrepl code options))
+                 resp (e.n.message/merge-messages resp)]
+             (assoc ctx :response resp)))))
       (get-in [:response :value])))
 
 (defmethod handler* :evaluate
