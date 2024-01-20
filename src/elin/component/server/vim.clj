@@ -81,7 +81,7 @@
     (e.p.rpc/notify! this ["call" "elin#internal#echom" [text highlight]])))
 
 (defn start-server
-  [{:keys [host server-socket on-accept]}]
+  [{:keys [host server-socket on-accept stop-signal]}]
   (let [response-manager (atom {})]
     ;; Client accepting loop
     (loop []
@@ -91,14 +91,21 @@
                 input-stream (io/reader (.getInputStream client-sock))]
             ;; Client message reading loop
             (loop []
-              (let [raw-msg (json/parse-stream input-stream)]
-                (e.log/debug "Vim server received message:" (pr-str raw-msg))
-                (on-accept (map->VimMessage {:host host
-                                             :message raw-msg
-                                             :output-stream output-stream
-                                             :response-manager response-manager})))
-              (when-not (.isClosed client-sock)
-                (recur))))
+              (let [[raw-msg ch] (async/alts!! [stop-signal
+                                                (async/thread
+                                                  (try
+                                                    (json/parse-stream input-stream)
+                                                    (catch Exception ex ex)))])]
+                (when (and (not= stop-signal ch)
+                           raw-msg
+                           (not (instance? Exception raw-msg)))
+                  (e.log/debug "Vim server received message:" (pr-str raw-msg))
+                  (on-accept (map->VimMessage {:host host
+                                               :message raw-msg
+                                               :output-stream output-stream
+                                               :response-manager response-manager}))
+                  (when-not (.isClosed client-sock)
+                    (recur))))))
           (e.log/debug "Client socket is closed"))
         (catch EOFException _
           nil)

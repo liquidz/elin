@@ -73,7 +73,7 @@
     (e.p.rpc/notify! this ["nvim_echo" [[[text highlight]] true {}]])))
 
 (defn start-server
-  [{:keys [host server-socket on-accept]}]
+  [{:keys [host server-socket on-accept stop-signal]}]
   (let [response-manager (atom {})]
     ;; Client accepting loop
     (loop []
@@ -83,14 +83,21 @@
                 data-input-stream (DataInputStream. (.getInputStream client-sock))]
             ;; Client message reading loop
             (loop []
-              (let [raw-msg (msg/unpack-stream data-input-stream)]
-                (e.log/debug "Neovim server received message:" (pr-str raw-msg))
-                (on-accept (map->NvimMessage {:host host
-                                              :message raw-msg
-                                              :output-stream output-stream
-                                              :response-manager response-manager})))
-              (when-not (.isClosed client-sock)
-                (recur))))
+              (let [[raw-msg ch] (async/alts!! [stop-signal
+                                                (async/thread
+                                                  (try
+                                                    (msg/unpack-stream data-input-stream)
+                                                    (catch Exception ex ex)))])]
+                (e.log/debug "client loop" raw-msg ch)
+                (when (and (not= stop-signal ch)
+                           (not (instance? Exception raw-msg)))
+                  (e.log/debug "Neovim server received message:" (pr-str raw-msg))
+                  (on-accept (map->NvimMessage {:host host
+                                                :message raw-msg
+                                                :output-stream output-stream
+                                                :response-manager response-manager}))
+                  (when-not (.isClosed client-sock)
+                    (recur))))))
           (e.log/debug "Client socket is closed"))
         (catch EOFException _
           nil)
