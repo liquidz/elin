@@ -10,10 +10,12 @@
 
 (m/=> handler [:=> [:cat e.s.server/?Message] any?])
 (defn- handler
-  [msg]
+  [components msg]
   (let [msg' (merge msg
                     (e.p.rpc/parse-message msg))
-        resp (e.h.core/handler* msg')]
+        params (assoc components
+                      :message msg')
+        resp (e.h.core/handler* params)]
     (if-let [callback (:callback msg')]
       (try
         (e.p.rpc/call-function msg "elin#callback#call" [callback resp])
@@ -22,9 +24,10 @@
       resp)))
 
 (defrecord Handler
-  []
+  [nrepl]
   component/Lifecycle
   (start [this]
-    (assoc this :handler handler))
+    (let [components {:nrepl nrepl}]
+      (assoc this :handler (partial handler components))))
   (stop [this]
     (dissoc this :handler)))

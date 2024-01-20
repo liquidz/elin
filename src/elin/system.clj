@@ -1,8 +1,9 @@
 (ns elin.system
   (:require
    [com.stuartsierra.component :as component]
-   [elin.component.handler :as elin.c.handler]
-   [elin.component.server :as elin.c.server]
+   [elin.component.handler :as e.c.handler]
+   [elin.component.nrepl :as e.c.nrepl]
+   [elin.component.server :as e.c.server]
    [msgpack.clojure-extensions]))
 
 (defn new-system
@@ -10,7 +11,10 @@
    (new-system {:server {:port 0}}))
   ([config]
    (component/system-map
-    :handler (elin.c.handler/map->Handler {})
+    :nrepl (e.c.nrepl/map->Nrepl {})
+    :handler (component/using
+              (e.c.handler/map->Handler {})
+              [:nrepl])
     :server (component/using
-             (elin.c.server/map->Server (or (:server config) {}))
+             (e.c.server/map->Server (or (:server config) {}))
              [:handler]))))
