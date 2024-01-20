@@ -14,7 +14,7 @@
 
 (defrecord NvimMessage
   [host message output-stream response-manager]
-  e.p.rpc/IRpc
+  e.p.rpc/IMessage
   (request? [_]
     (= 0 (first message)))
 
@@ -60,7 +60,7 @@
            (msg/pack)
            (.write output-stream))))
 
-  e.p.rpc/IHost
+  e.p.rpc/IFunction
   (call-function [this method params]
     (e.p.rpc/request! this ["nvim_call_function" [method params]]))
 
@@ -88,7 +88,6 @@
                                                   (try
                                                     (msg/unpack-stream data-input-stream)
                                                     (catch Exception ex ex)))])]
-                (e.log/debug "client loop" raw-msg ch)
                 (when (and (not= stop-signal ch)
                            (not (instance? Exception raw-msg)))
                   (e.log/debug "Neovim server received message:" (pr-str raw-msg))

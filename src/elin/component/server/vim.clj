@@ -13,7 +13,7 @@
 
 (defrecord VimMessage
   [host message output-stream response-manager]
-  e.p.rpc/IRpc
+  e.p.rpc/IMessage
   (request? [_]
     (and (sequential? message)
          (int? (first message))
@@ -68,7 +68,7 @@
       (-> [id (or error result)]
           (json/generate-stream  (io/writer output-stream)))))
 
-  e.p.rpc/IHost
+  e.p.rpc/IFunction
   (call-function [this method params]
     (e.p.rpc/request! this ["call" method params (e.u.id/next-id)]))
 

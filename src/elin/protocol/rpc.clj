@@ -1,6 +1,6 @@
 (ns elin.protocol.rpc)
 
-(defprotocol IRpc
+(defprotocol IMessage
   (request? [this])
   (response? [this])
   (parse-message [this])
@@ -8,7 +8,7 @@
   (notify! [this content])
   (response! [this error result]))
 
-(defprotocol IHost
+(defprotocol IFunction
   (call-function [this method params])
   (echo-text [this text])
   (echo-message [this text] [this text highlight]))

@@ -20,7 +20,7 @@
 
 (defn- log*
   [texts highlight]
-  (let [[msg & texts] (if (satisfies? e.p.rpc/IHost (first texts))
+  (let [[msg & texts] (if (satisfies? e.p.rpc/IFunction (first texts))
                         texts
                         (cons nil texts))
         s (->> (map str texts)
