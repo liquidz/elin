@@ -11,9 +11,13 @@
   component/Lifecycle
   (start [this]
     (e.log/debug "Nrepl component: Started")
-    (assoc this :client-manager (e.n.c.manager/new-manager)))
+    this)
   (stop [this]
     (e.log/info "Nrepl component: Stopping")
     (e.p.nrepl/remove-all! client-manager)
     (e.log/info "Nrepl component: Stopped")
     (dissoc this :client-manager)))
+
+(defn new-nrepl
+  [_]
+  (map->Nrepl {:client-manager (e.n.c.manager/new-manager)}))

@@ -62,3 +62,7 @@
       (async/close! stop-signal)
       (e.log/debug "Server component: Stopped")
       (assoc this :server-socket nil :server nil))))
+
+(defn new-server
+  [config]
+  (map->Server (:server config)))

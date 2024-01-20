@@ -31,3 +31,7 @@
       (assoc this :handler (partial handler components))))
   (stop [this]
     (dissoc this :handler)))
+
+(defn new-handler
+  [_]
+  (map->Handler {}))
