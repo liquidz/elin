@@ -58,7 +58,6 @@
       (let [id (or (:id msg) (e.u.id/next-id))
             msg (assoc msg :id id)]
         (swap! response-manager e.n.response/register-message msg)
-        (async/<!! (async/timeout 100))
         (->> (update-keys msg (comp str symbol))
              (b/write-bencode write-stream))
         (get-in @response-manager [id :channel])))))
