@@ -18,8 +18,8 @@
    [:connection e.n.connection/?Connection]
    [:session string?]
    [:supported-ops [:set keyword?]]
-   [:initial-namespace string?]
-   [:versions [:map-of keyword? any?]]])
+   [:initial-namespace [:maybe string?]]
+   [:version [:map-of keyword? any?]]])
 
 (defrecord Client
   [connection
