@@ -5,5 +5,8 @@
 (def ?Message
   [:map
    [:host string?]
-   [:message [:sequential any?]]
+   [:message [:sequential any?]]])
+
+(def ?Writer
+  [:map
    [:output-stream (e.u.schema/?instance java.io.OutputStream)]])
