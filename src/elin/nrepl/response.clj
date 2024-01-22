@@ -1,7 +1,7 @@
 (ns elin.nrepl.response
   (:require
    [clojure.core.async :as async]
-   [elin.log :as log]
+   [elin.log :as e.log]
    [elin.nrepl.message :as e.n.message]
    [elin.util.schema :as e.u.schema]
    [malli.core :as m])
@@ -24,7 +24,8 @@
 (defn- add-message
   [this
    {:as msg :keys [id]}]
-  (if id
+  (if (and id
+           (int? id))
     (update-in this [id :responses] conj msg)
     this))
 
@@ -32,14 +33,16 @@
 (defn- put-done-responses
   [this
    {:as msg :keys [id]}]
-  (if (and id (done? msg))
+  (if (and id
+           (int? id)
+           (done? msg))
     (if-let [{:keys [responses channel]} (get this id)]
       (do
         (async/go
           (try
             (async/>! channel responses)
             (catch Exception ex
-              (log/log "put done responses" (ex-message ex)))))
+              (e.log/log "put done responses" (ex-message ex)))))
         (dissoc this id))
       this)
     this))
@@ -56,7 +59,9 @@
 (defn register-message
   [this
    msg]
-  (if-let [id (:id msg)]
-    (assoc this id {:channel (async/chan)
-                    :responses []})
-    this))
+  (let [id (:id msg)]
+    (if (and id
+             (int? id))
+      (assoc this id {:channel (async/chan)
+                      :responses []})
+      this)))

@@ -39,10 +39,12 @@
 
   e.p.nrepl/IConnection
   (disconnect [_]
-    (when-not (.isClosed socket)
-      (.close socket)
-      (async/close! output-channel)
-      (reset! response-manager {})))
+    (if (.isClosed socket)
+      false
+      (do (.close socket)
+          (async/close! output-channel)
+          (reset! response-manager {})
+          true)))
 
   (disconnected? [_]
     (.isClosed socket))
