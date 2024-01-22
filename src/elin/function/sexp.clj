@@ -21,7 +21,7 @@
   [writer lnum col]
   (e.u.function/call-function writer "elin#compat#sexp#get_expr" [lnum col]))
 
-(m/=> get-namespace [:=> [:cat e.s.server/?Writer] [:maybe string?]])
+(m/=> get-namespace [:=> [:cat e.s.server/?Writer] [:maybe symbol?]])
 (defn get-namespace
   [writer]
   (try
