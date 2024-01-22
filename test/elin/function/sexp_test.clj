@@ -4,6 +4,8 @@
    [elin.function.sexp :as sut]
    [elin.test-helper :as h]))
 
+(t/use-fixtures :once h/malli-instrument-fixture)
+
 (defn- get-namespace-writer
   [ns-form]
   (let [handler #(if (h/call-function? % "elin#internal#clojure#get_ns_form")

@@ -2,8 +2,10 @@
   (:require
    [clojure.string :as str]
    [clojure.test :as t]
-   [elin.test-helper]
+   [elin.test-helper :as h]
    [elin.util.file :as sut]))
+
+(t/use-fixtures :once h/malli-instrument-fixture)
 
 (t/deftest find-file-in-parent-directories-test
   (t/testing "README"
