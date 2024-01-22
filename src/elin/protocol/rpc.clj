@@ -3,10 +3,13 @@
 (defprotocol IMessage
   (request? [this])
   (response? [this])
-  (parse-message [this])
+  (parse-message [this]))
+
+(defprotocol IWriter
   (request! [this content])
   (notify! [this content])
-  (response! [this error result]))
+  (response! [this id error result])
+  (flush! [this]))
 
 (defprotocol IFunction
   (call-function [this method params])
