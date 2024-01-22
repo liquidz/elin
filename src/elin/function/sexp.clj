@@ -1,37 +1,23 @@
 (ns elin.function.sexp
   (:require
-   [elin.constant.host :as e.c.host]
-   [elin.function.host :as e.f.host]
+   [clojure.string :as str]
    [elin.schema.server :as e.s.server]
-   [malli.core :as m]))
+   [elin.util.function :as e.u.function]
+   [malli.core :as m]
+   [rewrite-clj.zip :as r.zip]))
 
-(m/=> luaeval [:=> [:cat e.s.server/?Message string? [:sequential any?]] any?])
-(defn- luaeval [msg code args]
-  (e.f.host/call-function msg "luaeval" [code args]))
+(m/=> get-top-list [:=> [:cat e.s.server/?Writer int? int?] string?])
+(defn get-top-list
+  [writer lnum col]
+  (e.u.function/call-function writer "elin#compat#sexp#get_top_list" [lnum col]))
 
-(m/=> get-current-top-list [:=> [:cat e.s.server/?Message int? int?] string?])
-(defn get-current-top-list
-  [msg cursor-row cursor-col]
-  (if (= e.c.host/vim (:host msg))
-    "TODO"
-    (luaeval msg "require('vim-elin.sexp').get_top_list(_A[1], _A[2])"
-             [(dec cursor-row)
-              (dec cursor-col)])))
+(m/=> get-list [:=> [:cat e.s.server/?Writer int? int?] string?])
+(defn get-list
+  [writer lnum col]
+  (e.u.function/call-function writer "elin#compat#sexp#get_list" [lnum col]))
 
-(m/=> get-current-list [:=> [:cat e.s.server/?Message int? int?] string?])
-(defn get-current-list
-  [msg cursor-row cursor-col]
-  (if (= e.c.host/vim (:host msg))
-    "TODO"
-    (luaeval msg "require('vim-elin.sexp').get_list(_A[1], _A[2])"
-             [(dec cursor-row)
-              (dec cursor-col)])))
+(m/=> get-expr [:=> [:cat e.s.server/?Writer int? int?] string?])
+(defn get-expr
+  [writer lnum col]
+  (e.u.function/call-function writer "elin#compat#sexp#get_expr" [lnum col]))
 
-(m/=> get-current-form [:=> [:cat e.s.server/?Message int? int?] string?])
-(defn get-current-form
-  [msg cursor-row cursor-col]
-  (if (= e.c.host/vim (:host msg))
-    "TODO"
-    (luaeval msg "require('vim-elin.sexp').get_form(_A[1], _A[2])"
-             [(dec cursor-row)
-              (dec cursor-col)])))
