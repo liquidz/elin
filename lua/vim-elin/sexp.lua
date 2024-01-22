@@ -44,7 +44,7 @@ local get_list = function(cursor_row, cursor_col)
     return list_node and get_code(list_node) or nil
 end
 
-local get_form = function(cursor_row, cursor_col)
+local get_expr = function(cursor_row, cursor_col)
     local node = get_node_from_cursor_position(cursor_row, cursor_col)
     return node and get_code(node) or nil
 end
@@ -52,6 +52,6 @@ end
 return {
     get_top_list = get_top_list,
     get_list = get_list,
-    get_form = get_form,
+    get_expr = get_expr,
 }
 
