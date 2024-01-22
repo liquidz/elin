@@ -13,7 +13,7 @@
     EOFException)))
 
 (defrecord NvimMessage
-  [host message output-stream response-manager]
+  [host message response-manager]
   e.p.rpc/IMessage
   (request? [_]
     (= 0 (first message)))
@@ -38,8 +38,11 @@
           {:method (keyword method)
            :params params
            :callback callback})
-      {}))
+      {})))
 
+(defrecord NvimWriter
+  [output-stream response-manager]
+  e.p.rpc/IWriter
   (request! [_ content]
     (let [id (e.u.id/next-id)
           ch (async/chan)]
@@ -54,11 +57,14 @@
          (msg/pack)
          (.write output-stream)))
 
-  (response! [this error result]
-    (when-let [id (:id (e.p.rpc/parse-message this))]
+  (response! [_ id error result]
+    (when id
       (->> [1 id error result]
            (msg/pack)
            (.write output-stream))))
+
+  (flush! [_]
+    (.flush output-stream))
 
   e.p.rpc/IFunction
   (call-function [this method params]
@@ -91,10 +97,11 @@
                 (when (and (not= stop-signal ch)
                            (not (instance? Exception raw-msg)))
                   (e.log/debug "Neovim server received message:" (pr-str raw-msg))
-                  (on-accept (map->NvimMessage {:host host
-                                                :message raw-msg
-                                                :output-stream output-stream
-                                                :response-manager response-manager}))
+                  (on-accept {:message (map->NvimMessage {:host host
+                                                          :message raw-msg
+                                                          :response-manager response-manager})
+                              :writer (map->NvimWriter {:output-stream output-stream
+                                                        :response-manager response-manager})})
                   (when-not (.isClosed client-sock)
                     (recur))))))
           (e.log/debug "Client socket is closed"))

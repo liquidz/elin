@@ -11,7 +11,7 @@
    java.net.ServerSocket))
 
 (defn on-accept
-  [handler message]
+  [handler {:as arg-map :keys [message writer]}]
   (if (e.p.rpc/response? message)
     ;; Receive response
     (let [{:keys [response-manager]} message
@@ -23,12 +23,14 @@
     ;; Receive request/notify
     (future
       (let [[res err] (try
-                        [(handler message)]
+                        [(handler arg-map)]
                         (catch Exception ex
                           [nil (ex-message ex)]))]
         (when (e.p.rpc/request? message)
-          (e.p.rpc/response! message err res)
-          (.flush (:output-stream message)))))))
+          (e.p.rpc/response! writer
+                             (:id (e.p.rpc/parse-message message))
+                             err res)
+          (e.p.rpc/flush! writer))))))
 
 (defrecord Server
   [host port server-socket server stop-signal]

@@ -12,7 +12,7 @@
    java.io.EOFException))
 
 (defrecord VimMessage
-  [host message output-stream response-manager]
+  [host message response-manager]
   e.p.rpc/IMessage
   (request? [_]
     (and (sequential? message)
@@ -45,8 +45,11 @@
       (let [[_ [method params callback]] message]
         {:method (keyword method)
          :params params
-         :callback callback})))
+         :callback callback}))))
 
+(defrecord VimWriter
+  [output-stream response-manager]
+  e.p.rpc/IWriter
   (request! [_ [method :as content]]
     (let [id (cond
                (= "call" method) (nth content 3)
@@ -67,6 +70,9 @@
       (e.log/info "FIXME" (pr-str [id (or error result)]))
       (-> [id (or error result)]
           (json/generate-stream  (io/writer output-stream)))))
+
+  (flush! [_]
+    (.flush output-stream))
 
   e.p.rpc/IFunction
   (call-function [this method params]
@@ -100,10 +106,11 @@
                            raw-msg
                            (not (instance? Exception raw-msg)))
                   (e.log/debug "Vim server received message:" (pr-str raw-msg))
-                  (on-accept (map->VimMessage {:host host
-                                               :message raw-msg
-                                               :output-stream output-stream
-                                               :response-manager response-manager}))
+                  (on-accept {:message (map->VimMessage {:host host
+                                                         :message raw-msg
+                                                         :response-manager response-manager})
+                              :writer (map->VimWriter {:output-stream output-stream
+                                                       :response-manager response-manager})})
                   (when-not (.isClosed client-sock)
                     (recur))))))
           (e.log/debug "Client socket is closed"))
