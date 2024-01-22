@@ -1,6 +1,8 @@
 (ns elin.test-helper
   (:require
+   [babashka.nrepl.server :as b.n.server]
    [clojure.core.async :as async]
+   [elin.nrepl.connection :as e.n.connection]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.server :as e.s.server]
    [elin.util.id :as e.u.id]
@@ -8,12 +10,27 @@
    [malli.dev.pretty :as m.d.pretty]
    [malli.instrument :as m.inst]))
 
+(def ^:dynamic *nrepl-connection* nil)
+
+(defn malli-instrument-fixture
+  [f]
+  (m.inst/instrument!
+   {:report (m.d.pretty/reporter)})
+  (f))
+
+(defn test-nrepl-connection-fixture
+  [f]
+  (let [{:as server :keys [socket]} (b.n.server/start-server! {:host "localhost" :port 0})
+        port (.getLocalPort socket)]
+    (try
+      (binding [*nrepl-connection* (e.n.connection/connect "localhost" port)]
+        (f))
+      (finally
+        (b.n.server/stop-server! server)))))
+
 (def ?TestMessageOption
   [:map
    [:handler [:=> [:cat [:sequential any?]] any?]]])
-
-(m.inst/instrument!
- {:report (m.d.pretty/reporter)})
 
 (defprotocol ITestWriter
   (get-outputs [this]))
@@ -96,10 +113,7 @@
                     :outputs (atom [])
                     :option option}))
 
-;;(0 7 test_call_function [elin#internal#clojure#get_ns_form []])
 (defn call-function? [msg fn-name]
   (and
    (= "test_call_function" (nth msg 2))
    (= fn-name (first (nth msg 3)))))
-
-;;(0 7 test_call_function [elin#internal#clojure#get_ns_form []])
