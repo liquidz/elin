@@ -2,16 +2,16 @@
   (:require
    [clojure.core.async :as async]
    [clojure.test :as t]
-   [elin.nrepl.connection]
+   [elin.nrepl.connection :as sut]
    [elin.nrepl.message :as e.n.message]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.test-helper :as h]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
-(t/use-fixtures :each h/test-nrepl-connection-fixture)
+(t/use-fixtures :each h/test-nrepl-server-port-fixture)
 
 (t/deftest connect-test
-  (let [conn h/*nrepl-connection*]
+  (let [conn (sut/connect "localhost" h/*nrepl-server-port*)]
     (t/is (false? (e.p.nrepl/disconnected? conn)))
 
     (t/testing "request"
@@ -28,9 +28,10 @@
         (t/is (= {:type "out" :text "hello\n"}
                  (async/<!! (:output-channel conn))))))
 
-    ;; TODO
-    (t/testing "pprint-out")
-    (t/testing "std err")
+    (t/testing "std err"
+      (e.p.nrepl/request conn {:op "eval" :code "(binding [*out* *err*] (println \"world\"))"})
+      (t/is (= {:type "err" :text "world\n"}
+               (async/<!! (:output-channel conn)))))
 
     (t/testing "disconnect"
       (t/is (true? (e.p.nrepl/disconnect conn)))

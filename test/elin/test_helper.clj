@@ -2,7 +2,6 @@
   (:require
    [babashka.nrepl.server :as b.n.server]
    [clojure.core.async :as async]
-   [elin.nrepl.connection :as e.n.connection]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.server :as e.s.server]
    [elin.util.id :as e.u.id]
@@ -10,7 +9,7 @@
    [malli.dev.pretty :as m.d.pretty]
    [malli.instrument :as m.inst]))
 
-(def ^:dynamic *nrepl-connection* nil)
+(def ^:dynamic *nrepl-server-port* nil)
 
 (defn malli-instrument-fixture
   [f]
@@ -18,12 +17,12 @@
    {:report (m.d.pretty/reporter)})
   (f))
 
-(defn test-nrepl-connection-fixture
+(defn test-nrepl-server-port-fixture
   [f]
   (let [{:as server :keys [socket]} (b.n.server/start-server! {:host "localhost" :port 0})
         port (.getLocalPort socket)]
     (try
-      (binding [*nrepl-connection* (e.n.connection/connect "localhost" port)]
+      (binding [*nrepl-server-port* port]
         (f))
       (finally
         (b.n.server/stop-server! server)))))
