@@ -1,8 +1,13 @@
 (ns elin.component.nrepl
   (:require
+   [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
+   [elin.constant.kind :as e.c.kind]
    [elin.log :as e.log]
    [elin.nrepl.client :as e.n.client]
+   [elin.nrepl.constant :as e.n.constant]
+   [elin.nrepl.message :as e.n.message]
+   [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
    [malli.core :as m]
    [msgpack.clojure-extensions]))
@@ -17,7 +22,8 @@
    (format "%s:%s" (get-in c [:connection :host]) (get-in c [:connection :port]))))
 
 (defrecord Nrepl
-  [clients ; atom of [:map-of string? e.n.client/?Client]
+  [interceptor
+   clients ; atom of [:map-of string? e.n.client/?Client]
    current-client-key] ; atom of [:maybe string?]]
 
   component/Lifecycle
@@ -94,26 +100,51 @@
 
   (request [this msg]
     (when-let [client (e.p.nrepl/current-client this)]
-      (e.p.nrepl/request client msg)))
+      (async/go
+        (let [intercept #(apply e.p.interceptor/execute interceptor e.c.kind/nrepl %&)]
+          (-> {:request msg}
+              (intercept
+               (fn [{:as ctx :keys [request]}]
+                 (e.log/info "FIXME kiteruyo" request)
+                 (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
+              (:response))))))
 
   e.p.nrepl/INreplOp
   (close-op [this]
-    (when-let [client (e.p.nrepl/current-client this)]
-      (e.p.nrepl/close-op client)))
+    (when-let [{:keys [session]} (e.p.nrepl/current-client this)]
+      (e.p.nrepl/request this {:op "close" :session session})))
 
   (eval-op [this code options]
-    (when-let [client (e.p.nrepl/current-client this)]
-      (e.p.nrepl/eval-op client code options)))
+    (when-let [{:keys [session]} (e.p.nrepl/current-client this)]
+      (async/go
+        (->> (merge (select-keys options e.n.constant/eval-option-keys)
+                    {:op "eval" :session session  :code code})
+             (e.p.nrepl/request this)
+             (async/<!)
+             (e.n.message/merge-messages)))))
 
   (interrupt-op [this options]
-    (when-let [client (e.p.nrepl/current-client this)]
-      (e.p.nrepl/interrupt-op client options)))
+    (when-let [{:keys [session]} (e.p.nrepl/current-client this)]
+      (->> (merge (select-keys options #{:interrupt-id})
+                  {:op "interrupt" :session session})
+           (e.p.nrepl/request this))))
 
   (load-file-op [this file options]
-    (when-let [client (e.p.nrepl/current-client this)]
-      (e.p.nrepl/load-file-op client file options))))
+    (when-let [{:keys [session]} (e.p.nrepl/current-client this)]
+      (->> (merge (select-keys options e.n.constant/load-file-option-keys)
+                  {:op "load-file" :session session :file file})
+           (e.p.nrepl/request this))))
+
+  (ls-sessions [this]
+    (async/go
+      (-> (e.p.nrepl/request this {:op "ls-sessions"})
+          (async/<!)
+          (e.n.message/merge-messages)
+          (:sessions)))))
 
 (defn new-nrepl
-  [_]
-  (map->Nrepl {:clients (atom {})
-               :current-client-key (atom nil)}))
+  [config]
+  (map->Nrepl (merge
+               (:nrepl config)
+               {:clients (atom {})
+                :current-client-key (atom nil)})))

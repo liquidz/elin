@@ -4,3 +4,4 @@
 (def handler ::handler)
 (def connect ::connect)
 (def evaluate ::evaluate)
+(def nrepl ::nrepl)
