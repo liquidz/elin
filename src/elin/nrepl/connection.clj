@@ -97,16 +97,3 @@
       :write-stream write-stream
       :output-channel output-ch
       :response-manager response-manager})))
-
-(comment
-  (let [conn (connect "localhost" 61081)]
-    (try
-      (println "connected")
-      (let [{:keys [new-session]} (e.n.message/merge-messages
-                                    (async/<!! (e.p.nrepl/request conn {:op "clone"})))]
-        (println "resp"
-                 (e.n.message/merge-messages
-                   (async/<!! (e.p.nrepl/request conn {:op "eval" :code "(+ 1 2 3)" :session new-session})))))
-
-      (finally
-        (e.p.nrepl/disconnect conn)))))
