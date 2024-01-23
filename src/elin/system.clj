@@ -12,8 +12,10 @@
    (new-system {:server {:port 0}}))
   ([config]
    (component/system-map
-    :nrepl (e.c.nrepl/new-nrepl config)
     :interceptor (e.c.interceptor/new-interceptor config)
+    :nrepl (component/using
+            (e.c.nrepl/new-nrepl config)
+            [:interceptor])
     :handler (component/using
               (e.c.handler/new-handler config)
               [:nrepl :interceptor])
