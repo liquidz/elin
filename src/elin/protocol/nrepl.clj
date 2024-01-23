@@ -21,4 +21,5 @@
   (close-op [this])
   (eval-op [this code options])
   (interrupt-op [this options])
-  (load-file-op [this file options]))
+  (load-file-op [this file options])
+  (ls-sessions [this]))
