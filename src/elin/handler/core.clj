@@ -24,16 +24,15 @@
                       0 [nil nil]
                       1 [nil (first params)]
                       params)
+        intercept #(apply e.p.interceptor/execute interceptor e.c.kind/connect %&)
         result (-> {:elin elin :host host :port port}
-                   (as-> ctx
-                     (e.p.interceptor/execute
-                      interceptor e.c.kind/connect ctx
-                      (fn [{:as ctx :keys [host port]}]
-                        (if (and host port)
-                          (let [client (e.p.nrepl/add-client! nrepl host port)]
-                            (e.p.nrepl/switch-client! nrepl client)
-                            (assoc ctx :client client))
-                          ctx)))))]
+                   (intercept
+                    (fn [{:as ctx :keys [host port]}]
+                      (if (and host port)
+                        (let [client (e.p.nrepl/add-client! nrepl host port)]
+                          (e.p.nrepl/switch-client! nrepl client)
+                          (assoc ctx :client client))
+                        ctx))))]
     (if (contains? result :client)
       (e.log/info writer (format "Connected to %s:%s" (:host result) (:port result)))
       (e.log/warning writer "Host or port is not specified." (pr-str (select-keys result [:host :port]))))))
@@ -41,15 +40,14 @@
 (defn- evaluation*
   [{:as elin :component/keys [nrepl interceptor]}
    code & [options]]
-  (-> {:elin elin :code code :options (or options {})}
-      (as-> ctx
-        (e.p.interceptor/execute
-         interceptor e.c.kind/evaluate ctx
+  (let [intercept #(apply e.p.interceptor/execute interceptor e.c.kind/evaluate %&)]
+    (-> {:elin elin :code code :options (or options {})}
+        (intercept
          (fn [{:as ctx :keys [code options]}]
            (let [resp (async/<!! (e.p.nrepl/eval-op nrepl code options))
                  resp (e.n.message/merge-messages resp)]
-             (assoc ctx :response resp)))))
-      (get-in [:response :value])))
+             (assoc ctx :response resp))))
+        (get-in [:response :value]))))
 
 (defmethod handler* :evaluate
   [{:as elin :keys [message]}]

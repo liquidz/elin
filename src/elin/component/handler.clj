@@ -17,10 +17,9 @@
 (defn- handler
   [{:as components :component/keys [interceptor]}
    arg-map]
-  (-> arg-map
-      (as-> ctx
-        (e.p.interceptor/execute
-         interceptor e.c.kind/handler ctx
+  (let [intercept #(apply e.p.interceptor/execute interceptor e.c.kind/handler %&)]
+    (-> arg-map
+        (intercept
          (fn [{:as context :keys [message writer]}]
            (let [msg' (merge message
                              (e.p.rpc/parse-message message))
@@ -34,8 +33,8 @@
                            (catch Exception ex
                              (e.log/error writer "Failed to callback" (ex-message ex))))
                          resp)]
-             (assoc context :response resp')))))
-      (:response)))
+             (assoc context :response resp'))))
+        (:response))))
 
 (defrecord Handler
   [nrepl interceptor]
