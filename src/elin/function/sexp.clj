@@ -21,19 +21,21 @@
   [writer lnum col]
   (e.u.function/call-function writer "elin#compat#sexp#get_expr" [lnum col]))
 
-(m/=> get-namespace [:=> [:cat e.s.server/?Writer] [:maybe symbol?]])
+(m/=> get-namespace [:=> [:cat e.s.server/?Writer] [:maybe string?]])
 (defn get-namespace
   [writer]
   (try
     (let [ns-form (e.u.function/call-function writer "elin#internal#clojure#get_ns_form" [])
           target-sym (if (str/includes? ns-form "in-ns") 'in-ns 'ns)]
       (when (seq ns-form)
-        (let [zloc (-> ns-form
-                       (r.zip/of-string)
-                       (r.zip/find-value r.zip/next target-sym)
-                       (r.zip/right))]
-          (r.zip/sexpr
-           (if (= :quote (r.zip/tag zloc))
-             (r.zip/down zloc)
-             zloc)))))
+        (-> ns-form
+            (r.zip/of-string)
+            (r.zip/find-value r.zip/next target-sym)
+            (r.zip/right)
+            (as-> zloc
+              (if (= :quote (r.zip/tag zloc))
+                (r.zip/down zloc)
+                zloc))
+            (r.zip/sexpr)
+            (str))))
     (catch Exception _ nil)))

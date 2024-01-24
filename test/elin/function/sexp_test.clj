@@ -15,15 +15,15 @@
 
 (t/deftest get-namespace-test
   (t/testing "no metadata"
-    (t/is (= 'foo.bar
+    (t/is (= "foo.bar"
              (sut/get-namespace (get-namespace-writer "(ns foo.bar)")))))
 
   (t/testing "with metadata"
-    (t/is (= 'foo.bar
+    (t/is (= "foo.bar"
              (sut/get-namespace (get-namespace-writer "(ns ^:meta foo.bar)"))))
-    (t/is (= 'foo.bar
+    (t/is (= "foo.bar"
              (sut/get-namespace (get-namespace-writer "(ns ^{:meta true} foo.bar)")))))
 
   (t/testing "in-ns"
-    (t/is (= 'foo.bar
+    (t/is (= "foo.bar"
              (sut/get-namespace (get-namespace-writer "(in-ns 'foo.bar)"))))))
