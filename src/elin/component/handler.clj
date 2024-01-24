@@ -5,6 +5,7 @@
    [elin.handler.core :as e.h.core]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
+   [elin.protocol.nrepl :as e.p.nrepl]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.handler :as e.s.handler]
    [malli.core :as m]
@@ -15,12 +16,14 @@
                     e.s.handler/?ArgMap]
                any?])
 (defn- handler
-  [{:as components :component/keys [interceptor]}
+  [{:as components :component/keys [nrepl interceptor]}
    arg-map]
   (let [intercept #(apply e.p.interceptor/execute interceptor e.c.kind/handler %&)]
     (-> arg-map
         (intercept
          (fn [{:as context :keys [message writer]}]
+           (e.p.nrepl/set-writer! nrepl writer)
+
            (let [msg' (merge message
                              (e.p.rpc/parse-message message))
                  params (assoc components
