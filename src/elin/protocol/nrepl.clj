@@ -17,3 +17,5 @@
   (switch-client! [this client])
   (current-client [this]))
 
+(defprotocol INreplComponent
+  (set-writer! [this writer]))
