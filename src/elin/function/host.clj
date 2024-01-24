@@ -7,15 +7,15 @@
 
 (m/=> get-current-working-directory [:=> [:cat e.s.server/?Message [:* any?]] string?])
 (defn get-current-working-directory
-  [msg & extra-params]
+  [writer & extra-params]
   (let [params (or extra-params [])]
-    (e.u.function/call-function msg "getcwd" params)))
+    (e.u.function/call-function writer "getcwd" params)))
 
 (m/=> get-cursor-position [:=> [:cat e.s.server/?Message [:* any?]] e.s.host/?Position])
 (defn get-cursor-position
-  [msg & extra-params]
+  [writer & extra-params]
   (let [params (or extra-params [])
-        [bufnum lnum col off curswant] (e.u.function/call-function msg "getcurpos" params)]
+        [bufnum lnum col off curswant] (e.u.function/call-function writer "getcurpos" params)]
     {:bufname bufnum
      :lnum lnum
      :col col
@@ -23,5 +23,5 @@
      :curswant curswant}))
 
 (defn get-full-path
-  [msg]
-  (e.u.function/call-function msg "expand" ["%:p"]))
+  [writer]
+  (e.u.function/call-function writer "expand" ["%:p"]))
