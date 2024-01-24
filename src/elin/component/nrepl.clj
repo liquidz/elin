@@ -109,39 +109,6 @@
                  (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
               (:response))))))
 
-  e.p.nrepl/INreplOp
-  (close-op [this]
-    (when-let [{:keys [session]} (e.p.nrepl/current-client this)]
-      (e.p.nrepl/request this {:op "close" :session session})))
-
-  (eval-op [this code options]
-    (when-let [{:keys [session]} (e.p.nrepl/current-client this)]
-      (async/go
-        (->> (merge (select-keys options e.n.constant/eval-option-keys)
-                    {:op "eval" :session session  :code code})
-             (e.p.nrepl/request this)
-             (async/<!)
-             (e.n.message/merge-messages)))))
-
-  (interrupt-op [this options]
-    (when-let [{:keys [session]} (e.p.nrepl/current-client this)]
-      (->> (merge (select-keys options #{:interrupt-id})
-                  {:op "interrupt" :session session})
-           (e.p.nrepl/request this))))
-
-  (load-file-op [this file options]
-    (when-let [{:keys [session]} (e.p.nrepl/current-client this)]
-      (->> (merge (select-keys options e.n.constant/load-file-option-keys)
-                  {:op "load-file" :session session :file file})
-           (e.p.nrepl/request this))))
-
-  (ls-sessions [this]
-    (async/go
-      (-> (e.p.nrepl/request this {:op "ls-sessions"})
-          (async/<!)
-          (e.n.message/merge-messages)
-          (:sessions)))))
-
 (defn new-nrepl
   [config]
   (map->Nrepl (merge
