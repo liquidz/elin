@@ -55,25 +55,6 @@
         (t/is (true? (e.p.nrepl/supported-op? client "eval")))
         (t/is (false? (e.p.nrepl/supported-op? client "unknown")))))
 
-    ;; (t/testing "INreplOp"
-    ;;   (t/testing "eval-op"
-    ;;     (let [resp (-> (e.p.nrepl/eval-op client "(+ 1 2 3)" {})
-    ;;                    (async/<!!)
-    ;;                    (e.n.message/merge-messages))]
-    ;;       (t/is (= {:session (:session client)
-    ;;                 :status ["done"]
-    ;;                 :value "6"}
-    ;;                (select-keys resp [:session :status :value])))))
-    ;;
-    ;;   #_(t/testing "interrupt-op")
-    ;;   #_(t/testing "load-file-op")
-    ;;
-    ;;   (t/testing "ls-sessions"
-    ;;     (t/is (= [(:session client)]
-    ;;              (async/<!! (e.p.nrepl/ls-sessions client)))))
-    ;;   (t/testing "close-op"))
-
-
     (t/testing "disconnect"
       (t/is (true? (e.p.nrepl/disconnect client)))
       (t/is (true? (e.p.nrepl/disconnected? client))))))
