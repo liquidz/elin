@@ -4,6 +4,7 @@
    [clojure.test :as t]
    [com.stuartsierra.component :as component]
    [elin.component.nrepl]
+   [elin.nrepl.message :as e.n.message]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.system :as e.system]
    [elin.test-helper :as h]))
@@ -24,11 +25,14 @@
         (t/is (= {:status ["done"]
                   :session (:session client)
                   :value "6"}
-                 (-> (e.p.nrepl/eval-op nrepl "(+ 1 2 3)" {})
+                 (-> (e.p.nrepl/request nrepl {:op "eval" :code "(+ 1 2 3)"})
                      (async/<!!)
+                     (e.n.message/merge-messages)
                      (select-keys [:status :session :value]))))
         (t/is (= [(:session client)]
-                 (async/<!! (e.p.nrepl/ls-sessions nrepl)))))
-
+                 (-> (e.p.nrepl/request nrepl {:op "ls-sessions"})
+                     (async/<!!)
+                     (e.n.message/merge-messages)
+                     (:sessions)))))
       (finally
         (component/stop-system sys)))))
