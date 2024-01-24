@@ -3,6 +3,7 @@
    [com.stuartsierra.component :as component]
    [elin.constant.kind :as e.c.kind]
    [elin.interceptor.connect :as e.i.connect]
+   [elin.interceptor.nrepl :as e.i.nrepl]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [exoscale.interceptor :as interceptor]
@@ -10,7 +11,8 @@
 
 (def ^:private default-manager
   {e.c.kind/connect [e.i.connect/port-auto-detecting-interceptor
-                     e.i.connect/output-channel-interceptor]})
+                     e.i.connect/output-channel-interceptor]
+   e.c.kind/nrepl [e.i.nrepl/debug-interceptor]})
 
 (defrecord Interceptor
   [manager]
