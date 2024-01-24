@@ -7,7 +7,7 @@ function! elin#compat#sexp#get_list(lnum, col) abort
 endfunction
 
 function! elin#compat#sexp#get_expr(lnum, col) abort
-  return s:get_expr(a:lnul, a:col)
+  return s:get_expr(a:lnum, a:col)
 endfunction
 
 if has('nvim')
