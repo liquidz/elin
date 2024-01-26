@@ -8,3 +8,19 @@ function! elin#internal#echom(text, highlight) abort
     echohl None
 	endtry
 endfunction
+
+function! elin#internal#add_curpos_to_jumplist() abort
+  " :h jumplist
+  " > You can explicitly add a jump by setting the ' mark with "m'".
+  silent normal! m'
+endfunction
+
+function! elin#internal#jump(path, lnum, col, jump_cmd) abort
+  call elin#internal#add_curpos_to_jumplist()
+  if expand('%:p') !=# a:path
+    execute printf(':keepjumps %s %s', a:jump_cmd, a:path)
+  endif
+  call cursor(a:lnum, a:col)
+  normal! zz
+  return v:true
+endfunction
