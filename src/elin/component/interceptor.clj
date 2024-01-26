@@ -11,8 +11,11 @@
 
 (def ^:private default-manager
   {e.c.kind/connect [e.i.connect/port-auto-detecting-interceptor
-                     e.i.connect/output-channel-interceptor]
-   e.c.kind/nrepl [e.i.nrepl/debug-interceptor]})
+                     e.i.connect/output-channel-interceptor]})
+   ;; e.c.kind/evaluate [e.i.nrepl/eval-ns-interceptor]})
+
+(def ^:private dev-manager
+  {e.c.kind/nrepl [e.i.nrepl/debug-interceptor]})
 
 (defrecord Interceptor
   [manager]
@@ -41,7 +44,9 @@
       (interceptor/execute context (concat interceptors [terminator'])))))
 
 (defn new-interceptor
-  [config]
-  (let [initial-manager (->> (get-in config [:interceptor :manager])
-                             (reduce-kv assoc default-manager))]
+  [{:as config :keys [develop?]}]
+  (let [default-manager' (merge default-manager
+                                (when develop? dev-manager))
+        initial-manager (->> (get-in config [:interceptor :manager])
+                             (reduce-kv assoc default-manager'))]
     (map->Interceptor {:manager (atom initial-manager)})))
