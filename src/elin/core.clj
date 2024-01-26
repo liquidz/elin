@@ -5,10 +5,14 @@
    [elin.log :as e.log]))
 
 (defn -main
-  [host port]
-  (e.log/info "elin.core args" (pr-str port) "\n\n\n")
+  [host port development-mode]
   (let [port (Long/parseLong port)
-        sys-map (e.system/new-system {:server {:host host
+        develop? (= "true" development-mode)
+        sys-map (e.system/new-system {:develop? develop?
+                                      :server {:host host
                                                :port port}})]
+    (when develop?
+      (alter-var-root #'e.log/log-level (constantly e.log/DEBUG_LEVEL)))
+    (e.log/debug "elin.core Starting server:" (pr-str port) "\n\n\n")
     (component/start-system sys-map)
     (deref (promise))))

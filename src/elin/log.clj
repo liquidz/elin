@@ -8,7 +8,8 @@
 (def ^:const WARNING_LEVEL 1)
 (def ^:const ERROR_LEVEL 0)
 
-(def ^:dynamic *log-level* DEBUG_LEVEL)
+;(def ^:dynamic *log-level* INFO_LEVEL)
+(def log-level INFO_LEVEL)
 (def ^:dynamic *log-file* "/tmp/elin.log")
 
 (defn log
@@ -34,20 +35,20 @@
 
 (defn debug
   [& texts]
-  (when (<= DEBUG_LEVEL *log-level*)
+  (when (<= DEBUG_LEVEL log-level)
     (log* texts "Normal")))
 
 (defn info
   [& texts]
-  (when (<= INFO_LEVEL *log-level*)
+  (when (<= INFO_LEVEL log-level)
     (log* texts "MoreMsg")))
 
 (defn warning
   [& texts]
-  (when (<= WARNING_LEVEL *log-level*)
+  (when (<= WARNING_LEVEL log-level)
     (log* texts "WarningMsg")))
 
 (defn error
   [& texts]
-  (when (<= ERROR_LEVEL *log-level*)
+  (when (<= ERROR_LEVEL log-level)
     (log* texts "ErrorMsg")))
