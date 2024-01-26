@@ -26,3 +26,10 @@
 (defn get-full-path
   [writer]
   (e.u.function/call-function writer "expand" ["%:p"]))
+
+(m/=> jump [:=> [:cat e.s.server/?Writer string? int? int? [:* any?]] :nil])
+(defn jump
+  [writer path lnum col & [jump-command]]
+  (let [jump-command (or jump-command "edit")]
+    (e.u.function/call-function writer "elin#internal#jump" [path lnum col jump-command])
+    nil))
