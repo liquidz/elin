@@ -1,6 +1,7 @@
 (ns elin.util.file
   (:require
    [clojure.java.io :as io]
+   [clojure.string :as str]
    [elin.util.schema :as e.u.schema]
    [malli.core :as m]))
 
@@ -19,3 +20,12 @@
          (if (.exists file)
            file
            (recur (.getParentFile dir))))))))
+
+(m/=> normalize-path [:=> [:cat string?] string?])
+(defn normalize-path [path]
+  (let [path (str/replace-first path #"^file:" "")]
+    (if (str/starts-with? path "jar:")
+      (-> path
+          (str/replace-first #"^jar:file:" "zipfile://")
+          (str/replace #"!/" "::"))
+      path)))
