@@ -2,7 +2,10 @@
   (:require
    [com.stuartsierra.component :as component]
    [elin.constant.kind :as e.c.kind]
-   [elin.handler.core :as e.h.core]
+   [elin.handler :as e.handler]
+   [elin.handler.connect]
+   [elin.handler.core]
+   [elin.handler.evaluate]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
@@ -29,7 +32,7 @@
                  params (assoc components
                                :message msg'
                                :writer writer)
-                 resp (e.h.core/handler* params)
+                 resp (e.handler/handler* params)
                  resp' (if-let [callback (:callback msg')]
                          (try
                            (e.p.rpc/call-function writer "elin#callback#call" [callback resp])
