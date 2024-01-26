@@ -5,13 +5,13 @@
    [elin.util.function :as e.u.function]
    [malli.core :as m]))
 
-(m/=> get-current-working-directory [:=> [:cat e.s.server/?Message [:* any?]] string?])
+(m/=> get-current-working-directory [:=> [:cat e.s.server/?Writer [:* any?]] string?])
 (defn get-current-working-directory
   [writer & extra-params]
   (let [params (or extra-params [])]
     (e.u.function/call-function writer "getcwd" params)))
 
-(m/=> get-cursor-position [:=> [:cat e.s.server/?Message [:* any?]] e.s.host/?Position])
+(m/=> get-cursor-position [:=> [:cat e.s.server/?Writer [:* any?]] e.s.host/?Position])
 (defn get-cursor-position
   [writer & extra-params]
   (let [params (or extra-params [])
@@ -22,6 +22,7 @@
      :off off
      :curswant curswant}))
 
+(m/=> get-full-path [:=> [:cat e.s.server/?Writer] string?])
 (defn get-full-path
   [writer]
   (e.u.function/call-function writer "expand" ["%:p"]))
