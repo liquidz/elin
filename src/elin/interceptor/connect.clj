@@ -3,7 +3,7 @@
    [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.host :as e.f.host]
-   [elin.protocol.rpc :as e.p.rpc]
+   [elin.protocol.interceptor :as e.p.interceptor]
    [elin.util.file :as e.u.file]))
 
 (def port-auto-detecting-interceptor
@@ -24,14 +24,14 @@
 (def output-channel-interceptor
   {:name ::output-channel-interceptor
    :kind e.c.interceptor/connect
-   :leave (fn [{:as ctx :keys [elin client]}]
+   :leave (fn [{:as ctx :elin/keys [interceptor] :keys [elin client]}]
             (when client
               (async/go-loop []
                 (let [{:keys [writer]} elin
                       ch (get-in client [:connection :output-channel])
-                      {:keys [text]} (async/<! ch)]
-                  (when text
-                    ;; TODO FIXME
-                    (e.p.rpc/echo-message writer (str "OUTPUT: " text) "ErrorMsg")
+                      output (async/<! ch)]
+                  (when output
+                    (->> {:writer writer :output output}
+                         (e.p.interceptor/execute interceptor e.c.interceptor/output))
                     (recur)))))
             ctx)})

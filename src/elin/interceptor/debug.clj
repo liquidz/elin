@@ -25,7 +25,7 @@
 (def interceptor-context-checking-interceptor
   {:name ::interceptor-context-checking-interceptor
    :kind e.c.interceptor/all
-   :enter (fn [{:as ctx :elin.component.interceptor/keys [kind]}]
+   :enter (fn [{:as ctx :elin/keys [kind]}]
             (if-let [schema (get kind-schema-map kind)]
               (do
                 (some->> ctx

@@ -5,3 +5,4 @@
 (def handler ::handler)
 (def connect ::connect)
 (def nrepl ::nrepl)
+(def output ::output)
