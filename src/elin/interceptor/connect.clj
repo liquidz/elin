@@ -1,12 +1,14 @@
 (ns elin.interceptor.connect
   (:require
    [clojure.core.async :as async]
+   [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.host :as e.f.host]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.file :as e.u.file]))
 
 (def port-auto-detecting-interceptor
   {:name ::port-auto-detecting-interceptor
+   :kind e.c.interceptor/connect
    :enter (fn [{:as ctx :keys [elin host port]}]
             (if (and host port)
               ctx
@@ -21,6 +23,7 @@
 
 (def output-channel-interceptor
   {:name ::output-channel-interceptor
+   :kind e.c.interceptor/connect
    :leave (fn [{:as ctx :keys [elin client]}]
             (when client
               (async/go-loop []

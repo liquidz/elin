@@ -1,21 +1,21 @@
 (ns elin.component.interceptor
   (:require
    [com.stuartsierra.component :as component]
-   [elin.constant.kind :as e.c.kind]
+   [elin.constant.interceptor :as e.c.interceptor]
    [elin.interceptor.connect :as e.i.connect]
-   [elin.interceptor.nrepl :as e.i.nrepl]
+   [elin.interceptor.debug :as e.i.debug]
+   ;; [elin.interceptor.nrepl :as e.i.nrepl]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [exoscale.interceptor :as interceptor]
    [msgpack.clojure-extensions]))
 
-(def ^:private default-manager
-  {e.c.kind/connect [e.i.connect/port-auto-detecting-interceptor
-                     e.i.connect/output-channel-interceptor]})
-   ;; e.c.kind/evaluate [e.i.nrepl/eval-ns-interceptor]})
+(def ^:private default-interceptors
+  [e.i.connect/port-auto-detecting-interceptor
+   e.i.connect/output-channel-interceptor])
 
-(def ^:private dev-manager
-  {e.c.kind/nrepl [e.i.nrepl/debug-interceptor]})
+(def ^:private dev-interceptors
+  [e.i.debug/nrepl-debug-interceptor])
 
 (defrecord Interceptor
   [manager]
@@ -38,15 +38,18 @@
     (->> (or (get @manager kind) [])
          (interceptor/execute context)))
   (execute [_ kind context terminator]
-    (let [interceptors (or (get @manager kind) [])
+    (let [interceptors (concat
+                        (or (get @manager e.c.interceptor/all) [])
+                        (or (get @manager kind) []))
           terminator' {:name ::terminator
                        :enter terminator}]
       (interceptor/execute context (concat interceptors [terminator'])))))
 
 (defn new-interceptor
   [{:as config :keys [develop?]}]
-  (let [default-manager' (merge default-manager
-                                (when develop? dev-manager))
+  (let [default-manager (->> (concat default-interceptors
+                                     (when develop? dev-interceptors))
+                             (group-by :kind))
         initial-manager (->> (get-in config [:interceptor :manager])
-                             (reduce-kv assoc default-manager'))]
+                             (reduce-kv assoc default-manager))]
     (map->Interceptor {:manager (atom initial-manager)})))
