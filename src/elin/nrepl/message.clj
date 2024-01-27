@@ -1,6 +1,6 @@
 (ns elin.nrepl.message
   (:require
-   [elin.schame.nrepl :as e.s.nrepl]
+   [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.schema :as e.u.schema]
    [malli.core :as m]))
 
