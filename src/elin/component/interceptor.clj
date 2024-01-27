@@ -4,8 +4,8 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.interceptor.connect :as e.i.connect]
    [elin.interceptor.debug :as e.i.debug]
+   [elin.interceptor.nrepl :as e.i.nrepl]
    [elin.interceptor.output :as e.i.output]
-   ;; [elin.interceptor.nrepl :as e.i.nrepl]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [exoscale.interceptor :as interceptor]
@@ -14,7 +14,9 @@
 (def ^:private default-interceptors
   [e.i.connect/port-auto-detecting-interceptor
    e.i.connect/output-channel-interceptor
-   e.i.output/print-output-interceptor])
+   e.i.output/print-output-interceptor
+   e.i.nrepl/eval-ns-interceptor
+   e.i.nrepl/normalize-path-interceptor])
 
 (def ^:private dev-interceptors
   [e.i.debug/interceptor-context-checking-interceptor
@@ -53,9 +55,8 @@
 
 (defn new-interceptor
   [{:as config :keys [develop?]}]
-  (let [default-manager (->> (concat default-interceptors
-                                     (when develop? dev-interceptors))
-                             (group-by :kind))
-        initial-manager (->> (get-in config [:interceptor :manager])
-                             (reduce-kv assoc default-manager))]
+  (let [initial-manager (->> (concat default-interceptors
+                                     (when develop? dev-interceptors)
+                                     (get-in config [:interceptor :interceptors]))
+                             (group-by :kind))]
     (map->Interceptor {:manager (atom initial-manager)})))
