@@ -23,7 +23,6 @@
   (t/testing "Not found"
     (t/is (nil? (sut/find-file-in-parent-directories (str "non-existing" (random-uuid)))))))
 
-
 (t/deftest normalize-path-test
   (t/is (= "/foo/bar.txt"
            (sut/normalize-path "/foo/bar.txt")))
