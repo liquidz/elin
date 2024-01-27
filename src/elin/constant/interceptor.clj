@@ -1,4 +1,4 @@
-(ns elin.constant.kind
+(ns elin.constant.interceptor
   "Constants for interceptor kinds")
 
 (def handler ::handler)

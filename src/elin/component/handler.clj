@@ -1,7 +1,7 @@
 (ns elin.component.handler
   (:require
    [com.stuartsierra.component :as component]
-   [elin.constant.kind :as e.c.kind]
+   [elin.constant.interceptor :as e.c.interceptor]
    [elin.handler :as e.handler]
    [elin.handler.connect]
    [elin.handler.core]
@@ -21,7 +21,7 @@
 (defn- handler
   [{:as components :component/keys [nrepl interceptor]}
    arg-map]
-  (let [intercept #(apply e.p.interceptor/execute interceptor e.c.kind/handler %&)]
+  (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
     (-> arg-map
         (intercept
          (fn [{:as context :keys [message writer]}]

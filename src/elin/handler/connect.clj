@@ -1,6 +1,6 @@
 (ns elin.handler.connect
   (:require
-   [elin.constant.kind :as e.c.kind]
+   [elin.constant.interceptor :as e.c.interceptor]
    [elin.handler :as e.handler]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
@@ -21,7 +21,7 @@
   (let [[{:keys [host port]} error] (e.u.param/parse ?Params (:params message))]
     (if error
       (e.log/error writer "Invalid parameter" error)
-      (let [intercept #(apply e.p.interceptor/execute interceptor e.c.kind/connect %&)
+      (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/connect %&)
             result (-> {:elin elin :host host :port port}
                        (intercept
                         (fn [{:as ctx :keys [host port]}]

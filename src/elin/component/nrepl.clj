@@ -2,7 +2,7 @@
   (:require
    [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
-   [elin.constant.kind :as e.c.kind]
+   [elin.constant.interceptor :as e.c.interceptor]
    [elin.log :as e.log]
    [elin.nrepl.client :as e.n.client]
    [elin.protocol.interceptor :as e.p.interceptor]
@@ -105,7 +105,7 @@
   (request [this msg]
     (when-let [client (e.p.nrepl/current-client this)]
       (async/go
-        (let [intercept #(apply e.p.interceptor/execute interceptor e.c.kind/nrepl %&)]
+        (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
           (-> {:request msg :writer @writer-store}
               (intercept
                (fn [{:as ctx :keys [request]}]
