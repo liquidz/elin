@@ -1,13 +1,11 @@
 (ns elin.nrepl.message
   (:require
+   [elin.schame.nrepl :as e.s.nrepl]
    [elin.util.schema :as e.u.schema]
    [malli.core :as m]))
 
 (def ^:private array-key-set
   #{"status" "sessions" "classpath"})
-
-(def ?Message
-  [:map-of keyword? any?])
 
 (m/=> bytes->str [:=> [:cat any?] e.u.schema/?NotBytes])
 (defn- bytes->str
@@ -16,7 +14,7 @@
     (String. (bytes x))
     x))
 
-(m/=> format-message [:=> [:cat [:map-of string? any?]] ?Message])
+(m/=> format-message [:=> [:cat [:map-of string? any?]] e.s.nrepl/?Message])
 (defn format-message
   [msg]
   (reduce-kv
@@ -35,7 +33,7 @@
    {}
    msg))
 
-(m/=> merge-messages [:=> [:cat [:sequential ?Message]] ?Message])
+(m/=> merge-messages [:=> [:cat [:sequential e.s.nrepl/?Message]] e.s.nrepl/?Message])
 (defn merge-messages
   [msgs]
   (let [array-keys (map keyword array-key-set)

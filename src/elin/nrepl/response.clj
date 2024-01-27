@@ -2,25 +2,17 @@
   (:require
    [clojure.core.async :as async]
    [elin.log :as e.log]
-   [elin.nrepl.message :as e.n.message]
-   [elin.util.schema :as e.u.schema]
-   [malli.core :as m])
-  (:import
-   clojure.core.async.impl.channels.ManyToManyChannel))
+   [elin.schema.nrepl :as e.s.nrepl]
+   [malli.core :as m]))
 
-(def ?Manager
-  [:map-of int? [:map
-                 [:responses [:sequential e.n.message/?Message]]
-                 [:channel (e.u.schema/?instance ManyToManyChannel)]]])
-
-(m/=> done? [:=> [:cat e.n.message/?Message] boolean?])
+(m/=> done? [:=> [:cat e.s.nrepl/?Message] boolean?])
 (defn- done?
   [msg]
   (boolean
    (some #(= % "done")
          (:status msg))))
 
-(m/=> add-message [:=> [:cat  ?Manager e.n.message/?Message] ?Manager])
+(m/=> add-message [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
 (defn- add-message
   [this
    {:as msg :keys [id]}]
@@ -29,7 +21,7 @@
     (update-in this [id :responses] conj msg)
     this))
 
-(m/=> put-done-responses [:=> [:cat ?Manager e.n.message/?Message] ?Manager])
+(m/=> put-done-responses [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
 (defn- put-done-responses
   [this
    {:as msg :keys [id]}]
@@ -47,7 +39,7 @@
       this)
     this))
 
-(m/=> process-message [:=> [:cat ?Manager e.n.message/?Message] ?Manager])
+(m/=> process-message [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
 (defn process-message
   [this
    msg]
@@ -55,7 +47,7 @@
       (add-message msg)
       (put-done-responses msg)))
 
-(m/=> register-message [:=> [:cat ?Manager e.n.message/?Message] ?Manager])
+(m/=> register-message [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
 (defn register-message
   [this
    msg]

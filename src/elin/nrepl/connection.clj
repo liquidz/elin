@@ -5,28 +5,14 @@
    [elin.nrepl.message :as e.n.message]
    [elin.nrepl.response :as e.n.response]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.id :as e.u.id]
-   [elin.util.schema :as e.u.schema]
    [malli.core :as m])
   (:import
-   clojure.core.async.impl.channels.ManyToManyChannel
-   clojure.lang.Atom
-   (java.io
-    OutputStream
-    PushbackInputStream)
+   java.io.PushbackInputStream
    (java.net
     Socket
     SocketException)))
-
-(def ?Connection
-  [:map
-   [:host string?]
-   [:port int?]
-   [:socket (e.u.schema/?instance Socket)]
-   [:read-stream (e.u.schema/?instance PushbackInputStream)]
-   [:write-stream (e.u.schema/?instance OutputStream)]
-   [:output-channel (e.u.schema/?instance ManyToManyChannel)]
-   [:response-manager (e.u.schema/?instance Atom)]])
 
 (defrecord Connection
   [host
@@ -64,7 +50,7 @@
              (b/write-bencode write-stream))
         (get-in @response-manager [id :channel])))))
 
-(m/=> connect [:=> [:cat string? int?] ?Connection])
+(m/=> connect [:=> [:cat string? int?] e.s.nrepl/?Connection])
 (defn connect
   [host port]
   (let [sock (Socket. host port)

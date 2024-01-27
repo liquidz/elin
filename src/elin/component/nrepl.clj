@@ -7,12 +7,13 @@
    [elin.nrepl.client :as e.n.client]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m]
    [msgpack.clojure-extensions]))
 
 (m/=> client-key [:function
                   [:=> [:cat string? int?] string?]
-                  [:=> [:cat e.n.client/?Client] string?]])
+                  [:=> [:cat e.s.nrepl/?Client] string?]])
 (defn- client-key
   ([host port]
    (format "%s:%s" host port))

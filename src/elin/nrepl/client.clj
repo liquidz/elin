@@ -4,21 +4,8 @@
    [elin.nrepl.connection :as e.n.connection]
    [elin.nrepl.message :as e.n.message]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m]))
-
-(defprotocol IClient
-  (disconnect [this])
-  (disconnected? [this])
-  (notify [this msg])
-  (request [this msg]))
-
-(def ?Client
-  [:map
-   [:connection e.n.connection/?Connection]
-   [:session string?]
-   [:supported-ops [:set keyword?]]
-   [:initial-namespace [:maybe string?]]
-   [:version [:map-of keyword? any?]]])
 
 (defrecord Client
   [connection
@@ -51,7 +38,7 @@
   (supported-op? [_ op]
     (contains? supported-ops (keyword op))))
 
-(m/=> connect [:=> [:cat string? int?] ?Client])
+(m/=> connect [:=> [:cat string? int?] e.s.nrepl/?Client])
 (defn connect
   [host port]
   (let [conn (e.n.connection/connect host port)
