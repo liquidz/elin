@@ -1,26 +1,21 @@
 (ns elin.handler.evaluate
   (:require
    [clojure.core.async :as async]
-   [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.host :as e.f.host]
    [elin.function.nrepl.op :as e.f.n.op]
    [elin.function.sexp :as e.f.sexp]
-   [elin.handler :as e.handler]
-   [elin.protocol.interceptor :as e.p.interceptor]))
+   [elin.handler :as e.handler]))
 
 (defn- evaluation*
-  [{:as elin :component/keys [nrepl interceptor] :keys [writer]}
+  [{:component/keys [nrepl] :keys [writer]}
    code & [options]]
   (let [options (merge (or options {})
                        {:ns (e.f.sexp/get-namespace writer)
                         :file (e.f.host/get-full-path writer)
-                        :nrepl.middleware.print/stream? 1})
-        intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/evaluate %&)]
-    (-> {:elin elin :code code :options options}
-        (intercept
-         (fn [{:as ctx :keys [code options]}]
-           (assoc ctx :response (async/<!! (e.f.n.op/eval nrepl code options)))))
-        (get-in [:response :value]))))
+                        :nrepl.middleware.print/stream? 1})]
+    (-> (e.f.n.op/eval nrepl code options)
+        (async/<!!)
+        (:value))))
 
 (defmethod e.handler/handler* :evaluate
   [{:as elin :keys [message]}]
