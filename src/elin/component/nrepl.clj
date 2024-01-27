@@ -22,23 +22,19 @@
 
 (defrecord Nrepl
   [interceptor
+   writer-store
    clients-store ; atom of [:map-of string? e.n.client/?Client]
-   current-client-key-store ; atom of [:maybe string?]]
-   writer-store] ; atom of OutputStream
+   current-client-key-store] ; atom of [:maybe string?]]
 
   component/Lifecycle
   (start [this]
     (e.log/debug "Nrepl component: Started")
     this)
   (stop [this]
-    (e.log/info "Nrepl component: Stopping")
+    (e.log/debug "Nrepl component: Stopping")
     (e.p.nrepl/remove-all! this)
-    (e.log/info "Nrepl component: Stopped")
+    (e.log/debug "Nrepl component: Stopped")
     (dissoc this :client-manager))
-
-  e.p.nrepl/INreplComponent
-  (set-writer! [_ writer]
-    (reset! writer-store writer))
 
   e.p.nrepl/IClientManager
   (add-client!
@@ -106,7 +102,7 @@
     (when-let [client (e.p.nrepl/current-client this)]
       (async/go
         (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
-          (-> {:request msg :writer @writer-store}
+          (-> {:request msg :writer writer-store}
               (intercept
                (fn [{:as ctx :keys [request]}]
                  (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
@@ -117,5 +113,4 @@
   (map->Nrepl (merge
                (:nrepl config)
                {:clients-store (atom {})
-                :current-client-key-store (atom nil)
-                :writer-store (atom nil)})))
+                :current-client-key-store (atom nil)})))

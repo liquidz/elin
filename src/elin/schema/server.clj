@@ -8,5 +8,8 @@
    [:message [:sequential any?]]])
 
 (def ?Writer
-  [:map
-   [:output-stream (e.u.schema/?instance java.io.OutputStream)]])
+  [:or
+   [:map
+    [:output-stream (e.u.schema/?instance java.io.OutputStream)]]
+   [:map
+    [:writer-store (e.u.schema/?instance clojure.lang.Atom)]]])

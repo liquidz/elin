@@ -16,6 +16,3 @@
   (get-client [this host port] [this client-key])
   (switch-client! [this client])
   (current-client [this]))
-
-(defprotocol INreplComponent
-  (set-writer! [this writer]))

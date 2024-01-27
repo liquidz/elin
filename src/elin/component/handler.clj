@@ -8,7 +8,6 @@
    [elin.handler.evaluate]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
-   [elin.protocol.nrepl :as e.p.nrepl]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.handler :as e.s.handler]
    [malli.core :as m]
@@ -19,13 +18,13 @@
                     e.s.handler/?ArgMap]
                any?])
 (defn- handler
-  [{:as components :component/keys [nrepl interceptor]}
+  [{:as components :component/keys [interceptor writer-store]}
    arg-map]
   (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
     (-> arg-map
         (intercept
          (fn [{:as context :keys [message writer]}]
-           (e.p.nrepl/set-writer! nrepl writer)
+           (e.p.rpc/set-writer! writer-store writer)
 
            (let [msg' (merge message
                              (e.p.rpc/parse-message message))
@@ -43,11 +42,12 @@
         (:response))))
 
 (defrecord Handler
-  [nrepl interceptor]
+  [nrepl interceptor writer-store]
   component/Lifecycle
   (start [this]
     (let [components {:component/nrepl nrepl
-                      :component/interceptor interceptor}
+                      :component/interceptor interceptor
+                      :component/writer-store writer-store}
           handler (partial handler components)]
       (assoc this
              :handler handler)))

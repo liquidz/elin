@@ -5,6 +5,9 @@
   (response? [this])
   (parse-message [this]))
 
+(defprotocol IWriterStore
+  (set-writer! [this writer]))
+
 (defprotocol IWriter
   (request! [this content])
   (notify! [this content])
