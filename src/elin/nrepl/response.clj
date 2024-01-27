@@ -17,7 +17,8 @@
   [this
    {:as msg :keys [id]}]
   (if (and id
-           (int? id))
+           (int? id)
+           (contains? this id))
     (update-in this [id :responses] conj msg)
     this))
 
