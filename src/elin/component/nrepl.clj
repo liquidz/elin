@@ -109,7 +109,6 @@
           (-> {:request msg :writer @writer-store}
               (intercept
                (fn [{:as ctx :keys [request]}]
-                 (e.log/info "FIXME kiteruyo" request)
                  (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
               (:response)))))))
 
