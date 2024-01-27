@@ -15,7 +15,8 @@
    e.i.connect/output-channel-interceptor])
 
 (def ^:private dev-interceptors
-  [e.i.debug/nrepl-debug-interceptor])
+  [e.i.debug/interceptor-context-checking-interceptor
+   e.i.debug/nrepl-debug-interceptor])
 
 (defrecord Interceptor
   [manager]
@@ -42,8 +43,9 @@
                         (or (get @manager e.c.interceptor/all) [])
                         (or (get @manager kind) []))
           terminator' {:name ::terminator
-                       :enter terminator}]
-      (interceptor/execute context (concat interceptors [terminator'])))))
+                       :enter terminator}
+          context' (assoc context ::kind kind)]
+      (interceptor/execute context' (concat interceptors [terminator'])))))
 
 (defn new-interceptor
   [{:as config :keys [develop?]}]
