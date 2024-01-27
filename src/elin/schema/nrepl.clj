@@ -12,6 +12,11 @@
 (def ?Message
   [:map-of keyword? any?])
 
+(def ?Output
+  [:map
+   [:type [:enum "out" "pprint-out" "err"]]
+   [:text string?]])
+
 (def ?Connection
   [:map
    [:host string?]

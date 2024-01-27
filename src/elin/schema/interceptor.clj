@@ -7,6 +7,11 @@
 (def ?HandlerContext
   e.s.handler/?ArgMap)
 
+(def ?OutputContext
+  [:map
+   [:writer e.s.server/?Writer]
+   [:output e.s.nrepl/?Output]])
+
 (def ?ConnectContext
   [:map
    [:elin e.s.handler/?Elin]

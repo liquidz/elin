@@ -20,7 +20,8 @@
   {e.c.interceptor/all any?
    e.c.interceptor/connect e.s.interceptor/?ConnectContext
    e.c.interceptor/handler e.s.interceptor/?HandlerContext
-   e.c.interceptor/nrepl e.s.interceptor/?NreplContext})
+   e.c.interceptor/nrepl e.s.interceptor/?NreplContext
+   e.c.interceptor/output e.s.interceptor/?OutputContext})
 
 (def interceptor-context-checking-interceptor
   {:name ::interceptor-context-checking-interceptor
