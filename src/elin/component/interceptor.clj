@@ -8,7 +8,9 @@
    [elin.interceptor.output :as e.i.output]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
+   [elin.schema.interceptor :as e.s.interceptor]
    [exoscale.interceptor :as interceptor]
+   [malli.core :as m]
    [msgpack.clojure-extensions]))
 
 (def ^:private default-interceptors
@@ -53,10 +55,17 @@
                           :elin/kind kind)]
       (interceptor/execute context' (concat interceptors [terminator'])))))
 
+(defn- valid-interceptor?
+  [x]
+  (m/validate e.s.interceptor/?Interceptor x))
+
 (defn new-interceptor
   [{:as config :keys [develop?]}]
-  (let [initial-manager (->> (concat default-interceptors
-                                     (when develop? dev-interceptors)
-                                     (get-in config [:interceptor :interceptors]))
-                             (group-by :kind))]
+  (let [{interceptors true invalid false} (->> (concat default-interceptors
+                                                       (when develop? dev-interceptors)
+                                                       (get-in config [:interceptor :interceptors]))
+                                               (group-by valid-interceptor?))
+        initial-manager (group-by :kind interceptors)]
+    ;; TODO writer
+    (e.log/debug "Invalid interceptors:" invalid)
     (map->Interceptor {:manager (atom initial-manager)})))
