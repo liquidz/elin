@@ -8,7 +8,6 @@
 (def ^:const WARNING_LEVEL 1)
 (def ^:const ERROR_LEVEL 0)
 
-;(def ^:dynamic *log-level* INFO_LEVEL)
 (def log-level INFO_LEVEL)
 (def ^:dynamic *log-file* "/tmp/elin.log")
 

@@ -42,12 +42,12 @@
         (:response))))
 
 (defrecord Handler
-  [nrepl interceptor writer-store]
+  [nrepl interceptor lazy-writer]
   component/Lifecycle
   (start [this]
     (let [components {:component/nrepl nrepl
                       :component/interceptor interceptor
-                      :component/writer-store writer-store}
+                      :component/writer lazy-writer}
           handler (partial handler components)]
       (assoc this
              :handler handler)))

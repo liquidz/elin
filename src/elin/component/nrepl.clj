@@ -22,7 +22,7 @@
 
 (defrecord Nrepl
   [interceptor
-   writer-store
+   lazy-writer
    clients-store ; atom of [:map-of string? e.n.client/?Client]
    current-client-key-store] ; atom of [:maybe string?]]
 
@@ -102,7 +102,7 @@
     (when-let [client (e.p.nrepl/current-client this)]
       (async/go
         (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
-          (-> {:request msg :writer writer-store}
+          (-> {:request msg :writer lazy-writer}
               (intercept
                (fn [{:as ctx :keys [request]}]
                  (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))

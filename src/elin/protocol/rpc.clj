@@ -5,7 +5,7 @@
   (response? [this])
   (parse-message [this]))
 
-(defprotocol IWriterStore
+(defprotocol ILazyWriter
   (set-writer! [this writer]))
 
 (defprotocol IWriter
