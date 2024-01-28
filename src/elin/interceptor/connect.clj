@@ -12,7 +12,7 @@
    :enter (fn [{:as ctx :keys [elin host port]}]
             (if (and host port)
               ctx
-              (let [{:keys [writer]} elin
+              (let [{:component/keys [writer]} elin
                     cwd (e.f.host/get-current-working-directory writer)
                     nrepl-port-file (e.u.file/find-file-in-parent-directories cwd ".nrepl-port")
                     host' (or host "localhost")
@@ -27,7 +27,7 @@
    :leave (fn [{:as ctx :elin/keys [interceptor] :keys [elin client]}]
             (when client
               (async/go-loop []
-                (let [{:keys [writer]} elin
+                (let [{:component/keys [writer]} elin
                       ch (get-in client [:connection :output-channel])
                       output (async/<! ch)]
                   (when output

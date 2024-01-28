@@ -21,7 +21,7 @@
    [:leave {:optional true} fn?]])
 
 (def ?HandlerContext
-  e.s.handler/?ArgMap)
+  e.s.handler/?Elin)
 
 (def ?OutputContext
   [:map

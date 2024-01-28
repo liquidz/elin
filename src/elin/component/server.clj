@@ -11,7 +11,9 @@
    java.net.ServerSocket))
 
 (defn on-accept
-  [handler {:as arg-map :keys [message writer]}]
+  [handler lazy-writer {:as arg-map :keys [message writer]}]
+  (e.p.rpc/set-writer! lazy-writer writer)
+
   (if (e.p.rpc/response? message)
     ;; Receive response
     (let [{:keys [response-manager]} message
@@ -23,7 +25,7 @@
     ;; Receive request/notify
     (future
       (let [[res err] (try
-                        [(handler arg-map)]
+                        [(handler message)]
                         (catch Exception ex
                           [nil (ex-message ex)]))]
         (when (e.p.rpc/request? message)
@@ -33,17 +35,18 @@
           (e.p.rpc/flush! writer))))))
 
 (defrecord Server
-  [host port server-socket server stop-signal]
+  [host port server-socket server stop-signal
+   handler lazy-writer]
   component/Lifecycle
   (start [this]
     (when-not server
       (e.log/debug "Server component: Starting" host port)
       (let [server-socket (ServerSocket. port)
             stop-signal (async/chan)
-            handler (:handler (:handler this))
+            handler' (:handler handler)
             server-arg {:host host
                         :server-socket server-socket
-                        :on-accept (partial on-accept handler)
+                        :on-accept (partial on-accept handler' lazy-writer)
                         :stop-signal stop-signal}
             server (future
                      (if (= e.c.host/nvim host)

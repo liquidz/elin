@@ -25,7 +25,7 @@
    e.i.debug/nrepl-debug-interceptor])
 
 (defrecord Interceptor
-  [manager]
+  [lazy-writer manager]
   component/Lifecycle
   (start [this]
     (e.log/debug "Interceptor component: Started")
@@ -53,7 +53,10 @@
           context' (assoc context
                           :elin/interceptor this
                           :elin/kind kind)]
-      (interceptor/execute context' (concat interceptors [terminator'])))))
+      (try
+        (interceptor/execute context' (concat interceptors [terminator']))
+        (catch Exception ex
+          (e.log/error "Interceptor error" ex))))))
 
 (defn- valid-interceptor?
   [x]

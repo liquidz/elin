@@ -12,7 +12,7 @@
   "FIXME")
 
 (defmethod e.handler/handler* :lookup
-  [{:component/keys [nrepl] :keys [writer]}]
+  [{:component/keys [nrepl writer]}]
   (let [{:keys [lnum col]} (e.f.host/get-cursor-position writer)
         ns (e.f.sexp/get-namespace writer)
         sym (e.f.sexp/get-expr writer lnum col)]
@@ -20,7 +20,7 @@
      (async/<!! (e.f.n.op/lookup nrepl ns sym)))))
 
 (defmethod e.handler/handler* :jump-to-definition
-  [{:component/keys [nrepl] :keys [writer]}]
+  [{:component/keys [nrepl writer]}]
   (let [{:keys [lnum col]} (e.f.host/get-cursor-position writer)
         ns (e.f.sexp/get-namespace writer)
         sym (e.f.sexp/get-expr writer lnum col)

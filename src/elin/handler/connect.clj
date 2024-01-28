@@ -17,7 +17,7 @@
     [:port int?]]])
 
 (defmethod e.handler/handler* :connect
-  [{:as elin :component/keys [nrepl interceptor] :keys [message writer]}]
+  [{:as elin :component/keys [nrepl interceptor writer] :keys [message]}]
   (let [[{:keys [host port]} error] (e.u.param/parse ?Params (:params message))]
     (if error
       (e.log/error writer "Invalid parameter" error)

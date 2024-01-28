@@ -10,27 +10,22 @@
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.handler :as e.s.handler]
+   [elin.schema.server :as e.s.server]
    [malli.core :as m]
    [msgpack.clojure-extensions]))
 
-(m/=> handler [:=> [:cat
-                    [:map-of keyword? any?]
-                    e.s.handler/?ArgMap]
-               any?])
+(m/=> handler [:=> [:cat e.s.handler/?Components e.s.server/?Message] any?])
 (defn- handler
-  [{:as components :component/keys [interceptor writer-store]}
-   arg-map]
+  [{:as components :component/keys [interceptor]}
+   message]
   (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
-    (-> arg-map
+    ;; TODO FIXME arg-map の writer ではなく lazy-writer を使いたい
+    (-> (assoc components :message message)
         (intercept
-         (fn [{:as context :keys [message writer]}]
-           (e.p.rpc/set-writer! writer-store writer)
-
+         (fn [{:as context :component/keys [writer] :keys [message]}]
            (let [msg' (merge message
                              (e.p.rpc/parse-message message))
-                 params (assoc components
-                               :message msg'
-                               :writer writer)
+                 params (assoc context :message msg')
                  resp (e.handler/handler* params)
                  resp' (if-let [callback (:callback msg')]
                          (try
