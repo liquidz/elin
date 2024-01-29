@@ -2,6 +2,7 @@
   (:require
    [com.stuartsierra.component :as component]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.interceptor.autocmd :as e.i.autocmd]
    [elin.interceptor.connect :as e.i.connect]
    [elin.interceptor.debug :as e.i.debug]
    [elin.interceptor.nrepl :as e.i.nrepl]
@@ -18,7 +19,8 @@
    e.i.connect/output-channel-interceptor
    e.i.output/print-output-interceptor
    e.i.nrepl/eval-ns-interceptor
-   e.i.nrepl/normalize-path-interceptor])
+   e.i.nrepl/normalize-path-interceptor
+   e.i.autocmd/ns-create-interceptor])
 
 (def ^:private dev-interceptors
   [e.i.debug/interceptor-context-checking-interceptor

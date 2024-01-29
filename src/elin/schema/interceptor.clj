@@ -11,7 +11,8 @@
    e.c.interceptor/handler
    e.c.interceptor/connect
    e.c.interceptor/nrepl
-   e.c.interceptor/output])
+   e.c.interceptor/output
+   e.c.interceptor/autocmd])
 
 (def ?Interceptor
   [:map
