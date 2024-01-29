@@ -17,6 +17,7 @@
 (def ^:private default-interceptors
   [e.i.connect/port-auto-detecting-interceptor
    e.i.connect/output-channel-interceptor
+   e.i.connect/connected-interceptor
    e.i.output/print-output-interceptor
    e.i.nrepl/eval-ns-interceptor
    e.i.nrepl/normalize-path-interceptor

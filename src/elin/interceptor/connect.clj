@@ -24,14 +24,23 @@
 (def output-channel-interceptor
   {:name ::output-channel-interceptor
    :kind e.c.interceptor/connect
-   :leave (fn [{:as ctx :elin/keys [interceptor] :keys [elin client]}]
+   :leave (fn [{:as ctx :keys [elin client]}]
             (when client
               (async/go-loop []
-                (let [{:component/keys [writer]} elin
+                (let [{:component/keys [writer interceptor]} elin
                       ch (get-in client [:connection :output-channel])
                       output (async/<! ch)]
                   (when output
                     (->> {:writer writer :output output}
                          (e.p.interceptor/execute interceptor e.c.interceptor/output))
                     (recur)))))
+            ctx)})
+
+(def connected-interceptor
+  {:name ::connected-interceptor
+   :kind e.c.interceptor/connect
+   :leave (fn [{:as ctx :keys [elin]}]
+            (let [{:component/keys [interceptor]} elin]
+              (->> {:elin elin :autocmd-type "BufEnter"}
+                   (e.p.interceptor/execute interceptor e.c.interceptor/autocmd)))
             ctx)})
