@@ -6,3 +6,4 @@
 (def connect ::connect)
 (def nrepl ::nrepl)
 (def output ::output)
+(def autocmd ::autocmd)

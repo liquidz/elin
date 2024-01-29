@@ -1,15 +1,24 @@
 (ns elin.handler.core
   (:require
    [clojure.core.async :as async]
+   [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.host :as e.f.host]
    [elin.function.nrepl.op :as e.f.n.op]
    [elin.function.sexp :as e.f.sexp]
-   [elin.handler :as e.handler]))
+   [elin.handler :as e.handler]
+   [elin.protocol.interceptor :as e.p.interceptor]))
 
 (defmethod e.handler/handler* :initialize
   [_]
   ;; TODO Load plugins
   "FIXME")
+
+(defmethod e.handler/handler* :intercept
+  [{:as elin :component/keys [interceptor] :keys [message]}]
+  (let [autocmd-type (first (:params message))]
+    (->> {:elin elin :autocmd-type autocmd-type}
+         (e.p.interceptor/execute interceptor e.c.interceptor/autocmd))
+    true))
 
 (defmethod e.handler/handler* :lookup
   [{:component/keys [nrepl writer]}]

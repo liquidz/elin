@@ -41,9 +41,8 @@
     (swap! manager update-vals (fn [vs] (vec (remove #(= % interceptor) vs)))))
   (remove-interceptor! [_ kind interceptor]
     (swap! manager update kind (fn [vs] (vec (remove #(= % interceptor) vs)))))
-  (execute [_ kind context]
-    (->> (or (get @manager kind) [])
-         (interceptor/execute context)))
+  (execute [this kind context]
+    (e.p.interceptor/execute this kind context identity))
   (execute [this kind context terminator]
     (let [interceptors (concat
                         (or (get @manager e.c.interceptor/all) [])

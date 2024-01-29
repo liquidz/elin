@@ -38,3 +38,13 @@
   [:map
    [:request e.s.nrepl/?Message]
    [:writer e.s.server/?Writer]])
+
+(def ?AutocmdContext
+  [:map
+   [:elin e.s.handler/?Elin]
+   [:autocmd-type [:enum
+                   "BufRead"
+                   "BufNewFile"
+                   "BufEnter"
+                   "BufWritePost"
+                   "VimLeave"]]])

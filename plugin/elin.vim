@@ -20,7 +20,17 @@ function! s:init() abort
   endif
 endfunction
 
+aug elin_autocmd_group
+  au!
+  au BufRead *.clj,*.cljs,*.cljc call elin#notify('intercept', ['BufRead'])
+  au BufNewFile *.clj,*.cljs,*.cljc call elin#notify('intercept', ['BufNewFile'])
+  au BufEnter *.clj,*.cljs,*.cljc call elin#notify('intercept', ['BufEnter'])
+  au BufWritePost *.clj,*.cljs,*.cljc call elin#notify('intercept', ['BufWritePost'])
+  au VimLeave * call s:deinit()
+aug END
+
 function! s:deinit() abort
+  call elin#notify('intercept', ['VimLeave'])
   call elin#server#disconnect()
   call elin#server#stop()
 endfunction
@@ -29,7 +39,6 @@ if has('vim_starting')
   aug elin_starting_group
     au!
     au VimEnter * call s:init()
-    au VimLeave * call s:deinit()
   aug END
 else
   call s:init()
