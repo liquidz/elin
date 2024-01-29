@@ -1,4 +1,5 @@
 (ns elin.function.host
+  (:refer-clojure :exclude [eval])
   (:require
    [elin.schema.host :as e.s.host]
    [elin.schema.server :as e.s.server]
@@ -33,3 +34,28 @@
   (let [jump-command (or jump-command "edit")]
     (e.u.function/call-function writer "elin#internal#jump" [path lnum col jump-command])
     nil))
+
+(m/=> eval [:=> [:cat e.s.server/?Writer string?] any?])
+(defn eval
+  [writer s]
+  (e.u.function/call-function writer "elin#internal#eval" [s]))
+
+(m/=> execute [:=> [:cat e.s.server/?Writer string?] any?])
+(defn execute
+  [writer cmd]
+  (e.u.function/call-function writer "elin#internal#execute" [cmd]))
+
+(m/=> get-variable [:=> [:cat e.s.server/?Writer string?] any?])
+(defn get-variable
+  [writer var-name]
+  (eval writer (format "exists('%s') ? %s : v:null" var-name var-name)))
+
+(m/=> set-variable [:=> [:cat e.s.server/?Writer string? any?] any?])
+(defn set-variable
+  [writer var-name value]
+  (let [value' (cond
+                 (string? value) (str "'" value "'")
+                 (true? value) "v:true"
+                 (false? value) "v:false"
+                 :else value)]
+    (execute writer (format "let %s = %s" var-name value'))))
