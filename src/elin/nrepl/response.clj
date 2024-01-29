@@ -31,11 +31,8 @@
            (done? msg))
     (if-let [{:keys [responses channel]} (get this id)]
       (do
-        (async/go
-          (try
-            (async/>! channel responses)
-            (catch Exception ex
-              (e.log/log "put done responses" (ex-message ex)))))
+        ;; TODO error handling
+        (async/put! channel responses)
         (dissoc this id))
       this)
     this))
@@ -55,6 +52,6 @@
   (let [id (:id msg)]
     (if (and id
              (int? id))
-      (assoc this id {:channel (async/chan)
+      (assoc this id {:channel (async/promise-chan)
                       :responses []})
       this)))

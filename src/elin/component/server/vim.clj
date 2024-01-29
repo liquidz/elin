@@ -54,20 +54,17 @@
     (let [id (cond
                (= "call" method) (nth content 3)
                (= "expr" method) (nth content 2))
-          maybe-ch (when id (async/chan))]
+          maybe-ch (when id (async/promise-chan))]
       (when (and id maybe-ch)
         (swap! response-manager assoc id maybe-ch))
-      (e.log/info "FIXME request!" (pr-str content))
       (json/generate-stream content (io/writer output-stream))
       maybe-ch))
 
   (notify! [_ content]
-    (e.log/info "FIXME notify! " (pr-str content))
     (json/generate-stream content (io/writer output-stream)))
 
   (response! [this error result]
     (when-let [id (:id (e.p.rpc/parse-message this))]
-      (e.log/info "FIXME" (pr-str [id (or error result)]))
       (-> [id (or error result)]
           (json/generate-stream  (io/writer output-stream)))))
 

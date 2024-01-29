@@ -11,7 +11,7 @@
    java.net.ServerSocket))
 
 (defn on-accept
-  [handler lazy-writer {:as arg-map :keys [message writer]}]
+  [handler lazy-writer {:keys [message writer]}]
   (e.p.rpc/set-writer! lazy-writer writer)
 
   (if (e.p.rpc/response? message)
@@ -20,7 +20,7 @@
           {:keys [id error result]} (e.p.rpc/parse-message message)]
       (when-let [ch (get @response-manager id)]
         (swap! response-manager dissoc id)
-        (async/go (async/>! ch {:result result :error error}))))
+        (async/put! ch {:result result :error error})))
 
     ;; Receive request/notify
     (future
