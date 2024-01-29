@@ -91,7 +91,7 @@
     [this]
     (if-let [client (e.p.nrepl/current-client this)]
       (e.p.nrepl/disconnected? client)
-      (throw (ex-info "Not connected" {}))))
+      true))
 
   (notify [this msg]
     (if-let [client (e.p.nrepl/current-client this)]
