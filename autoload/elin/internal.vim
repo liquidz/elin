@@ -24,3 +24,11 @@ function! elin#internal#jump(path, lnum, col, jump_cmd) abort
   normal! zz
   return v:true
 endfunction
+
+function! elin#internal#eval(str) abort
+  return eval(a:str)
+endfunction
+
+function! elin#internal#execute(cmd) abort
+  call execute(a:cmd)
+endfunction
