@@ -2,17 +2,44 @@
   (:require
    [bencode.core :as b]
    [clojure.core.async :as async]
-   [elin.nrepl.message :as e.n.message]
+   [elin.constant.nrepl :as e.c.nrepl]
    [elin.nrepl.response :as e.n.response]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.id :as e.u.id]
+   [elin.util.schema :as e.u.schema]
    [malli.core :as m])
   (:import
    java.io.PushbackInputStream
    (java.net
     Socket
     SocketException)))
+
+(m/=> bytes->str [:=> [:cat any?] e.u.schema/?NotBytes])
+(defn- bytes->str
+  [x]
+  (if (bytes? x)
+    (String. (bytes x))
+    x))
+
+(m/=> format-message [:=> [:cat [:map-of string? any?]] e.s.nrepl/?Message])
+(defn- format-message
+  [msg]
+  (reduce-kv
+   (fn [accm k v]
+     (assoc accm
+            (keyword k)
+            (cond
+              (contains? e.c.nrepl/array-key-set k)
+              (mapv bytes->str v)
+
+              (map? v)
+              (format-message v)
+
+              :else
+              (bytes->str v))))
+   {}
+   msg))
 
 (defrecord Connection
   [host
@@ -62,7 +89,7 @@
     (async/go-loop []
       (try
         (let [v (b/read-bencode read-stream)
-              msg (e.n.message/format-message v)]
+              msg (format-message v)]
           (swap! response-manager e.n.response/process-message msg)
 
           (when (string? (:out msg))
