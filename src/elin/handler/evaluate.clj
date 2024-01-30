@@ -1,6 +1,5 @@
 (ns elin.handler.evaluate
   (:require
-   [clojure.core.async :as async]
    [elin.error :as e]
    [elin.function.nrepl.op :as e.f.n.op]
    [elin.function.vim :as e.f.vim]
