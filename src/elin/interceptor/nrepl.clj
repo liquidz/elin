@@ -2,8 +2,8 @@
   (:require
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.nrepl.message :as e.n.message]
-   [elin.util.file :as e.u.file]))
+   [elin.util.file :as e.u.file]
+   [elin.util.nrepl :as e.u.nrepl]))
 
 (def eval-ns-interceptor
   {:name ::eval-ns-interceptor
@@ -23,5 +23,5 @@
             (if (not (contains? #{"lookup" "info"} (:op request)))
               ctx
               (->> response
-                   (e.n.message/update-messages :file e.u.file/normalize-path)
+                   (e.u.nrepl/update-messages :file e.u.file/normalize-path)
                    (assoc ctx :response))))})

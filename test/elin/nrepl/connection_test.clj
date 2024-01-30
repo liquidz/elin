@@ -3,9 +3,9 @@
    [clojure.core.async :as async]
    [clojure.test :as t]
    [elin.nrepl.connection :as sut]
-   [elin.nrepl.message :as e.n.message]
    [elin.protocol.nrepl :as e.p.nrepl]
-   [elin.test-helper :as h]))
+   [elin.test-helper :as h]
+   [elin.util.nrepl :as e.u.nrepl]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 (t/use-fixtures :each h/test-nrepl-server-port-fixture)
@@ -17,7 +17,7 @@
     (t/testing "request"
       (let [resp (-> (e.p.nrepl/request conn {:op "describe"})
                      (async/<!!)
-                     (e.n.message/merge-messages))]
+                     (e.u.nrepl/merge-messages))]
         (t/is (= #{:babashka :babashka.nrepl}
                  (set (keys (:versions resp)))))))
 

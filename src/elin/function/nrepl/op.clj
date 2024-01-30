@@ -4,9 +4,9 @@
    [clojure.core.async :as async]
    [clojure.java.io :as io]
    [clojure.set :as set]
-   [elin.nrepl.message :as e.n.message]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.component :as e.s.component]
+   [elin.util.nrepl :as e.u.nrepl]
    [malli.core :as m]))
 
 (def ?Lookup
@@ -68,7 +68,7 @@
                    {:op "eval" :session session  :code code})
             (e.p.nrepl/request nrepl)
             (async/<!)
-            (e.n.message/merge-messages))))))
+            (e.u.nrepl/merge-messages))))))
 
 (m/=> interrupt [:function
                  [:=> [:cat e.s.component/?Nrepl] any?]
@@ -107,10 +107,10 @@
     (if (e.p.nrepl/supported-op? nrepl "info")
       (-> (e.p.nrepl/request nrepl {:op "info" :ns ns-str :sym sym-str})
           (async/<!)
-          (e.n.message/merge-messages))
+          (e.u.nrepl/merge-messages))
       (-> (e.p.nrepl/request nrepl {:op "lookup" :ns ns-str :sym sym-str})
           (async/<!)
-          (e.n.message/merge-messages)
+          (e.u.nrepl/merge-messages)
           (:info)))))
 
 (m/=> ls-sessions [:=> [:cat e.s.component/?Nrepl] [:sequential string?]])
@@ -119,5 +119,5 @@
   (async/go
     (-> (e.p.nrepl/request nrepl {:op "ls-sessions"})
         (async/<!)
-        (e.n.message/merge-messages)
+        (e.u.nrepl/merge-messages)
         (:sessions))))

@@ -2,9 +2,9 @@
   (:require
    [clojure.core.async :as async]
    [elin.nrepl.connection :as e.n.connection]
-   [elin.nrepl.message :as e.n.message]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.nrepl :as e.s.nrepl]
+   [elin.util.nrepl :as e.u.nrepl]
    [malli.core :as m]))
 
 (defrecord Client
@@ -42,9 +42,9 @@
 (defn connect
   [host port]
   (let [conn (e.n.connection/connect host port)
-        clone-resp (e.n.message/merge-messages
+        clone-resp (e.u.nrepl/merge-messages
                     (async/<!! (e.p.nrepl/request conn {:op "clone"})))
-        describe-resp (e.n.message/merge-messages
+        describe-resp (e.u.nrepl/merge-messages
                        (async/<!! (e.p.nrepl/request conn {:op "describe"})))]
     (map->Client
      {:connection conn

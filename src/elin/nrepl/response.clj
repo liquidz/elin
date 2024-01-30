@@ -1,7 +1,6 @@
 (ns elin.nrepl.response
   (:require
    [clojure.core.async :as async]
-   [elin.log :as e.log]
    [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m]))
 

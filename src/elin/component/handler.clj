@@ -19,7 +19,6 @@
   [{:as components :component/keys [interceptor]}
    message]
   (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
-    ;; TODO FIXME arg-map の writer ではなく lazy-writer を使いたい
     (-> (assoc components :message message)
         (intercept
          (fn [{:as context :component/keys [writer] :keys [message]}]

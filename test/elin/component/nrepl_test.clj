@@ -4,10 +4,10 @@
    [clojure.test :as t]
    [com.stuartsierra.component :as component]
    [elin.component.nrepl]
-   [elin.nrepl.message :as e.n.message]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.system :as e.system]
-   [elin.test-helper :as h]))
+   [elin.test-helper :as h]
+   [elin.util.nrepl :as e.u.nrepl]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 (t/use-fixtures :each h/test-nrepl-server-port-fixture)
@@ -27,12 +27,12 @@
                   :value "6"}
                  (-> (e.p.nrepl/request nrepl {:op "eval" :code "(+ 1 2 3)"})
                      (async/<!!)
-                     (e.n.message/merge-messages)
+                     (e.u.nrepl/merge-messages)
                      (select-keys [:status :session :value]))))
         (t/is (= [(:session client)]
                  (-> (e.p.nrepl/request nrepl {:op "ls-sessions"})
                      (async/<!!)
-                     (e.n.message/merge-messages)
+                     (e.u.nrepl/merge-messages)
                      (:sessions)))))
       (finally
         (component/stop-system sys)))))
