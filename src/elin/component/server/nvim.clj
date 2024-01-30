@@ -45,7 +45,7 @@
   e.p.rpc/IWriter
   (request! [_ content]
     (let [id (e.u.id/next-id)
-          ch (async/chan)]
+          ch (async/promise-chan)]
       (swap! response-manager assoc id ch)
       (->> (concat [0 id] content)
            (msg/pack)
