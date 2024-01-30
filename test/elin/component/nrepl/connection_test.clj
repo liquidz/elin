@@ -1,8 +1,8 @@
-(ns elin.nrepl.connection-test
+(ns elin.component.nrepl.connection-test
   (:require
    [clojure.core.async :as async]
    [clojure.test :as t]
-   [elin.nrepl.connection :as sut]
+   [elin.component.nrepl.connection :as sut]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.test-helper :as h]
    [elin.util.nrepl :as e.u.nrepl]))

@@ -9,10 +9,8 @@
 (def ^:private namespaces-to-load
   '[["src" elin.component.server]
     ["src" elin.component.handler]
-    ;; ["src" elin.nrepl.message]
-    ;; ["src" elin.nrepl.response]
-    ["src" elin.nrepl.connection]
-    ["src" elin.nrepl.client]
+    ["src" elin.component.nrepl.connection]
+    ["src" elin.component.nrepl.client]
     ["src" elin.system]
     ["src" elin.log]
     ["src" elin.util.file]

@@ -2,9 +2,9 @@
   (:require
    [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
+   [elin.component.nrepl.client :as e.c.n.client]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.log :as e.log]
-   [elin.nrepl.client :as e.n.client]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.nrepl :as e.s.nrepl]
@@ -23,7 +23,7 @@
 (defrecord Nrepl
   [interceptor
    lazy-writer
-   clients-store ; atom of [:map-of string? e.n.client/?Client]
+   clients-store ; atom of [:map-of string? e.c.n.client/?Client]
    current-client-key-store] ; atom of [:maybe string?]]
 
   component/Lifecycle
@@ -43,7 +43,7 @@
     client)
   (add-client!
     [this host port]
-    (e.p.nrepl/add-client! this (e.n.client/connect host port)))
+    (e.p.nrepl/add-client! this (e.c.n.client/connect host port)))
 
   (remove-client!
     [_ client]

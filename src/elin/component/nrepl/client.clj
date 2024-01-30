@@ -1,7 +1,7 @@
-(ns elin.nrepl.client
+(ns elin.component.nrepl.client
   (:require
    [clojure.core.async :as async]
-   [elin.nrepl.connection :as e.n.connection]
+   [elin.component.nrepl.connection :as e.c.n.connection]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.nrepl :as e.u.nrepl]
@@ -41,7 +41,7 @@
 (m/=> connect [:=> [:cat string? int?] e.s.nrepl/?Client])
 (defn connect
   [host port]
-  (let [conn (e.n.connection/connect host port)
+  (let [conn (e.c.n.connection/connect host port)
         clone-resp (e.u.nrepl/merge-messages
                     (async/<!! (e.p.nrepl/request conn {:op "clone"})))
         describe-resp (e.u.nrepl/merge-messages

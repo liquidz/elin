@@ -1,4 +1,4 @@
-(ns elin.nrepl.connection
+(ns elin.component.nrepl.connection
   (:require
    [bencode.core :as b]
    [clojure.core.async :as async]
