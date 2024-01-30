@@ -1,9 +1,9 @@
 (ns elin.schema.component
   (:require
-   [elin.util.schema :as e.u.schema]))
+   [elin.schema :as e.schema]))
 
 (def ?Atom
-  (e.u.schema/?instance clojure.lang.Atom))
+  (e.schema/?instance clojure.lang.Atom))
 
 (def ?Interceptor
   [:map

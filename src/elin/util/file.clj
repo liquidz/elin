@@ -2,13 +2,13 @@
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
-   [elin.util.schema :as e.u.schema]
+   [elin.schema :as e.schema]
    [malli.core :as m]))
 
 (m/=> find-file-in-parent-directories
       [:function
-       [:=> [:cat string?] [:maybe e.u.schema/?File]]
-       [:=> [:cat string? string?] [:maybe e.u.schema/?File]]])
+       [:=> [:cat string?] [:maybe e.schema/?File]]
+       [:=> [:cat string? string?] [:maybe e.schema/?File]]])
 (defn find-file-in-parent-directories
   ([file-name]
    (find-file-in-parent-directories "." file-name))

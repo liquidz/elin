@@ -4,6 +4,7 @@
    [com.stuartsierra.component :as component]
    [elin.component.nrepl.client :as e.c.n.client]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.error :as e]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
@@ -85,7 +86,7 @@
     [this]
     (if-let [client (e.p.nrepl/current-client this)]
       (e.p.nrepl/disconnect client)
-      (throw (ex-info "Not connected" {}))))
+      (e/unavailable {:message "Not connected"})))
 
   (disconnected?
     [this]
@@ -96,17 +97,19 @@
   (notify [this msg]
     (if-let [client (e.p.nrepl/current-client this)]
       (e.p.nrepl/notify client msg)
-      (throw (ex-info "Not connected" {}))))
+      (e/unavailable {:message "Not connected"})))
 
   (request [this msg]
-    (when-let [client (e.p.nrepl/current-client this)]
+    (if-let [client (e.p.nrepl/current-client this)]
       (async/go
         (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
           (-> {:request msg :writer lazy-writer}
               (intercept
                (fn [{:as ctx :keys [request]}]
                  (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
-              (:response)))))))
+              (:response))))
+      (async/go
+        (e/unavailable {:message "Not connected"})))))
 
 (defn new-nrepl
   [config]

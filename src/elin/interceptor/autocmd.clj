@@ -1,10 +1,10 @@
 (ns elin.interceptor.autocmd
   (:require
-   [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.function.host :as e.f.host]
+   [elin.error :as e]
    [elin.function.nrepl.op :as e.f.n.op]
-   [elin.function.sexp :as e.f.sexp]
+   [elin.function.vim :as e.f.vim]
+   [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.protocol.nrepl :as e.p.nrepl]))
 
 (def ^:priavte ns-created-var-name
@@ -17,13 +17,13 @@
             (let [{:component/keys [writer nrepl]} elin]
               (when (and (contains? #{"BufRead" "BufEnter"} autocmd-type)
                          (not (e.p.nrepl/disconnected? nrepl))
-                         (nil? (e.f.host/get-variable writer ns-created-var-name)))
-                (when-let [ns-sym (some-> (e.f.sexp/get-namespace writer)
-                                          (symbol))]
+                         (nil? (e.f.vim/get-variable!! writer ns-created-var-name)))
+                (e/let [ns-str (e.f.v.sexp/get-namespace!! writer)
+                        ns-sym (or (symbol ns-str)
+                                   (e/incorrect))]
                   (->> `(when-not (clojure.core/find-ns '~ns-sym)
                           (clojure.core/create-ns '~ns-sym))
                        (str)
-                       (e.f.n.op/eval nrepl)
-                       (async/<!!))
-                  (e.f.host/set-variable writer ns-created-var-name true))))
+                       (e.f.n.op/eval!! nrepl))
+                  (e.f.vim/set-variable!! writer ns-created-var-name true))))
             ctx)})

@@ -5,6 +5,7 @@
    [elin.component.server.nvim :as e.c.s.nvim]
    [elin.component.server.vim :as e.c.s.vim]
    [elin.constant.host :as e.c.host]
+   [elin.error :as e]
    [elin.log :as e.log]
    [elin.protocol.rpc :as e.p.rpc])
   (:import
@@ -25,7 +26,10 @@
     ;; Receive request/notify
     (future
       (let [[res err] (try
-                        [(handler message)]
+                        (let [res (handler message)]
+                          (if (e/error? res)
+                            [nil (ex-message res)]
+                            [res]))
                         (catch Exception ex
                           [nil (ex-message ex)]))]
         (when (e.p.rpc/request? message)

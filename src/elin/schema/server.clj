@@ -1,6 +1,6 @@
 (ns elin.schema.server
   (:require
-   [elin.util.schema :as e.u.schema]))
+   [elin.schema :as e.schema]))
 
 (def ?Message
   [:map
@@ -10,6 +10,6 @@
 (def ?Writer
   [:or
    [:map
-    [:output-stream (e.u.schema/?instance java.io.OutputStream)]]
+    [:output-stream (e.schema/?instance java.io.OutputStream)]]
    [:map
-    [:writer-store (e.u.schema/?instance clojure.lang.Atom)]]])
+    [:writer-store (e.schema/?instance clojure.lang.Atom)]]])

@@ -4,9 +4,9 @@
    [clojure.core.async :as async]
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.schema :as e.schema]
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.id :as e.u.id]
-   [elin.util.schema :as e.u.schema]
    [malli.core :as m])
   (:import
    java.io.PushbackInputStream
@@ -14,7 +14,7 @@
     Socket
     SocketException)))
 
-(m/=> bytes->str [:=> [:cat any?] e.u.schema/?NotBytes])
+(m/=> bytes->str [:=> [:cat any?] e.schema/?NotBytes])
 (defn- bytes->str
   [x]
   (if (bytes? x)

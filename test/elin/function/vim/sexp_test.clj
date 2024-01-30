@@ -1,7 +1,7 @@
-(ns elin.function.sexp-test
+(ns elin.function.vim.sexp-test
   (:require
    [clojure.test :as t]
-   [elin.function.sexp :as sut]
+   [elin.function.vim.sexp :as sut]
    [elin.test-helper :as h]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
@@ -16,14 +16,14 @@
 (t/deftest get-namespace-test
   (t/testing "no metadata"
     (t/is (= "foo.bar"
-             (sut/get-namespace (get-namespace-writer "(ns foo.bar)")))))
+             (sut/get-namespace!! (get-namespace-writer "(ns foo.bar)")))))
 
   (t/testing "with metadata"
     (t/is (= "foo.bar"
-             (sut/get-namespace (get-namespace-writer "(ns ^:meta foo.bar)"))))
+             (sut/get-namespace!! (get-namespace-writer "(ns ^:meta foo.bar)"))))
     (t/is (= "foo.bar"
-             (sut/get-namespace (get-namespace-writer "(ns ^{:meta true} foo.bar)")))))
+             (sut/get-namespace!! (get-namespace-writer "(ns ^{:meta true} foo.bar)")))))
 
   (t/testing "in-ns"
     (t/is (= "foo.bar"
-             (sut/get-namespace (get-namespace-writer "(in-ns 'foo.bar)"))))))
+             (sut/get-namespace!! (get-namespace-writer "(in-ns 'foo.bar)"))))))
