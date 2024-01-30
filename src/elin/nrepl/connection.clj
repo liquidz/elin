@@ -3,7 +3,6 @@
    [bencode.core :as b]
    [clojure.core.async :as async]
    [elin.constant.nrepl :as e.c.nrepl]
-   [elin.nrepl.response :as e.n.response]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.id :as e.u.id]
@@ -41,6 +40,57 @@
    {}
    msg))
 
+(m/=> done? [:=> [:cat e.s.nrepl/?Message] boolean?])
+(defn- done?
+  [msg]
+  (boolean
+   (some #(= % "done")
+         (:status msg))))
+
+(m/=> add-message [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
+(defn- add-message
+  [this
+   {:as msg :keys [id]}]
+  (if (and id
+           (int? id)
+           (contains? this id))
+    (update-in this [id :responses] conj msg)
+    this))
+
+(m/=> put-done-responses [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
+(defn- put-done-responses
+  [this
+   {:as msg :keys [id]}]
+  (if (and id
+           (int? id)
+           (done? msg))
+    (if-let [{:keys [responses channel]} (get this id)]
+      (do
+        ;; TODO error handling
+        (async/put! channel responses)
+        (dissoc this id))
+      this)
+    this))
+
+(m/=> process-message [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
+(defn- process-message
+  [this
+   msg]
+  (-> this
+      (add-message msg)
+      (put-done-responses msg)))
+
+(m/=> register-message [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
+(defn- register-message
+  [this
+   msg]
+  (let [id (:id msg)]
+    (if (and id
+             (int? id))
+      (assoc this id {:channel (async/promise-chan)
+                      :responses []})
+      this)))
+
 (defrecord Connection
   [host
    port
@@ -72,7 +122,7 @@
       (async/go nil)
       (let [id (or (:id msg) (e.u.id/next-id))
             msg (assoc msg :id id)]
-        (swap! response-manager e.n.response/register-message msg)
+        (swap! response-manager register-message msg)
         (->> (update-keys msg (comp str symbol))
              (b/write-bencode write-stream))
         (get-in @response-manager [id :channel])))))
@@ -90,7 +140,7 @@
       (try
         (let [v (b/read-bencode read-stream)
               msg (format-message v)]
-          (swap! response-manager e.n.response/process-message msg)
+          (swap! response-manager process-message msg)
 
           (when (string? (:out msg))
             (async/>! output-ch {:type "out" :text (:out msg)}))
