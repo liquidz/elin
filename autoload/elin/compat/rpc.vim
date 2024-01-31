@@ -8,13 +8,21 @@ function! elin#compat#rpc#disconnect(conn) abort
 endfunction
 
 function! elin#compat#rpc#request(conn, method, params) abort
-  return s:request(a:conn, a:method, [a:params])
+  try
+    return s:request(a:conn, a:method, [a:params])
+  catch
+    call elin#internal#echom(printf('Elin failed to request: %s', v:exception), 'ErrorMsg')
+  endtry
 endfunction
 
 function! elin#compat#rpc#notify(conn, method, params, ...) abort
   let Callback = get(a:, 1, {_ -> 0 })
   let callback_id = elin#callback#register(Callback)
-  return s:notify(a:conn, a:method, [a:params] + [callback_id])
+  try
+    return s:notify(a:conn, a:method, [a:params] + [callback_id])
+  catch
+    call elin#internal#echom(printf('Elin failed to notify: %s', v:exception), 'ErrorMsg')
+  endtry
 endfunction
 
 if has('nvim')
@@ -77,13 +85,10 @@ else
   endfunction
 
   function! s:request(ch, method, params) abort
-    echom printf("FIXME start to request: %s", [a:method] + a:params)
-    "let [result, error] = ch_evalexpr(a:ch, [a:method] + a:params)
-    let result = ch_evalexpr(a:ch, [a:method] + a:params)
-    echom printf("FIXME finish to request: %s", result )
-    " if error isnot# v:null
-    "   throw error
-    " endif
+    let [error, result] = ch_evalexpr(a:ch, [a:method] + a:params)
+    if error isnot# v:null
+      throw error
+    endif
     return result
   endfunction
 
