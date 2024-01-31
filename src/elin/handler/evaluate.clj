@@ -11,10 +11,11 @@
    code & [options]]
   (e/let [ns-str (e.f.v.sexp/get-namespace!! writer)
           path (e.f.vim/get-full-path!! writer)
-          options (merge (or options {})
-                         {:ns ns-str
-                          :file path
-                          :nrepl.middleware.print/stream? 1})
+          options (cond-> (merge (or options {})
+                                 {:file path
+                                  :nrepl.middleware.print/stream? 1})
+                    (seq ns-str)
+                    (assoc :ns ns-str))
           res (e.f.n.op/eval!! nrepl code options)]
     (:value res)))
 
