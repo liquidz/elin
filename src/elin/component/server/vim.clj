@@ -63,9 +63,10 @@
   (notify! [_ content]
     (json/generate-stream content (io/writer output-stream)))
 
-  (response! [this error result]
-    (when-let [id (:id (e.p.rpc/parse-message this))]
-      (-> [id (or error result)]
+  (response! [_ id error result]
+    (when id
+      ;; (-> [id (or error result)])
+      (-> [id [error result]]
           (json/generate-stream  (io/writer output-stream)))))
 
   (flush! [_]
