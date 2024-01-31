@@ -9,9 +9,10 @@
    [elin.protocol.interceptor :as e.p.interceptor]))
 
 (defmethod e.handler/handler* :initialize
-  [_]
+  [{:component/keys [writer]}]
   ;; TODO Load plugins
-  "FIXME")
+  (e.f.vim/call!! writer "elin#internal#buffer#info#ready" [])
+  true)
 
 (defmethod e.handler/handler* :intercept
   [{:as elin :component/keys [interceptor] :keys [message]}]

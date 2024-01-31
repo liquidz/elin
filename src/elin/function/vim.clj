@@ -8,6 +8,10 @@
    [elin.util.function :as e.u.function]
    [malli.core :as m]))
 
+(m/=> call!! [:=> [:cat e.s.server/?Writer string? [:sequential any?]] any?])
+(defn call!! [writer function-name params]
+  (async/<!! (e.u.function/call-function writer function-name params)))
+
 (m/=> get-current-working-directory!! [:=> [:cat e.s.server/?Writer [:* any?]] (e.schema/error-or string?)])
 (defn get-current-working-directory!!
   [writer & extra-params]
