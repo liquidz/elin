@@ -10,7 +10,15 @@ function! elin#compat#sexp#get_expr(lnum, col) abort
   return s:get_expr(a:lnum, a:col)
 endfunction
 
+function! s:skip_in_string_or_comment() abort
+  if synIDattr(synID(line('.'), col('.'), 0), 'name') =~? 'string\|comment'
+    return 1
+  endif
+  return 0
+endfunction
+
 if has('nvim')
+
   function! s:get_top_list(lnum, col) abort
     return luaeval('require("vim-elin.sexp").get_top_list(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
   endfunction
@@ -22,4 +30,64 @@ if has('nvim')
   function! s:get_expr(lnum, col) abort
     return luaeval('require("vim-elin.sexp").get_expr(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
   endfunction
+
+else
+
+  function! s:get_top_list(lnum, col) abort
+    let view = winsaveview()
+    try
+      call cursor(a:lnum, a:col)
+      let start_lnum = search('^\S', 'cbW')
+      if start_lnum == 0
+        return ''
+      endif
+      let end_lnum = searchpair('(', '', ')', 'cW', funcref('s:skip_in_string_or_comment'))
+      if end_lnum <= 0
+        return ''
+      endif
+
+      return join(getline(start_lnum, end_lnum), "\n")
+    finally
+      call winrestview(view)
+    endtry
+  endfunction
+
+  function! s:get_list(lnum, col) abort
+    let view = winsaveview()
+    try
+      call cursor(a:lnum, a:col)
+      let start_pos = searchpairpos('(', '', ')', 'cbW', funcref('s:skip_in_string_or_comment'))
+      if start_pos == [0, 0]
+        return ''
+      endif
+      let end_pos = searchpairpos('(', '', ')', 'W', funcref('s:skip_in_string_or_comment'))
+      if end_pos == [0, 0]
+        return ''
+      endif
+
+      let lines = getline(start_pos[0], end_pos[0])
+      if len(lines) == 1
+        let lines[0] = strpart(lines[0], start_pos[1] - 1)
+        let lines[0] = strpart(lines[-1], 0, end_pos[1] - start_pos[1] + 1)
+      else
+        let lines[0] = strpart(lines[0], start_pos[1] - 1)
+        let lines[-1] = strpart(lines[-1], 0, end_pos[1])
+      endif
+
+      return join(lines, "\n")
+    finally
+      call winrestview(view)
+    endtry
+  endfunction
+
+  function! s:get_expr(lnum, col) abort
+    let view = winsaveview()
+    try
+      call cursor(a:lnum, a:col)
+      return elin#util#cword()
+    finally
+      call winrestview(view)
+    endtry
+  endfunction
+
 endif
