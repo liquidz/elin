@@ -3,7 +3,7 @@ let g:elin#babashka = get(g:, 'elin#babashka', 'bb')
 function! elin#notify(...) abort
   let conn = elin#server#connection()
   if conn is# v:null
-    echom 'not connected'
+    echom printf('Not connected to Elin server: %s', a:000)
     return
   endif
   return call(function('elin#compat#rpc#notify'), [conn] + a:000)
@@ -12,7 +12,7 @@ endfunction
 function! elin#request(...) abort
   let conn = elin#server#connection()
   if conn is# v:null
-    echom 'not connected'
+    echom printf('Not connected to Elin server: %s', a:000)
     return
   endif
   return call(function('elin#compat#rpc#request'), [conn] + a:000)

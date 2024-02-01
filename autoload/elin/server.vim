@@ -32,20 +32,20 @@ endfunction
 function! s:try_connecting(port, timer_id) abort
   let port = a:port is# v:null ? s:port : a:port
   if port is# v:null
-    echom 'Port is not set'
+    call elin#internal#echom('Port is not set', 'ErrorMsg')
     return
   endif
 
-  echom printf("Trying to connect to Elin Server: %s", port)
+  echo printf("Trying to connect to Elin Server: %s", port)
   if s:connect(port)
     call elin#notify('initialize', [])
-    echom printf("Connected to Elin Server: %s", port)
+    echo printf("Connected to Elin Server: %s", port)
     return timer_stop(a:timer_id)
   endif
 
   let s:retry_count = s:retry_count + 1
   if s:retry_count > s:retry_max
-    echom printf('Failed connecting to Elin Server: port=%s, error=%s', port, v:exception)
+    call elin#internal#echom(printf('Failed connecting to Elin Server: port=%s, error=%s', port, v:exception), 'ErrorMsg')
     return timer_stop(a:timer_id)
   endif
 endfunction
