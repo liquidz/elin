@@ -1,28 +1,52 @@
 (ns elin.function.vim
   (:require
    [clojure.core.async :as async]
-   [elin.error :as e.error]
+   [elin.error :as e]
+   [elin.protocol.rpc :as e.p.rpc]
    [elin.schema :as e.schema]
    [elin.schema.server :as e.s.server]
    [elin.schema.vim :as e.s.vim]
-   [elin.util.function :as e.u.function]
    [malli.core :as m]))
+
+(m/=> call [:=>
+            [:cat e.s.server/?Writer string? [:sequential any?]]
+            e.schema/?ManyToManyChannel])
+(defn call
+  [writer fn-name params]
+  (async/go
+    (let [{:keys [result error]} (async/<! (e.p.rpc/call-function writer fn-name params))]
+      (if error
+        (e/fault {:message (str "Failed to call function: " error)
+                  :function fn-name
+                  :params params})
+        result))))
+
+(m/=> notify [:=> [:cat e.s.server/?Writer string? [:sequential any?]] :nil])
+(defn notify
+  [writer fn-name params]
+  (e.p.rpc/notify-function writer fn-name params)
+  nil)
+
+(m/=> luaeval [:=> [:cat e.s.server/?Writer string? [:sequential any?]]
+               e.schema/?ManyToManyChannel])
+(defn luaeval [writer code args]
+  (call writer "luaeval" [code args]))
 
 (m/=> call!! [:=> [:cat e.s.server/?Writer string? [:sequential any?]] any?])
 (defn call!! [writer function-name params]
-  (async/<!! (e.u.function/call-function writer function-name params)))
+  (async/<!! (call writer function-name params)))
 
 (m/=> get-current-working-directory!! [:=> [:cat e.s.server/?Writer [:* any?]] (e.schema/error-or string?)])
 (defn get-current-working-directory!!
   [writer & extra-params]
   (let [params (or extra-params [])]
-    (async/<!! (e.u.function/call-function writer "getcwd" params))))
+    (async/<!! (call writer "getcwd" params))))
 
 (m/=> get-cursor-position!! [:=> [:cat e.s.server/?Writer [:* any?]] (e.schema/error-or e.s.vim/?Position)])
 (defn get-cursor-position!!
   [writer & extra-params]
-  (e.error/let [params (or extra-params [])
-                [bufnum lnum col off curswant] (async/<!! (e.u.function/call-function writer "getcurpos" params))]
+  (e/let [params (or extra-params [])
+          [bufnum lnum col off curswant] (async/<!! (call writer "getcurpos" params))]
     {:bufname bufnum
      :lnum lnum
      :col col
@@ -32,25 +56,25 @@
 (m/=> get-full-path!! [:=> [:cat e.s.server/?Writer] (e.schema/error-or string?)])
 (defn get-full-path!!
   [writer]
-  (async/<!! (e.u.function/call-function writer "expand" ["%:p"])))
+  (async/<!! (call writer "expand" ["%:p"])))
 
 (m/=> jump!! [:=> [:cat e.s.server/?Writer string? int? int? [:* any?]] [:maybe e.schema/?Error]])
 (defn jump!!
   [writer path lnum col & [jump-command]]
   (let [jump-command (or jump-command "edit")
-        res (async/<!! (e.u.function/call-function writer "elin#internal#jump" [path lnum col jump-command]))]
-    (when (e.error/error? res)
+        res (async/<!! (call writer "elin#internal#jump" [path lnum col jump-command]))]
+    (when (e/error? res)
       res)))
 
 (m/=> eval!! [:=> [:cat e.s.server/?Writer string?] any?])
 (defn eval!!
   [writer s]
-  (async/<!! (e.u.function/call-function writer "elin#internal#eval" [s])))
+  (async/<!! (call writer "elin#internal#eval" [s])))
 
 (m/=> execute!! [:=> [:cat e.s.server/?Writer string?] any?])
 (defn execute!!
   [writer cmd]
-  (async/<!! (e.u.function/call-function writer "elin#internal#execute" [cmd])))
+  (async/<!! (call writer "elin#internal#execute" [cmd])))
 
 (m/=> get-variable!! [:=> [:cat e.s.server/?Writer string?] any?])
 (defn get-variable!!
