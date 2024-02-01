@@ -14,7 +14,7 @@ local function get_code(node)
         and string.sub(node_text[end_row - start_row + 1], 1, end_col - start_col)
         or string.sub(node_text[end_row - start_row + 1], 1, end_col)
 
-    return table.concat(node_text, "\n")
+    return { code = table.concat(node_text, "\n"); lnum = start_row + 1; col = start_col + 1 }
 end
 
 local function find_list_lit(node)

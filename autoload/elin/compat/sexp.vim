@@ -17,7 +17,7 @@ function! s:skip_in_string_or_comment() abort
   return 0
 endfunction
 
-if has('nvim')
+if has('nvim') && exists('*nvim_get_runtime_file') && len(nvim_get_runtime_file('parser', v:true)) > 0
 
   function! s:get_top_list(lnum, col) abort
     return luaeval('require("vim-elin.sexp").get_top_list(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
@@ -41,12 +41,12 @@ else
       if start_lnum == 0
         return ''
       endif
-      let end_lnum = searchpair('(', '', ')', 'cW', funcref('s:skip_in_string_or_comment'))
+      let end_lnum = searchpair('(', '', ')', 'W', funcref('s:skip_in_string_or_comment'))
       if end_lnum <= 0
         return ''
       endif
 
-      return join(getline(start_lnum, end_lnum), "\n")
+      return {'code': join(getline(start_lnum, end_lnum), "\n"), 'lnum': start_lnum, 'col': 1}
     finally
       call winrestview(view)
     endtry
@@ -74,7 +74,7 @@ else
         let lines[-1] = strpart(lines[-1], 0, end_pos[1])
       endif
 
-      return join(lines, "\n")
+      return {'code': join(lines, "\n"), 'lnum': start_pos[0], 'col': start_pos[1]}
     finally
       call winrestview(view)
     endtry
@@ -84,7 +84,7 @@ else
     let view = winsaveview()
     try
       call cursor(a:lnum, a:col)
-      return elin#util#cword()
+      return {'code': elin#util#cword(), 'lnum': a:lnum, 'col': a:col}
     finally
       call winrestview(view)
     endtry

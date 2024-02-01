@@ -2,34 +2,46 @@
   (:require
    [clojure.core.async :as async]
    [clojure.string :as str]
-   [elin.error :as e.error]
+   [elin.error :as e]
+   [elin.function.vim  :as e.f.vim]
    [elin.schema :as e.schema]
    [elin.schema.server :as e.s.server]
-   [elin.util.function :as e.u.function]
    [malli.core :as m]
    [rewrite-clj.zip :as r.zip]))
 
-(m/=> get-top-list!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or string?)])
+(def ^:private ?CodeAndPosition
+  [:map
+   [:code string?]
+   [:lnum int?]
+   [:col int?]])
+
+(m/=> get-top-list!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or ?CodeAndPosition)])
 (defn get-top-list!!
   [writer lnum col]
-  (async/<!! (e.u.function/call-function writer "elin#compat#sexp#get_top_list" [lnum col])))
+  (-> (e.f.vim/call writer "elin#compat#sexp#get_top_list" [lnum col])
+      (async/<!!)
+      (update-keys keyword)))
 
-(m/=> get-list!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or string?)])
+(m/=> get-list!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or ?CodeAndPosition)])
 (defn get-list!!
   [writer lnum col]
-  (async/<!! (e.u.function/call-function writer "elin#compat#sexp#get_list" [lnum col])))
+  (-> (e.f.vim/call writer "elin#compat#sexp#get_list" [lnum col])
+      (async/<!!)
+      (update-keys keyword)))
 
-(m/=> get-expr!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or string?)])
+(m/=> get-expr!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or ?CodeAndPosition)])
 (defn get-expr!!
   [writer lnum col]
-  (async/<!! (e.u.function/call-function writer "elin#compat#sexp#get_expr" [lnum col])))
+  (-> (e.f.vim/call writer "elin#compat#sexp#get_expr" [lnum col])
+      (async/<!!)
+      (update-keys keyword)))
 
 (m/=> get-namespace!! [:=> [:cat e.s.server/?Writer] (e.schema/error-or [:maybe string?])])
 (defn get-namespace!!
   [writer]
   (try
-    (e.error/let [ns-form (async/<!! (e.u.function/call-function writer "elin#internal#clojure#get_ns_form" []))
-                  target-sym (if (str/includes? ns-form "in-ns") 'in-ns 'ns)]
+    (e/let [ns-form (async/<!! (e.f.vim/call writer "elin#internal#clojure#get_ns_form" []))
+            target-sym (if (str/includes? ns-form "in-ns") 'in-ns 'ns)]
       (when (seq ns-form)
         (-> ns-form
             (r.zip/of-string)
@@ -42,4 +54,4 @@
             (r.zip/sexpr)
             (str))))
     (catch Exception ex
-      (e.error/not-found {:message (ex-message ex)}))))
+      (e/not-found {:message (ex-message ex)}))))
