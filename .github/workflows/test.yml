@@ -9,8 +9,10 @@ jobs:
       - uses: DeLaGuardo/setup-clojure@master
         with:
           bb: latest
+          clj-kondo: latest
       - uses: actions/cache@v3
         with:
           path: ~/.m2
           key: test-m2-${{ hashFiles('bb.edn') }}
+      - run: bb lint
       - run: bb test
