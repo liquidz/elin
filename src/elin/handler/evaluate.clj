@@ -7,15 +7,14 @@
    [elin.handler :as e.handler]))
 
 (defn- evaluation*
-  [{:component/keys [nrepl writer]}
+  [{:component/keys [nrepl]}
    code & [options]]
-  (e/let [ns-str (e.f.v.sexp/get-namespace!! writer)
-          path (e.f.vim/get-full-path!! writer)
-          options (cond-> (merge (or options {})
-                                 {:file path
-                                  :nrepl.middleware.print/stream? 1})
-                    (seq ns-str)
-                    (assoc :ns ns-str))
+  (e/let [options (reduce-kv (fn [accm k v]
+                               (if v
+                                 (assoc accm k v)
+                                 accm))
+                             {:nrepl.middleware.print/stream? 1}
+                             options)
           res (e.f.n.op/eval!! nrepl code options)]
     (:value res)))
 
@@ -31,17 +30,32 @@
 (defmethod e.handler/handler* :evaluate-current-top-list
   [{:as elin :component/keys [writer]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
-          code (e.f.v.sexp/get-top-list!! writer lnum col)]
-    (evaluation* elin code {:line lnum :column col})))
+          ns-str (e.f.v.sexp/get-namespace!! writer)
+          path (e.f.vim/get-full-path!! writer)
+          {:keys [code lnum col]} (e.f.v.sexp/get-top-list!! writer lnum col)]
+    (evaluation* elin code {:line lnum
+                            :column col
+                            :ns ns-str
+                            :file path})))
 
 (defmethod e.handler/handler* :evaluate-current-list
   [{:as elin :component/keys [writer]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
-          code (e.f.v.sexp/get-list!! writer lnum col)]
-    (evaluation* elin code {:line lnum :column col})))
+          ns-str (e.f.v.sexp/get-namespace!! writer)
+          path (e.f.vim/get-full-path!! writer)
+          {:keys [code lnum col]} (e.f.v.sexp/get-list!! writer lnum col)]
+    (evaluation* elin code {:line lnum
+                            :column col
+                            :ns ns-str
+                            :file path})))
 
 (defmethod e.handler/handler* :evaluate-current-expr
   [{:as elin :component/keys [writer]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
-          code (e.f.v.sexp/get-expr!! writer lnum col)]
-    (evaluation* elin code {:line lnum :column col})))
+          ns-str (e.f.v.sexp/get-namespace!! writer)
+          path (e.f.vim/get-full-path!! writer)
+          {:keys [code lnum col]} (e.f.v.sexp/get-expr!! writer lnum col)]
+    (evaluation* elin code {:line lnum
+                            :column col
+                            :ns ns-str
+                            :file path})))
