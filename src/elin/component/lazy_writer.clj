@@ -20,6 +20,7 @@
               ::response! (apply e.p.rpc/response! writer args)
               ::flush! (e.p.rpc/flush! writer)
               ::call-function (apply e.p.rpc/call-function writer args)
+              ::notify-function (apply e.p.rpc/notify-function writer args)
               ::echo-text (apply e.p.rpc/echo-text writer args)
               ::echo-message (apply e.p.rpc/echo-message writer args)
               nil)
@@ -63,6 +64,10 @@
     (if-let [writer @writer-store]
       (e.p.rpc/call-function writer method params)
       (async/put! writer-channel [::call-function method params])))
+  (notify-function [_ method params]
+    (if-let [writer @writer-store]
+      (e.p.rpc/notify-function writer method params)
+      (async/put! writer-channel [::notify-function method params])))
   (echo-text [_ text]
     (if-let [writer @writer-store]
       (e.p.rpc/echo-text writer text)

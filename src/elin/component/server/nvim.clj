@@ -70,6 +70,9 @@
   (call-function [this method params]
     (e.p.rpc/request! this ["nvim_call_function" [method params]]))
 
+  (notify-function [this method params]
+    (e.p.rpc/notify! this ["nvim_call_function" [method params]]))
+
   (echo-text [this text]
     (e.p.rpc/notify! this ["nvim_echo" [[text "Normal"]] false {}]))
 

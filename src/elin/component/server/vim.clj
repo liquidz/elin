@@ -76,6 +76,9 @@
   (call-function [this method params]
     (e.p.rpc/request! this ["call" method params (e.u.id/next-id)]))
 
+  (notify-function [this method params]
+    (e.p.rpc/notify! this ["call" method params]))
+
   (echo-text [this text]
     (e.p.rpc/notify! this ["ex" "echo" (format "'%s'" text)]))
 
