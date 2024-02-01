@@ -11,7 +11,7 @@
 (defmethod e.handler/handler* :initialize
   [{:component/keys [writer]}]
   ;; TODO Load plugins
-  (e.f.vim/call!! writer "elin#internal#buffer#info#ready" [])
+  (e.f.vim/notify writer "elin#internal#buffer#info#ready" [])
   true)
 
 (defmethod e.handler/handler* :intercept

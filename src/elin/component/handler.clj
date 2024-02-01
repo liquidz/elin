@@ -28,7 +28,7 @@
                  resp (e.handler/handler* params)
                  resp' (if-let [callback (:callback msg')]
                          (try
-                           (e.p.rpc/call-function writer "elin#callback#call" [callback resp])
+                           (e.p.rpc/notify-function writer "elin#callback#call" [callback resp])
                            ;; FIXME
                            (catch Exception ex
                              (e.log/error writer "Failed to callback" (ex-message ex))))
