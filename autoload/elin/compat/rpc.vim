@@ -16,10 +16,11 @@ function! elin#compat#rpc#request(conn, method, params) abort
 endfunction
 
 function! elin#compat#rpc#notify(conn, method, params, ...) abort
-  let Callback = get(a:, 1, {_ -> 0 })
-  let callback_id = elin#callback#register(Callback)
+  let Callback = get(a:, 1, v:null)
+  let callback_id = Callback is v:null ? v:null : elin#callback#register(Callback)
+  let params = callback_id is v:null ? [a:params] : [a:params] + [callback_id]
   try
-    return s:notify(a:conn, a:method, [a:params] + [callback_id])
+    return s:notify(a:conn, a:method, params)
   catch
     call elin#internal#echom(printf('Elin failed to notify: %s', v:exception), 'ErrorMsg')
   endtry
