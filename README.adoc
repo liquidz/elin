@@ -9,10 +9,6 @@ Work in progress
 [source,vim]
 ----
 " evaluation
-:echo elin#notify('connect', ['localhost', 61081])
-:echo elin#callback_test('evaluate', ['(+ 1 2 3)'])
-:echo elin#request('evaluate-current-top-list', [])
-
-" request from server
-:echo elin#notify('plus', [123, 456])
+:echo elin#notify('elin.handler.connect/connect', ['localhost', 61081])
+:echo elin#request('elin.handler.evaluate/evaluate-current-top-list', [])
 ----

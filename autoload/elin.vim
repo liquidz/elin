@@ -18,6 +18,10 @@ function! elin#request(...) abort
   return call(function('elin#compat#rpc#request'), [conn] + a:000)
 endfunction
 
+function! elin#intercept(...) abort
+  return elin#notify('elin.handler.internal/intercept', a:000)
+endfunction
+
 function! s:callback(...) abort
   echom printf('FIXME callback %s', a:000)
 endfunction

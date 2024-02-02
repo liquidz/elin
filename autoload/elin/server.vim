@@ -38,7 +38,7 @@ function! s:try_connecting(port, timer_id) abort
 
   echo printf("Trying to connect to Elin Server: %s", port)
   if s:connect(port)
-    call elin#notify('initialize', [])
+    call elin#notify('elin.handler.internal/initialize', [])
     echo printf("Connected to Elin Server: %s", port)
     return timer_stop(a:timer_id)
   endif

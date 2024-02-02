@@ -22,15 +22,15 @@ endfunction
 
 aug elin_autocmd_group
   au!
-  au BufRead *.clj,*.cljs,*.cljc call elin#notify('intercept', ['BufRead'])
-  au BufNewFile *.clj,*.cljs,*.cljc call elin#notify('intercept', ['BufNewFile'])
-  au BufEnter *.clj,*.cljs,*.cljc call elin#notify('intercept', ['BufEnter'])
-  au BufWritePost *.clj,*.cljs,*.cljc call elin#notify('intercept', ['BufWritePost'])
+  au BufRead *.clj,*.cljs,*.cljc call elin#intercept('BufRead')
+  au BufNewFile *.clj,*.cljs,*.cljc call elin#intercept('BufNewFile')
+  au BufEnter *.clj,*.cljs,*.cljc call elin#intercept('BufEnter')
+  au BufWritePost *.clj,*.cljs,*.cljc call elin#intercept('BufWritePost')
   au VimLeave * call s:deinit()
 aug END
 
 function! s:deinit() abort
-  call elin#notify('intercept', ['VimLeave'])
+  call elin#intercept('VimLeave')
   call elin#server#disconnect()
   call elin#server#stop()
 endfunction
