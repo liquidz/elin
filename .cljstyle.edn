@@ -8,5 +8,5 @@
          :functions {:enabled? false}
          :types {:enabled? false}
          :namespaces {:indent-size 1}}
- :files {:ignore #{"target"}}}
+ :files {:ignore #{".clj-kondo" "target" "foo.clj"}}}
 ; vim:ft=clojure
