@@ -1,11 +1,12 @@
 (ns elin.handler.connect
   (:require
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.handler :as e.handler]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
-   [elin.util.param :as e.u.param]))
+   [elin.schema.handler :as e.s.handler]
+   [elin.util.param :as e.u.param]
+   [malli.core :as m]))
 
 (def ^:private ?Params
   [:or
@@ -16,7 +17,8 @@
     [:host string?]
     [:port int?]]])
 
-(defmethod e.handler/handler* :connect
+(m/=> connect [:=> [:cat e.s.handler/?Elin] any?])
+(defn connect
   [{:as elin :component/keys [nrepl interceptor writer] :keys [message]}]
   (let [[{:keys [host port]} error] (e.u.param/parse ?Params (:params message))]
     (if error

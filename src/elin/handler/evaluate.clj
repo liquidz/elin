@@ -4,11 +4,13 @@
    [elin.function.nrepl.op :as e.f.n.op]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
-   [elin.handler :as e.handler]))
+   [elin.schema.handler :as e.s.handler]
+   [malli.core :as m]))
 
+(m/=> evaluation* [:=> [:cat e.s.handler/?Elin string? map?] any?])
 (defn- evaluation*
   [{:component/keys [nrepl]}
-   code & [options]]
+   code options]
   (e/let [options (reduce-kv (fn [accm k v]
                                (if v
                                  (assoc accm k v)
@@ -20,14 +22,16 @@
 
 ;; TODO status: ["namespace-not-found" "done" "error"]
 
-(defmethod e.handler/handler* :evaluate
+(m/=> evaluate [:=> [:cat e.s.handler/?Elin] any?])
+(defn evaluate
   [{:as elin :keys [message]}]
-  (->> message
-       (:params)
-       (first)
-       (evaluation* elin)))
+  (let [code (->> message
+                  (:params)
+                  (first))]
+    (evaluation* elin code {})))
 
-(defmethod e.handler/handler* :evaluate-current-top-list
+(m/=> evaluate-current-top-list [:=> [:cat e.s.handler/?Elin] any?])
+(defn evaluate-current-top-list
   [{:as elin :component/keys [writer]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
           ns-str (e.f.v.sexp/get-namespace!! writer)
@@ -38,7 +42,8 @@
                             :ns ns-str
                             :file path})))
 
-(defmethod e.handler/handler* :evaluate-current-list
+(m/=> evaluate-current-list [:=> [:cat e.s.handler/?Elin] any?])
+(defn evaluate-current-list
   [{:as elin :component/keys [writer]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
           ns-str (e.f.v.sexp/get-namespace!! writer)
@@ -49,7 +54,8 @@
                             :ns ns-str
                             :file path})))
 
-(defmethod e.handler/handler* :evaluate-current-expr
+(m/=> evaluate-current-expr [:=> [:cat e.s.handler/?Elin] any?])
+(defn evaluate-current-expr
   [{:as elin :component/keys [writer]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
           ns-str (e.f.v.sexp/get-namespace!! writer)

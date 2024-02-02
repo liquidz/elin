@@ -14,3 +14,9 @@
    [:map
     [:message e.s.server/?Message]]
    ?Components))
+
+(def ?Handlers
+  [:sequential fn?])
+
+(def ?HandlerMap
+  [:map-of qualified-keyword? fn?])
