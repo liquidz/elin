@@ -11,6 +11,24 @@
 (def log-level INFO_LEVEL)
 (def ^:dynamic *log-file* "/tmp/elin.log")
 
+(defn set-level!
+  [level]
+  (let [level (cond
+                (int? level)
+                level
+
+                (keyword? level)
+                (case level
+                  :debug DEBUG_LEVEL
+                  :info INFO_LEVEL
+                  :warning WARNING_LEVEL
+                  :error ERROR_LEVEL
+                  INFO_LEVEL)
+
+                :else
+                INFO_LEVEL)]
+    (alter-var-root #'log-level (constantly level))))
+
 (defn log
   [& messages]
   (let [s (->> (map str messages)
