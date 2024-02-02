@@ -9,7 +9,7 @@
         rewrite-clj/rewrite-clj {:mvn/version "1.1.47"}}
 
  :tasks
- {start-server {:task (shell "bb -m elin.core localhost 12233 true")}
+ {start-server {:task (shell "bb -m elin.core localhost 12233 .")}
   repl {:override-builtin true
         :extra-paths ["dev" "test"]
         :requires ([elin.dev]

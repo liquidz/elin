@@ -7,13 +7,13 @@ let s:retry_count = 0
 let s:retry_interval = 100
 let s:retry_max = 20
 
-function! elin#server#start(development_mode) abort
-  call elin#script#empty_port(funcref('s:start', [a:development_mode]))
+function! elin#server#start() abort
+  call elin#script#empty_port(funcref('s:start'))
 endfunction
 
-function! s:start(development_mode, port) abort
+function! s:start(port) abort
   let s:port = a:port
-  let command = [g:elin#babashka, '-m', 'elin.core', s:host, a:port, a:development_mode ? 'true' : 'false']
+  let command = [g:elin#babashka, '-m', 'elin.core', s:host, a:port, getcwd()]
   let options = {'cwd': g:elin_home}
   let s:job = elin#compat#job#start(command, options)
 endfunction

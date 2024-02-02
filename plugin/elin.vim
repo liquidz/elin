@@ -6,12 +6,11 @@ let g:loaded_vim_elin = 1
 let g:elin_home = expand('<sfile>:p:h:h')
 let g:elin_auto_connect = get(g:, 'elin_auto_connect', v:true)
 let g:elin_server_port = get(g:, 'elin_server_port', v:null)
-let g:elin_development_mode = get(g:, 'elin_development_mode', v:false)
 
 function! s:init() abort
   if g:elin_server_port is v:null
     echom 'vim-elin: start server'
-    call elin#server#start(g:elin_development_mode)
+    call elin#server#start()
   endif
 
   if g:elin_auto_connect is v:true
