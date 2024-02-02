@@ -10,9 +10,9 @@ jobs:
         with:
           bb: latest
           clj-kondo: latest
-      - uses: actions/cache@v3
+          cljstyle: latest
+      - uses: actions/cache@v4
         with:
           path: ~/.m2
           key: test-m2-${{ hashFiles('bb.edn') }}
-      - run: bb lint
-      - run: bb test
+      - run: bb check-all
