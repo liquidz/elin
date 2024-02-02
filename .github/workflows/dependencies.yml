@@ -1,0 +1,9 @@
+name: dependencies
+on: [push]
+
+jobs:
+  antq:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: liquidz/antq-action@main
