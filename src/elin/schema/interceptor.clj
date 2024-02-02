@@ -16,7 +16,7 @@
 
 (def ?Interceptor
   [:map
-   [:name keyword?]
+   [:name qualified-keyword?]
    [:kind ?Kind]
    [:enter {:optional true} fn?]
    [:leave {:optional true} fn?]])
