@@ -1,8 +1,8 @@
 (ns elin.core
   (:require
    [com.stuartsierra.component :as component]
-   [elin.system :as e.system]
-   [elin.log :as e.log]))
+   [elin.log :as e.log]
+   [elin.system :as e.system]))
 
 (defn -main
   [host port development-mode]
