@@ -9,7 +9,6 @@
 (m/=> initialize [:=> [:cat e.s.handler/?Elin] any?])
 (defn initialize
   [{:component/keys [writer]}]
-  ;; TODO Load plugins
   (e.f.vim/notify writer "elin#internal#buffer#info#ready" [])
   true)
 

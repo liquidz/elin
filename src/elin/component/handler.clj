@@ -7,8 +7,10 @@
    [elin.handler.internal]
    [elin.handler.navigate]
    [elin.log :as e.log]
+   [elin.protocol.handler :as e.p.handler]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.rpc :as e.p.rpc]
+   [elin.schema :as e.schema]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.server :as e.s.server]
    [malli.core :as m]
@@ -24,18 +26,24 @@
     elin.handler.internal/intercept
     elin.handler.navigate/jump-to-definition])
 
+(defn- resolve-handler [sym]
+  (when-let [f (try
+                 (requiring-resolve sym)
+                 (catch Exception ex
+                   (e.log/info "Failed to resolve handler" (pr-str {:sym sym :ex ex}))
+                   nil))]
+    [(keyword sym) f]))
+
 (m/=> build-handler-map [:=> [:cat e.s.handler/?Handlers] e.s.handler/?HandlerMap])
 (defn- build-handler-map
   [handlers]
   (reduce (fn [accm sym]
-            (if-let [f (try
-                         (resolve sym)
-                         (catch Exception _ nil))]
-              (assoc accm (keyword sym) f)
+            (if-let [[k f] (resolve-handler sym)]
+              (assoc accm k f)
               accm))
           {} handlers))
 
-(m/=> handler [:=> [:cat e.s.handler/?Components e.s.handler/?HandlerMap e.s.server/?Message] any?])
+(m/=> handler [:=> [:cat e.s.handler/?Components e.schema/?Atom e.s.server/?Message] any?])
 (defn- handler
   [{:as components :component/keys [interceptor]}
    handler-map
@@ -48,7 +56,7 @@
                              (e.p.rpc/parse-message message))
                  elin (assoc context :message msg')
                  handler-key (:method msg')
-                 resp (if-let [handler-fn (get handler-map handler-key)]
+                 resp (if-let [handler-fn (get @handler-map handler-key)]
                         (handler-fn elin)
                         (e.log/error writer (format "Unknown handler: %s" handler-key)))
                  resp' (if-let [callback (:callback msg')]
@@ -62,21 +70,29 @@
         (:response))))
 
 (defrecord Handler
-  [nrepl interceptor lazy-writer]
+  [nrepl interceptor lazy-writer handler-map]
   component/Lifecycle
   (start [this]
     (let [components {:component/nrepl nrepl
                       :component/interceptor interceptor
                       :component/writer lazy-writer}
-          handler-map (build-handler-map default-handlers)
+          _ (reset! handler-map (build-handler-map default-handlers))
+          ;; handler-map (build-handler-map default-handlers)
 
           handler (partial handler components handler-map)]
       (assoc this
              :handler handler)))
 
   (stop [this]
-    (dissoc this :handler)))
+    (dissoc this :handler))
+
+  e.p.handler/IHandler
+  (add-handlers! [_ handler-syms]
+    (->> handler-syms
+         (keep resolve-handler)
+         (into {})
+         (swap! handler-map merge))))
 
 (defn new-handler
   [_]
-  (map->Handler {}))
+  (map->Handler {:handler-map (atom {})}))

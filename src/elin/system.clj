@@ -5,6 +5,7 @@
    [elin.component.interceptor :as e.c.interceptor]
    [elin.component.lazy-writer :as e.c.lazy-writer]
    [elin.component.nrepl :as e.c.nrepl]
+   [elin.component.plugin :as e.c.plugin]
    [elin.component.server :as e.c.server]
    [msgpack.clojure-extensions]))
 
@@ -23,6 +24,9 @@
     :handler (component/using
               (e.c.handler/new-handler config)
               [:nrepl :interceptor :lazy-writer])
+    :plugin (component/using
+             (e.c.plugin/new-plugin config)
+             [:interceptor :handler :lazy-writer])
     :server (component/using
              (e.c.server/new-server config)
              [:handler :lazy-writer]))))
