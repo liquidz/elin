@@ -3,7 +3,9 @@
    [malli.core :as m])
   (:import
    clojure.core.async.impl.channels.ManyToManyChannel
-   clojure.lang.ExceptionInfo))
+   (clojure.lang
+    Atom
+    ExceptionInfo)))
 
 (defn ?instance
   [klass]
@@ -24,6 +26,9 @@
 
 (def ?ManyToManyChannel
   (?instance ManyToManyChannel))
+
+(def ?Atom
+  (?instance Atom))
 
 (defn error-or
   [schema]
