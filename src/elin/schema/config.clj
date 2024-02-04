@@ -1,11 +1,19 @@
 (ns elin.schema.config)
 
+(def ^:private ?Env
+  [:map
+   [:cwd string?]])
+
 (def ^:private ?LogLevel
   [:enum :debug :info :warning :error])
 
 (def ^:private ?Log
   [:map
    [:level {:default :info} ?LogLevel]])
+
+(def ^:private ?Plugin
+  [:map
+   [:edn-files [:sequential string?]]])
 
 (def ^:private ?Server
   [:map
@@ -14,5 +22,7 @@
 
 (def ?Config
   [:map
-   [:log {:default {}} ?Log]
+   [:env ?Env]
+   [:log {:optional true :default {}} ?Log]
+   [:plugin ?Plugin]
    [:server ?Server]])

@@ -13,9 +13,21 @@ endfunction
 
 function! s:start(port) abort
   let s:port = a:port
-  let command = [g:elin#babashka, '-m', 'elin.core', s:host, a:port, getcwd()]
-  let options = {'cwd': g:elin_home}
+  let config = json_encode({
+        \ 'env': {'cwd': getcwd()},
+        \ 'plugin': {'edn-files': elin#internal#plugin#search()},
+        \ 'server': {'host': s:host, 'port': str2nr(a:port)},
+        \ })
+  let command = [g:elin#babashka, '-m', 'elin.core', config]
+  let options = {
+        \ 'cwd': g:elin_home,
+        \ 'err_cb': funcref('s:error_callback'),
+        \ }
   let s:job = elin#compat#job#start(command, options)
+endfunction
+
+function! s:error_callback(...) abort
+  call elin#internal#echom(string(a:000), 'ErrorMsg')
 endfunction
 
 function! elin#server#connect(...) abort

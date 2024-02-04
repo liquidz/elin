@@ -1,15 +1,27 @@
 (ns elin.core
   (:require
+   [cheshire.core :as json]
    [com.stuartsierra.component :as component]
    [elin.config :as e.config]
    [elin.log :as e.log]
-   [elin.system :as e.system]))
+   [elin.schema.config :as e.s.config]
+   [elin.system :as e.system]
+   [malli.core :as m]
+   [malli.error :as m.error]))
+
+(defn- parse-json-config
+  [json-config]
+  (let [res (json/parse-string json-config keyword)]
+    (when-let [err (some->> res
+                            (m/explain e.s.config/?Config)
+                            (m.error/humanize))]
+      (throw (ex-info "Invalid server config" err)))
+    res))
 
 (defn -main
-  [host port current-working-directory]
-  (let [port (Long/parseLong port)
-        config (->> {:server {:host host :port port}}
-                    (e.config/load-config current-working-directory))
+  [json-config]
+  (let [{:as config :keys [env]} (parse-json-config json-config)
+        config (e.config/load-config (:cwd env) config)
         sys-map (e.system/new-system config)]
 
     (when-let [level (get-in config [:log :level])]
