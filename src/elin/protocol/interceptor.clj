@@ -1,7 +1,8 @@
 (ns elin.protocol.interceptor)
 
 (defprotocol IInterceptor
-  (add-interceptor!
+  (add-interceptors!
+    [this interceptor]
     [this kind interceptor])
   (remove-interceptor!
     [this interceptor]

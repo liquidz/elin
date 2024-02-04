@@ -38,8 +38,12 @@
     (dissoc this :manager))
 
   e.p.interceptor/IInterceptor
-  (add-interceptor! [_ kind interceptor]
-    (swap! manager update kind #(conj (or % []) interceptor)))
+  (add-interceptors! [this interceptors]
+    ;; TODO validation
+    (doseq [[kind interceptors] (group-by :kind interceptors)]
+      (e.p.interceptor/add-interceptors! this kind interceptors)))
+  (add-interceptors! [_ kind interceptors]
+    (swap! manager update kind #(concat (or % []) interceptors)))
   (remove-interceptor! [_ interceptor]
     (swap! manager update-vals (fn [vs] (vec (remove #(= % interceptor) vs)))))
   (remove-interceptor! [_ kind interceptor]
