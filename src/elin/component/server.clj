@@ -74,4 +74,4 @@
 
 (defn new-server
   [config]
-  (map->Server (:server config)))
+  (map->Server (or (:server config) {})))
