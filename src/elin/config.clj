@@ -14,6 +14,9 @@
   (mt/transformer
    mt/default-value-transformer))
 
+(m/=> load-config [:function
+                   [:=> [:cat string?] e.s.config/?Config]
+                   [:=> [:cat string? map?] e.s.config/?Config]])
 (defn load-config
   ([dir]
    (load-config dir {}))

@@ -1,1 +1,4 @@
-{:log {:level :debug}}
+{:log {:level :debug}
+ :interceptor {:includes [elin.interceptor.debug/interceptor-context-checking-interceptor
+                          elin.interceptor.debug/nrepl-debug-interceptor]}
+ :env {:cwd "."}}
