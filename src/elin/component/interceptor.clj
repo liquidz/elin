@@ -2,11 +2,11 @@
   (:require
    [com.stuartsierra.component :as component]
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.interceptor.autocmd :as e.i.autocmd]
-   [elin.interceptor.connect :as e.i.connect]
-   [elin.interceptor.debug :as e.i.debug]
-   [elin.interceptor.nrepl :as e.i.nrepl]
-   [elin.interceptor.output :as e.i.output]
+   [elin.interceptor.autocmd]
+   [elin.interceptor.connect]
+   ;; [elin.interceptor.debug :as e.i.debug]
+   [elin.interceptor.nrepl]
+   [elin.interceptor.output]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.interceptor :as e.s.interceptor]
@@ -15,39 +15,54 @@
    [msgpack.clojure-extensions]))
 
 (def ^:private default-interceptors
-  [e.i.connect/port-auto-detecting-interceptor
-   e.i.connect/output-channel-interceptor
-   e.i.connect/connected-interceptor
-   e.i.output/print-output-interceptor
-   e.i.nrepl/eval-ns-interceptor
-   e.i.nrepl/normalize-path-interceptor
-   e.i.autocmd/ns-create-interceptor])
+  '[elin.interceptor.connect/port-auto-detecting-interceptor
+    elin.interceptor.connect/output-channel-interceptor
+    elin.interceptor.connect/connected-interceptor
+    elin.interceptor.output/print-output-interceptor
+    elin.interceptor.nrepl/eval-ns-interceptor
+    elin.interceptor.nrepl/normalize-path-interceptor
+    elin.interceptor.autocmd/ns-create-interceptor])
 
-(def ^:private dev-interceptors
-  [e.i.debug/interceptor-context-checking-interceptor
-   e.i.debug/nrepl-debug-interceptor])
+;; (def ^:private dev-interceptors
+;;   [e.i.debug/interceptor-context-checking-interceptor
+;;    e.i.debug/nrepl-debug-interceptor])
+
+(defn- resolve-interceptor [lazy-writer sym]
+  (try
+    (deref (requiring-resolve sym))
+    (catch Exception ex
+      (e.log/warning lazy-writer "Failed to resolve interceptor" {:symbol sym :ex ex})
+      nil)))
+
+(defn- valid-interceptor?
+  [x]
+  (m/validate e.s.interceptor/?Interceptor x))
 
 (defrecord Interceptor
-  [lazy-writer manager]
+  [lazy-writer     ; LazyWriter component
+   plugin          ; Plugin component
+   excludes
+   includes
+   manager]
   component/Lifecycle
   (start [this]
-    (e.log/debug "Interceptor component: Started")
-    this)
+    (let [exclude-set (set excludes)
+          grouped-interceptors (->> (concat default-interceptors
+                                            (or includes [])
+                                            (or (get-in plugin [:loaded-plugin :interceptors]) []))
+                                    (remove #(contains? exclude-set %))
+                                    (keep #(resolve-interceptor lazy-writer %))
+                                    (group-by valid-interceptor?))
+          interceptor-map (group-by :kind (get grouped-interceptors true))]
+      (when-let [invalid-interceptors (seq (get grouped-interceptors false))]
+        (e.log/warning lazy-writer "Invalid interceptors:" invalid-interceptors))
+      (e.log/debug "Interceptor component: Started")
+      (assoc this :manager (atom interceptor-map))))
   (stop [this]
     (e.log/info "Interceptor component: Stopped")
     (dissoc this :manager))
 
   e.p.interceptor/IInterceptor
-  (add-interceptors! [this interceptors]
-    ;; TODO validation
-    (doseq [[kind interceptors] (group-by :kind interceptors)]
-      (e.p.interceptor/add-interceptors! this kind interceptors)))
-  (add-interceptors! [_ kind interceptors]
-    (swap! manager update kind #(concat (or % []) interceptors)))
-  (remove-interceptor! [_ interceptor]
-    (swap! manager update-vals (fn [vs] (vec (remove #(= % interceptor) vs)))))
-  (remove-interceptor! [_ kind interceptor]
-    (swap! manager update kind (fn [vs] (vec (remove #(= % interceptor) vs)))))
   (execute [this kind context]
     (e.p.interceptor/execute this kind context identity))
   (execute [this kind context terminator]
@@ -64,17 +79,6 @@
         (catch Exception ex
           (e.log/error "Interceptor error" ex))))))
 
-(defn- valid-interceptor?
-  [x]
-  (m/validate e.s.interceptor/?Interceptor x))
-
 (defn new-interceptor
-  [{:as config :keys [develop?]}]
-  (let [{interceptors true invalid false} (->> (concat default-interceptors
-                                                       (when develop? dev-interceptors)
-                                                       (get-in config [:interceptor :interceptors]))
-                                               (group-by valid-interceptor?))
-        initial-manager (group-by :kind interceptors)]
-    ;; TODO writer
-    (e.log/debug "Invalid interceptors:" invalid)
-    (map->Interceptor {:manager (atom initial-manager)})))
+  [config]
+  (map->Interceptor (or (:interceptor config) {})))
