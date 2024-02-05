@@ -70,14 +70,24 @@
         (:response))))
 
 (defrecord Handler
-  [nrepl interceptor lazy-writer handler-map]
+  [interceptor     ; Interceptor component
+   lazy-writer     ; LazyWriter component
+   nrepl           ; Nrepl component
+   plugin          ; Plugin component
+   includes
+   excludes
+   handler-map]
   component/Lifecycle
   (start [this]
     (let [components {:component/nrepl nrepl
                       :component/interceptor interceptor
                       :component/writer lazy-writer}
-          _ (reset! handler-map (build-handler-map default-handlers))
-          ;; handler-map (build-handler-map default-handlers)
+          exclude-set (set excludes)
+          handlers (concat default-handlers
+                           (or includes [])
+                           (or (get-in plugin [:loaded-plugin :handlers]) []))
+          handlers (remove #(contains? exclude-set %) handlers)
+          _ (reset! handler-map (build-handler-map handlers))
 
           handler (partial handler components handler-map)]
       (assoc this
@@ -94,5 +104,7 @@
          (swap! handler-map merge))))
 
 (defn new-handler
-  [_]
-  (map->Handler {:handler-map (atom {})}))
+  [config]
+  (-> (or (:handler config) {})
+      (assoc :handler-map (atom {}))
+      (map->Handler)))
