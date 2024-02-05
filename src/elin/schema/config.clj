@@ -4,6 +4,16 @@
   [:map
    [:cwd string?]])
 
+(def ^:private ?Handler
+  [:map
+   [:includes {:default []} [:sequential qualified-symbol?]]
+   [:excludes {:default []} [:sequential qualified-symbol?]]])
+
+(def ^:private ?Interceptor
+  [:map
+   [:includes {:default []} [:sequential qualified-symbol?]]
+   [:excludes {:default []} [:sequential qualified-symbol?]]])
+
 (def ^:private ?LogLevel
   [:enum :debug :info :warning :error])
 
@@ -13,7 +23,7 @@
 
 (def ^:private ?Plugin
   [:map
-   [:edn-files [:sequential string?]]])
+   [:edn-files {:default []} [:sequential string?]]])
 
 (def ^:private ?Server
   [:map
@@ -23,6 +33,8 @@
 (def ?Config
   [:map
    [:env ?Env]
-   [:log {:optional true :default {}} ?Log]
-   [:plugin ?Plugin]
+   [:handler {:default {}} ?Handler]
+   [:interceptor {:default {}} ?Interceptor]
+   [:log {:default {}} ?Log]
+   [:plugin {:default {}} ?Plugin]
    [:server ?Server]])
