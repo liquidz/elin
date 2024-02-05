@@ -16,14 +16,14 @@
           (let [[type & args] (async/<! ch)]
             (case type
               ::request! (let [[ch & args] args
-                               res-ch (apply e.p.rpc/request! writer args)]
-                           (async/pipe res-ch ch))
+                               res (async/<! (apply e.p.rpc/request! writer args))]
+                           (async/put! ch res))
               ::notify! (apply e.p.rpc/notify! writer args)
               ::response! (apply e.p.rpc/response! writer args)
               ::flush! (e.p.rpc/flush! writer)
               ::call-function (let [[ch & args] args
-                                    res-ch (apply e.p.rpc/call-function writer args)]
-                                (async/pipe res-ch ch))
+                                    res (async/<! (apply e.p.rpc/call-function writer args))]
+                                (async/put! ch res))
               ::notify-function (apply e.p.rpc/notify-function writer args)
               ::echo-text (apply e.p.rpc/echo-text writer args)
               ::echo-message (apply e.p.rpc/echo-message writer args)
