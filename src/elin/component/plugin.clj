@@ -1,16 +1,13 @@
 (ns elin.component.plugin
   (:require
    [babashka.classpath :as b.classpath]
-   [clojure.core.async :as async]
    [clojure.edn :as edn]
    [clojure.java.io :as io]
    [clojure.string :as str]
    [com.stuartsierra.component :as component]
-   [elin.function.vim :as e.f.vim]
    [elin.log :as e.log]
-   [elin.protocol.handler :as e.p.handler]
-   [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.plugin :as e.s.plugin]
+   [elin.schema.server :as e.s.server]
    [malli.core :as m]
    [malli.error :as m.error]))
 
@@ -27,40 +24,52 @@
        (str/join ":")
        (b.classpath/add-classpath)))
 
+(m/=> load-plugin [:=> [:cat e.s.server/?Writer string?] [:maybe e.s.plugin/?Plugin]])
+(defn- load-plugin
+  [lazy-writer edn-file]
+  (let [content (edn/read-string (slurp edn-file))
+        err (validation-error content)]
+    (if err
+      (e.log/error lazy-writer "Invalid plugin.edn: " (pr-str err))
+      content)))
+
+(m/=> load-plugins [:=> [:cat e.s.server/?Writer [:sequential string?]] e.s.plugin/?Plugin])
+(defn- load-plugins
+  [lazy-writer edn-files]
+  (loop [[edn-file & rest-edn-files] edn-files
+         loaded-files #{}
+         result {:name (str ::plugin)
+                 :handlers []
+                 :interceptors []}]
+    (cond
+      (not edn-file)
+      result
+
+      (contains? loaded-files edn-file)
+      (recur rest-edn-files loaded-files result)
+
+      :else
+      (let [{:as content :keys [handlers interceptors]} (load-plugin lazy-writer edn-file)
+            loaded-files' (cond-> loaded-files
+                            content
+                            (conj edn-file))
+            result' (if content
+                      (-> result
+                          (update :handlers concat (or handlers []))
+                          (update :interceptors concat (or interceptors [])))
+                      result)]
+        (recur rest-edn-files loaded-files' result')))))
+
 (defrecord Plugin
-  [handler lazy-writer interceptor]
+  [lazy-writer edn-files loaded-plugin]
   component/Lifecycle
   (start [this]
-    (async/go
-      (try
-        (let [paths (async/<! (e.f.vim/call lazy-writer "elin#internal#plugin#search" []))]
-          (add-classpaths! paths)
-          (reduce
-           (fn [loaded path]
-             (let [content (edn/read-string (slurp path))
-                   err (validation-error content)]
-               (cond
-                 err
-                 (do (e.log/error lazy-writer "Invalid plugin.edn: " (pr-str err))
-                     loaded)
+    (add-classpaths! edn-files)
+    (assoc this :loaded-plugin (load-plugins lazy-writer edn-files)))
 
-                 (contains? loaded (:name content))
-                 (do (e.log/warning lazy-writer "Already loaded plugin:" (:name content))
-                     loaded)
-
-                 :else
-                 (let [{:keys [name handlers interceptors]} content]
-                   (e.p.handler/add-handlers! handler handlers)
-                   (e.p.interceptor/add-interceptors! interceptor interceptors)
-                   (e.log/debug lazy-writer "Plugin loaded: " name)
-                   (conj loaded name)))))
-           #{} paths))
-        (catch Exception ex
-          (e.log/error lazy-writer "Failed to load plugins" ex))))
-    this)
   (stop [this]
-    this))
+    (dissoc this :loaded-plugin)))
 
 (defn new-plugin
-  [_]
-  (map->Plugin {}))
+  [config]
+  (map->Plugin (or (:plugin config) {})))
