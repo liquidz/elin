@@ -65,7 +65,7 @@
   component/Lifecycle
   (start [this]
     (add-classpaths! edn-files)
-    (assoc this :loaded-plugin (load-plugins lazy-writer edn-files)))
+    (assoc this :loaded-plugin (load-plugins lazy-writer (or edn-files []))))
 
   (stop [this]
     (dissoc this :loaded-plugin)))
