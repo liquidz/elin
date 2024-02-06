@@ -1,0 +1,3 @@
+{:name "elin core example plugin"
+ :handlers [elin-example.core/hello]
+ :interceptors [elin-example.core/interceptor]}
