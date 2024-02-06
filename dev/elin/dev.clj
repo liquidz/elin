@@ -4,11 +4,11 @@
    [clojure.java.io :as io]
    [com.stuartsierra.component :as component]
    [elin.config :as e.config]
-   [medley.core :as medley]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.log :as e.log]
    [elin.system :as e.system]
-   [malli.dev :as m.dev]))
+   [malli.dev :as m.dev]
+   [medley.core :as medley]))
 
 (def ^:private last-message-store (atom nil))
 (def ^:private store-last-message-interceptor
