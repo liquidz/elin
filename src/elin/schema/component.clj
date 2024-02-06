@@ -15,3 +15,7 @@
    [:clients-store ?Atom]
    [:current-client-key-store ?Atom]
    [:writer-store ?Atom]])
+
+(def ?LazyWriter
+  [:map
+   [:writer-store (e.schema/?instance clojure.lang.Atom)]])

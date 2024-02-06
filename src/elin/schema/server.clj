@@ -1,6 +1,7 @@
 (ns elin.schema.server
   (:require
-   [elin.schema :as e.schema]))
+   [elin.schema :as e.schema]
+   [elin.schema.component :as e.s.component]))
 
 (def ?Message
   [:map
@@ -11,5 +12,4 @@
   [:or
    [:map
     [:output-stream (e.schema/?instance java.io.OutputStream)]]
-   [:map
-    [:writer-store (e.schema/?instance clojure.lang.Atom)]]])
+   e.s.component/?LazyWriter])
