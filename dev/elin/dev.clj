@@ -19,10 +19,8 @@
             ctx)})
 
 (def config
-  (medley/deep-merge
-   {:server {:host "nvim"
-             :port 12233}}
-   (e.config/load-config ".")))
+  (e.config/load-config "." {:server {:host "nvim"
+                                      :port 12233}}))
 
 (def system-map
   (e.system/new-system config))
