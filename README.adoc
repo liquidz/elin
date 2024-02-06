@@ -3,6 +3,8 @@
 [quote,Nahoko Uehashi,The Beast Player]
 Joeun smiled. “Elin, the wild apple that grows in the mountains. What a nice name.”
 
+image:https://github.com/liquidz/vim-elin/workflows/test/badge.svg["GitHub Actions for test workflow", link="https://github.com/liquidz/vim-elin/actions?query=workflow%3Atest"]
+
 Work in progress
 
 
