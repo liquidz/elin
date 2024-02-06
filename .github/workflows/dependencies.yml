@@ -7,3 +7,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: liquidz/antq-action@main
+        skips: clojure-cli
