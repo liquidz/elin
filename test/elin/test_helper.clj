@@ -99,11 +99,15 @@
   ITestWriter
   (get-outputs [_] @outputs))
 
-(m/=> test-message [:=> :cat e.s.server/?Message])
+(m/=> test-message [:function
+                    [:=> :cat e.s.server/?Message]
+                    [:=> [:cat [:sequential any?]] e.s.server/?Message]])
 (defn test-message
-  []
-  (map->TestMessage {:host "test"
-                     :message []}))
+  ([]
+   (test-message []))
+  ([messages]
+   (map->TestMessage {:host "test"
+                      :message messages})))
 
 (m/=> test-writer [:=> [:cat ?TestMessageOption] e.s.server/?Writer])
 (defn test-writer
