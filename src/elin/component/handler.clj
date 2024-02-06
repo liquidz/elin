@@ -19,7 +19,7 @@
     elin.handler.evaluate/evaluate
     elin.handler.evaluate/evaluate-current-expr
     elin.handler.evaluate/evaluate-current-list
-    elin.handler.evaluate/evaluate-current-top-level
+    elin.handler.evaluate/evaluate-current-top-list
     elin.handler.internal/initialize
     elin.handler.internal/intercept
     elin.handler.navigate/jump-to-definition])
