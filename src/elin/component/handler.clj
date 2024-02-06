@@ -7,10 +7,8 @@
    [elin.handler.internal]
    [elin.handler.navigate]
    [elin.log :as e.log]
-   [elin.protocol.handler :as e.p.handler]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.rpc :as e.p.rpc]
-   [elin.schema :as e.schema]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.server :as e.s.server]
    [malli.core :as m]
@@ -26,24 +24,26 @@
     elin.handler.internal/intercept
     elin.handler.navigate/jump-to-definition])
 
-(defn- resolve-handler [sym]
+(m/=> resolve-handler [:=> [:cat e.s.server/?Writer qualified-symbol?]
+                       [:or :nil [:cat qualified-keyword? fn?]]])
+(defn- resolve-handler [lazy-writer sym]
   (when-let [f (try
-                 (requiring-resolve sym)
-                 (catch Exception ex
-                   (e.log/info "Failed to resolve handler" (pr-str {:sym sym :ex ex}))
+                 @(requiring-resolve sym)
+                 (catch Exception _
+                   (e.log/warning lazy-writer "Failed to resolve handler:" sym)
                    nil))]
     [(keyword sym) f]))
 
-(m/=> build-handler-map [:=> [:cat e.s.handler/?Handlers] e.s.handler/?HandlerMap])
+(m/=> build-handler-map [:=> [:cat e.s.server/?Writer [:sequential qualified-symbol?]] e.s.handler/?HandlerMap])
 (defn- build-handler-map
-  [handlers]
+  [lazy-writer handler-symbols]
   (reduce (fn [accm sym]
-            (if-let [[k f] (resolve-handler sym)]
+            (if-let [[k f] (resolve-handler lazy-writer sym)]
               (assoc accm k f)
               accm))
-          {} handlers))
+          {} handler-symbols))
 
-(m/=> handler [:=> [:cat e.s.handler/?Components e.schema/?Atom e.s.server/?Message] any?])
+(m/=> handler [:=> [:cat e.s.handler/?Components e.s.handler/?HandlerMap e.s.server/?Message] any?])
 (defn- handler
   [{:as components :component/keys [interceptor]}
    handler-map
@@ -56,7 +56,7 @@
                              (e.p.rpc/parse-message message))
                  elin (assoc context :message msg')
                  handler-key (:method msg')
-                 resp (if-let [handler-fn (get @handler-map handler-key)]
+                 resp (if-let [handler-fn (get handler-map handler-key)]
                         (handler-fn elin)
                         (e.log/error writer (format "Unknown handler: %s" handler-key)))
                  resp' (if-let [callback (:callback msg')]
@@ -87,24 +87,15 @@
                            (or includes [])
                            (or (get-in plugin [:loaded-plugin :handlers]) []))
           handlers (remove #(contains? exclude-set %) handlers)
-          _ (reset! handler-map (build-handler-map handlers))
-
+          handler-map (build-handler-map lazy-writer handlers)
           handler (partial handler components handler-map)]
       (assoc this
+             :handler-map handler-map
              :handler handler)))
 
   (stop [this]
-    (dissoc this :handler))
-
-  e.p.handler/IHandler
-  (add-handlers! [_ handler-syms]
-    (->> handler-syms
-         (keep resolve-handler)
-         (into {})
-         (swap! handler-map merge))))
+    (dissoc this :handler :handler-map)))
 
 (defn new-handler
   [config]
-  (-> (or (:handler config) {})
-      (assoc :handler-map (atom {}))
-      (map->Handler)))
+  (map->Handler (or (:handler config) {})))
