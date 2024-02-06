@@ -4,7 +4,6 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.interceptor.autocmd]
    [elin.interceptor.connect]
-   ;; [elin.interceptor.debug :as e.i.debug]
    [elin.interceptor.nrepl]
    [elin.interceptor.output]
    [elin.log :as e.log]
@@ -23,10 +22,6 @@
     elin.interceptor.nrepl/normalize-path-interceptor
     elin.interceptor.autocmd/ns-create-interceptor])
 
-;; (def ^:private dev-interceptors
-;;   [e.i.debug/interceptor-context-checking-interceptor
-;;    e.i.debug/nrepl-debug-interceptor])
-
 (defn- resolve-interceptor [lazy-writer sym]
   (try
     (deref (requiring-resolve sym))
@@ -43,7 +38,7 @@
    plugin          ; Plugin component
    excludes
    includes
-   manager]
+   interceptor-map]
   component/Lifecycle
   (start [this]
     (let [exclude-set (set excludes)
@@ -55,20 +50,21 @@
                                     (group-by valid-interceptor?))
           interceptor-map (group-by :kind (get grouped-interceptors true))]
       (when-let [invalid-interceptors (seq (get grouped-interceptors false))]
+        (println "Invalid interceptors:" invalid-interceptors)
         (e.log/warning lazy-writer "Invalid interceptors:" invalid-interceptors))
       (e.log/debug "Interceptor component: Started")
-      (assoc this :manager (atom interceptor-map))))
+      (assoc this :interceptor-map interceptor-map)))
   (stop [this]
     (e.log/info "Interceptor component: Stopped")
-    (dissoc this :manager))
+    (dissoc this :interceptor-map))
 
   e.p.interceptor/IInterceptor
   (execute [this kind context]
     (e.p.interceptor/execute this kind context identity))
   (execute [this kind context terminator]
     (let [interceptors (concat
-                        (or (get @manager e.c.interceptor/all) [])
-                        (or (get @manager kind) []))
+                        (or (get interceptor-map e.c.interceptor/all) [])
+                        (or (get interceptor-map kind) []))
           terminator' {:name ::terminator
                        :enter terminator}
           context' (assoc context
