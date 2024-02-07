@@ -31,3 +31,10 @@
        (contains? res k)
        (update k f)))
    messages))
+
+(m/=> has-status? [:=> [:cat e.s.nrepl/?Message string?] boolean?])
+(defn has-status?
+  [message status]
+  (boolean
+   (some #(= % status)
+         (:status message))))

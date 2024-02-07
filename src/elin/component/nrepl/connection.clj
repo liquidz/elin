@@ -7,6 +7,7 @@
    [elin.schema :as e.schema]
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.id :as e.u.id]
+   [elin.util.nrepl :as e.u.nrepl]
    [malli.core :as m])
   (:import
    java.io.PushbackInputStream
@@ -40,13 +41,6 @@
    {}
    msg))
 
-(m/=> done? [:=> [:cat e.s.nrepl/?Message] boolean?])
-(defn- done?
-  [msg]
-  (boolean
-   (some #(= % "done")
-         (:status msg))))
-
 (m/=> add-message [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
 (defn- add-message
   [this
@@ -63,7 +57,7 @@
    {:as msg :keys [id]}]
   (if (and id
            (int? id)
-           (done? msg))
+           (e.u.nrepl/has-status? msg "done"))
     (if-let [{:keys [responses channel]} (get this id)]
       (do
         ;; TODO error handling
