@@ -47,10 +47,12 @@
         clone-resp (e.u.nrepl/merge-messages
                     (async/<!! (e.p.nrepl/request conn {:op "clone"})))
         describe-resp (e.u.nrepl/merge-messages
-                       (async/<!! (e.p.nrepl/request conn {:op "describe"})))]
+                       (async/<!! (e.p.nrepl/request conn {:op "describe"})))
+        ns-eval-resp (e.u.nrepl/merge-messages
+                      (async/<!! (e.p.nrepl/request conn {:op "eval" :code (str '(ns-name *ns*))})))]
     (map->Client
      {:connection conn
       :session (:new-session clone-resp)
       :supported-ops (set (keys (:ops describe-resp)))
-      :initial-namespace (get-in describe-resp [:aux :current-ns])
+      :initial-namespace (:value ns-eval-resp)
       :version (:versions describe-resp)})))
