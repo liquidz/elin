@@ -22,7 +22,9 @@
                         ns-sym (or (symbol ns-str)
                                    (e/incorrect))]
                   (->> `(when-not (clojure.core/find-ns '~ns-sym)
-                          (clojure.core/create-ns '~ns-sym))
+                          (clojure.core/create-ns '~ns-sym)
+                          (clojure.core/in-ns '~ns-sym)
+                          (clojure.core/refer-clojure))
                        (str)
                        (e.f.n.op/eval!! nrepl))
                   (e.f.vim/set-variable!! writer ns-created-var-name true))))
