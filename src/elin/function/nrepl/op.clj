@@ -119,15 +119,28 @@
   [nrepl ns-str sym-str]
   (cond
     (e.p.nrepl/supported-op? nrepl "info")
-    (e/-> (e.p.nrepl/request nrepl {:op "info" :ns ns-str :sym sym-str})
-          (async/<!!)
-          (e.u.nrepl/merge-messages))
+    (e/let [res (e/-> (e.p.nrepl/request nrepl {:op "info" :ns ns-str :sym sym-str})
+                      (async/<!!)
+                      (e.u.nrepl/merge-messages))]
+      (if (e.u.nrepl/has-status? res "no-info")
+        (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)})
+        res))
 
     (e.p.nrepl/supported-op? nrepl "lookup")
-    (e/-> (e.p.nrepl/request nrepl {:op "lookup" :ns ns-str :sym sym-str})
-          (async/<!!)
-          (e.u.nrepl/merge-messages)
-          (:info))
+    (e/let [res (e/-> (e.p.nrepl/request nrepl {:op "lookup" :ns ns-str :sym sym-str})
+                      (async/<!!)
+                      (e.u.nrepl/merge-messages))]
+      (cond
+        (e.u.nrepl/has-status? res "lookup-error")
+        (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)})
+
+        (contains? res :info)
+        (if (= [] (:info res))
+          {}
+          (:info res))
+
+        :else
+        res))
 
     :else
     (e/unsupported {:message "info or lookup op not supported"})))
