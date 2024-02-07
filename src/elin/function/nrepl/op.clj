@@ -111,7 +111,8 @@
                     :file-name (.getName file)
                     :file-path file-path})
             (e.p.nrepl/request nrepl)
-            (async/<!!))))))
+            (async/<!!)
+            (e.u.nrepl/merge-messages))))))
 
 (m/=> lookup!! [:=> [:cat e.s.component/?Nrepl string? string?] (e.schema/error-or ?Lookup)])
 (defn lookup!!
