@@ -52,7 +52,7 @@
                [:=> [:cat e.s.component/?Nrepl string?] any?]])
 (defn close!!
   ([nrepl]
-   (if-let [{:keys [session]} (e.p.nrepl/current-client nrepl)]
+   (if-let [session (e.p.nrepl/current-session nrepl)]
      (close!! nrepl session)
      (e/unavailable {:message "Not connected"})))
   ([nrepl session]
@@ -65,7 +65,7 @@
   ([nrepl code]
    (eval!! nrepl code {}))
   ([nrepl code options]
-   (if-let [{:keys [session]} (e.p.nrepl/current-client nrepl)]
+   (if-let [session (e.p.nrepl/current-session nrepl)]
      (->> (merge (select-keys options eval-option-keys)
                  {:op "eval" :session session  :code code})
           (e.p.nrepl/request nrepl)
@@ -80,7 +80,7 @@
   ([nrepl]
    (interrupt!! nrepl {}))
   ([nrepl options]
-   (if-let [{:keys [session]} (e.p.nrepl/current-client nrepl)]
+   (if-let [session (e.p.nrepl/current-session nrepl)]
      (e/->> (merge (select-keys options #{:interrupt-id})
                    {:op "interrupt" :session session})
             (e.p.nrepl/request nrepl)
@@ -94,7 +94,7 @@
   ([nrepl file-path]
    (load-file!! nrepl file-path {}))
   ([nrepl file-path options]
-   (let [{:keys [session]} (e.p.nrepl/current-client nrepl)
+   (let [session (e.p.nrepl/current-session nrepl)
          file (io/file file-path)]
      (cond
        (not session)

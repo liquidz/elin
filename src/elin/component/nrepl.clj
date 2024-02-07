@@ -81,6 +81,10 @@
     (when-let [client (e.p.nrepl/current-client this)]
       (e.p.nrepl/supported-op? client op)))
 
+  (current-session [this]
+    (when-let [client (e.p.nrepl/current-client this)]
+      (e.p.nrepl/current-session client)))
+
   e.p.nrepl/IConnection
   (disconnect
     [this]

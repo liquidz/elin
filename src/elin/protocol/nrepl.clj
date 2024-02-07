@@ -7,7 +7,8 @@
   (request [this msg]))
 
 (defprotocol IClient
-  (supported-op? [this op]))
+  (supported-op? [this op])
+  (current-session [this]))
 
 (defprotocol IClientManager
   (add-client! [this host port] [this client])

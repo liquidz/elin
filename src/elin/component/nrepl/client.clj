@@ -36,7 +36,9 @@
 
   e.p.nrepl/IClient
   (supported-op? [_ op]
-    (contains? supported-ops (keyword op))))
+    (contains? supported-ops (keyword op)))
+  (current-session [_]
+    session))
 
 (m/=> connect [:=> [:cat string? int?] e.s.nrepl/?Client])
 (defn connect
