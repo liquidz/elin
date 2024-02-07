@@ -65,3 +65,10 @@
                             :column col
                             :ns ns-str
                             :file path})))
+
+(m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
+(defn load-current-file
+  [{:component/keys [nrepl writer]}]
+  (e/let [path (e.f.vim/get-full-path!! writer)]
+    (e.f.n.op/load-file!! nrepl path)
+    true))

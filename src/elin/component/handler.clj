@@ -20,6 +20,7 @@
     elin.handler.evaluate/evaluate-current-expr
     elin.handler.evaluate/evaluate-current-list
     elin.handler.evaluate/evaluate-current-top-list
+    elin.handler.evaluate/load-current-file
     elin.handler.internal/initialize
     elin.handler.internal/intercept
     elin.handler.navigate/jump-to-definition])
