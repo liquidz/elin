@@ -40,11 +40,9 @@
   (current-session [_]
     session))
 
-(m/=> connect [:=> [:cat string? int?] e.s.nrepl/?Client])
-(defn connect
-  [host port]
-  (let [conn (e.c.n.connection/connect host port)
-        clone-resp (e.u.nrepl/merge-messages
+(defn new-client
+  [conn]
+  (let [clone-resp (e.u.nrepl/merge-messages
                     (async/<!! (e.p.nrepl/request conn {:op "clone"})))
         describe-resp (e.u.nrepl/merge-messages
                        (async/<!! (e.p.nrepl/request conn {:op "describe"})))
@@ -56,3 +54,8 @@
       :supported-ops (set (keys (:ops describe-resp)))
       :initial-namespace (:value ns-eval-resp)
       :version (:versions describe-resp)})))
+
+(m/=> connect [:=> [:cat string? int?] e.s.nrepl/?Client])
+(defn connect
+  [host port]
+  (new-client (e.c.n.connection/connect host port)))
