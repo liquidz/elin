@@ -42,6 +42,11 @@
   (let [params (or extra-params [])]
     (async/<!! (call writer "getcwd" params))))
 
+(m/=> get-current-file-path!! [:=> [:cat e.s.server/?Writer] (e.schema/error-or string?)])
+(defn get-current-file-path!!
+  [writer]
+  (async/<!! (call writer "expand" ["%:p"])))
+
 (m/=> get-cursor-position!! [:=> [:cat e.s.server/?Writer [:* any?]] (e.schema/error-or e.s.vim/?Position)])
 (defn get-cursor-position!!
   [writer & extra-params]
