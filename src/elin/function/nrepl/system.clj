@@ -47,8 +47,8 @@
   (e/-> (get-system-info nrepl)
         (:file-separator)))
 
-(m/=> project-iame [:=> [:cat e.s.component/?Nrepl] [:or e.schema/?Error string?]])
-(defn project-iame
+(m/=> project-name [:=> [:cat e.s.component/?Nrepl] [:or e.schema/?Error string?]])
+(defn project-name
   [nrepl]
   (e/-> (get-system-info nrepl)
         (:project-name)))
