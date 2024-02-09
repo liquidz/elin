@@ -32,9 +32,9 @@
                 dummy-nrepl (h/test-nrepl {:client {:handler (partial test-handler session)}})]
             (t/is (= info (sut/get-system-info dummy-nrepl))
                   "Result should be cached")
-            (t/is (= user-dir (sut/user-dir dummy-nrepl)))
-            (t/is (= file-separator (sut/file-separator dummy-nrepl)))
-            (t/is (= project-name (sut/project-name dummy-nrepl))))))
+            (t/is (= user-dir (sut/get-user-dir dummy-nrepl)))
+            (t/is (= file-separator (sut/get-file-separator dummy-nrepl)))
+            (t/is (= project-name (sut/get-project-name dummy-nrepl))))))
 
       (finally
         (component/stop-system sys)))))

@@ -35,20 +35,20 @@
    (comp e.p.nrepl/current-session first)
    get-system-info*))
 
-(m/=> user-dir [:=> [:cat e.s.component/?Nrepl] [:or e.schema/?Error string?]])
-(defn user-dir
+(m/=> get-user-dir [:=> [:cat e.s.component/?Nrepl] [:or e.schema/?Error string?]])
+(defn get-user-dir
   [nrepl]
   (e/-> (get-system-info nrepl)
         (:user-dir)))
 
-(m/=> file-separator [:=> [:cat e.s.component/?Nrepl] [:or e.schema/?Error string?]])
-(defn file-separator
+(m/=> get-file-separator [:=> [:cat e.s.component/?Nrepl] [:or e.schema/?Error string?]])
+(defn get-file-separator
   [nrepl]
   (e/-> (get-system-info nrepl)
         (:file-separator)))
 
-(m/=> project-name [:=> [:cat e.s.component/?Nrepl] [:or e.schema/?Error string?]])
-(defn project-name
+(m/=> get-project-name [:=> [:cat e.s.component/?Nrepl] [:or e.schema/?Error string?]])
+(defn get-project-name
   [nrepl]
   (e/-> (get-system-info nrepl)
         (:project-name)))
