@@ -12,7 +12,8 @@
 
 (def ?Interceptor
   [:map
-   [:manager ?Atom]])
+   [:lazy-writer ?LazyWriter]
+   [:interceptor-map [:map-of keyword? any?]]])
 
 (def ^:private NreplComponent
   [:map
