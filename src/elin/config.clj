@@ -1,14 +1,12 @@
 (ns elin.config
   (:require
    [aero.core :as aero]
+   [elin.constant.project :as e.c.project]
    [elin.schema.config :as e.s.config]
    [elin.util.file :as e.u.file]
    [malli.core :as m]
    [malli.transform :as mt]
    [medley.core :as medley]))
-
-(def ^:private config-file-name
-  ".elin.edn")
 
 (def ^:private config-transformer
   (mt/transformer
@@ -21,7 +19,7 @@
   ([dir]
    (load-config dir {}))
   ([dir base]
-   (let [config (some-> (e.u.file/find-file-in-parent-directories dir config-file-name)
+   (let [config (some-> (e.u.file/find-file-in-parent-directories dir e.c.project/config-file-name)
                         (aero/read-config))
          config (medley/deep-merge base
                                    (or config {}))]
