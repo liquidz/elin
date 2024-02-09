@@ -2,7 +2,9 @@
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
+   [elin.constant.project :as e.c.project]
    [elin.schema :as e.schema]
+   [elin.util.os :as e.u.os]
    [malli.core :as m]))
 
 (m/=> find-file-in-parent-directories
@@ -29,3 +31,20 @@
           (str/replace-first #"^jar:file:" "zipfile://")
           (str/replace #"!/" "::"))
       path)))
+
+(m/=> get-cache-directory [:=> :cat string?])
+(defn get-cache-directory
+  []
+  (let [home (System/getenv "HOME")
+        xdg-cache-home (System/getenv "$XDG_CACHE_HOME")
+        file (cond
+               e.u.os/mac?
+               (io/file home "Library" "Caches" e.c.project/name)
+
+               (seq xdg-cache-home)
+               (io/file xdg-cache-home e.c.project/name)
+
+               :else
+               (io/file home ".cache" e.c.project/name))]
+    (.mkdirs file)
+    (.getAbsolutePath file)))
