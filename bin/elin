@@ -1,0 +1,112 @@
+#!/usr/bin/env bb
+
+#_{:clj-kondo/ignore [:namespace-name-mismatch]}
+(ns elin
+  (:require
+    [babashka.cli :as cli]
+    [babashka.deps :as deps]
+    [clojure.edn :as edn]
+    [clojure.java.io :as io]
+    [clojure.string :as str]))
+
+(def ^:private cwd (System/getProperty "user.dir"))
+
+(def ^:private project-root
+  (-> (io/file *file*)
+      (.getParentFile)
+      (.getParentFile)
+      (.getAbsolutePath)))
+
+(deps/add-deps
+  {:deps {'babashka/process {:mvn/version "0.5.21"}
+          'liquidz/vim-elin {:local/root project-root}}})
+(require
+  '[babashka.process :as proc])
+
+(def ^:private command-config
+  (-> (io/file project-root "bb.edn")
+      (slurp)
+      (edn/read-string)
+      (get-in [:__elin_internal__ :command])))
+
+(defn- existing-file
+  [dir filename]
+  (let [file (io/file dir filename)]
+    (when (.exists file)
+      file)))
+
+(defn- find-project-files
+  [cwd]
+  (loop [dir (io/file cwd)]
+    (when dir
+      (let [deps-edn-file (existing-file dir "deps.edn")
+            project-clj-file (existing-file dir "project.clj")]
+
+        (if (or deps-edn-file project-clj-file)
+          {:clojure-cli deps-edn-file
+           :leiningen project-clj-file}
+          (recur (.getParentFile dir)))))))
+
+(defn- select-project
+  [{:keys [force-leiningen force-shadow-cljs]}
+   cwd]
+  (let [res (find-project-files cwd)]
+    (cond
+      force-leiningen
+      (first (select-keys res [:leiningen]))
+
+      force-shadow-cljs
+      (first (select-keys res [:shadow-cljs]))
+
+      :else
+      (first (select-keys res [:clojure-cli])))))
+
+(def ^:private cli-options
+  {:force-leiningen {:coerce :boolean}
+   :force-shadow-cljs {:coerce :boolean}
+   :dry-run {:coerce :boolean}
+   :instant {:coerce :boolean}
+   :help {:default false :coerce :boolean}})
+
+(def ^:private cli-subcommands
+  [{:cmds ["repl"]
+    :fn #(assoc % :fn :repl)}
+   {:cmds ["version"]
+    :fn #(assoc % :fn :version)}
+   {:cmds []
+    :fn #(assoc % :fn :help)}])
+
+(defmulti dispatch :fn)
+(defmethod dispatch :default
+  [_]
+  (throw (ex-info "Unknown command" {})))
+
+(defmethod dispatch :repl
+  [{:keys [opts]}]
+  (let [{:keys [dry-run]} opts
+        [project _] (select-project opts cwd)
+        commands (case project
+                    :clojure-cli
+                    ["clj" "-Sdeps" (pr-str {:deps (:deps command-config)})
+                     "-M" "-m" "nrepl.cmdline"
+                     "-m" (pr-str (:middlewares command-config))
+                     "--interactive"]
+
+                   (throw (ex-info "No project found" {:cwd cwd})))]
+    (if dry-run
+      (println (str/join " " commands))
+      (apply proc/shell {:out :inherit :in :inherit} commands))))
+
+(defn -main [& args]
+  (try
+    (dispatch
+     (cli/dispatch cli-subcommands args {:spec cli-options}))
+    (catch Exception ex
+      (binding [*out* *err*]
+        (println (ex-message ex))))))
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply -main *command-line-args*))
+  ;(do (require '[malli.dev :as m.dev])))
+
+;; vim:ft=clojure
