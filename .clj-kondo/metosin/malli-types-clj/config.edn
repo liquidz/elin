@@ -90,8 +90,6 @@
                                                                                                        :version :map}}}}}},
                                         elin.component.nrepl.connection {bytes->str {:arities {1 {:args [:any],
                                                                                                   :ret :any}}},
-                                                                         format-message {:arities {1 {:args [:map],
-                                                                                                      :ret :map}}},
                                                                          add-message {:arities {2 {:args [:map :map],
                                                                                                    :ret :map}}},
                                                                          put-done-responses {:arities {2 {:args [:map
