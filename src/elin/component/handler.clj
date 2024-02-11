@@ -1,5 +1,6 @@
 (ns elin.component.handler
   (:require
+   [clojure.walk :as walk]
    [com.stuartsierra.component :as component]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.handler.connect]
@@ -44,6 +45,31 @@
               accm))
           {} handler-symbols))
 
+(defn- format-response
+  [x]
+  (cond
+    (keyword? x)
+    (str (symbol x))
+
+    (symbol? x)
+    (str x)
+
+    (or (sequential? x)
+        (map? x))
+    (walk/prewalk #(cond
+                     (keyword? %)
+                     (str (symbol %))
+
+                     (symbol? %)
+                     (str %)
+
+                     :else
+                     %)
+                  x)
+
+    :else
+    x))
+
 (m/=> handler [:=> [:cat e.s.handler/?Components e.s.handler/?HandlerMap e.s.server/?Message] any?])
 (defn- handler
   [{:as components :component/keys [interceptor]}
@@ -60,13 +86,14 @@
                  resp (if-let [handler-fn (get handler-map handler-key)]
                         (handler-fn elin)
                         (e.log/error writer (format "Unknown handler: %s" handler-key)))
+                 resp' (format-response resp)
                  resp' (if-let [callback (:callback msg')]
                          (try
-                           (e.p.rpc/notify-function writer "elin#callback#call" [callback resp])
+                           (e.p.rpc/notify-function writer "elin#callback#call" [callback resp'])
                            ;; FIXME
                            (catch Exception ex
                              (e.log/error writer "Failed to callback" (ex-message ex))))
-                         resp)]
+                         resp')]
              (assoc context :response resp'))))
         (:response))))
 
