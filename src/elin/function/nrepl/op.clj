@@ -152,3 +152,12 @@
         (async/<!!)
         (e.u.nrepl/merge-messages)
         (:sessions)))
+
+(defn completions!!
+  [nrepl ns-str prefix]
+  (e/-> (e.p.nrepl/request nrepl {:op "completions"
+                                  :prefix prefix
+                                  :ns ns-str})
+        (async/<!!)
+        (e.u.nrepl/merge-messages)
+        (:completions)))
