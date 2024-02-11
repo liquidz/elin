@@ -2,7 +2,6 @@
   (:require
    [bencode.core :as b]
    [clojure.core.async :as async]
-   [elin.constant.nrepl :as e.c.nrepl]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema :as e.schema]
    [elin.schema.nrepl :as e.s.nrepl]
@@ -22,24 +21,20 @@
     (String. (bytes x))
     x))
 
-(m/=> format-message [:=> [:cat [:map-of string? any?]] e.s.nrepl/?Message])
 (defn- format-message
-  [msg]
-  (reduce-kv
-   (fn [accm k v]
-     (assoc accm
-            (keyword k)
-            (cond
-              (contains? e.c.nrepl/array-key-set k)
-              (mapv bytes->str v)
+  [v]
+  (cond
+    (sequential? v)
+    (mapv format-message v)
 
-              (map? v)
-              (format-message v)
+    (map? v)
+    (reduce-kv
+     (fn [accm k v]
+       (assoc accm (keyword k) (format-message v)))
+     {} v)
 
-              :else
-              (bytes->str v))))
-   {}
-   msg))
+    :else
+    (bytes->str v)))
 
 (m/=> add-message [:=> [:cat e.s.nrepl/?Manager e.s.nrepl/?Message] e.s.nrepl/?Manager])
 (defn- add-message
