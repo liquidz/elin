@@ -76,23 +76,32 @@
   [writer s]
   (async/<!! (call writer "elin#internal#eval" [s])))
 
+(m/=> execute! [:=> [:cat e.s.server/?Writer string?] e.schema/?ManyToManyChannel])
+(defn execute!
+  [writer cmd]
+  (call writer "elin#internal#execute" [cmd]))
+
 (m/=> execute!! [:=> [:cat e.s.server/?Writer string?] any?])
 (defn execute!!
   [writer cmd]
-  (async/<!! (call writer "elin#internal#execute" [cmd])))
+  (async/<!! (execute! writer cmd)))
 
 (m/=> get-variable!! [:=> [:cat e.s.server/?Writer string?] any?])
 (defn get-variable!!
   [writer var-name]
   (eval!! writer (format "exists('%s') ? %s : v:null" var-name var-name)))
 
-(m/=> set-variable!! [:=> [:cat e.s.server/?Writer string? any?] :nil])
-(defn set-variable!!
+(m/=> set-variable! [:=> [:cat e.s.server/?Writer string? any?] e.schema/?ManyToManyChannel])
+(defn set-variable!
   [writer var-name value]
   (let [value' (cond
                  (string? value) (str "'" value "'")
                  (true? value) "v:true"
                  (false? value) "v:false"
                  :else value)]
-    (execute!! writer (format "let %s = %s" var-name value'))
-    nil))
+    (execute! writer (format "let %s = %s" var-name value'))))
+
+(m/=> set-variable!! [:=> [:cat e.s.server/?Writer string? any?] :nil])
+(defn set-variable!!
+  [writer var-name value]
+  (async/<!! (set-variable! writer var-name value)))
