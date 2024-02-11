@@ -3,6 +3,7 @@
    [clojure.walk :as walk]
    [com.stuartsierra.component :as component]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.handler.complete]
    [elin.handler.connect]
    [elin.handler.evaluate]
    [elin.handler.internal]
@@ -15,8 +16,10 @@
    [malli.core :as m]
    [msgpack.clojure-extensions]))
 
+
 (def ^:private default-handlers
-  '[elin.handler.connect/connect
+  '[elin.handler.complete/complete
+    elin.handler.connect/connect
     elin.handler.evaluate/evaluate
     elin.handler.evaluate/evaluate-current-expr
     elin.handler.evaluate/evaluate-current-list
