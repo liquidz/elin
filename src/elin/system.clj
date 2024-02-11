@@ -8,6 +8,7 @@
    [elin.component.nrepl :as e.c.nrepl]
    [elin.component.plugin :as e.c.plugin]
    [elin.component.server :as e.c.server]
+   [elin.component.server.http :as e.c.s.http]
    [msgpack.clojure-extensions]))
 
 (defn new-system
@@ -42,6 +43,12 @@
                :lazy-writer
                :nrepl
                :plugin])
+
+    ;; NOTE: The port will be stored to elin.constant.server/http-server-port-variable
+    :http-server (component/using
+                  (e.c.s.http/new-http-server config)
+                  [:handler
+                   :lazy-writer])
 
     :server (component/using
              (e.c.server/new-server config)
