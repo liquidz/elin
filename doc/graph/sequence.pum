@@ -4,6 +4,22 @@ skinparam shadowing false
 skinparam RoundCorner 7
 autonumber "<b>0."
 
+skinparam sequence {
+  FontColor #444444
+  LifeLineBorderColor SeaGreen
+  ArrowColor SeaGreen
+
+  ActorBorderColor #444444
+  ParticipantBorderColor SeaGreen
+  ParticipantBackgroundColor YellowGreen
+
+  DividerFontSize 10
+  DividerBorderColor #AAAAAA
+  DividerBackgroundColor #AAAAAA
+  DividerFontColor #EEEEEE
+  DividerBorderThickness 1
+}
+
 actor User as user
 participant "Vim/Neovim" as vim
 participant "Elin" as elin
