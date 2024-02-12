@@ -9,7 +9,9 @@
    [elin.protocol.rpc :as e.p.rpc]
    [org.httpkit.server :as h.server])
   (:import
-   java.net.ServerSocket))
+   (java.net
+    ServerSocket
+    URLDecoder)))
 
 (defn- valid-request?
   [{:keys [request-method headers]}]
@@ -34,6 +36,20 @@
     {:id -1
      :method method
      :params params}))
+
+(defn- ok
+  [resp]
+  {:body resp})
+
+(defn- bad-request
+  [& [m]]
+  (merge {:status 400 :body "Bad request"}
+         m))
+
+(defn- not-found
+  [& [m]]
+  (merge {:status 404 :body "Not found"}
+         m))
 
 (defrecord HttpServer
   [lazy-writer handler host port stop-server]
@@ -60,18 +76,24 @@
                       :method (keyword method)
                       :params (or params [])}))
 
-  (handle [this {:as req :keys [body]}]
-    (if-not (valid-request? req)
-      {:status 404 :body "Not found"}
-      (let [handler' (:handler handler)
-            {:keys [method params]} (json/parse-stream (io/reader body) keyword)]
-        (if (not method)
-          {:status 400 :body "Bad request"}
-          {:body (-> (new-message this
-                                  (keyword method)
-                                  (or params []))
-                     (handler')
-                     (json/generate-string))})))))
+  (handle [this {:as req :keys [uri body]}]
+    (let [uri (URLDecoder/decode uri)]
+      (condp = uri
+        "/api/v1"
+        (if-not (valid-request? req)
+          (not-found)
+          (let [handler' (:handler handler)
+                {:keys [method params]} (json/parse-stream (io/reader body) keyword)]
+            (if (not method)
+              (bad-request)
+              (-> (new-message this
+                               (keyword method)
+                               (or params []))
+                  (handler')
+                  (json/generate-string)
+                  (ok)))))
+
+        (not-found)))))
 
 (defn new-http-server
   [config]
