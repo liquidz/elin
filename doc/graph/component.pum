@@ -1,0 +1,40 @@
+@startuml
+
+left to right direction
+skinparam component {
+  FontColor #444444
+  BorderColor SeaGreen
+  ArrowColor SeaGreen
+  BackgroundColor white
+}
+
+[Vim/Neovim] as vim
+cloud {
+  [Other clients] as clients
+}
+
+component "Elin Server" #YellowGreen {
+  port "vim" as vimPort
+  port "http" as httpPort
+
+  component "Vim/Neovim server" as vimServer
+  component "HTTP server" as httpServer
+  component Handler
+  component "nREPL Client" as client
+  interface Interceptor
+}
+
+[nREPL Server] as nrepl
+
+vimPort <--> vimServer
+httpPort <--> httpServer
+vimServer <--> Handler
+httpServer <--> Handler
+Handler <--> client
+client <-- Interceptor
+Interceptor --> nrepl
+
+vim <--> vimPort : JSON\nMessagePack
+clients <--> httpPort : JSON
+
+@enduml

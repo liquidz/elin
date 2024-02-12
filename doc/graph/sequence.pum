@@ -1,0 +1,66 @@
+@startuml
+hide footbox
+skinparam shadowing false
+skinparam RoundCorner 7
+autonumber "<b>0."
+
+actor User as user
+participant "Vim/Neovim" as vim
+participant "Elin" as elin
+participant "nREPL Server" as nrepl
+
+"user" -> "vim" : Launch vim/neovim
+activate vim
+  "vim" ->> "elin" : Start elin server
+  activate elin
+    note right
+        The port number is specified by vim/neovim
+    end note
+
+    "vim" -> "elin" : Connect to elin server
+    activate elin
+    return Connected
+
+    === Connecting to nREPL Server ===
+
+    "user" -> "vim" : Request to connect nREPL server
+    activate vim
+      "vim" -> "elin" : Request to connect nREPL server
+      activate elin
+        "elin" -> "nrepl" : Connect to nREPL server
+        activate nrepl
+        return
+      return
+    return Connected
+
+    === Evaluating s-expressions ===
+
+    "user" -> "vim" : Request to evaluate current form
+    activate vim
+      "vim" -> "elin" : Request to evaluate current form
+      activate elin
+        "elin" -> "vim" : Get current form
+        activate vim
+        return Current form
+
+        "elin" -> "nrepl" : Send eval op
+        activate nrepl
+        return Result
+      return Result
+    return Result
+
+    === Leave vim ===
+
+    "user" -> "vim" : Exit
+    activate vim
+      "vim" -> "elin" : Exit
+      activate elin
+        "elin" ->> "nrepl" : Disconnect
+        destroy nrepl
+
+        "elin" ->> "elin" : Stop internal servers
+      return
+      destroy elin
+    destroy vim
+
+@enduml
