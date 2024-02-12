@@ -80,7 +80,7 @@
     (e.p.rpc/notify! this ["call" method params]))
 
   (echo-text [this text]
-    (e.p.rpc/notify! this ["ex" "echo" (format "'%s'" text)]))
+    (e.p.rpc/notify! this ["ex" (format "echo '%s'" text)]))
 
   (echo-message [this text]
     (e.p.rpc/echo-message this text "Normal"))
