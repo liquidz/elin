@@ -74,7 +74,7 @@
     (e.p.rpc/notify! this ["nvim_call_function" [method params]]))
 
   (echo-text [this text]
-    (e.p.rpc/notify! this ["nvim_echo" [[text "Normal"]] false {}]))
+    (e.p.rpc/notify! this ["nvim_echo" [[[text "Normal"]] false {}]]))
 
   (echo-message [this text]
     (e.p.rpc/echo-message this text "Normal"))
