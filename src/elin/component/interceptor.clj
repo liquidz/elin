@@ -20,6 +20,8 @@
     elin.interceptor.output/print-output-interceptor
     elin.interceptor.nrepl/eval-ns-interceptor
     elin.interceptor.nrepl/normalize-path-interceptor
+    elin.interceptor.nrepl/output-eval-result-to-cmdline-interceptor
+    elin.interceptor.nrepl/set-eval-result-to-virtual-text-interceptor
     elin.interceptor.autocmd/ns-create-interceptor])
 
 (defn- resolve-interceptor [lazy-writer sym]
