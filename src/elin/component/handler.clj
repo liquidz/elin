@@ -1,6 +1,5 @@
 (ns elin.component.handler
   (:require
-   [clojure.walk :as walk]
    [com.stuartsierra.component :as component]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.handler.complete]
@@ -13,9 +12,9 @@
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.server :as e.s.server]
+   [elin.util.server :as e.u.server]
    [malli.core :as m]
    [msgpack.clojure-extensions]))
-
 
 (def ^:private default-handlers
   '[elin.handler.complete/complete
@@ -48,31 +47,6 @@
               accm))
           {} handler-symbols))
 
-(defn- format-response
-  [x]
-  (cond
-    (keyword? x)
-    (str (symbol x))
-
-    (symbol? x)
-    (str x)
-
-    (or (sequential? x)
-        (map? x))
-    (walk/prewalk #(cond
-                     (keyword? %)
-                     (str (symbol %))
-
-                     (symbol? %)
-                     (str %)
-
-                     :else
-                     %)
-                  x)
-
-    :else
-    x))
-
 (m/=> handler [:=> [:cat e.s.handler/?Components e.s.handler/?HandlerMap e.s.server/?Message] any?])
 (defn- handler
   [{:as components :component/keys [interceptor]}
@@ -89,7 +63,7 @@
                  resp (if-let [handler-fn (get handler-map handler-key)]
                         (handler-fn elin)
                         (e.log/error writer (format "Unknown handler: %s" handler-key)))
-                 resp' (format-response resp)
+                 resp' (e.u.server/format resp)
                  resp' (if-let [callback (:callback msg')]
                          (try
                            (e.p.rpc/notify-function writer "elin#callback#call" [callback resp'])
