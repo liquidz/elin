@@ -2,12 +2,12 @@ let s:buf_name = 'elin_info_buffer'
 let s:delimiter = ';; ----------'
 
 function! elin#internal#buffer#info#open() abort
-  if elin#compat#buffer#is_visible(s:buf_name)
+  if elin#internal#buffer#is_visible(s:buf_name)
     return
   endif
 
-  call elin#compat#buffer#open(s:buf_name, {})
-  "call elin#compat#buffer#focus_by_name(s:buf_name)
+  call elin#internal#buffer#open(s:buf_name, {})
+  "call elin#internal#buffer#focus_by_name(s:buf_name)
 endfunction
 
 function! elin#internal#buffer#info#ready() abort
@@ -30,7 +30,7 @@ function! elin#internal#buffer#info#append(s) abort
   " let s = iced#util#delete_color_code(a:s)
   " let timer = iced#system#get('timer')
 
-  call elin#compat#buffer#append(s:buf_name, a:s, {'scroll_to_bottom': v:true})
+  call elin#internal#buffer#append(s:buf_name, a:s, {'scroll_to_bottom': v:true})
 
   " call timer.start_lazily(
   "      \ 'delete_old_lines',

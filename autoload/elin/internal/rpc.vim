@@ -1,13 +1,13 @@
-function! elin#compat#rpc#connect(addr, ...) abort
+function! elin#internal#rpc#connect(addr, ...) abort
   let options = get(a:, 1, {})
   return s:connect(a:addr, options)
 endfunction
 
-function! elin#compat#rpc#disconnect(conn) abort
+function! elin#internal#rpc#disconnect(conn) abort
   return s:disconnect(a:conn)
 endfunction
 
-function! elin#compat#rpc#request(conn, method, params) abort
+function! elin#internal#rpc#request(conn, method, params) abort
   try
     return s:request(a:conn, a:method, [a:params])
   catch
@@ -15,7 +15,7 @@ function! elin#compat#rpc#request(conn, method, params) abort
   endtry
 endfunction
 
-function! elin#compat#rpc#notify(conn, method, params, ...) abort
+function! elin#internal#rpc#notify(conn, method, params, ...) abort
   let Callback = get(a:, 1, v:null)
   let callback_id = Callback is v:null ? v:null : elin#callback#register(Callback)
   let params = callback_id is v:null ? [a:params] : [a:params] + [callback_id]

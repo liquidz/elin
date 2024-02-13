@@ -23,7 +23,7 @@ function! s:start(port) abort
         \ 'cwd': g:elin_home,
         \ 'err_cb': funcref('s:error_callback'),
         \ }
-  let s:job = elin#compat#job#start(command, options)
+  let s:job = elin#internal#job#start(command, options)
 endfunction
 
 function! s:error_callback(...) abort
@@ -64,7 +64,7 @@ endfunction
 
 function! s:connect(port) abort
   try
-    let s:conn = elin#compat#rpc#connect(printf('localhost:%s', a:port))
+    let s:conn = elin#internal#rpc#connect(printf('localhost:%s', a:port))
     let s:port = a:port
     return v:true
   catch
@@ -77,7 +77,7 @@ function! elin#server#disconnect() abort
     return
   endif
 
-  call elin#compat#rpc#disconnect(s:conn)
+  call elin#internal#rpc#disconnect(s:conn)
   let s:conn = v:null
   let s:port = v:null
 endfunction
@@ -87,7 +87,7 @@ function! elin#server#stop() abort
     return
   endif
 
-  call elin#compat#job#stop(s:job)
+  call elin#internal#job#stop(s:job)
   let s:job = v:null
 endfunction
 

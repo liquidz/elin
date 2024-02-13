@@ -6,8 +6,8 @@
 (defn set
   [writer text]
   (let [text (str "=> " text)]
-    (e.f.vim/notify writer "elin#compat#virtual_text#set" [text])))
+    (e.f.vim/notify writer "elin#internal#virtual_text#set" [text])))
 
 (defn clear-all
   [writer]
-  (e.f.vim/notify writer "elin#compat#virtual_text#clear" []))
+  (e.f.vim/notify writer "elin#internal#virtual_text#clear" []))

@@ -1,12 +1,12 @@
-function! elin#compat#job#start(command, options) abort
+function! elin#internal#job#start(command, options) abort
   return s:start(a:command, a:options)
 endfunction
 
-function! elin#compat#job#stop(job) abort
+function! elin#internal#job#stop(job) abort
   return s:stop(a:job)
 endfunction
 
-function! elin#compat#job#redir(command, callback) abort
+function! elin#internal#job#redir(command, callback) abort
   let d = {'result': '', 'callback': a:callback}
   call s:start(a:command, {
         \ 'out_cb': funcref('s:on_redir_out', d),

@@ -6,7 +6,7 @@ function! elin#notify(...) abort
     echom printf('Not connected to Elin server: %s', a:000)
     return
   endif
-  return call(function('elin#compat#rpc#notify'), [conn] + a:000)
+  return call(function('elin#internal#rpc#notify'), [conn] + a:000)
 endfunction
 
 function! elin#request(...) abort
@@ -15,7 +15,7 @@ function! elin#request(...) abort
     echom printf('Not connected to Elin server: %s', a:000)
     return
   endif
-  return call(function('elin#compat#rpc#request'), [conn] + a:000)
+  return call(function('elin#internal#rpc#request'), [conn] + a:000)
 endfunction
 
 function! elin#intercept(...) abort

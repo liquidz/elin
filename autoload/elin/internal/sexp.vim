@@ -1,12 +1,12 @@
-function! elin#compat#sexp#get_top_list(lnum, col) abort
+function! elin#internal#sexp#get_top_list(lnum, col) abort
   return s:get_top_list(a:lnum, a:col)
 endfunction
 
-function! elin#compat#sexp#get_list(lnum, col) abort
+function! elin#internal#sexp#get_list(lnum, col) abort
   return s:get_list(a:lnum, a:col)
 endfunction
 
-function! elin#compat#sexp#get_expr(lnum, col) abort
+function! elin#internal#sexp#get_expr(lnum, col) abort
   return s:get_expr(a:lnum, a:col)
 endfunction
 

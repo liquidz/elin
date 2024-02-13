@@ -18,21 +18,21 @@
 (m/=> get-top-list!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or ?CodeAndPosition)])
 (defn get-top-list!!
   [writer lnum col]
-  (-> (e.f.vim/call writer "elin#compat#sexp#get_top_list" [lnum col])
+  (-> (e.f.vim/call writer "elin#internal#sexp#get_top_list" [lnum col])
       (async/<!!)
       (update-keys keyword)))
 
 (m/=> get-list!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or ?CodeAndPosition)])
 (defn get-list!!
   [writer lnum col]
-  (-> (e.f.vim/call writer "elin#compat#sexp#get_list" [lnum col])
+  (-> (e.f.vim/call writer "elin#internal#sexp#get_list" [lnum col])
       (async/<!!)
       (update-keys keyword)))
 
 (m/=> get-expr!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or ?CodeAndPosition)])
 (defn get-expr!!
   [writer lnum col]
-  (-> (e.f.vim/call writer "elin#compat#sexp#get_expr" [lnum col])
+  (-> (e.f.vim/call writer "elin#internal#sexp#get_expr" [lnum col])
       (async/<!!)
       (update-keys keyword)))
 

@@ -1,5 +1,5 @@
 
-function! elin#compat#virtual_text#set(text, ...) abort
+function! elin#internal#virtual_text#set(text, ...) abort
   let opt = get(a:, 1, {})
   let bufnr = get(opt, 'bufnr', bufnr('%'))
   let lnum = get(opt, 'lnum', line('.'))
@@ -8,7 +8,7 @@ function! elin#compat#virtual_text#set(text, ...) abort
   return s:set(bufnr, a:text, lnum, hl, align)
 endfunction
 
-function! elin#compat#virtual_text#clear(...) abort
+function! elin#internal#virtual_text#clear(...) abort
   let opt = get(a:, 1, {})
   let bufnr = get(opt, 'bufnr', bufnr('%'))
   let lnum = get(opt, 'lnum', v:null)
