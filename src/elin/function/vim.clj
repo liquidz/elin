@@ -6,6 +6,7 @@
    [elin.schema :as e.schema]
    [elin.schema.server :as e.s.server]
    [elin.schema.vim :as e.s.vim]
+   [elin.util.server :as e.u.server]
    [malli.core :as m]))
 
 (m/=> call [:=>
@@ -14,7 +15,9 @@
 (defn call
   [writer fn-name params]
   (async/go
-    (let [{:keys [result error]} (async/<! (e.p.rpc/call-function writer fn-name params))]
+    (let [{:keys [result error]} (->> (e.u.server/format params)
+                                      (e.p.rpc/call-function writer fn-name)
+                                      (async/<!))]
       (if error
         (e/fault {:message (str "Failed to call function: " error)
                   :function fn-name
@@ -24,7 +27,8 @@
 (m/=> notify [:=> [:cat e.s.server/?Writer string? [:sequential any?]] :nil])
 (defn notify
   [writer fn-name params]
-  (e.p.rpc/notify-function writer fn-name params)
+  (->> (map e.u.server/format params)
+       (e.p.rpc/notify-function writer fn-name))
   nil)
 
 (m/=> luaeval [:=> [:cat e.s.server/?Writer string? [:sequential any?]]
