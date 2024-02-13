@@ -8,7 +8,7 @@
 
 (defn- get-namespace-writer
   [ns-form]
-  (let [handler #(if (h/call-function? % "elin#internal#clojure#get_ns_form")
+  (let [handler #(if (h/call-function? % "elin#internal#sexp#clojure#get_ns_form")
                    ns-form
                    "")]
     (h/test-writer {:handler handler})))

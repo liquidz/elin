@@ -1,4 +1,4 @@
-function! elin#internal#clojure#get_ns_form() abort
+function! elin#internal#sexp#clojure#get_ns_form() abort
   let line = getline(1)
   if line ==# '(ns' || line[0:3] ==# '(ns '
     return elin#internal#sexp#get_list(1, 1)['code']

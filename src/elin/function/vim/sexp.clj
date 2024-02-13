@@ -40,7 +40,7 @@
 (defn get-namespace!!
   [writer]
   (try
-    (e/let [ns-form (async/<!! (e.f.vim/call writer "elin#internal#clojure#get_ns_form" []))
+    (e/let [ns-form (async/<!! (e.f.vim/call writer "elin#internal#sexp#clojure#get_ns_form" []))
             target-sym (if (str/includes? ns-form "in-ns") 'in-ns 'ns)]
       (when (seq ns-form)
         (-> ns-form
