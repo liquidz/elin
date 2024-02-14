@@ -6,6 +6,7 @@
    [elin.handler.connect]
    [elin.handler.evaluate]
    [elin.handler.internal]
+   [elin.handler.lookup]
    [elin.handler.navigate]
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
@@ -26,6 +27,7 @@
     elin.handler.evaluate/load-current-file
     elin.handler.internal/initialize
     elin.handler.internal/intercept
+    elin.handler.lookup/lookup
     elin.handler.navigate/jump-to-definition])
 
 (m/=> resolve-handler [:=> [:cat e.s.server/?Writer qualified-symbol?]
