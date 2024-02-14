@@ -43,5 +43,7 @@
    :leave (fn [{:as ctx :keys [request writer response]}]
             (when (= "eval" (:op request))
               (when-let [v (:value (e.u.nrepl/merge-messages response))]
-                (e.f.v.virtual-text/set writer (str v))))
+                (e.f.v.virtual-text/set writer
+                                        (str v)
+                                        {:highlight "DiffText"})))
             ctx)})
