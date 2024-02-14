@@ -19,6 +19,14 @@ function! elin#internal#popup#close(winid) abort
   return s:close(a:winid)
 endfunction
 
+function! s:normalize_opts(opts) abort
+  let opts = copy(a:opts)
+  if opts['moved'] ==# 'current-line'
+      let opts['moved'] = [0, &columns]
+  endif
+  return opts
+endfunction
+
 function! s:init_win(winid, opts) abort
   let has_moved = has_key(a:opts, 'moved')
 
@@ -120,25 +128,26 @@ if has('nvim')
 
   function! s:open(texts, opts) abort
     call s:close(s:last_winid)
+    let opts = s:normalize_opts(a:opts)
     let bufnr = nvim_create_buf(0, 1)
     if bufnr < 0 || type(a:texts) != v:t_list || empty(a:texts)
       return
     endif
 
-    let calculated = s:calculate(a:texts, a:opts)
+    let calculated = s:calculate(a:texts, opts)
     let win_opts = {
           \ 'relative': 'editor',
           \ 'row': calculated['line'],
           \ 'col': calculated['col'],
           \ 'width': calculated['width'],
           \ 'height': calculated['height'],
-          \ 'style': get(a:opts, 'style', 'minimal'),
+          \ 'style': get(opts, 'style', 'minimal'),
           \ 'focusable': v:false,
           \ 'noautocmd': v:true,
           \ }
 
-    if has_key(a:opts, 'border')
-      let border = get(a:opts, 'border')
+    if has_key(opts, 'border')
+      let border = get(opts, 'border')
       let win_opts['border'] = empty(border)
             \ ? 'double'
             \ : border
@@ -147,7 +156,7 @@ if has('nvim')
     " Open popup
     call nvim_buf_set_lines(bufnr, 0, len(calculated['texts']), 0, calculated['texts'])
     let winid = nvim_open_win(bufnr, v:false, win_opts)
-    call s:init_win(winid, a:opts)
+    call s:init_win(winid, opts)
 
     let s:last_winid = winid
     return winid
@@ -212,9 +221,9 @@ else
 
   function! s:open(texts, opts) abort
     call s:close(s:last_winid)
-
-    let calculated = s:calculate(a:texts, a:opts)
-    let org_line = get(a:opts, 'line')
+    let opts = s:normalize_opts(a:opts)
+    let calculated = s:calculate(a:texts, opts)
+    let org_line = get(opts, 'line')
     let line = calculated['line']
 
     if type(org_line) == v:t_number || (org_line !=# 'top' && org_line !=# 'bottom')
@@ -234,13 +243,14 @@ else
           \ 'maxheight': calculated['max_height'],
           \ }
 
-    call extend(win_opts, elin#util#select_keys(a:opts,
+    call extend(win_opts, elin#util#select_keys(opts,
           \ ['highlight', 'border', 'borderchars', 'borderhighlight',
           \  'moved', 'wrap', 'textprop', 'textpropid', 'mask']))
 
     " Open popup
     let winid = popup_create(a:texts, win_opts)
-    call s:init_win(winid, a:opts)
+    redraw
+    call s:init_win(winid, opts)
 
     let s:last_winid = winid
     return winid
