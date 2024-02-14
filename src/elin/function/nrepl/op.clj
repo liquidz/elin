@@ -8,20 +8,9 @@
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema :as e.schema]
    [elin.schema.component :as e.s.component]
+   [elin.schema.nrepl.op :as e.s.n.op]
    [elin.util.nrepl :as e.u.nrepl]
    [malli.core :as m]))
-
-(def ?Lookup
-  [:map
-   [:ns string?]
-   [:name string?]
-   [:file string?]
-   [:arglists-str string?]
-   [:column int?]
-   [:line int?]
-   [:doc {:optional true} string?]
-   ;; cider-nrepl's info op
-   [:arglists {:optional true} [:maybe string?]]])
 
 (def middleware-caught-keys
   #{:nrepl.middleware.caught/caught
@@ -114,36 +103,23 @@
             (async/<!!)
             (e.u.nrepl/merge-messages))))))
 
-(m/=> lookup!! [:=> [:cat e.s.component/?Nrepl string? string?] (e.schema/error-or ?Lookup)])
+(m/=> lookup!! [:=> [:cat e.s.component/?Nrepl string? string?] (e.schema/error-or e.s.n.op/?Lookup)])
 (defn lookup!!
   [nrepl ns-str sym-str]
-  (cond
-    (e.p.nrepl/supported-op? nrepl "info")
-    (e/let [res (e/-> (e.p.nrepl/request nrepl {:op "info" :ns ns-str :sym sym-str})
-                      (async/<!!)
-                      (e.u.nrepl/merge-messages))]
-      (if (e.u.nrepl/has-status? res "no-info")
-        (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)})
-        res))
+  (e/let [res (e/-> (e.p.nrepl/request nrepl {:op "lookup" :ns ns-str :sym sym-str})
+                    (async/<!!)
+                    (e.u.nrepl/merge-messages))]
+    (cond
+      (e.u.nrepl/has-status? res "lookup-error")
+      (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)})
 
-    (e.p.nrepl/supported-op? nrepl "lookup")
-    (e/let [res (e/-> (e.p.nrepl/request nrepl {:op "lookup" :ns ns-str :sym sym-str})
-                      (async/<!!)
-                      (e.u.nrepl/merge-messages))]
-      (cond
-        (e.u.nrepl/has-status? res "lookup-error")
-        (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)})
+      (contains? res :info)
+      (if (= [] (:info res))
+        {}
+        (:info res))
 
-        (contains? res :info)
-        (if (= [] (:info res))
-          {}
-          (:info res))
-
-        :else
-        res))
-
-    :else
-    (e/unsupported {:message "info or lookup op not supported"})))
+      :else
+      res)))
 
 (m/=> ls-sessions!! [:=> [:cat e.s.component/?Nrepl] e.schema/?ManyToManyChannel])
 (defn ls-sessions!!
