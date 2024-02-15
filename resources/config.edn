@@ -5,8 +5,8 @@
                           elin.interceptor.nrepl/eval-ns-interceptor
                           elin.interceptor.nrepl/normalize-path-interceptor
                           elin.interceptor.output/print-output-interceptor]
-               :preset {:evaluation [elin.interceptor.nrepl/output-eval-result-to-cmdline-interceptor
-                                     elin.interceptor.nrepl/set-eval-result-to-virtual-text-interceptor]}}
+               :preset {:evaluation {:includes [elin.interceptor.nrepl/output-eval-result-to-cmdline-interceptor
+                                                elin.interceptor.nrepl/set-eval-result-to-virtual-text-interceptor]}}}
 
  :handler {:includes [elin.handler.complete/complete
                       elin.handler.connect/connect
@@ -21,7 +21,7 @@
                       elin.handler.lookup/lookup
                       elin.handler.navigate/jump-to-definition]
 
-           elin.handler.evaluate/evaluate {:includes [elin.interceptor.nrepl/output-eval-result-to-cmdline-interceptor]}
-           elin.handler.evaluate/evaluate-current-expr {:includes #ref [:interceptor :preset :evaluation]}
-           elin.handler.evaluate/evaluate-current-list {:includes #ref [:interceptor :preset :evaluation]}
-           elin.handler.evaluate/evaluate-current-top-list {:includes #ref [:interceptor :preset :evaluation]}}}
+           elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.nrepl/output-eval-result-to-cmdline-interceptor]}}
+           elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
+           elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
+           elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}}}
