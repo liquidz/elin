@@ -27,6 +27,7 @@
     elin.handler.evaluate/load-current-file
     elin.handler.internal/initialize
     elin.handler.internal/intercept
+    elin.handler.internal/error
     elin.handler.lookup/lookup
     elin.handler.navigate/jump-to-definition])
 

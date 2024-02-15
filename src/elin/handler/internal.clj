@@ -2,6 +2,7 @@
   (:require
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.vim :as e.f.vim]
+   [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.handler :as e.s.handler]
    [malli.core :as m]))
@@ -19,3 +20,8 @@
     (->> {:elin elin :autocmd-type autocmd-type}
          (e.p.interceptor/execute interceptor e.c.interceptor/autocmd))
     true))
+
+(defn error
+  [{:component/keys [writer] :keys [message]}]
+  (e.log/error writer (str "Unexpected error: " (pr-str (:params message))))
+  true)
