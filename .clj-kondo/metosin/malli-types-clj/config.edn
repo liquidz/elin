@@ -109,7 +109,12 @@
                                                                                                            :write-stream :any,
                                                                                                            :output-channel :any,
                                                                                                            :response-manager :any}}}}}},
-                                        elin.config {merge-configs {:arities {2 {:args [:map :map], :ret :map}}},
+                                        elin.config {merge-configs {:arities {2 {:args [:map :map], :ret :map},
+                                                                              :varargs {:args [:map
+                                                                                               :map
+                                                                                               {:op :rest, :spec :map}],
+                                                                                        :ret :map,
+                                                                                        :min-arity 2}}},
                                                      load-config {:arities {2 {:args [:string :map],
                                                                                :ret {:op :keys,
                                                                                      :req {:env {:op :keys,
@@ -180,7 +185,17 @@
                                                                                                      :ret :any}}},
                                                                     get-project-name {:arities {1 {:args [:any],
                                                                                                    :ret :any}}}},
-                                        elin.handler.evaluate {evaluate {:arities {1 {:args [{:op :keys,
+                                        elin.handler.evaluate {evaluation* {:arities {3 {:args [{:op :keys,
+                                                                                                 :req {:message {:op :keys,
+                                                                                                                 :req {:host :string,
+                                                                                                                       :message :sequential}},
+                                                                                                       :component/nrepl :any,
+                                                                                                       :component/interceptor :any,
+                                                                                                       :component/writer :any}}
+                                                                                                :string
+                                                                                                :map],
+                                                                                         :ret :any}}},
+                                                               evaluate {:arities {1 {:args [{:op :keys,
                                                                                               :req {:message {:op :keys,
                                                                                                               :req {:host :string,
                                                                                                                     :message :sequential}},
