@@ -18,6 +18,7 @@
    [elin.schema.server :as e.s.server]
    [elin.util.server :as e.u.server]
    [malli.core :as m]
+   [medley.core :as medley]
    [msgpack.clojure-extensions]))
 
 (m/=> resolve-handler [:=> [:cat e.s.server/?Writer qualified-symbol?]
@@ -41,11 +42,11 @@
 
 ;; (m/=> construct-handler-parameter [:=> [:cat] e.s.handler/?Elin])
 (defn- construct-handler-parameter
-  [{:as context :keys [message config]}]
+  [{:as context :keys [message handler-config-map]}]
   (let [{:component/keys [interceptor nrepl]} context
         {:as message' :keys [method]} (merge message
                                              (e.p.rpc/parse-message message))
-        handler-config (or (get config (symbol method))
+        handler-config (or (get handler-config-map (symbol method))
                            {})
         message-config (some-> (get-in message' [:options :config])
                                (edn/read-string))
@@ -59,14 +60,14 @@
                           :component/nrepl (assoc nrepl :interceptor interceptor')))]
     (assoc context' :message message')))
 
-(m/=> handler [:=> [:cat e.s.handler/?Components e.s.handler/?HandlerMap e.s.server/?Message] any?])
+(m/=> handler [:=> [:cat e.s.handler/?Components map? e.s.handler/?HandlerMap e.s.server/?Message] any?])
 (defn- handler
   [{:as components :component/keys [interceptor]}
-   config
+   handler-config-map
    handler-map
    message]
   (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
-    (-> (assoc components :message message :config config)
+    (-> (assoc components :message message :handler-config-map handler-config-map)
         (intercept
          (fn [{:as context :component/keys [writer]}]
            (let [elin (construct-handler-parameter context)
@@ -92,19 +93,21 @@
    lazy-writer     ; LazyWriter component
    nrepl           ; Nrepl component
    plugin          ; Plugin component
-   config
+   includes
+   excludes
+   handler-config-map
    handler-map]
   component/Lifecycle
   (start [this]
     (let [components {:component/nrepl nrepl
                       :component/interceptor interceptor
                       :component/writer lazy-writer}
-          exclude-set (set (:excludes config))
-          handlers (concat (or (:includes config) [])
+          exclude-set (set excludes)
+          handlers (concat (or includes [])
                            (or (get-in plugin [:loaded-plugin :handlers]) []))
           handlers (remove #(contains? exclude-set %) handlers)
           handler-map (build-handler-map lazy-writer handlers)
-          handler (partial handler components config handler-map)]
+          handler (partial handler components handler-config-map handler-map)]
       (assoc this
              :handler-map handler-map
              :handler handler)))
@@ -114,4 +117,7 @@
 
 (defn new-handler
   [config]
-  (map->Handler {:config (or (:handler config) {})}))
+  (let [config (or (:handler config) {})
+        component-config (medley/filter-keys keyword? config)]
+    (map->Handler (assoc component-config
+                         :handler-config-map (medley/remove-keys keyword? config)))))
