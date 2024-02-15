@@ -64,7 +64,9 @@
                  handler-key (:method msg')
                  resp (if-let [handler-fn (get handler-map handler-key)]
                         (handler-fn elin)
-                        (e.log/error writer (format "Unknown handler: %s" handler-key)))
+                        (let [msg (format "Unknown handler: %s" handler-key)]
+                          (e.log/error writer msg)
+                          msg))
                  resp' (e.u.server/format resp)
                  resp' (if-let [callback (:callback msg')]
                          (try
