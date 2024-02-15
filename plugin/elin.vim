@@ -17,16 +17,16 @@ function! s:init() abort
     echom 'vim-elin: connect to server'
     call elin#server#connect(g:elin_server_port)
   endif
-endfunction
 
-aug elin_autocmd_group
-  au!
-  au BufRead *.clj,*.cljs,*.cljc call elin#intercept('BufRead')
-  au BufNewFile *.clj,*.cljs,*.cljc call elin#intercept('BufNewFile')
-  au BufEnter *.clj,*.cljs,*.cljc call elin#intercept('BufEnter')
-  au BufWritePost *.clj,*.cljs,*.cljc call elin#intercept('BufWritePost')
-  au VimLeave * call s:deinit()
-aug END
+  aug elin_autocmd_group
+    au!
+    au BufRead *.clj,*.cljs,*.cljc call elin#intercept('BufRead')
+    au BufNewFile *.clj,*.cljs,*.cljc call elin#intercept('BufNewFile')
+    au BufEnter *.clj,*.cljs,*.cljc call elin#intercept('BufEnter')
+    au BufWritePost *.clj,*.cljs,*.cljc call elin#intercept('BufWritePost')
+    au VimLeave * call s:deinit()
+  aug END
+endfunction
 
 function! s:deinit() abort
   call elin#intercept('VimLeave')
