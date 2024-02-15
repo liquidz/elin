@@ -2,6 +2,7 @@
   (:require
    [clojure.edn :as edn]
    [com.stuartsierra.component :as component]
+   [elin.config :as e.config]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.handler.complete]
    [elin.handler.connect]
@@ -18,20 +19,6 @@
    [elin.util.server :as e.u.server]
    [malli.core :as m]
    [msgpack.clojure-extensions]))
-
-(def ^:private default-handlers
-  '[elin.handler.complete/complete
-    elin.handler.connect/connect
-    elin.handler.evaluate/evaluate
-    elin.handler.evaluate/evaluate-current-expr
-    elin.handler.evaluate/evaluate-current-list
-    elin.handler.evaluate/evaluate-current-top-list
-    elin.handler.evaluate/load-current-file
-    elin.handler.internal/initialize
-    elin.handler.internal/intercept
-    elin.handler.internal/error
-    elin.handler.lookup/lookup
-    elin.handler.navigate/jump-to-definition])
 
 (m/=> resolve-handler [:=> [:cat e.s.server/?Writer qualified-symbol?]
                        [:or :nil [:cat qualified-keyword? fn?]]])
@@ -54,16 +41,20 @@
 
 ;; (m/=> construct-handler-parameter [:=> [:cat] e.s.handler/?Elin])
 (defn- construct-handler-parameter
-  [{:as context :keys [message]}]
+  [{:as context :keys [message config]}]
   (let [{:component/keys [interceptor nrepl]} context
-        message' (merge message
-                        (e.p.rpc/parse-message message))
-        config (some-> (get-in message' [:options :config])
-                       (edn/read-string))
-        interceptor' (when config
-                       (e.p.config/configure interceptor config))
+        {:as message' :keys [method]} (merge message
+                                             (e.p.rpc/parse-message message))
+        handler-config (or (get config (symbol method))
+                           {})
+        message-config (some-> (get-in message' [:options :config])
+                               (edn/read-string))
+        this-config (e.config/merge-configs handler-config
+                                            message-config)
+        interceptor' (when this-config
+                       (e.p.config/configure interceptor this-config))
         context' (cond-> context
-                   config
+                   this-config
                    (assoc :component/interceptor interceptor'
                           :component/nrepl (assoc nrepl :interceptor interceptor')))]
     (assoc context' :message message')))
@@ -71,10 +62,11 @@
 (m/=> handler [:=> [:cat e.s.handler/?Components e.s.handler/?HandlerMap e.s.server/?Message] any?])
 (defn- handler
   [{:as components :component/keys [interceptor]}
+   config
    handler-map
    message]
   (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
-    (-> (assoc components :message message)
+    (-> (assoc components :message message :config config)
         (intercept
          (fn [{:as context :component/keys [writer]}]
            (let [elin (construct-handler-parameter context)
@@ -100,21 +92,19 @@
    lazy-writer     ; LazyWriter component
    nrepl           ; Nrepl component
    plugin          ; Plugin component
-   includes
-   excludes
+   config
    handler-map]
   component/Lifecycle
   (start [this]
     (let [components {:component/nrepl nrepl
                       :component/interceptor interceptor
                       :component/writer lazy-writer}
-          exclude-set (set excludes)
-          handlers (concat default-handlers
-                           (or includes [])
+          exclude-set (set (:excludes config))
+          handlers (concat (or (:includes config) [])
                            (or (get-in plugin [:loaded-plugin :handlers]) []))
           handlers (remove #(contains? exclude-set %) handlers)
           handler-map (build-handler-map lazy-writer handlers)
-          handler (partial handler components handler-map)]
+          handler (partial handler components config handler-map)]
       (assoc this
              :handler-map handler-map
              :handler handler)))
@@ -124,4 +114,4 @@
 
 (defn new-handler
   [config]
-  (map->Handler (or (:handler config) {})))
+  (map->Handler {:config (or (:handler config) {})}))
