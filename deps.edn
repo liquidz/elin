@@ -39,4 +39,4 @@
   org.flatland/ordered {:mvn/version "1.5.9"},
   rewrite-clj/rewrite-clj {:mvn/version "1.1.47"},
   selmer/selmer {:mvn/version "1.12.59"}},
- :paths ["src"]}
+ :paths ["src" "resources"]}
