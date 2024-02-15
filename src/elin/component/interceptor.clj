@@ -30,12 +30,13 @@
 (defrecord Interceptor
   [lazy-writer     ; LazyWriter component
    plugin          ; Plugin component
-   config
+   includes
+   excludes
    interceptor-map]
   component/Lifecycle
   (start [this]
-    (let [exclude-set (set (:excludes config))
-          grouped-interceptors (->> (concat (or (:includes config) [])
+    (let [exclude-set (set excludes)
+          grouped-interceptors (->> (concat (or includes [])
                                             (or (get-in plugin [:loaded-plugin :interceptors]) []))
                                     (distinct)
                                     (remove #(contains? exclude-set %))
@@ -90,4 +91,4 @@
 
 (defn new-interceptor
   [config]
-  (map->Interceptor {:config (or (get config config-key) {})}))
+  (map->Interceptor (or (get config config-key) {})))
