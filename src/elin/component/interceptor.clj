@@ -16,17 +16,6 @@
 
 (def ^:private config-key :interceptor)
 
-(def ^:private default-interceptors
-  '[elin.interceptor.connect/port-auto-detecting-interceptor
-    elin.interceptor.connect/output-channel-interceptor
-    elin.interceptor.connect/connected-interceptor
-    elin.interceptor.output/print-output-interceptor
-    elin.interceptor.nrepl/eval-ns-interceptor
-    elin.interceptor.nrepl/normalize-path-interceptor
-    elin.interceptor.nrepl/output-eval-result-to-cmdline-interceptor
-    elin.interceptor.nrepl/set-eval-result-to-virtual-text-interceptor
-    elin.interceptor.autocmd/ns-create-interceptor])
-
 (defn- resolve-interceptor [lazy-writer sym]
   (try
     (deref (requiring-resolve sym))
@@ -41,15 +30,14 @@
 (defrecord Interceptor
   [lazy-writer     ; LazyWriter component
    plugin          ; Plugin component
-   excludes
-   includes
+   config
    interceptor-map]
   component/Lifecycle
   (start [this]
-    (let [exclude-set (set excludes)
-          grouped-interceptors (->> (concat default-interceptors
-                                            (or includes [])
+    (let [exclude-set (set (:excludes config))
+          grouped-interceptors (->> (concat (or (:includes config) [])
                                             (or (get-in plugin [:loaded-plugin :interceptors]) []))
+                                    (distinct)
                                     (remove #(contains? exclude-set %))
                                     (keep #(resolve-interceptor lazy-writer %))
                                     (group-by valid-interceptor?))
@@ -86,7 +74,6 @@
           exclude-set (->> (or excludes [])
                            (map keyword)
                            (set))
-          _ (e.log/info "FIXME excludes" (pr-str exclude-set))
           grouped (->> (or includes [])
                        (keep #(resolve-interceptor lazy-writer %))
                        (group-by valid-interceptor?))
@@ -98,10 +85,9 @@
                       include-map)
           configured (update-vals configured
                                   (fn [interceptors]
-                                    (remove #(contains? exclude-set (:name %)) interceptors)))
-          _ (e.log/info "FIXME configured" (pr-str (get configured e.c.interceptor/nrepl)))]
+                                    (remove #(contains? exclude-set (:name %)) interceptors)))]
       (assoc this :interceptor-map configured))))
 
 (defn new-interceptor
   [config]
-  (map->Interceptor (or (get config config-key) {})))
+  (map->Interceptor {:config (or (get config config-key) {})}))
