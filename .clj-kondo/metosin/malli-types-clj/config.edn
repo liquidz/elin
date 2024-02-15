@@ -25,10 +25,11 @@
                                                                                               :ret :any}}},
                                                                 build-handler-map {:arities {2 {:args [:any :sequential],
                                                                                                 :ret :map}}},
-                                                                handler {:arities {3 {:args [{:op :keys,
+                                                                handler {:arities {4 {:args [{:op :keys,
                                                                                               :req {:component/nrepl :any,
                                                                                                     :component/interceptor :any,
                                                                                                     :component/writer :any}}
+                                                                                             :map
                                                                                              :map
                                                                                              {:op :keys,
                                                                                               :req {:host :string,
@@ -109,10 +110,12 @@
                                                                                                            :write-stream :any,
                                                                                                            :output-channel :any,
                                                                                                            :response-manager :any}}}}}},
-                                        elin.config {merge-configs {:arities {2 {:args [:map :map], :ret :map},
-                                                                              :varargs {:args [:map
-                                                                                               :map
-                                                                                               {:op :rest, :spec :map}],
+                                        elin.config {merge-configs {:arities {2 {:args [:nilable/map :nilable/map],
+                                                                                 :ret :map},
+                                                                              :varargs {:args [:nilable/map
+                                                                                               :nilable/map
+                                                                                               {:op :rest,
+                                                                                                :spec :nilable/map}],
                                                                                         :ret :map,
                                                                                         :min-arity 2}}},
                                                      load-config {:arities {2 {:args [:string :map],
