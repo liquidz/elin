@@ -13,8 +13,8 @@
    mt/default-value-transformer))
 
 (m/=> merge-configs [:function
-                     [:=> [:cat map? map?] map?]
-                     [:=> [:cat map? map? [:* map?]] map?]])
+                     [:=> [:cat [:maybe map?] [:maybe map?]] map?]
+                     [:=> [:cat [:maybe map?] [:maybe map?] [:* [:maybe map?]]] map?]])
 (defn merge-configs
   ([c1 c2]
    (when (or c1 c2)
