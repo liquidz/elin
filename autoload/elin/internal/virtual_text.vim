@@ -28,7 +28,7 @@ if has('nvim')
   endfunction
 
   function! s:set(bufnr, text, lnum, highlight, align) abort
-    call s:clear(a:bufnr, a:lnum - 1, a:lnum)
+    call s:clear(a:bufnr, a:lnum, a:lnum + 1)
     return nvim_buf_set_extmark(a:bufnr, s:namespace, a:lnum - 1, 0, {
           \ 'virt_text': [[a:text, a:highlight]],
           \ 'virt_text_pos': s:text_align_to_virt_text_pos(a:align)
