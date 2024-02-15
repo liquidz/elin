@@ -1,28 +1,49 @@
 (ns elin.config
   (:require
    [aero.core :as aero]
+   [clojure.java.io :as io]
    [elin.constant.project :as e.c.project]
    [elin.schema.config :as e.s.config]
    [elin.util.file :as e.u.file]
    [malli.core :as m]
-   [malli.transform :as mt]
-   [medley.core :as medley]))
+   [malli.transform :as mt]))
 
 (def ^:private config-transformer
   (mt/transformer
    mt/default-value-transformer))
 
-(m/=> load-config [:function
-                   [:=> [:cat string?] e.s.config/?Config]
-                   [:=> [:cat string? map?] e.s.config/?Config]])
+(m/=> merge-configs [:function
+                     [:=> [:cat map? map?] map?]
+                     [:=> [:cat map? map? [:* map?]] map?]])
+(defn merge-configs
+  ([c1 c2]
+   (when (or c1 c2)
+     (reduce-kv (fn [accm k v2]
+                  (if-let [v1 (get accm k)]
+                    (case k
+                      (:includes :excludes)
+                      (assoc accm k (if (and (sequential? v1) (sequential? v2))
+                                      (vec (concat v1 v2))
+                                      v2))
+
+                      (assoc accm k (if (and (map? v1) (map? v2))
+                                      (merge-configs v1 v2)
+                                      v2)))
+                    (assoc accm k v2)))
+                (or c1 {})
+                c2)))
+  ([c1 c2 & more-configs]
+   (reduce merge-configs (or c1 {}) (cons c2 more-configs))))
+
+(m/=> load-config [:=> [:cat string? map?] e.s.config/?Config])
 (defn load-config
-  ([dir]
-   (load-config dir {}))
-  ([dir base]
-   (let [config (some-> (e.u.file/find-file-in-parent-directories dir e.c.project/config-file-name)
-                        (aero/read-config))
-         config (medley/deep-merge base
-                                   (or config {}))]
-     (m/coerce e.s.config/?Config
-               config
-               config-transformer))))
+  [dir server-config]
+  (let [default (aero/read-config (io/resource "config.edn"))
+        config (some-> (e.u.file/find-file-in-parent-directories dir e.c.project/config-file-name)
+                       (aero/read-config))
+        config (merge-configs server-config
+                              default
+                              (or config {}))]
+    (m/coerce e.s.config/?Config
+              config
+              config-transformer)))
