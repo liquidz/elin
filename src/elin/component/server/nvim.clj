@@ -34,10 +34,14 @@
            :error error
            :result result})
       ;; notify
-      2 (let [[_ method [params callback]] message]
-          {:method (keyword method)
-           :params params
-           :callback callback})
+      2 (let [[_ method [params callback :as args]] message
+              method' (keyword method)]
+          (if (= :nvim_error_event method')
+            {:method :elin.handler.internal/error
+             :params args}
+            {:method method'
+             :params params
+             :callback callback}))
       {})))
 
 (defrecord NvimWriter
