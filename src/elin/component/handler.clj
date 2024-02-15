@@ -69,7 +69,7 @@
                           (e.log/error writer msg)
                           msg))
                  resp' (e.u.server/format resp)
-                 resp' (if-let [callback (:callback msg')]
+                 resp' (if-let [callback (get-in msg' [:options :callback])]
                          (try
                            (e.p.rpc/notify-function writer "elin#callback#call" [callback resp'])
                            ;; FIXME

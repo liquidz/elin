@@ -7,6 +7,7 @@
    [elin.log :as e.log]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.id :as e.u.id]
+   [elin.util.server :as e.u.server]
    [msgpack.clojure-extensions])
   (:import
    java.io.EOFException))
@@ -35,17 +36,18 @@
          :result result})
 
       (e.p.rpc/request? this)
-      (let [[id [method params]] message]
+      (let [[id [method params options]] message]
         {:id id
          :method (keyword method)
-         :params params})
+         :params params
+         :options (e.u.server/unformat options)})
 
       ;; notify
       :else
-      (let [[_ [method params callback]] message]
+      (let [[_ [method params options]] message]
         {:method (keyword method)
          :params params
-         :callback callback}))))
+         :options (e.u.server/unformat options)}))))
 
 (defrecord VimWriter
   [output-stream response-manager]
@@ -65,7 +67,6 @@
 
   (response! [_ id error result]
     (when id
-      ;; (-> [id (or error result)])
       (-> [id [error result]]
           (json/generate-stream  (io/writer output-stream)))))
 

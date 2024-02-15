@@ -7,20 +7,30 @@ function! elin#internal#rpc#disconnect(conn) abort
   return s:disconnect(a:conn)
 endfunction
 
-function! elin#internal#rpc#request(conn, method, params) abort
+function! elin#internal#rpc#request(conn, method, params, ...) abort
+  let options = get(a:, 1, {})
+  if has_key(options, 'callback')
+    echoerr 'Callback is not supported in request'
+    return
+  endif
+
   try
-    return s:request(a:conn, a:method, [a:params])
+    return s:request(a:conn, a:method, [a:params] + [options])
   catch
     call elin#internal#echom(printf('Elin failed to request: %s', v:exception), 'ErrorMsg')
   endtry
 endfunction
 
 function! elin#internal#rpc#notify(conn, method, params, ...) abort
-  let Callback = get(a:, 1, v:null)
-  let callback_id = Callback is v:null ? v:null : elin#callback#register(Callback)
-  let params = callback_id is v:null ? [a:params] : [a:params] + [callback_id]
+  let options = get(a:, 1, {})
+  let Callback = get(options, 'callback', v:null)
+  if Callback isnot v:null
+    let callback_id = Callback is v:null ? v:null : elin#callback#register(Callback)
+    let options['callback'] = callback_id
+  endif
+
   try
-    return s:notify(a:conn, a:method, params)
+    return s:notify(a:conn, a:method, [a:params] + [options])
   catch
     call elin#internal#echom(printf('Elin failed to notify: %s', v:exception), 'ErrorMsg')
   endtry

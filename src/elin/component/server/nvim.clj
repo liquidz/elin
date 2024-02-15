@@ -5,6 +5,7 @@
    [elin.log :as e.log]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.id :as e.u.id]
+   [elin.util.server :as e.u.server]
    [msgpack.clojure-extensions]
    [msgpack.core :as msg])
   (:import
@@ -24,24 +25,29 @@
   (parse-message [_]
     (condp = (first message)
       ;; request
-      0 (let [[_ id method [params]] message]
+      0 (let [[_ id method [params options]] message]
           {:id id
            :method (keyword method)
-           :params params})
+           :params params
+           :options (-> (e.u.server/unformat options)
+                        ;; Do not allow 'callback' option for request
+                        (dissoc :callback))})
       ;; response
       1 (let [[_ id error result] message]
           {:id id
            :error error
            :result result})
       ;; notify
-      2 (let [[_ method [params callback :as args]] message
-              method' (keyword method)]
+      2 (let [[_ method [params options :as args]] message
+              method' (keyword method)
+              options' (e.u.server/unformat options)]
           (if (= :nvim_error_event method')
             {:method :elin.handler.internal/error
-             :params args}
+             :params args
+             :options options'}
             {:method method'
              :params params
-             :callback callback}))
+             :options options'}))
       {})))
 
 (defrecord NvimWriter
