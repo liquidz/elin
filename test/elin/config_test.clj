@@ -21,6 +21,12 @@
            (sut/merge-configs {:a {:b [1]}}
                               {:a {:b [2]}})))
 
+  (t/testing "nil"
+    (t/is (= {:a 1}
+             (sut/merge-configs {:a 1} nil)))
+    (t/is (= {:b 2}
+             (sut/merge-configs nil {:b 2}))))
+
   (t/testing "includes"
     (t/is (= {:a {:includes [1 2]}}
              (sut/merge-configs {:a {:includes [1]}}
