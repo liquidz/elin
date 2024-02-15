@@ -1,5 +1,6 @@
 (ns elin.component.handler
   (:require
+   [clojure.edn :as edn]
    [com.stuartsierra.component :as component]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.handler.complete]
@@ -9,6 +10,7 @@
    [elin.handler.lookup]
    [elin.handler.navigate]
    [elin.log :as e.log]
+   [elin.protocol.config :as e.p.config]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.handler :as e.s.handler]
@@ -50,6 +52,22 @@
               accm))
           {} handler-symbols))
 
+;; (m/=> construct-handler-parameter [:=> [:cat] e.s.handler/?Elin])
+(defn- construct-handler-parameter
+  [{:as context :keys [message]}]
+  (let [{:component/keys [interceptor nrepl]} context
+        message' (merge message
+                        (e.p.rpc/parse-message message))
+        config (some-> (get-in message' [:options :config])
+                       (edn/read-string))
+        interceptor' (when config
+                       (e.p.config/configure interceptor config))
+        context' (cond-> context
+                   config
+                   (assoc :component/interceptor interceptor'
+                          :component/nrepl (assoc nrepl :interceptor interceptor')))]
+    (assoc context' :message message')))
+
 (m/=> handler [:=> [:cat e.s.handler/?Components e.s.handler/?HandlerMap e.s.server/?Message] any?])
 (defn- handler
   [{:as components :component/keys [interceptor]}
@@ -58,18 +76,16 @@
   (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
     (-> (assoc components :message message)
         (intercept
-         (fn [{:as context :component/keys [writer] :keys [message]}]
-           (let [msg' (merge message
-                             (e.p.rpc/parse-message message))
-                 elin (assoc context :message msg')
-                 handler-key (:method msg')
+         (fn [{:as context :component/keys [writer]}]
+           (let [elin (construct-handler-parameter context)
+                 handler-key (get-in elin [:message :method])
                  resp (if-let [handler-fn (get handler-map handler-key)]
                         (handler-fn elin)
                         (let [msg (format "Unknown handler: %s" handler-key)]
                           (e.log/error writer msg)
                           msg))
                  resp' (e.u.server/format resp)
-                 resp' (if-let [callback (get-in msg' [:options :callback])]
+                 resp' (if-let [callback (get-in elin [:message :options :callback])]
                          (try
                            (e.p.rpc/notify-function writer "elin#callback#call" [callback resp'])
                            ;; FIXME
