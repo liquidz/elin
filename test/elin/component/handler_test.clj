@@ -2,31 +2,89 @@
   (:require
    [clojure.test :as t]
    [com.stuartsierra.component :as component]
+   [elin.component.interceptor :as e.c.interceptor]
+   [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.system :as e.system]
    [elin.test-helper :as h]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 
-(defn test-handler
-  [{:component/keys [writer]}]
-  (e.p.rpc/echo-text writer "Hello world")
+(def ^:private test-global-interceptor
+  {:name ::test-global-interceptor
+   :kind ::test
+   :enter (fn [ctx]
+            (update ctx :x (partial + 1)))})
+
+(def ^:private test-configured-interceptor
+  {:name ::test-configured-interceptor
+   :kind ::test
+   :enter (fn [ctx]
+            (update ctx :x (partial + 2)))})
+
+(def ^:private test-requst-interceptor
+  {:name ::test-requst-interceptor
+   :kind ::test
+   :enter (fn [ctx]
+            (update ctx :x (partial + 4)))})
+
+(defn- test-handler
+  [{:component/keys [writer] :keys [message]}]
+  (e.p.rpc/echo-text writer (str "Hello " (first (:params message))))
   "OK")
 
+(defn test-global-interceptor-handler
+  [{:component/keys [interceptor]}]
+  (:x (e.p.interceptor/execute interceptor ::test {:x 0})))
+
+(defn test-configured-interceptor-handler
+  [{:component/keys [interceptor]}]
+  (:x (e.p.interceptor/execute interceptor ::test {:x 10})))
+
+(def ^:private test-config
+  {:handler {:includes [(symbol #'test-handler)
+                        (symbol #'test-global-interceptor-handler)
+                        (symbol #'test-configured-interceptor-handler)]
+             :config-map {(symbol #'test-configured-interceptor-handler)
+                          {:interceptor {:includes [(symbol #'test-configured-interceptor)]}}}}
+   :interceptor {:includes [(symbol #'test-global-interceptor)]}})
+
+(defn- call-test-handler
+  ([handler-component var']
+   (call-test-handler handler-component var' []))
+  ([handler-component var' params]
+   (call-test-handler handler-component var' params {}))
+  ([handler-component var' params options]
+   (let [handler-fn (:handler handler-component)
+         method (str (symbol var'))]
+     (handler-fn (h/test-message [0 1 method [params options]])))))
+
 (t/deftest new-handler-test
-  (let [test-handler-sym (symbol #'test-handler)
-        config {:handler {:includes [test-handler-sym]}}
-        {:as sys :keys [handler lazy-writer]} (-> (e.system/new-system config)
-                                                  (dissoc :server)
-                                                  (component/start-system))
-        writer (h/test-writer {:handler (constantly true)})]
-    (try
-      (e.p.rpc/set-writer! lazy-writer writer)
+  (with-redefs [e.c.interceptor/valid-interceptor? (constantly true)]
+    (let [{:as sys :keys [handler lazy-writer]} (-> (e.system/new-system test-config)
+                                                    (dissoc :server)
+                                                    (component/start-system))
+          call-test-handler' (partial call-test-handler handler)
+          writer (h/test-writer {:handler (constantly true)})]
+      (try
+        (e.p.rpc/set-writer! lazy-writer writer)
 
-      (let [handler-fn (:handler handler)
-            res (handler-fn (h/test-message [0 1 (str test-handler-sym)]))]
-        (t/is (= "OK" res))
-        (t/is (= ["Hello world"] (h/get-outputs writer))))
+        (t/testing "Normal handler"
+          (let [res (call-test-handler' #'test-handler ["world"])]
+            (t/is (= "OK" res))
+            (t/is (= ["Hello world"] (h/get-outputs writer)))))
 
-      (finally
-        (component/stop-system sys)))))
+        (t/testing "Handler using interceptor"
+          (t/testing "Global interceptor"
+            (t/is (= 1 (call-test-handler' #'test-global-interceptor-handler))))
+
+          (t/testing "Configured interceptor"
+            (t/is (= 13 (call-test-handler' #'test-configured-interceptor-handler))))
+
+          (t/testing "Requested interceptor"
+            (let [options {:config (pr-str {:interceptor {:includes [(symbol #'test-requst-interceptor)]}})}]
+              (t/is (= 5 (call-test-handler' #'test-global-interceptor-handler [] options)))
+              (t/is (= 17 (call-test-handler' #'test-configured-interceptor-handler [] options))))))
+
+        (finally
+          (component/stop-system sys))))))
