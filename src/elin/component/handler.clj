@@ -19,22 +19,22 @@
    [elin.util.server :as e.u.server]
    [malli.core :as m]))
 
-(m/=> resolve-handler [:=> [:cat e.s.server/?Writer qualified-symbol?]
+(m/=> resolve-handler [:=> [:cat e.s.server/?Host qualified-symbol?]
                        [:or :nil [:cat qualified-keyword? fn?]]])
-(defn- resolve-handler [lazy-writer sym]
+(defn- resolve-handler [lazy-host sym]
   (when-let [f (try
                  @(requiring-resolve sym)
                  (catch Exception _
-                   (e.log/warning lazy-writer "Failed to resolve handler:" sym)
+                   (e.log/warning lazy-host "Failed to resolve handler:" sym)
                    nil))]
     [(keyword sym) f]))
 
-(m/=> build-handler-map [:=> [:cat e.s.server/?Writer [:sequential qualified-symbol?]]
+(m/=> build-handler-map [:=> [:cat e.s.server/?Host [:sequential qualified-symbol?]]
                          e.s.handler/?HandlerMap])
 (defn- build-handler-map
-  [lazy-writer handler-symbols]
+  [lazy-host handler-symbols]
   (reduce (fn [accm sym]
-            (if-let [[k f] (resolve-handler lazy-writer sym)]
+            (if-let [[k f] (resolve-handler lazy-host sym)]
               (assoc accm k f)
               accm))
           {} handler-symbols))
@@ -69,28 +69,28 @@
   (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
     (-> (assoc components :message message :config-map config-map)
         (intercept
-         (fn [{:as context :component/keys [writer]}]
+         (fn [{:as context :component/keys [host]}]
            (let [elin (construct-handler-parameter context)
                  handler-key (get-in elin [:message :method])
                  resp (if-let [handler-fn (get handler-map handler-key)]
                         (handler-fn elin)
                         (let [msg (format "Unknown handler: %s" handler-key)]
-                          (e.log/error writer msg)
+                          (e.log/error host msg)
                           msg))
                  resp' (e.u.server/format resp)
                  resp' (if-let [callback (get-in elin [:message :options :callback])]
                          (try
-                           (e.p.rpc/notify-function writer "elin#callback#call" [callback resp'])
+                           (e.p.rpc/notify-function host "elin#callback#call" [callback resp'])
                            ;; FIXME
                            (catch Exception ex
-                             (e.log/error writer "Failed to callback" (ex-message ex))))
+                             (e.log/error host "Failed to callback" (ex-message ex))))
                          resp')]
              (assoc context :response resp'))))
         (:response))))
 
 (defrecord Handler
   [interceptor     ; Interceptor component
-   lazy-writer     ; LazyWriter component
+   lazy-host       ; LazyHost component
    nrepl           ; Nrepl component
    plugin          ; Plugin component
    includes
@@ -101,12 +101,12 @@
   (start [this]
     (let [components {:component/nrepl nrepl
                       :component/interceptor interceptor
-                      :component/writer lazy-writer}
+                      :component/host lazy-host}
           exclude-set (set excludes)
           handlers (concat (or includes [])
                            (or (get-in plugin [:loaded-plugin :handlers]) []))
           handlers (remove #(contains? exclude-set %) handlers)
-          handler-map (build-handler-map lazy-writer handlers)
+          handler-map (build-handler-map lazy-host handlers)
           handler (partial handler components config-map handler-map)]
       (assoc this
              :handler-map handler-map

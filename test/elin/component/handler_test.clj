@@ -29,8 +29,8 @@
             (update ctx :x (partial + 4)))})
 
 (defn- test-handler
-  [{:component/keys [writer] :keys [message]}]
-  (e.p.rpc/echo-text writer (str "Hello " (first (:params message))))
+  [{:component/keys [host] :keys [message]}]
+  (e.p.rpc/echo-text host (str "Hello " (first (:params message))))
   "OK")
 
 (defn test-global-interceptor-handler
@@ -61,18 +61,18 @@
 
 (t/deftest new-handler-test
   (with-redefs [e.c.interceptor/valid-interceptor? (constantly true)]
-    (let [{:as sys :keys [handler lazy-writer]} (-> (e.system/new-system test-config)
-                                                    (dissoc :server)
-                                                    (component/start-system))
+    (let [{:as sys :keys [handler lazy-host]} (-> (e.system/new-system test-config)
+                                                  (dissoc :server)
+                                                  (component/start-system))
           call-test-handler' (partial call-test-handler handler)
-          writer (h/test-writer {:handler (constantly true)})]
+          host (h/test-host {:handler (constantly true)})]
       (try
-        (e.p.rpc/set-writer! lazy-writer writer)
+        (e.p.rpc/set-host! lazy-host host)
 
         (t/testing "Normal handler"
           (let [res (call-test-handler' #'test-handler ["world"])]
             (t/is (= "OK" res))
-            (t/is (= ["Hello world"] (h/get-outputs writer)))))
+            (t/is (= ["Hello world"] (h/get-outputs host)))))
 
         (t/testing "Handler using interceptor"
           (t/testing "Global interceptor"

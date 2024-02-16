@@ -19,10 +19,10 @@
   (.getAbsolutePath (.getParentFile (io/file path))))
 
 (defn- get-user-dir*
-  [nrepl lazy-writer]
+  [nrepl lazy-host]
   (e/let [user-dir (e.f.n.system/get-user-dir nrepl)]
     (if (empty? user-dir)
-      (e/-> (e.f.vim/get-current-file-path!! lazy-writer)
+      (e/-> (e.f.vim/get-current-file-path!! lazy-host)
             (get-parent-absolute-path))
       user-dir)))
 (def get-user-dir
@@ -47,7 +47,7 @@
   (require '[pod.borkdude.clj-kondo :as clj-kondo]))
 
 (defrecord CljKondo
-  [lazy-writer nrepl analyzing?-atom analyzed-atom]
+  [lazy-host nrepl analyzing?-atom analyzed-atom]
   component/Lifecycle
   (start [this]
     (assoc this
@@ -65,7 +65,7 @@
           (async/thread
             (try
               #_{:clj-kondo/ignore [:unresolved-namespace]}
-              (e/let [user-dir (get-user-dir nrepl lazy-writer)
+              (e/let [user-dir (get-user-dir nrepl lazy-host)
                       res (clj-kondo/run! {:lint [user-dir]
                                            :config {:output {:analysis {:protocol-impls true}}}})
                       cache-path (get-cache-file-path user-dir)]
@@ -80,7 +80,7 @@
       (do (reset! analyzing?-atom true)
           (async/thread
             (try
-              (e/let [user-dir (get-user-dir nrepl lazy-writer)
+              (e/let [user-dir (get-user-dir nrepl lazy-host)
                       cache-file (get-cache-file-path user-dir)
                       analyzed (json/parse-stream (io/reader cache-file) keyword)]
                 (reset! analyzed-atom analyzed))

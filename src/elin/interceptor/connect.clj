@@ -9,18 +9,18 @@
 (def port-auto-detecting-interceptor
   {:name ::port-auto-detecting-interceptor
    :kind e.c.interceptor/connect
-   :enter (fn [{:as ctx :keys [elin host port]}]
-            (if (and host port)
+   :enter (fn [{:as ctx :keys [elin hostname port]}]
+            (if (and hostname port)
               ctx
-              (let [{:component/keys [writer]} elin
+              (let [{:component/keys [host]} elin
                     ;; TODO error handling
-                    cwd (e.f.vim/get-current-working-directory!! writer)
+                    cwd (e.f.vim/get-current-working-directory!! host)
                     nrepl-port-file (e.u.file/find-file-in-parent-directories cwd ".nrepl-port")
-                    host' (or host "localhost")
+                    hostname' (or hostname "localhost")
                     port' (some-> nrepl-port-file
                                   (slurp)
                                   (Long/parseLong))]
-                (assoc ctx :host host' :port port'))))})
+                (assoc ctx :hostname hostname' :port port'))))})
 
 (def output-channel-interceptor
   {:name ::output-channel-interceptor
@@ -28,11 +28,11 @@
    :leave (fn [{:as ctx :keys [elin client]}]
             (when client
               (async/go-loop []
-                (let [{:component/keys [writer interceptor]} elin
+                (let [{:component/keys [host interceptor]} elin
                       ch (get-in client [:connection :output-channel])
                       output (async/<! ch)]
                   (when output
-                    (->> {:writer writer :output output}
+                    (->> {:host host :output output}
                          (e.p.interceptor/execute interceptor e.c.interceptor/output))
                     (recur)))))
             ctx)})

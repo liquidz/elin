@@ -32,11 +32,11 @@
 
 (m/=> evaluate-current-top-list [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-top-list
-  [{:as elin :component/keys [writer]}]
-  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
-          ns-str (e.f.v.sexp/get-namespace!! writer)
-          path (e.f.vim/get-full-path!! writer)
-          {:keys [code lnum col]} (e.f.v.sexp/get-top-list!! writer lnum col)]
+  [{:as elin :component/keys [host]}]
+  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+          ns-str (e.f.v.sexp/get-namespace!! host)
+          path (e.f.vim/get-full-path!! host)
+          {:keys [code lnum col]} (e.f.v.sexp/get-top-list!! host lnum col)]
     (evaluation* elin code {:line lnum
                             :column col
                             :ns ns-str
@@ -44,11 +44,11 @@
 
 (m/=> evaluate-current-list [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-list
-  [{:as elin :component/keys [writer]}]
-  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
-          ns-str (e.f.v.sexp/get-namespace!! writer)
-          path (e.f.vim/get-full-path!! writer)
-          {:keys [code lnum col]} (e.f.v.sexp/get-list!! writer lnum col)]
+  [{:as elin :component/keys [host]}]
+  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+          ns-str (e.f.v.sexp/get-namespace!! host)
+          path (e.f.vim/get-full-path!! host)
+          {:keys [code lnum col]} (e.f.v.sexp/get-list!! host lnum col)]
     (evaluation* elin code {:line lnum
                             :column col
                             :ns ns-str
@@ -56,11 +56,11 @@
 
 (m/=> evaluate-current-expr [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-expr
-  [{:as elin :component/keys [writer]}]
-  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
-          ns-str (e.f.v.sexp/get-namespace!! writer)
-          path (e.f.vim/get-full-path!! writer)
-          {:keys [code lnum col]} (e.f.v.sexp/get-expr!! writer lnum col)]
+  [{:as elin :component/keys [host]}]
+  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+          ns-str (e.f.v.sexp/get-namespace!! host)
+          path (e.f.vim/get-full-path!! host)
+          {:keys [code lnum col]} (e.f.v.sexp/get-expr!! host lnum col)]
     (evaluation* elin code {:line lnum
                             :column col
                             :ns ns-str
@@ -68,7 +68,7 @@
 
 (m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
 (defn load-current-file
-  [{:component/keys [nrepl writer]}]
-  (e/let [path (e.f.vim/get-full-path!! writer)]
+  [{:component/keys [nrepl host]}]
+  (e/let [path (e.f.vim/get-full-path!! host)]
     (e.f.n.op/load-file!! nrepl path)
     true))

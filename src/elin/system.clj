@@ -4,7 +4,7 @@
    [elin.component.clj-kondo :as e.c.clj-kondo]
    [elin.component.handler :as e.c.handler]
    [elin.component.interceptor :as e.c.interceptor]
-   [elin.component.lazy-writer :as e.c.lazy-writer]
+   [elin.component.lazy-host :as e.c.lazy-host]
    [elin.component.nrepl :as e.c.nrepl]
    [elin.component.plugin :as e.c.plugin]
    [elin.component.server :as e.c.server]
@@ -16,31 +16,31 @@
    (new-system {:server {:port 0}}))
   ([config]
    (component/system-map
-    :lazy-writer (e.c.lazy-writer/new-lazy-writer config)
+    :lazy-host (e.c.lazy-host/new-lazy-host config)
 
     :plugin (component/using
              (e.c.plugin/new-plugin config)
-             [:lazy-writer])
+             [:lazy-host])
 
     :interceptor (component/using
                   (e.c.interceptor/new-interceptor config)
-                  [:lazy-writer
+                  [:lazy-host
                    :plugin])
 
     :nrepl (component/using
             (e.c.nrepl/new-nrepl config)
             [:interceptor
-             :lazy-writer])
+             :lazy-host])
 
     :clj-kondo (component/using
                 (e.c.clj-kondo/new-clj-kondo config)
-                [:lazy-writer
+                [:lazy-host
                  :nrepl])
 
     :handler (component/using
               (e.c.handler/new-handler config)
               [:interceptor
-               :lazy-writer
+               :lazy-host
                :nrepl
                :plugin])
 
@@ -48,9 +48,9 @@
     :http-server (component/using
                   (e.c.s.http/new-http-server config)
                   [:handler
-                   :lazy-writer])
+                   :lazy-host])
 
     :server (component/using
              (e.c.server/new-server config)
              [:handler
-              :lazy-writer]))))
+              :lazy-host]))))

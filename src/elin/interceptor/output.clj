@@ -6,6 +6,6 @@
 (def print-output-interceptor
   {:name ::print-output-interceptor
    :kind e.c.interceptor/output
-   :enter (fn [{:as ctx :keys [writer output]}]
-            (e.f.vim/call!! writer "elin#internal#buffer#info#append" [(pr-str output)])
+   :enter (fn [{:as ctx :keys [host output]}]
+            (e.f.vim/call!! host "elin#internal#buffer#info#append" [(pr-str output)])
             ctx)})

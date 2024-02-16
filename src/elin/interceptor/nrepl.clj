@@ -31,19 +31,19 @@
 (def output-eval-result-to-cmdline-interceptor
   {:name ::output-eval-result-to-cmdline-interceptor
    :kind e.c.interceptor/nrepl
-   :leave (fn [{:as ctx :keys [request writer response]}]
+   :leave (fn [{:as ctx :keys [request host response]}]
             (when (= "eval" (:op request))
               (when-let [v (:value (e.u.nrepl/merge-messages response))]
-                (e.p.rpc/echo-text writer (str v))))
+                (e.p.rpc/echo-text host (str v))))
             ctx)})
 
 (def set-eval-result-to-virtual-text-interceptor
   {:name ::set-eval-result-to-virtual-text-interceptor
    :kind e.c.interceptor/nrepl
-   :leave (fn [{:as ctx :keys [request writer response]}]
+   :leave (fn [{:as ctx :keys [request host response]}]
             (when (= "eval" (:op request))
               (when-let [v (:value (e.u.nrepl/merge-messages response))]
-                (e.f.v.virtual-text/set writer
+                (e.f.v.virtual-text/set host
                                         (str v)
                                         {:highlight "DiffText"})))
             ctx)})

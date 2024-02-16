@@ -1,4 +1,4 @@
-(ns elin.test-helper.writer
+(ns elin.test-helper.host
   (:require
    [clojure.core.async :as async]
    [elin.protocol.rpc :as e.p.rpc]
@@ -7,8 +7,8 @@
    [elin.util.id :as e.u.id]
    [malli.core :as m]))
 
-(defrecord TestWriter ; {{{
-  [writer-store outputs option]
+(defrecord TestHost ; {{{
+  [host-store outputs option]
   e.p.rpc/IHost
   (request! [_ content]
     (let [id (e.u.id/next-id)
@@ -41,12 +41,12 @@
   (echo-message [_ text _highlight]
     (swap! outputs conj text)))
 
-(defn get-outputs [test-writer]
-  @(:outputs test-writer))
+(defn get-outputs [test-host]
+  @(:outputs test-host))
 
-(m/=> test-writer [:=> [:cat h.message/?TestMessageOption] e.s.server/?Writer])
-(defn test-writer
+(m/=> test-host [:=> [:cat h.message/?TestMessageOption] e.s.server/?Host])
+(defn test-host
   [option]
-  (map->TestWriter {:writer-store (atom nil)
-                    :outputs (atom [])
-                    :option option}))
+  (map->TestHost {:host-store (atom nil)
+                  :outputs (atom [])
+                  :option option}))

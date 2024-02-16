@@ -9,11 +9,11 @@
 
 (m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
 (defn jump-to-definition
-  [{:component/keys [nrepl writer]}]
-  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
-          ns (e.f.v.sexp/get-namespace!! writer)
-          {:keys [code]} (e.f.v.sexp/get-expr!! writer lnum col)
+  [{:component/keys [nrepl host]}]
+  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+          ns (e.f.v.sexp/get-namespace!! host)
+          {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
           {:keys [file line column]} (e.f.n.op/lookup!! nrepl ns code)]
     (when (and file line)
-      (e.f.vim/jump!! writer file line (or column 1)))
+      (e.f.vim/jump!! host file line (or column 1)))
     true))

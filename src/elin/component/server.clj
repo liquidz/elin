@@ -12,8 +12,8 @@
    java.net.ServerSocket))
 
 (defn on-accept
-  [handler lazy-writer {:keys [message host]}]
-  (e.p.rpc/set-writer! lazy-writer host)
+  [handler lazy-host {:keys [message host]}]
+  (e.p.rpc/set-host! lazy-host host)
 
   (if (e.p.rpc/response? message)
     ;; Receive response
@@ -40,7 +40,7 @@
 
 (defrecord Server
   [host port server-socket server stop-signal
-   handler lazy-writer]
+   handler lazy-host]
   component/Lifecycle
   (start [this]
     (when-not server
@@ -50,7 +50,7 @@
             handler' (:handler handler)
             server-arg {:host host
                         :server-socket server-socket
-                        :on-accept (partial on-accept handler' lazy-writer)
+                        :on-accept (partial on-accept handler' lazy-host)
                         :stop-signal stop-signal}
             server (future
                      (if (= e.c.host/nvim host)

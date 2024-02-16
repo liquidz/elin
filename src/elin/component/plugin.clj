@@ -24,18 +24,18 @@
        (str/join ":")
        (b.classpath/add-classpath)))
 
-(m/=> load-plugin [:=> [:cat e.s.server/?Writer string?] [:maybe e.s.plugin/?Plugin]])
+(m/=> load-plugin [:=> [:cat e.s.server/?Host string?] [:maybe e.s.plugin/?Plugin]])
 (defn- load-plugin
-  [lazy-writer edn-file]
+  [lazy-host edn-file]
   (let [content (edn/read-string (slurp edn-file))
         err (validation-error content)]
     (if err
-      (e.log/error lazy-writer "Invalid plugin.edn: " (pr-str err))
+      (e.log/error lazy-host "Invalid plugin.edn: " (pr-str err))
       content)))
 
-(m/=> load-plugins [:=> [:cat e.s.server/?Writer [:sequential string?]] e.s.plugin/?Plugin])
+(m/=> load-plugins [:=> [:cat e.s.server/?Host [:sequential string?]] e.s.plugin/?Plugin])
 (defn- load-plugins
-  [lazy-writer edn-files]
+  [lazy-host edn-files]
   (loop [[edn-file & rest-edn-files] edn-files
          loaded-files #{}
          result {:name (str ::plugin)
@@ -49,7 +49,7 @@
       (recur rest-edn-files loaded-files result)
 
       :else
-      (let [{:as content :keys [handlers interceptors]} (load-plugin lazy-writer edn-file)
+      (let [{:as content :keys [handlers interceptors]} (load-plugin lazy-host edn-file)
             loaded-files' (cond-> loaded-files
                             content
                             (conj edn-file))
@@ -61,11 +61,11 @@
         (recur rest-edn-files loaded-files' result')))))
 
 (defrecord Plugin
-  [lazy-writer edn-files loaded-plugin]
+  [lazy-host edn-files loaded-plugin]
   component/Lifecycle
   (start [this]
     (add-classpaths! edn-files)
-    (assoc this :loaded-plugin (load-plugins lazy-writer (or edn-files []))))
+    (assoc this :loaded-plugin (load-plugins lazy-host (or edn-files []))))
 
   (stop [this]
     (dissoc this :loaded-plugin)))

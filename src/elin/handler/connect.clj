@@ -14,24 +14,24 @@
    [:catn
     [:port int?]]
    [:catn
-    [:host string?]
+    [:hostname string?]
     [:port int?]]])
 
 (m/=> connect [:=> [:cat e.s.handler/?Elin] any?])
 (defn connect
-  [{:as elin :component/keys [nrepl interceptor writer] :keys [message]}]
-  (let [[{:keys [host port]} error] (e.u.param/parse ?Params (:params message))]
+  [{:as elin :component/keys [nrepl interceptor host] :keys [message]}]
+  (let [[{:keys [hostname port]} error] (e.u.param/parse ?Params (:params message))]
     (if error
-      (e.log/error writer "Invalid parameter" error)
+      (e.log/error host "Invalid parameter" error)
       (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/connect %&)
-            result (-> {:elin elin :host host :port port}
+            result (-> {:elin elin :hostname hostname :port port}
                        (intercept
-                        (fn [{:as ctx :keys [host port]}]
-                          (if (and host port)
-                            (let [client (e.p.nrepl/add-client! nrepl host port)]
+                        (fn [{:as ctx :keys [hostname port]}]
+                          (if (and hostname port)
+                            (let [client (e.p.nrepl/add-client! nrepl hostname port)]
                               (e.p.nrepl/switch-client! nrepl client)
                               (assoc ctx :client client))
                             ctx))))]
         (if (contains? result :client)
-          (e.log/info writer (format "Connected to %s:%s" (:host result) (:port result)))
-          (e.log/warning writer "Host or port is not specified." (pr-str (select-keys result [:host :port]))))))))
+          (e.log/info host (format "Connected to %s:%s" (:hostname result) (:port result)))
+          (e.log/warning host "Host or port is not specified." (pr-str (select-keys result [:hostname :port]))))))))

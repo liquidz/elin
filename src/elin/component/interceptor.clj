@@ -16,11 +16,11 @@
 
 (def ^:private config-key :interceptor)
 
-(defn- resolve-interceptor [lazy-writer sym]
+(defn- resolve-interceptor [lazy-host sym]
   (try
     (deref (requiring-resolve sym))
     (catch Exception ex
-      (e.log/warning lazy-writer "Failed to resolve interceptor" {:symbol sym :ex ex})
+      (e.log/warning lazy-host "Failed to resolve interceptor" {:symbol sym :ex ex})
       nil)))
 
 (defn- valid-interceptor?
@@ -28,7 +28,7 @@
   (m/validate e.s.interceptor/?Interceptor x))
 
 (defrecord Interceptor
-  [lazy-writer     ; LazyWriter component
+  [lazy-host       ; LazyHost component
    plugin          ; Plugin component
    includes
    excludes
@@ -40,16 +40,16 @@
                                             (or (get-in plugin [:loaded-plugin :interceptors]) []))
                                     (distinct)
                                     (remove #(contains? exclude-set %))
-                                    (keep #(resolve-interceptor lazy-writer %))
+                                    (keep #(resolve-interceptor lazy-host %))
                                     (group-by valid-interceptor?))
           interceptor-map (group-by :kind (get grouped-interceptors true))]
       (when-let [invalid-interceptors (seq (get grouped-interceptors false))]
         (e.log/debug "Invalid interceptors:" invalid-interceptors)
-        (e.log/warning lazy-writer "Invalid interceptors:" invalid-interceptors))
-      (e.log/debug lazy-writer "Interceptor component: Started")
+        (e.log/warning lazy-host "Invalid interceptors:" invalid-interceptors))
+      (e.log/debug lazy-host "Interceptor component: Started")
       (assoc this :interceptor-map interceptor-map)))
   (stop [this]
-    (e.log/debug lazy-writer "Interceptor component: Stopped")
+    (e.log/debug lazy-host "Interceptor component: Stopped")
     (dissoc this :interceptor-map))
 
   e.p.interceptor/IInterceptor
@@ -67,7 +67,7 @@
       (try
         (interceptor/execute context' (concat interceptors [terminator']))
         (catch Exception ex
-          (e.log/error lazy-writer "Failed to intercept:" (ex-message ex))))))
+          (e.log/error lazy-host "Failed to intercept:" (ex-message ex))))))
 
   e.p.config/IConfigure
   (configure [this config]
@@ -76,7 +76,7 @@
                            (map keyword)
                            (set))
           grouped (->> (or includes [])
-                       (keep #(resolve-interceptor lazy-writer %))
+                       (keep #(resolve-interceptor lazy-host %))
                        (group-by valid-interceptor?))
           include-map (group-by :kind (get grouped true))
           configured (reduce-kv

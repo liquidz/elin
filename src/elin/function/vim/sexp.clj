@@ -15,32 +15,32 @@
    [:lnum int?]
    [:col int?]])
 
-(m/=> get-top-list!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or ?CodeAndPosition)])
+(m/=> get-top-list!! [:=> [:cat e.s.server/?Host int? int?] (e.schema/error-or ?CodeAndPosition)])
 (defn get-top-list!!
-  [writer lnum col]
-  (-> (e.f.vim/call writer "elin#internal#sexp#get_top_list" [lnum col])
+  [host lnum col]
+  (-> (e.f.vim/call host "elin#internal#sexp#get_top_list" [lnum col])
       (async/<!!)
       (update-keys keyword)))
 
-(m/=> get-list!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or ?CodeAndPosition)])
+(m/=> get-list!! [:=> [:cat e.s.server/?Host int? int?] (e.schema/error-or ?CodeAndPosition)])
 (defn get-list!!
-  [writer lnum col]
-  (-> (e.f.vim/call writer "elin#internal#sexp#get_list" [lnum col])
+  [host lnum col]
+  (-> (e.f.vim/call host "elin#internal#sexp#get_list" [lnum col])
       (async/<!!)
       (update-keys keyword)))
 
-(m/=> get-expr!! [:=> [:cat e.s.server/?Writer int? int?] (e.schema/error-or ?CodeAndPosition)])
+(m/=> get-expr!! [:=> [:cat e.s.server/?Host int? int?] (e.schema/error-or ?CodeAndPosition)])
 (defn get-expr!!
-  [writer lnum col]
-  (-> (e.f.vim/call writer "elin#internal#sexp#get_expr" [lnum col])
+  [host lnum col]
+  (-> (e.f.vim/call host "elin#internal#sexp#get_expr" [lnum col])
       (async/<!!)
       (update-keys keyword)))
 
-(m/=> get-namespace!! [:=> [:cat e.s.server/?Writer] (e.schema/error-or [:maybe string?])])
+(m/=> get-namespace!! [:=> [:cat e.s.server/?Host] (e.schema/error-or [:maybe string?])])
 (defn get-namespace!!
-  [writer]
+  [host]
   (try
-    (e/let [ns-form (async/<!! (e.f.vim/call writer "elin#internal#sexp#clojure#get_ns_form" []))
+    (e/let [ns-form (async/<!! (e.f.vim/call host "elin#internal#sexp#clojure#get_ns_form" []))
             target-sym (if (str/includes? ns-form "in-ns") 'in-ns 'ns)]
       (when (seq ns-form)
         (-> ns-form

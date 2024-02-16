@@ -5,7 +5,7 @@
    [elin.component.nrepl :as e.c.nrepl]
    [elin.component.nrepl.client :as e.c.n.client]
    [elin.protocol.nrepl :as e.p.nrepl]
-   [elin.test-helper.writer :as h.writer]))
+   [elin.test-helper.host :as h.host]))
 
 (defn- nrepl-connectin-default-handler
   [msg]
@@ -66,16 +66,16 @@
 
 (defn test-nrepl
   [option]
-  (let [writer (h.writer/test-writer (merge {:handler identity}
-                                            (or (:lazy-writer option) {})))
+  (let [host (h.host/test-host (merge {:handler identity}
+                                      (or (:lazy-host option) {})))
         interceptor (e.c.interceptor/new-interceptor
-                     {:interceptor (merge {:lazy-writer writer
+                     {:interceptor (merge {:lazy-host host
                                            :interceptor-map {}}
                                           (or (:interceptor option) {}))})
         client (test-nrepl-client (or (:client option) {}))
         nrepl (e.c.nrepl/new-nrepl
                {:nrepl {:interceptor interceptor
-                        :lazy-writer writer}})]
+                        :lazy-host host}})]
     (e.p.nrepl/add-client! nrepl client)
     (e.p.nrepl/switch-client! nrepl client)
     nrepl))
@@ -83,10 +83,10 @@
 (comment
   (let [
         option {}
-        writer (h.writer/test-writer (merge {:handler identity}
-                                            (or (:lazy-writer option) {})))
+        host (h.host/test-host (merge {:handler identity}
+                                      (or (:lazy-host option) {})))
         interceptor (e.c.interceptor/new-interceptor
-                      {:interceptor (merge {:lazy-writer writer
+                      {:interceptor (merge {:lazy-host host
                                             :interceptor-map {}}
                                            (or (:interceptor option) {}))})]
 

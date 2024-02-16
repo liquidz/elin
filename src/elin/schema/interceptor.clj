@@ -26,19 +26,19 @@
 
 (def ?OutputContext
   [:map
-   [:writer e.s.server/?Writer]
+   [:host e.s.server/?Host]
    [:output e.s.nrepl/?Output]])
 
 (def ?ConnectContext
   [:map
    [:elin e.s.handler/?Elin]
-   [:host [:maybe string?]]
+   [:hostname [:maybe string?]]
    [:port [:maybe int?]]])
 
 (def ?NreplContext
   [:map
    [:request e.s.nrepl/?Message]
-   [:writer e.s.server/?Writer]])
+   [:host e.s.server/?Host]])
 
 (def ?AutocmdContext
   [:map

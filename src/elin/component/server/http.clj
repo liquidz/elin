@@ -52,12 +52,12 @@
          m))
 
 (defrecord HttpServer
-  [lazy-writer handler host port stop-server]
+  [lazy-host handler host port stop-server]
   component/Lifecycle
   (start [this]
     (let [port' (get-empty-port)]
       (async/go
-        (e.f.vim/set-variable! lazy-writer
+        (e.f.vim/set-variable! lazy-host
                                e.c.server/http-server-port-variable
                                port'))
       (assoc this

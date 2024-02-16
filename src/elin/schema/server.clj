@@ -8,8 +8,8 @@
    [:host string?]
    [:message [:sequential any?]]])
 
-(def ?Writer
+(def ?Host
   [:or
    [:map
     [:output-stream (e.schema/?instance java.io.OutputStream)]]
-   e.s.component/?LazyWriter])
+   e.s.component/?LazyHost])

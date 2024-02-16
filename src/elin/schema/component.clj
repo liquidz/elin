@@ -6,19 +6,19 @@
 (def ?Atom
   (e.schema/?instance clojure.lang.Atom))
 
-(def ?LazyWriter
+(def ?LazyHost
   [:map
-   [:writer-store (e.schema/?instance clojure.lang.Atom)]])
+   [:host-store (e.schema/?instance clojure.lang.Atom)]])
 
 (def ?Interceptor
   [:map
-   [:lazy-writer ?LazyWriter]
+   [:lazy-host ?LazyHost]
    [:interceptor-map [:map-of keyword? any?]]])
 
 (def ^:private NreplComponent
   [:map
    [:interceptor ?Interceptor]
-   [:lazy-writer ?LazyWriter]
+   [:lazy-host ?LazyHost]
    [:clients-store ?Atom]
    [:current-client-key-store ?Atom]])
 

@@ -13,7 +13,7 @@
   (let [edn-file (.getAbsolutePath (io/file "example-plugin" "plugin.edn"))
         config {:plugin {:edn-files [edn-file]}}
         {:as sys :keys [plugin]} (-> (e.system/new-system config)
-                                     (select-keys [:lazy-writer :plugin])
+                                     (select-keys [:lazy-host :plugin])
                                      (component/start-system))]
     (try
       (t/is (= {:name (str ::sut/plugin)
@@ -25,7 +25,7 @@
 
 (t/deftest new-plugin-no-plugin-test
   (let [{:as sys :keys [plugin]} (-> (e.system/new-system)
-                                     (select-keys [:lazy-writer :plugin])
+                                     (select-keys [:lazy-host :plugin])
                                      (component/start-system))]
     (try
       (t/is (= {:name (str ::sut/plugin)

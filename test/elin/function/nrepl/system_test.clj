@@ -16,7 +16,7 @@
 
 (t/deftest get-system-info-test
   (let [{:as sys :keys [nrepl]} (-> (e.system/new-system)
-                                    (select-keys [:interceptor :nrepl :plugin :lazy-writer])
+                                    (select-keys [:interceptor :nrepl :plugin :lazy-host])
                                     (component/start-system))]
     (try
       (let [client (e.p.nrepl/add-client! nrepl "localhost" h/*nrepl-server-port*)]

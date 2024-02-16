@@ -5,27 +5,27 @@
    [elin.function.vim  :as e.f.vim]))
 
 (defn open
-  ([writer s]
-   (open writer s {}))
-  ([writer s options]
+  ([host s]
+   (open host s {}))
+  ([host s options]
    (let [texts (str/split-lines s)]
-     (e.f.vim/call writer "elin#internal#popup#open" [texts options]))))
+     (e.f.vim/call host "elin#internal#popup#open" [texts options]))))
 
 (defn open!!
-  ([writer s]
-   (open!! writer s {}))
-  ([writer s options]
-   (async/<!! (open writer s options))))
+  ([host s]
+   (open!! host s {}))
+  ([host s options]
+   (async/<!! (open host s options))))
 
 (defn move
-  [writer winid lnum col]
-  (e.f.vim/notify writer "elin#internal#popup#move" [winid lnum col]))
+  [host winid lnum col]
+  (e.f.vim/notify host "elin#internal#popup#move" [winid lnum col]))
 
 (defn set-text
-  [writer winid s]
+  [host winid s]
   (let [texts (str/split-lines s)]
-    (e.f.vim/notify writer "elin#internal#popup#set_texts" [winid texts])))
+    (e.f.vim/notify host "elin#internal#popup#set_texts" [winid texts])))
 
 (defn close
-  [writer winid]
-  (e.f.vim/notify writer "elin#internal#popup#close" [winid]))
+  [host winid]
+  (e.f.vim/notify host "elin#internal#popup#close" [winid]))

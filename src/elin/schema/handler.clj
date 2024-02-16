@@ -7,7 +7,7 @@
   [:map
    [:component/nrepl any?]
    [:component/interceptor any?]
-   [:component/writer e.s.server/?Writer]])
+   [:component/host e.s.server/?Host]])
 
 (def ?Elin
   (m.util/merge

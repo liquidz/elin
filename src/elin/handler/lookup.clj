@@ -100,13 +100,13 @@
     (generate-cljdoc lookup-resp)))
 
 (defn lookup
-  [{:component/keys [nrepl writer]}]
-  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! writer)
-          ns-str (e.f.v.sexp/get-namespace!! writer)
-          {:keys [code]} (e.f.v.sexp/get-expr!! writer lnum col)
+  [{:component/keys [nrepl host]}]
+  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+          ns-str (e.f.v.sexp/get-namespace!! host)
+          {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
           resp (e.f.n.c.op/info!! nrepl ns-str code)]
     (e.f.v.popup/open!!
-     writer
+     host
      (generate-doc resp)
      {:line "near-cursor"
       :border []

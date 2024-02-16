@@ -14,7 +14,7 @@
 
 (t/deftest new-nrepl-test
   (let [{:as sys :keys [nrepl]} (-> (e.system/new-system)
-                                    (select-keys [:interceptor :nrepl :plugin :lazy-writer])
+                                    (select-keys [:interceptor :nrepl :plugin :lazy-host])
                                     (component/start-system))]
     (try
       (t/is (nil? (e.p.nrepl/current-client nrepl)))

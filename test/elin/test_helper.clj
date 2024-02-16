@@ -1,9 +1,9 @@
 (ns elin.test-helper
   (:require
    [babashka.nrepl.server :as b.n.server]
+   [elin.test-helper.host :as h.host]
    [elin.test-helper.message :as h.message]
    [elin.test-helper.nrepl :as h.nrepl]
-   [elin.test-helper.writer :as h.writer]
    [malli.dev.pretty :as m.d.pretty]
    [malli.instrument :as m.inst]))
 
@@ -31,8 +31,8 @@
    (= fn-name (first (nth msg 3)))))
 
 (def test-message #'h.message/test-message)
-(def get-outputs #'h.writer/get-outputs)
-(def test-writer #'h.writer/test-writer)
+(def get-outputs #'h.host/get-outputs)
+(def test-host #'h.host/test-host)
 (def test-nrepl-connection #'h.nrepl/test-nrepl-connection)
 (def test-nrepl-client #'h.nrepl/test-nrepl-client)
 (def test-nrepl #'h.nrepl/test-nrepl)

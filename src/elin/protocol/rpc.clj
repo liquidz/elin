@@ -5,8 +5,8 @@
   (response? [this])
   (parse-message [this]))
 
-(defprotocol ILazyWriter
-  (set-writer! [this writer]))
+(defprotocol ILazyHost
+  (set-host! [this host]))
 
 (defprotocol IHost
   (request! [this content])

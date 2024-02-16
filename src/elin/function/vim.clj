@@ -10,13 +10,13 @@
    [malli.core :as m]))
 
 (m/=> call [:=>
-            [:cat e.s.server/?Writer string? [:sequential any?]]
+            [:cat e.s.server/?Host string? [:sequential any?]]
             e.schema/?ManyToManyChannel])
 (defn call
-  [writer fn-name params]
+  [host fn-name params]
   (async/go
     (let [{:keys [result error]} (->> (e.u.server/format params)
-                                      (e.p.rpc/call-function writer fn-name)
+                                      (e.p.rpc/call-function host fn-name)
                                       (async/<!))]
       (if error
         (e/fault {:message (str "Failed to call function: " error)
@@ -24,88 +24,88 @@
                   :params params})
         result))))
 
-(m/=> notify [:=> [:cat e.s.server/?Writer string? [:sequential any?]] :nil])
+(m/=> notify [:=> [:cat e.s.server/?Host string? [:sequential any?]] :nil])
 (defn notify
-  [writer fn-name params]
+  [host fn-name params]
   (->> (map e.u.server/format params)
-       (e.p.rpc/notify-function writer fn-name))
+       (e.p.rpc/notify-function host fn-name))
   nil)
 
-(m/=> luaeval [:=> [:cat e.s.server/?Writer string? [:sequential any?]]
+(m/=> luaeval [:=> [:cat e.s.server/?Host string? [:sequential any?]]
                e.schema/?ManyToManyChannel])
-(defn luaeval [writer code args]
-  (call writer "luaeval" [code args]))
+(defn luaeval [host code args]
+  (call host "luaeval" [code args]))
 
-(m/=> call!! [:=> [:cat e.s.server/?Writer string? [:sequential any?]] any?])
-(defn call!! [writer function-name params]
-  (async/<!! (call writer function-name params)))
+(m/=> call!! [:=> [:cat e.s.server/?Host string? [:sequential any?]] any?])
+(defn call!! [host function-name params]
+  (async/<!! (call host function-name params)))
 
-(m/=> get-current-working-directory!! [:=> [:cat e.s.server/?Writer [:* any?]] (e.schema/error-or string?)])
+(m/=> get-current-working-directory!! [:=> [:cat e.s.server/?Host [:* any?]] (e.schema/error-or string?)])
 (defn get-current-working-directory!!
-  [writer & extra-params]
+  [host & extra-params]
   (let [params (or extra-params [])]
-    (async/<!! (call writer "getcwd" params))))
+    (async/<!! (call host "getcwd" params))))
 
-(m/=> get-current-file-path!! [:=> [:cat e.s.server/?Writer] (e.schema/error-or string?)])
+(m/=> get-current-file-path!! [:=> [:cat e.s.server/?Host] (e.schema/error-or string?)])
 (defn get-current-file-path!!
-  [writer]
-  (async/<!! (call writer "expand" ["%:p"])))
+  [host]
+  (async/<!! (call host "expand" ["%:p"])))
 
-(m/=> get-cursor-position!! [:=> [:cat e.s.server/?Writer [:* any?]] (e.schema/error-or e.s.vim/?Position)])
+(m/=> get-cursor-position!! [:=> [:cat e.s.server/?Host [:* any?]] (e.schema/error-or e.s.vim/?Position)])
 (defn get-cursor-position!!
-  [writer & extra-params]
+  [host & extra-params]
   (e/let [params (or extra-params [])
-          [bufnum lnum col off curswant] (async/<!! (call writer "getcurpos" params))]
+          [bufnum lnum col off curswant] (async/<!! (call host "getcurpos" params))]
     {:bufname bufnum
      :lnum lnum
      :col col
      :off off
      :curswant curswant}))
 
-(m/=> get-full-path!! [:=> [:cat e.s.server/?Writer] (e.schema/error-or string?)])
+(m/=> get-full-path!! [:=> [:cat e.s.server/?Host] (e.schema/error-or string?)])
 (defn get-full-path!!
-  [writer]
-  (async/<!! (call writer "expand" ["%:p"])))
+  [host]
+  (async/<!! (call host "expand" ["%:p"])))
 
-(m/=> jump!! [:=> [:cat e.s.server/?Writer string? int? int? [:* any?]] [:maybe e.schema/?Error]])
+(m/=> jump!! [:=> [:cat e.s.server/?Host string? int? int? [:* any?]] [:maybe e.schema/?Error]])
 (defn jump!!
-  [writer path lnum col & [jump-command]]
+  [host path lnum col & [jump-command]]
   (let [jump-command (or jump-command "edit")
-        res (async/<!! (call writer "elin#internal#jump" [path lnum col jump-command]))]
+        res (async/<!! (call host "elin#internal#jump" [path lnum col jump-command]))]
     (when (e/error? res)
       res)))
 
-(m/=> eval!! [:=> [:cat e.s.server/?Writer string?] any?])
+(m/=> eval!! [:=> [:cat e.s.server/?Host string?] any?])
 (defn eval!!
-  [writer s]
-  (async/<!! (call writer "elin#internal#eval" [s])))
+  [host s]
+  (async/<!! (call host "elin#internal#eval" [s])))
 
-(m/=> execute! [:=> [:cat e.s.server/?Writer string?] e.schema/?ManyToManyChannel])
+(m/=> execute! [:=> [:cat e.s.server/?Host string?] e.schema/?ManyToManyChannel])
 (defn execute!
-  [writer cmd]
-  (call writer "elin#internal#execute" [cmd]))
+  [host cmd]
+  (call host "elin#internal#execute" [cmd]))
 
-(m/=> execute!! [:=> [:cat e.s.server/?Writer string?] any?])
+(m/=> execute!! [:=> [:cat e.s.server/?Host string?] any?])
 (defn execute!!
-  [writer cmd]
-  (async/<!! (execute! writer cmd)))
+  [host cmd]
+  (async/<!! (execute! host cmd)))
 
-(m/=> get-variable!! [:=> [:cat e.s.server/?Writer string?] any?])
+(m/=> get-variable!! [:=> [:cat e.s.server/?Host string?] any?])
 (defn get-variable!!
-  [writer var-name]
-  (eval!! writer (format "exists('%s') ? %s : v:null" var-name var-name)))
+  [host var-name]
+  (eval!! host (format "exists('%s') ? %s : v:null" var-name var-name)))
 
-(m/=> set-variable! [:=> [:cat e.s.server/?Writer string? any?] e.schema/?ManyToManyChannel])
+(m/=> set-variable! [:=> [:cat e.s.server/?Host string? any?] e.schema/?ManyToManyChannel])
 (defn set-variable!
-  [writer var-name value]
+  [host var-name value]
   (let [value' (cond
                  (string? value) (str "'" value "'")
                  (true? value) "v:true"
                  (false? value) "v:false"
                  :else value)]
-    (execute! writer (format "let %s = %s" var-name value'))))
+    (execute! host (format "let %s = %s" var-name value'))))
 
-(m/=> set-variable!! [:=> [:cat e.s.server/?Writer string? any?] :nil])
+(m/=> set-variable!! [:=> [:cat e.s.server/?Host string? any?] :nil])
 (defn set-variable!!
-  [writer var-name value]
-  (async/<!! (set-variable! writer var-name value)))
+  [host var-name value]
+  (async/<!! (set-variable! host var-name value)))

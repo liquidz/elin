@@ -1,4 +1,4 @@
-(ns elin.component.lazy-writer-test
+(ns elin.component.lazy-host-test
   (:require
    [clojure.core.async :as async]
    [clojure.test :as t]
@@ -9,17 +9,17 @@
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 
-(t/deftest new-lazy-writer-test
-  (let [{:as sys :keys [lazy-writer]} (-> (e.system/new-system)
-                                          (select-keys [:lazy-writer])
-                                          (component/start-system))
+(t/deftest new-lazy-host-test
+  (let [{:as sys :keys [lazy-host]} (-> (e.system/new-system)
+                                        (select-keys [:lazy-host])
+                                        (component/start-system))
         wrote (atom [])
-        writer (h/test-writer {:handler #(do (swap! wrote conj %)
-                                             "OK")})]
+        host (h/test-host {:handler #(do (swap! wrote conj %)
+                                         "OK")})]
     (try
-      (e.p.rpc/notify! lazy-writer ["before"])
-      (e.p.rpc/set-writer! lazy-writer writer)
-      (e.p.rpc/notify! lazy-writer ["after"])
+      (e.p.rpc/notify! lazy-host ["before"])
+      (e.p.rpc/set-host! lazy-host host)
+      (e.p.rpc/notify! lazy-host ["after"])
 
       (t/is (= [[2 "after"]] @wrote))
 

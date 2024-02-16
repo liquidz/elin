@@ -9,8 +9,8 @@
 
 (m/=> initialize [:=> [:cat e.s.handler/?Elin] any?])
 (defn initialize
-  [{:component/keys [writer]}]
-  (e.f.vim/notify writer "elin#internal#buffer#info#ready" [])
+  [{:component/keys [host]}]
+  (e.f.vim/notify host "elin#internal#buffer#info#ready" [])
   true)
 
 (m/=> intercept [:=> [:cat e.s.handler/?Elin] any?])
@@ -22,6 +22,6 @@
     true))
 
 (defn error
-  [{:component/keys [writer] :keys [message]}]
-  (e.log/error writer (str "Unexpected error: " (pr-str (:params message))))
+  [{:component/keys [host] :keys [message]}]
+  (e.log/error host (str "Unexpected error: " (pr-str (:params message))))
   true)

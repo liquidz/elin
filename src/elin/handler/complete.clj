@@ -45,14 +45,14 @@
        (sort-by :word)))
 
 (defn- cider-nrepl-complete
-  [{:component/keys [nrepl writer]} prefix]
-  (e/let [ns-str (e.f.v.sexp/get-namespace!! writer)
+  [{:component/keys [nrepl hsot]} prefix]
+  (e/let [ns-str (e.f.v.sexp/get-namespace!! hsot)
           candidates (e.f.n.c.op/complete!! nrepl ns-str prefix)]
     (format-candidates candidates)))
 
 (defn- nrepl-completions
-  [{:component/keys [nrepl writer]} prefix]
-  (e/let [ns-str (e.f.v.sexp/get-namespace!! writer)
+  [{:component/keys [nrepl hsot]} prefix]
+  (e/let [ns-str (e.f.v.sexp/get-namespace!! hsot)
           candidates (e.f.n.op/completions!! nrepl ns-str prefix)]
     (format-candidates candidates)))
 
