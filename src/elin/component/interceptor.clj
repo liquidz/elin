@@ -44,7 +44,7 @@
                                     (group-by valid-interceptor?))
           interceptor-map (group-by :kind (get grouped-interceptors true))]
       (when-let [invalid-interceptors (seq (get grouped-interceptors false))]
-        (println "Invalid interceptors:" invalid-interceptors)
+        (e.log/debug "Invalid interceptors:" invalid-interceptors)
         (e.log/warning lazy-writer "Invalid interceptors:" invalid-interceptors))
       (e.log/debug lazy-writer "Interceptor component: Started")
       (assoc this :interceptor-map interceptor-map)))
