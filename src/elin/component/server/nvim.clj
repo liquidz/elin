@@ -50,7 +50,7 @@
              :options options'}))
       {})))
 
-(defrecord NvimWriter
+(defrecord NvimHost
   [output-stream response-manager]
   e.p.rpc/IHost
   (request! [_ content]
@@ -113,8 +113,8 @@
                   (on-accept {:message (map->NvimMessage {:host host
                                                           :message raw-msg
                                                           :response-manager response-manager})
-                              :writer (map->NvimWriter {:output-stream output-stream
-                                                        :response-manager response-manager})})
+                              :writer (map->NvimHost {:output-stream output-stream
+                                                      :response-manager response-manager})})
                   (when-not (.isClosed client-sock)
                     (recur))))))
           (e.log/debug "Client socket is closed"))

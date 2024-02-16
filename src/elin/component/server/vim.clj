@@ -49,7 +49,7 @@
          :params params
          :options (e.u.server/unformat options)}))))
 
-(defrecord VimWriter
+(defrecord VimHost
   [output-stream response-manager]
   e.p.rpc/IHost
   (request! [_ [method :as content]]
@@ -111,8 +111,8 @@
                   (on-accept {:message (map->VimMessage {:host host
                                                          :message raw-msg
                                                          :response-manager response-manager})
-                              :writer (map->VimWriter {:output-stream output-stream
-                                                       :response-manager response-manager})})
+                              :writer (map->VimHost {:output-stream output-stream
+                                                     :response-manager response-manager})})
                   (when-not (.isClosed client-sock)
                     (recur))))))
           (e.log/debug "Client socket is closed"))
