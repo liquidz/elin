@@ -12,8 +12,8 @@
    java.net.ServerSocket))
 
 (defn on-accept
-  [handler lazy-writer {:keys [message writer]}]
-  (e.p.rpc/set-writer! lazy-writer writer)
+  [handler lazy-writer {:keys [message host]}]
+  (e.p.rpc/set-writer! lazy-writer host)
 
   (if (e.p.rpc/response? message)
     ;; Receive response
@@ -33,10 +33,10 @@
                         (catch Exception ex
                           [nil (ex-message ex)]))]
         (when (e.p.rpc/request? message)
-          (e.p.rpc/response! writer
+          (e.p.rpc/response! host
                              (:id (e.p.rpc/parse-message message))
                              err res)
-          (e.p.rpc/flush! writer))))))
+          (e.p.rpc/flush! host))))))
 
 (defrecord Server
   [host port server-socket server stop-signal

@@ -113,8 +113,8 @@
                   (on-accept {:message (map->NvimMessage {:host host
                                                           :message raw-msg
                                                           :response-manager response-manager})
-                              :writer (map->NvimHost {:output-stream output-stream
-                                                      :response-manager response-manager})})
+                              :host (map->NvimHost {:output-stream output-stream
+                                                    :response-manager response-manager})})
                   (when-not (.isClosed client-sock)
                     (recur))))))
           (e.log/debug "Client socket is closed"))
