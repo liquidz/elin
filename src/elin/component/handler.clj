@@ -17,9 +17,7 @@
    [elin.schema.handler :as e.s.handler]
    [elin.schema.server :as e.s.server]
    [elin.util.server :as e.u.server]
-   [malli.core :as m]
-   [medley.core :as medley]
-   [msgpack.clojure-extensions]))
+   [malli.core :as m]))
 
 (m/=> resolve-handler [:=> [:cat e.s.server/?Writer qualified-symbol?]
                        [:or :nil [:cat qualified-keyword? fn?]]])
@@ -31,7 +29,8 @@
                    nil))]
     [(keyword sym) f]))
 
-(m/=> build-handler-map [:=> [:cat e.s.server/?Writer [:sequential qualified-symbol?]] e.s.handler/?HandlerMap])
+(m/=> build-handler-map [:=> [:cat e.s.server/?Writer [:sequential qualified-symbol?]]
+                         e.s.handler/?HandlerMap])
 (defn- build-handler-map
   [lazy-writer handler-symbols]
   (reduce (fn [accm sym]
@@ -40,13 +39,13 @@
               accm))
           {} handler-symbols))
 
-;; (m/=> construct-handler-parameter [:=> [:cat] e.s.handler/?Elin])
+(m/=> construct-handler-parameter [:=> [:cat map?] e.s.handler/?Elin])
 (defn- construct-handler-parameter
-  [{:as context :keys [message handler-config-map]}]
+  [{:as context :keys [message config-map]}]
   (let [{:component/keys [interceptor nrepl]} context
         {:as message' :keys [method]} (merge message
                                              (e.p.rpc/parse-message message))
-        handler-config (or (get handler-config-map (symbol method))
+        handler-config (or (get config-map (symbol method))
                            {})
         message-config (some-> (get-in message' [:options :config])
                                (edn/read-string))
@@ -60,14 +59,15 @@
                           :component/nrepl (assoc nrepl :interceptor interceptor')))]
     (assoc context' :message message')))
 
-(m/=> handler [:=> [:cat e.s.handler/?Components map? e.s.handler/?HandlerMap e.s.server/?Message] any?])
+(m/=> handler [:=> [:cat e.s.handler/?Components map? e.s.handler/?HandlerMap e.s.server/?Message]
+               any?])
 (defn- handler
   [{:as components :component/keys [interceptor]}
-   handler-config-map
+   config-map
    handler-map
    message]
   (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
-    (-> (assoc components :message message :handler-config-map handler-config-map)
+    (-> (assoc components :message message :config-map config-map)
         (intercept
          (fn [{:as context :component/keys [writer]}]
            (let [elin (construct-handler-parameter context)
@@ -95,7 +95,7 @@
    plugin          ; Plugin component
    includes
    excludes
-   handler-config-map
+   config-map
    handler-map]
   component/Lifecycle
   (start [this]
@@ -107,7 +107,7 @@
                            (or (get-in plugin [:loaded-plugin :handlers]) []))
           handlers (remove #(contains? exclude-set %) handlers)
           handler-map (build-handler-map lazy-writer handlers)
-          handler (partial handler components handler-config-map handler-map)]
+          handler (partial handler components config-map handler-map)]
       (assoc this
              :handler-map handler-map
              :handler handler)))
@@ -117,7 +117,4 @@
 
 (defn new-handler
   [config]
-  (let [config (or (:handler config) {})
-        component-config (medley/filter-keys keyword? config)]
-    (map->Handler (assoc component-config
-                         :handler-config-map (medley/remove-keys keyword? config)))))
+  (map->Handler (or (:handler config) {})))

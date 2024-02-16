@@ -21,7 +21,7 @@
                       elin.handler.lookup/lookup
                       elin.handler.navigate/jump-to-definition]
 
-           elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.nrepl/output-eval-result-to-cmdline-interceptor]}}
-           elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
-           elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
-           elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}}}
+           :config-map {elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.nrepl/output-eval-result-to-cmdline-interceptor]}}
+                        elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
+                        elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
+                        elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}}}}
