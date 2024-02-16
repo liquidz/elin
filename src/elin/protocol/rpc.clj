@@ -8,7 +8,7 @@
 (defprotocol ILazyWriter
   (set-writer! [this writer]))
 
-(defprotocol IWriter
+(defprotocol IHost
   (request! [this content])
   (notify! [this content])
   (response! [this id error result])

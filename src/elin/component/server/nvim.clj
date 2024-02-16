@@ -52,7 +52,7 @@
 
 (defrecord NvimWriter
   [output-stream response-manager]
-  e.p.rpc/IWriter
+  e.p.rpc/IHost
   (request! [_ content]
     (let [id (e.u.id/next-id)
           ch (async/promise-chan)]

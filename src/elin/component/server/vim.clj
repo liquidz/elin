@@ -51,7 +51,7 @@
 
 (defrecord VimWriter
   [output-stream response-manager]
-  e.p.rpc/IWriter
+  e.p.rpc/IHost
   (request! [_ [method :as content]]
     (let [id (cond
                (= "call" method) (nth content 3)

@@ -9,7 +9,7 @@
 
 (defrecord TestWriter ; {{{
   [writer-store outputs option]
-  e.p.rpc/IWriter
+  e.p.rpc/IHost
   (request! [_ content]
     (let [id (e.u.id/next-id)
           {:keys [handler]} option

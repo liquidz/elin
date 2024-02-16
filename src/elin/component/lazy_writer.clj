@@ -45,7 +45,7 @@
   (set-writer! [_ writer]
     (reset! writer-store writer))
 
-  e.p.rpc/IWriter
+  e.p.rpc/IHost
   (request! [_ content]
     (if-let [writer @writer-store]
       (e.p.rpc/request! writer content)
