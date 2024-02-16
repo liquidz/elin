@@ -46,10 +46,10 @@
       (when-let [invalid-interceptors (seq (get grouped-interceptors false))]
         (println "Invalid interceptors:" invalid-interceptors)
         (e.log/warning lazy-writer "Invalid interceptors:" invalid-interceptors))
-      (e.log/debug "Interceptor component: Started")
+      (e.log/debug lazy-writer "Interceptor component: Started")
       (assoc this :interceptor-map interceptor-map)))
   (stop [this]
-    (e.log/info "Interceptor component: Stopped")
+    (e.log/debug lazy-writer "Interceptor component: Stopped")
     (dissoc this :interceptor-map))
 
   e.p.interceptor/IInterceptor
