@@ -39,8 +39,9 @@
 
 (def ?NreplContext
   [:map
-   [:request e.s.nrepl/?Message]
-   [:host e.s.server/?Host]])
+   [:component/host e.s.server/?Host]
+   [:component/interceptor any?]
+   [:request e.s.nrepl/?Message]])
 
 (def ?AutocmdContext
   [:map

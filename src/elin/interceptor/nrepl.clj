@@ -31,7 +31,7 @@
 (def output-eval-result-to-cmdline-interceptor
   {:name ::output-eval-result-to-cmdline-interceptor
    :kind e.c.interceptor/nrepl
-   :leave (fn [{:as ctx :keys [request host response]}]
+   :leave (fn [{:as ctx :component/keys [host] :keys [request response]}]
             (when (= "eval" (:op request))
               (when-let [v (:value (e.u.nrepl/merge-messages response))]
                 (e.p.rpc/echo-text host (str v))))
@@ -40,7 +40,7 @@
 (def set-eval-result-to-virtual-text-interceptor
   {:name ::set-eval-result-to-virtual-text-interceptor
    :kind e.c.interceptor/nrepl
-   :leave (fn [{:as ctx :keys [request host response]}]
+   :leave (fn [{:as ctx :component/keys [host] :keys [request response]}]
             (when (= "eval" (:op request))
               (when-let [v (:value (e.u.nrepl/merge-messages response))]
                 (e.f.v.virtual-text/set host

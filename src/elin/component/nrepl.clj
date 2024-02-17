@@ -107,7 +107,9 @@
     (if-let [client (e.p.nrepl/current-client this)]
       (async/go
         (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
-          (-> {:request msg :host lazy-host}
+          (-> {:component/host lazy-host
+               :component/interceptor interceptor
+               :request msg}
               (intercept
                (fn [{:as ctx :keys [request]}]
                  (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
