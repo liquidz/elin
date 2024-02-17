@@ -2,7 +2,7 @@
   (:require
    [clojure.edn :as edn]
    [elin.error :as e]
-   [elin.function.nrepl.op :as e.f.n.op]
+   [elin.function.nrepl :as e.f.nrepl]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema :as e.schema]
    [elin.schema.component :as e.s.component]
@@ -26,7 +26,7 @@
 (defn- get-system-info*
   [nrepl]
   (e/->> (str get-system-info-code)
-         (e.f.n.op/eval!! nrepl)
+         (e.f.nrepl/eval!! nrepl)
          (:value)
          (edn/read-string)))
 

@@ -1,4 +1,4 @@
-(ns elin.function.nrepl.op
+(ns elin.function.nrepl
   (:refer-clojure :exclude [eval load-file])
   (:require
    [clojure.core.async :as async]

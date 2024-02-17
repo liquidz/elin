@@ -2,7 +2,7 @@
   (:require
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
-   [elin.function.nrepl.op :as e.f.n.op]
+   [elin.function.nrepl :as e.f.nrepl]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.protocol.nrepl :as e.p.nrepl]))
@@ -25,6 +25,6 @@
                         (clojure.core/in-ns '~ns-sym)
                         (clojure.core/refer-clojure))
                      (str)
-                     (e.f.n.op/eval!! nrepl))
+                     (e.f.nrepl/eval!! nrepl))
                 (e.f.vim/set-variable!! host ns-created-var-name true)))
             ctx)})

@@ -1,7 +1,7 @@
 (ns elin.handler.evaluate
   (:require
    [elin.error :as e]
-   [elin.function.nrepl.op :as e.f.n.op]
+   [elin.function.nrepl :as e.f.nrepl]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.schema.handler :as e.s.handler]
@@ -17,7 +17,7 @@
                                  accm))
                              {:nrepl.middleware.print/stream? 1}
                              options)
-          res (e.f.n.op/eval!! nrepl code options)]
+          res (e.f.nrepl/eval!! nrepl code options)]
     (:value res)))
 
 ;; TODO status: ["namespace-not-found" "done" "error"]
@@ -70,5 +70,5 @@
 (defn load-current-file
   [{:component/keys [nrepl host]}]
   (e/let [path (e.f.vim/get-full-path!! host)]
-    (e.f.n.op/load-file!! nrepl path)
+    (e.f.nrepl/load-file!! nrepl path)
     true))
