@@ -30,10 +30,12 @@
    :enter (fn [{:as ctx :elin/keys [kind]}]
             (if-let [schema (get kind-schema-map kind)]
               (do
-                (some->> ctx
-                         (m/explain schema)
-                         (m.error/humanize)
-                         (ex-info "Invalid context")
-                         (throw))
+                (when-let [err (some->> ctx
+                                        (m/explain schema)
+                                        (m.error/humanize))]
+                  (throw (ex-info (format "Invalid context for %s: %s"
+                                          kind
+                                          err)
+                                  err)))
                 ctx)
               (throw (ex-info "Unknown kind" {:kind kind :context ctx}))))})
