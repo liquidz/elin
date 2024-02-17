@@ -196,17 +196,7 @@
                                                                                                      :ret :any}}},
                                                                     get-project-name {:arities {1 {:args [:any],
                                                                                                    :ret :any}}}},
-                                        elin.handler.evaluate {evaluation* {:arities {3 {:args [{:op :keys,
-                                                                                                 :req {:message {:op :keys,
-                                                                                                                 :req {:host :string,
-                                                                                                                       :message :sequential}},
-                                                                                                       :component/nrepl :any,
-                                                                                                       :component/interceptor :any,
-                                                                                                       :component/host :any}}
-                                                                                                :string
-                                                                                                :map],
-                                                                                         :ret :any}}},
-                                                               evaluate {:arities {1 {:args [{:op :keys,
+                                        elin.handler.evaluate {evaluate {:arities {1 {:args [{:op :keys,
                                                                                               :req {:message {:op :keys,
                                                                                                               :req {:host :string,
                                                                                                                     :message :sequential}},
