@@ -143,6 +143,8 @@
                                                                                            :server {:op :keys,
                                                                                                     :req {:host :string,
                                                                                                           :port :int}}}}}}}},
+                                        elin.util.map {select-keys-by-namespace {:arities {2 {:args [:map :keyword],
+                                                                                              :ret :map}}}},
                                         elin.handler.internal {initialize {:arities {1 {:args [{:op :keys,
                                                                                                 :req {:message {:op :keys,
                                                                                                                 :req {:host :string,
