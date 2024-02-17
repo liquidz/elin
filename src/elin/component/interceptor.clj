@@ -67,7 +67,9 @@
       (try
         (interceptor/execute context' (concat interceptors [terminator']))
         (catch Exception ex
-          (e.log/error lazy-host "Failed to intercept:" (ex-message ex))))))
+          (e.log/error lazy-host (format "Failed to intercept for %s: %s"
+                                         kind
+                                         (ex-message ex)))))))
 
   e.p.config/IConfigure
   (configure [this config]
