@@ -5,6 +5,7 @@
    [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.handler :as e.s.handler]
+   [elin.util.map :as e.u.map]
    [malli.core :as m]))
 
 (m/=> initialize [:=> [:cat e.s.handler/?Elin] any?])
@@ -16,9 +17,11 @@
 (m/=> intercept [:=> [:cat e.s.handler/?Elin] any?])
 (defn intercept
   [{:as elin :component/keys [interceptor] :keys [message]}]
-  (let [autocmd-type (first (:params message))]
-    (->> {:elin elin :autocmd-type autocmd-type}
-         (e.p.interceptor/execute interceptor e.c.interceptor/autocmd))
+  (let [autocmd-type (first (:params message))
+        context (-> elin
+                    (e.u.map/select-keys-by-namespace :component)
+                    (assoc :autocmd-type autocmd-type))]
+    (e.p.interceptor/execute interceptor e.c.interceptor/autocmd context)
     true))
 
 (defn error

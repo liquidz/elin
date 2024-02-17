@@ -30,10 +30,13 @@
       (m.util/merge e.s.handler/?Components)))
 
 (def ?ConnectContext
-  [:map
-   [:elin e.s.handler/?Elin]
-   [:hostname [:maybe string?]]
-   [:port [:maybe int?]]])
+  (-> [:map
+       ;; ENTER
+       [:hostname [:maybe string?]]
+       [:port [:maybe int?]]
+       ;; LEAVE
+       [:client {:optional true} any?]]
+      (m.util/merge e.s.handler/?Components)))
 
 (def ?NreplContext
   (-> [:map
@@ -46,11 +49,11 @@
                       :component/nrepl))))
 
 (def ?AutocmdContext
-  [:map
-   [:elin e.s.handler/?Elin]
-   [:autocmd-type [:enum
-                   "BufRead"
-                   "BufNewFile"
-                   "BufEnter"
-                   "BufWritePost"
-                   "VimLeave"]]])
+  (-> [:map
+       [:autocmd-type [:enum
+                       "BufRead"
+                       "BufNewFile"
+                       "BufEnter"
+                       "BufWritePost"
+                       "VimLeave"]]]
+      (m.util/merge e.s.handler/?Components)))
