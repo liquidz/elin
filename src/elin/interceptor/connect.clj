@@ -28,11 +28,14 @@
    :leave (fn [{:as ctx :keys [elin client]}]
             (when client
               (async/go-loop []
-                (let [{:component/keys [host interceptor]} elin
+                (let [{:component/keys [nrepl interceptor host]} elin
                       ch (get-in client [:connection :output-channel])
                       output (async/<! ch)]
                   (when output
-                    (->> {:host host :output output}
+                    (->> {:component/nrepl nrepl
+                          :component/interceptor interceptor
+                          :component/host host
+                          :output output}
                          (e.p.interceptor/execute interceptor e.c.interceptor/output))
                     (recur)))))
             ctx)})

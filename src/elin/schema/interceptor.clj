@@ -26,7 +26,9 @@
 
 (def ?OutputContext
   [:map
-   [:host e.s.server/?Host]
+   [:component/nrepl any?]
+   [:component/interceptor any?]
+   [:component/host e.s.server/?Host]
    [:output e.s.nrepl/?Output]])
 
 (def ?ConnectContext
