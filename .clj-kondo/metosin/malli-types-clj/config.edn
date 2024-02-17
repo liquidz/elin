@@ -277,7 +277,5 @@
                                                                                                               :component/interceptor :any,
                                                                                                               :component/host :any}}],
                                                                                                 :ret :any}}}},
-                                        elin.function.nrepl.cider-nrepl.op {info!! {:arities {3 {:args [:any
-                                                                                                        :string
-                                                                                                        :string],
-                                                                                                 :ret :any}}}}}}}}
+                                        elin.function.nrepl.cider {info!! {:arities {3 {:args [:any :string :string],
+                                                                                        :ret :any}}}}}}}}
