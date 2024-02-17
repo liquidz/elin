@@ -1,4 +1,4 @@
-(ns elin.function.nrepl.cider-nrepl.op
+(ns elin.function.nrepl.cider
   (:require
    [clojure.core.async :as async]
    [elin.error :as e]

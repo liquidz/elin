@@ -3,7 +3,7 @@
    [clojure.string :as str]
    [elin.error :as e]
    [elin.function.nrepl :as e.f.nrepl]
-   [elin.function.nrepl.cider-nrepl.op :as e.f.n.c.op]
+   [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.protocol.nrepl :as e.p.nrepl]))
 
@@ -47,7 +47,7 @@
 (defn- cider-nrepl-complete
   [{:component/keys [nrepl hsot]} prefix]
   (e/let [ns-str (e.f.v.sexp/get-namespace!! hsot)
-          candidates (e.f.n.c.op/complete!! nrepl ns-str prefix)]
+          candidates (e.f.n.cider/complete!! nrepl ns-str prefix)]
     (format-candidates candidates)))
 
 (defn- nrepl-completions

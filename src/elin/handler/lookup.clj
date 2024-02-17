@@ -2,7 +2,7 @@
   (:require
    [clojure.string :as str]
    [elin.error :as e]
-   [elin.function.nrepl.cider-nrepl.op :as e.f.n.c.op]
+   [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.popup :as e.f.v.popup]
    [elin.function.vim.sexp :as e.f.v.sexp]))
@@ -104,7 +104,7 @@
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
-          resp (e.f.n.c.op/info!! nrepl ns-str code)]
+          resp (e.f.n.cider/info!! nrepl ns-str code)]
     (e.f.v.popup/open!!
      host
      (generate-doc resp)
