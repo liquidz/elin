@@ -3,7 +3,7 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.nrepl :as e.s.nrepl]
-   [elin.schema.server :as e.s.server]))
+   [malli.util :as m.util]))
 
 (def ?Kind
   [:enum
@@ -25,11 +25,9 @@
   e.s.handler/?Elin)
 
 (def ?OutputContext
-  [:map
-   [:component/nrepl any?]
-   [:component/interceptor any?]
-   [:component/host e.s.server/?Host]
-   [:output e.s.nrepl/?Output]])
+  (-> [:map
+       [:output e.s.nrepl/?Output]]
+      (m.util/merge e.s.handler/?Components)))
 
 (def ?ConnectContext
   [:map
@@ -38,10 +36,14 @@
    [:port [:maybe int?]]])
 
 (def ?NreplContext
-  [:map
-   [:component/host e.s.server/?Host]
-   [:component/interceptor any?]
-   [:request e.s.nrepl/?Message]])
+  (-> [:map
+       ;; ENTER
+       [:request e.s.nrepl/?Message]
+       ;; LEAVE
+       [:response {:optional true} any?]]
+      (m.util/merge
+       (m.util/dissoc e.s.handler/?Components
+                      :component/nrepl))))
 
 (def ?AutocmdContext
   [:map
