@@ -28,8 +28,7 @@
     :interceptor (component/using
                   (e.c.interceptor/new-interceptor config)
                   [:lazy-host
-                   :plugin
-                   :session-storage])
+                   :plugin])
 
     :nrepl (component/using
             (e.c.nrepl/new-nrepl config)

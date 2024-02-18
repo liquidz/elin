@@ -93,6 +93,7 @@
    lazy-host       ; LazyHost component
    nrepl           ; Nrepl component
    plugin          ; Plugin component
+   session-storage ; SessionStorage component
    includes
    excludes
    config-map
@@ -101,7 +102,8 @@
   (start [this]
     (let [components {:component/nrepl nrepl
                       :component/interceptor interceptor
-                      :component/host lazy-host}
+                      :component/host lazy-host
+                      :component/session-storage session-storage}
           exclude-set (set excludes)
           handlers (concat (or includes [])
                            (or (get-in plugin [:loaded-plugin :handlers]) []))

@@ -7,7 +7,8 @@
   [:map
    [:component/nrepl any?]
    [:component/interceptor any?]
-   [:component/host e.s.server/?Host]])
+   [:component/host e.s.server/?Host]
+   [:component/session-storage any?]])
 
 (def ?Elin
   (m.util/merge

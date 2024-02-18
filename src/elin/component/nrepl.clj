@@ -22,8 +22,9 @@
    (format "%s:%s" (get-in c [:connection :host]) (get-in c [:connection :port]))))
 
 (defrecord Nrepl
-  [interceptor
-   lazy-host
+  [interceptor     ; Interceptor component
+   lazy-host       ; LazyHost component
+   session-storage ; SessionStorage component
    clients-store ; atom of [:map-of string? e.c.n.client/?Client]
    current-client-key-store] ; atom of [:maybe string?]]
 
@@ -109,6 +110,7 @@
         (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
           (-> {:component/host lazy-host
                :component/interceptor interceptor
+               :component/session-storage session-storage
                :request msg}
               (intercept
                (fn [{:as ctx :keys [request]}]
