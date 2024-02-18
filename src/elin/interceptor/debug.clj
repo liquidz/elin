@@ -22,7 +22,8 @@
    e.c.interceptor/handler e.s.interceptor/?HandlerContext
    e.c.interceptor/nrepl e.s.interceptor/?NreplContext
    e.c.interceptor/output e.s.interceptor/?OutputContext
-   e.c.interceptor/autocmd e.s.interceptor/?AutocmdContext})
+   e.c.interceptor/autocmd e.s.interceptor/?AutocmdContext
+   e.c.interceptor/test e.s.interceptor/?TestContext})
 
 (def interceptor-context-checking-interceptor
   {:name ::interceptor-context-checking-interceptor

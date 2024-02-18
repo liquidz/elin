@@ -12,7 +12,8 @@
    e.c.interceptor/connect
    e.c.interceptor/nrepl
    e.c.interceptor/output
-   e.c.interceptor/autocmd])
+   e.c.interceptor/autocmd
+   e.c.interceptor/test])
 
 (def ?Interceptor
   [:map
@@ -56,4 +57,13 @@
                        "BufEnter"
                        "BufWritePost"
                        "VimLeave"]]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?TestContext
+  (-> [:map
+       ;; ENTER
+       [:ns string?]
+       [:vars [:sequential string?]]
+       ;; LEAVE
+       [:response {:optional true} map?]]
       (m.util/merge e.s.handler/?Components)))
