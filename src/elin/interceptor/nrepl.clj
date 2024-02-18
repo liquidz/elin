@@ -23,11 +23,20 @@
   {:name ::normalize-path-interceptor
    :kind e.c.interceptor/nrepl
    :leave (fn [{:as ctx :keys [request response]}]
-            (if (not (contains? #{"lookup" "info"} (:op request)))
-              ctx
+            (cond
+              (contains? #{e.c.nrepl/lookup-op e.c.nrepl/info-op} (:op request))
               (->> response
                    (e.u.nrepl/update-messages :file e.u.file/normalize-path)
-                   (assoc ctx :response))))})
+                   (assoc ctx :response))
+
+              (contains? #{e.c.nrepl/ns-path-op} (:op request))
+              (->> response
+                   (e.u.nrepl/update-messages :url e.u.file/normalize-path)
+                   (e.u.nrepl/update-messages :path e.u.file/normalize-path)
+                   (assoc ctx :response))
+
+              :else
+              ctx))})
 
 (def output-eval-result-to-cmdline-interceptor
   {:name ::output-eval-result-to-cmdline-interceptor
