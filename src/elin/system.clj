@@ -9,6 +9,7 @@
    [elin.component.plugin :as e.c.plugin]
    [elin.component.server :as e.c.server]
    [elin.component.server.http :as e.c.s.http]
+   [elin.component.session-storage :as e.c.session-storage]
    [msgpack.clojure-extensions]))
 
 (defn new-system
@@ -22,15 +23,19 @@
              (e.c.plugin/new-plugin config)
              [:lazy-host])
 
+    :session-storage (e.c.session-storage/new-session-storage config)
+
     :interceptor (component/using
                   (e.c.interceptor/new-interceptor config)
                   [:lazy-host
-                   :plugin])
+                   :plugin
+                   :session-storage])
 
     :nrepl (component/using
             (e.c.nrepl/new-nrepl config)
             [:interceptor
-             :lazy-host])
+             :lazy-host
+             :session-storage])
 
     :clj-kondo (component/using
                 (e.c.clj-kondo/new-clj-kondo config)
@@ -42,7 +47,8 @@
               [:interceptor
                :lazy-host
                :nrepl
-               :plugin])
+               :plugin
+               :session-storage])
 
     ;; NOTE: The port will be stored to elin.constant.server/http-server-port-variable
     :http-server (component/using
