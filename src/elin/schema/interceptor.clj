@@ -52,9 +52,9 @@
 (def ?AutocmdContext
   (-> [:map
        [:autocmd-type [:enum
-                       "BufRead"
-                       "BufNewFile"
                        "BufEnter"
+                       "BufNewFile"
+                       "BufRead"
                        "BufWritePost"
                        "VimLeave"]]]
       (m.util/merge e.s.handler/?Components)))
