@@ -26,7 +26,7 @@
   (with-redefs [sut/valid-interceptor? (constantly true)]
     (let [config {:interceptor {:includes [(symbol #'test-interceptor)]}}
           {:as sys :keys [interceptor]} (-> (e.system/new-system config)
-                                            (select-keys [:lazy-host :plugin :interceptor])
+                                            (dissoc :nrepl :clj-kondo :handler :http-server :server)
                                             (component/start-system))]
       (try
         (t/is (= 2
