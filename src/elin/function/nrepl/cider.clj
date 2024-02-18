@@ -11,6 +11,7 @@
    [malli.core :as m]))
 
 (def info-op "info")
+(def ns-path-op "ns-path")
 (def test-var-query-op "test-var-query")
 
 ;; TODO If complete op is not supported, fallback to completions op.
@@ -39,6 +40,16 @@
       (if (e.u.nrepl/has-status? res "no-info")
         (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)})
         res))))
+
+(m/=> ns-path!! [:=> [:cat e.s.component/?Nrepl string?] [:maybe string?]])
+(defn ns-path!!
+  [nrepl ns-str]
+  (e/let [resp (e/-> (e.p.nrepl/request nrepl {:op ns-path-op
+                                               :ns ns-str})
+                     (async/<!!)
+                     (e.u.nrepl/merge-messages))]
+    (or (:url resp)
+        (:path resp))))
 
 (defn test-var-query!!
   [nrepl var-query]
