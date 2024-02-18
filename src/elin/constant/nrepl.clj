@@ -4,3 +4,20 @@
   #{"status" "sessions" "classpath"
     ;; cider-nrepl complete op
     "completions"})
+
+;; nrepl built-in ops
+
+(def close-op "close")
+(def completions-op "completions")
+(def eval-op "eval")
+(def interrupt-op "interrupt")
+(def load-file-op "load-file")
+(def lookup-op "lookup")
+(def ls-sessions-op "ls-sessions")
+
+;; cider-nrepl ops
+
+(def complete-op "complete")
+(def info-op "info")
+(def ns-path-op "ns-path")
+(def test-var-query-op "test-var-query")

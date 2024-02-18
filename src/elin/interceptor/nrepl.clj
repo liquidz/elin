@@ -2,6 +2,7 @@
   (:require
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.constant.nrepl :as e.c.nrepl]
    [elin.function.vim.virtual-text :as e.f.v.virtual-text]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.file :as e.u.file]
@@ -11,7 +12,7 @@
   {:name ::eval-ns-interceptor
    :kind e.c.interceptor/nrepl
    :enter (fn [{:as ctx :keys [request]}]
-            (if (not= "eval" (:op request))
+            (if (not= e.c.nrepl/eval-op (:op request))
               ctx
               (let [{:keys [code]} request]
                 (if (str/starts-with? code "(ns")
@@ -32,7 +33,7 @@
   {:name ::output-eval-result-to-cmdline-interceptor
    :kind e.c.interceptor/nrepl
    :leave (fn [{:as ctx :component/keys [host] :keys [request response]}]
-            (when (= "eval" (:op request))
+            (when (= e.c.nrepl/eval-op (:op request))
               (when-let [v (:value (e.u.nrepl/merge-messages response))]
                 (e.p.rpc/echo-text host (str v))))
             ctx)})
@@ -41,7 +42,7 @@
   {:name ::set-eval-result-to-virtual-text-interceptor
    :kind e.c.interceptor/nrepl
    :leave (fn [{:as ctx :component/keys [host] :keys [request response]}]
-            (when (= "eval" (:op request))
+            (when (= e.c.nrepl/eval-op (:op request))
               (when-let [v (:value (e.u.nrepl/merge-messages response))]
                 (e.f.v.virtual-text/set host
                                         (str v)

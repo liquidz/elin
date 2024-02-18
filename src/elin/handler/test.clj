@@ -2,6 +2,7 @@
   (:require
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.constant.nrepl :as e.c.nrepl]
    [elin.error :as e]
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.nrepl.vim :as e.f.n.vim]
@@ -22,7 +23,7 @@
 
 (defn run-test-under-cursor
   [{:as elin :component/keys [host nrepl interceptor]}]
-  (if (e.p.nrepl/supported-op? nrepl e.f.n.cider/test-var-query-op)
+  (if (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
     (e/let [{:keys [code response options]} (e.f.n.vim/evaluate-current-top-list!! {:host host :nrepl nrepl})
             {ns-str :ns} options
             var-name (or (some->> (extract-multi-method-name code)

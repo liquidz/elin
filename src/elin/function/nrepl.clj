@@ -4,6 +4,7 @@
    [clojure.core.async :as async]
    [clojure.java.io :as io]
    [clojure.set :as set]
+   [elin.constant.nrepl :as e.c.nrepl]
    [elin.error :as e]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema :as e.schema]
@@ -45,7 +46,7 @@
      (close!! nrepl session)
      (e/unavailable {:message "Not connected"})))
   ([nrepl session]
-   (async/<!! (e.p.nrepl/request nrepl {:op "close" :session session}))))
+   (async/<!! (e.p.nrepl/request nrepl {:op e.c.nrepl/close-op :session session}))))
 
 (m/=> eval!! [:function
               [:=> [:cat e.s.component/?Nrepl string?] any?]
@@ -56,7 +57,7 @@
   ([nrepl code options]
    (if-let [session (e.p.nrepl/current-session nrepl)]
      (->> (merge (select-keys options eval-option-keys)
-                 {:op "eval" :session session  :code code})
+                 {:op e.c.nrepl/eval-op :session session  :code code})
           (e.p.nrepl/request nrepl)
           (async/<!!)
           (e.u.nrepl/merge-messages))
@@ -71,7 +72,7 @@
   ([nrepl options]
    (if-let [session (e.p.nrepl/current-session nrepl)]
      (e/->> (merge (select-keys options #{:interrupt-id})
-                   {:op "interrupt" :session session})
+                   {:op e.c.nrepl/interrupt-op :session session})
             (e.p.nrepl/request nrepl)
             (async/<!!))
      (e/unavailable {:message "Not connected"}))))
@@ -94,7 +95,7 @@
 
        :else
        (->> (merge (select-keys options load-file-option-keys)
-                   {:op "load-file"
+                   {:op e.c.nrepl/load-file-op
                     :session session
                     :file (slurp file)
                     :file-name (.getName file)
@@ -106,7 +107,7 @@
 (m/=> lookup!! [:=> [:cat e.s.component/?Nrepl string? string?] (e.schema/error-or e.s.n.op/?Lookup)])
 (defn lookup!!
   [nrepl ns-str sym-str]
-  (e/let [res (e/-> (e.p.nrepl/request nrepl {:op "lookup" :ns ns-str :sym sym-str})
+  (e/let [res (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/lookup-op :ns ns-str :sym sym-str})
                     (async/<!!)
                     (e.u.nrepl/merge-messages))]
     (cond
@@ -124,14 +125,14 @@
 (m/=> ls-sessions!! [:=> [:cat e.s.component/?Nrepl] e.schema/?ManyToManyChannel])
 (defn ls-sessions!!
   [nrepl]
-  (e/-> (e.p.nrepl/request nrepl {:op "ls-sessions"})
+  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/ls-sessions-op})
         (async/<!!)
         (e.u.nrepl/merge-messages)
         (:sessions)))
 
 (defn completions!!
   [nrepl ns-str prefix]
-  (e/-> (e.p.nrepl/request nrepl {:op "completions"
+  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/completions-op
                                   :prefix prefix
                                   :ns ns-str})
         (async/<!!)

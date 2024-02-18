@@ -2,6 +2,7 @@
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
+   [elin.constant.nrepl :as e.c.nrepl]
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.component :as e.s.component]
@@ -35,7 +36,6 @@
     filename))
 
 (m/=> test-error-message [:=> [:cat map?] string?])
-
 (defn- test-error-message
   [test-result]
   (let [var' (:var test-result)
@@ -92,7 +92,7 @@
 (m/=> collect-results [:=> [:cat e.s.component/?Nrepl map?] [:sequential ?TestResult]])
 (defn collect-results
   [nrepl test-resp]
-  (let [ns-path-op-supported? (e.p.nrepl/supported-op? nrepl e.f.n.cider/ns-path-op)]
+  (let [ns-path-op-supported? (e.p.nrepl/supported-op? nrepl e.c.nrepl/ns-path-op)]
     (flatten
      (for [[_ns-kw var-map] (or (:results test-resp) {})]
        (for [[_var-kw test-results] (or var-map {})]
