@@ -18,6 +18,9 @@ function! s:init() abort
     call elin#server#connect(g:elin_server_port)
   endif
 
+  " FIXME this should be configurable by .elin.edn
+  exe ':sign define elin_error text=🔥 texthl=ErrorMsg'
+
   aug elin_autocmd_group
     au!
     au BufRead *.clj,*.cljs,*.cljc call elin#intercept('BufRead')
