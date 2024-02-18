@@ -27,7 +27,8 @@
                         (exists? file))
                  file
                  "")
-         name' (str prefix name)
+         name' (some->> name
+                        (str prefix))
          options {:group group'
                   :file file'
                   :name name'
@@ -37,11 +38,17 @@
 (defn list-in-buffer!!
   ([host]
    (->> (e.f.vim/call!! host "elin#internal#sign#list_in_buffer" [])
-        (filter #(str/starts-with? (:name %) prefix))))
+        (filter #(str/starts-with? (get % "name") prefix))))
   ([host target-buffer]
    (->> (e.f.vim/call!! host "elin#internal#sign#list_in_buffer" [target-buffer])
-        (filter #(str/starts-with? (:name %) prefix)))))
+        (filter #(str/starts-with? (get % "name") prefix)))))
 
 (defn list-all!!
   [host]
   (e.f.vim/call!! host "elin#internal#sign#list_all" []))
+
+(defn refresh
+  ([host]
+   (e.f.vim/notify host "elin#internal#sign#refresh" []))
+  ([host signs]
+   (e.f.vim/notify host "elin#internal#sign#refresh" [{:signs signs}])))
