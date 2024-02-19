@@ -267,6 +267,13 @@
                                                                                                   :component/host :any,
                                                                                                   :component/session-storage :any}}],
                                                                                     :ret :any}}}},
+                                        elin.function.nrepl.test {test-var-query!! {:arities {2 {:args [:any
+                                                                                                        {:op :keys,
+                                                                                                         :req {:ns :string,
+                                                                                                               :vars :sequential,
+                                                                                                               :base-line :int,
+                                                                                                               :current-file :string}}],
+                                                                                                 :ret :map}}}},
                                         elin.util.nrepl {merge-messages {:arities {1 {:args [:sequential], :ret :map}}},
                                                          update-messages {:arities {3 {:args [:keyword :fn :sequential],
                                                                                        :ret :sequential}}},
