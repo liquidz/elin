@@ -38,7 +38,9 @@
   (supported-op? [_ op]
     (contains? supported-ops (keyword op)))
   (current-session [_]
-    session))
+    session)
+  (version [_]
+    version))
 
 (defn new-client
   [conn]

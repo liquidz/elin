@@ -8,7 +8,8 @@
 
 (defprotocol IClient
   (supported-op? [this op])
-  (current-session [this]))
+  (current-session [this])
+  (version this))
 
 (defprotocol IClientManager
   (add-client! [this host port] [this client])

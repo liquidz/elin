@@ -86,6 +86,10 @@
     (when-let [client (e.p.nrepl/current-client this)]
       (e.p.nrepl/current-session client)))
 
+  (version [this]
+    (when-let [client (e.p.nrepl/current-client this)]
+      (e.p.nrepl/version client)))
+
   e.p.nrepl/IConnection
   (disconnect
     [this]
