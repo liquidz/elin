@@ -5,7 +5,9 @@
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.popup :as e.f.v.popup]
-   [elin.function.vim.sexp :as e.f.v.sexp]))
+   [elin.function.vim.sexp :as e.f.v.sexp]
+   [elin.schema.handler :as e.s.handler]
+   [malli.core :as m]))
 
 (def ^:private subsection-separator
   "----------------------------------------------------------------------------")
@@ -99,6 +101,7 @@
     (generate-javadoc lookup-resp)
     (generate-cljdoc lookup-resp)))
 
+(m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
   [{:component/keys [nrepl host]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)

@@ -5,7 +5,9 @@
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.vim.sexp :as e.f.v.sexp]
-   [elin.protocol.nrepl :as e.p.nrepl]))
+   [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.schema.handler :as e.s.handler]
+   [malli.core :as m]))
 
 (def ^:private type->kind
   {"var" "v"
@@ -56,6 +58,7 @@
           candidates (e.f.nrepl/completions!! nrepl ns-str prefix)]
     (format-candidates candidates)))
 
+(m/=> complete [:=> [:cat e.s.handler/?Elin] any?])
 (defn complete
   [{:as elin :component/keys [nrepl] :keys [message]}]
   (let [prefix (first (:params message))]

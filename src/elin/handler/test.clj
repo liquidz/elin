@@ -9,7 +9,9 @@
    [elin.function.nrepl.vim :as e.f.n.vim]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.schema.handler :as e.s.handler]
    [elin.util.map :as e.u.map]
+   [malli.core :as m]
    [rewrite-clj.zip :as r.zip]))
 
 (defn- extract-multi-method-name
@@ -22,6 +24,7 @@
               (r.zip/sexpr)
               (str)))))
 
+(m/=> run-test-under-cursor [:=> [:cat e.s.handler/?Elin] any?])
 (defn run-test-under-cursor
   [{:as elin :component/keys [host nrepl interceptor]}]
   (e/let [{:keys [code response options]} (e.f.n.vim/evaluate-current-top-list!! {:host host :nrepl nrepl})
