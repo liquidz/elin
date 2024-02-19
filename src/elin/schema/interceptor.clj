@@ -56,6 +56,7 @@
                        "BufNewFile"
                        "BufRead"
                        "BufWritePost"
+                       "BufWritePre"
                        "VimLeave"]]]
       (m.util/merge e.s.handler/?Components)))
 
