@@ -18,7 +18,7 @@ function! elin#request(...) abort
   return call(function('elin#internal#rpc#request'), [conn] + a:000)
 endfunction
 
-function! elin#intercept(...) abort
+function! elin#intercept_notify(...) abort
   return elin#notify('elin.handler.internal/intercept', a:000)
 endfunction
 

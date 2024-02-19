@@ -23,10 +23,10 @@ function! s:init() abort
 
   aug elin_autocmd_group
     au!
-    au BufRead *.clj,*.cljs,*.cljc call elin#intercept('BufRead')
-    au BufNewFile *.clj,*.cljs,*.cljc call elin#intercept('BufNewFile')
-    au BufEnter *.clj,*.cljs,*.cljc call elin#intercept('BufEnter')
-    au BufWritePost *.clj,*.cljs,*.cljc call elin#intercept('BufWritePost')
+    au BufRead *.clj,*.cljs,*.cljc call elin#intercept_notify('BufRead')
+    au BufNewFile *.clj,*.cljs,*.cljc call elin#intercept_notify('BufNewFile')
+    au BufEnter *.clj,*.cljs,*.cljc call elin#intercept_notify('BufEnter')
+    au BufWritePost *.clj,*.cljs,*.cljc call elin#intercept_notify('BufWritePost')
     au VimLeave * call s:deinit()
   aug END
 endfunction
