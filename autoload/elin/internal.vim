@@ -25,6 +25,21 @@ function! elin#internal#jump(path, lnum, col, jump_cmd) abort
   return v:true
 endfunction
 
+function! elin#internal#open_file(path, ...) abort
+  let command = get(a:, 1, 'edit')
+	let path = a:path
+  if !filereadable(a:path)
+    let path = input('Open this file?: ', a:path)
+	endif
+
+  if empty(path)
+    return
+  endif
+
+  call mkdir(fnamemodify(path, ':h'), 'p')
+  execute printf(':%s %s', command, path)
+endfunction
+
 function! elin#internal#eval(str) abort
   return eval(a:str)
 endfunction
