@@ -17,6 +17,7 @@
                       elin.handler.evaluate/evaluate-current-top-list
                       elin.handler.test/run-test-under-cursor
                       elin.handler.evaluate/load-current-file
+                      elin.handler.internal/healthcheck
                       elin.handler.internal/error
                       elin.handler.internal/initialize
                       elin.handler.internal/intercept

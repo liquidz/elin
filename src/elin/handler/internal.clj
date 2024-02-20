@@ -8,6 +8,8 @@
    [elin.util.map :as e.u.map]
    [malli.core :as m]))
 
+(defn healthcheck [_] "OK")
+
 (m/=> initialize [:=> [:cat e.s.handler/?Elin] any?])
 (defn initialize
   [{:component/keys [host]}]
