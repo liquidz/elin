@@ -108,4 +108,5 @@
 (m/=> set-variable!! [:=> [:cat e.s.server/?Host string? any?] :nil])
 (defn set-variable!!
   [host var-name value]
-  (async/<!! (set-variable! host var-name value)))
+  (async/<!! (set-variable! host var-name value))
+  nil)
