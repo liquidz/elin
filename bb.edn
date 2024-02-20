@@ -9,7 +9,7 @@
         rewrite-clj/rewrite-clj {:mvn/version "1.1.47"}}
 
  :__elin_internal__
- {:command {:deps {nrepl/nrepl {:mvn/version "1.1.0"}
+ {:command {:deps {nrepl/nrepl {:mvn/version "1.1.1"}
                    refactor-nrepl/refactor-nrepl {:mvn/version "3.9.1"}
                    cider/cider-nrepl {:mvn/version "0.45.0"}}
             :middlewares [cider.nrepl/cider-middleware
@@ -22,7 +22,6 @@
         :extra-paths ["dev" "test"]
         :requires ([elin.dev]
                    [elin.test-helper])
-        ;; :task (elin.t.nrepl/-main)
         :task (exec 'elin.task.nrepl/-main)}
 
   lint (shell "clj-kondo --lint src:test")
