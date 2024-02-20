@@ -47,7 +47,7 @@ else
   call prop_type_add(s:textprop_type, {})
 
   function! s:set(bufnr, text, lnum, highlight, align) abort
-    echom printf('FIXME %s', a:lnum)
+    call s:clear(a:bufnr, a:lnum, a:lnum + 1)
     call prop_type_change(s:textprop_type, {'highlight': a:highlight})
     call prop_add(a:lnum, 0, {
           \ 'type': s:textprop_type,
