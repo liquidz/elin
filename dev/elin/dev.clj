@@ -6,19 +6,20 @@
    [elin.system :as e.system]
    [malli.dev :as m.dev]))
 
-(def system-map (atom nil))
+(def server-config (atom {}))
 (defonce sys (atom nil))
 
 (defn initialize
   [{:keys [host port]}]
-  (let [config (e.config/load-config "." {:server {:host host :port port}})]
-    (reset! system-map (e.system/new-system config))))
+  (reset! server-config {:server {:host host :port port}}))
 
 (defn start-system
   []
   (when-not @sys
     (e.log/info "Starting elin system")
-    (reset! sys (component/start-system @system-map))
+    (let [config (e.config/load-config "." @server-config)
+          system-map (e.system/new-system config)]
+      (reset! sys (component/start-system system-map)))
     ::started))
 
 (defn stop-system
