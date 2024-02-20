@@ -64,12 +64,23 @@ endfunction
 
 function! s:connect(port) abort
   try
-    let s:conn = elin#internal#rpc#connect(printf('localhost:%s', a:port))
+    let s:conn = elin#internal#rpc#connect(
+          \ printf('localhost:%s', a:port),
+          \ {'on_close': funcref('s:on_close')},
+          \ )
     let s:port = a:port
     return v:true
   catch
     return v:false
   endtry
+endfunction
+
+function! s:on_close(...) abort
+  echom 'Elin server connection is closed'
+  if s:port is# v:null
+    return
+  endif
+  call timer_start(100, {_ -> elin#server#connect(s:port)})
 endfunction
 
 function! elin#server#disconnect() abort
