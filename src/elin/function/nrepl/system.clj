@@ -10,11 +10,11 @@
    [malli.core :as m]))
 
 (def ^:private get-system-info-code
-  `(let [user-dir (System/getProperty "user.dir")
-         sep (System/getProperty "file.separator")]
-     {:user-dir user-dir
-      :file-separator sep
-      :project-name (-> (.split user-dir sep) seq last)}))
+  `(let [user-dir# (System/getProperty "user.dir")
+         sep# (System/getProperty "file.separator")]
+     {:user-dir user-dir#
+      :file-separator sep#
+      :project-name (-> (.split user-dir# sep#) seq last)}))
 
 (def ^:private ?SystemInfo
   [:map
