@@ -41,7 +41,7 @@
                           (throw (ex-info "deps.edn is outdated" {})))}
 
   clj-kondo-emit {:extra-paths ["test"]
-                  :extra-deps {org.clojure/tools.namespace {:mvn/version "1.4.5"}}
+                  :extra-deps {org.clojure/tools.namespace {:mvn/version "1.5.0"}}
                   :requires ([malli.clj-kondo :as mc]
                              [clojure.tools.namespace.find :as ctnf]
                              [clojure.java.io :as io])
