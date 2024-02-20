@@ -1,37 +1,24 @@
 (ns elin.dev
   (:require
-   [clojure.edn :as edn]
-   [clojure.java.io :as io]
    [com.stuartsierra.component :as component]
    [elin.config :as e.config]
-   [elin.constant.interceptor :as e.c.interceptor]
    [elin.log :as e.log]
    [elin.system :as e.system]
-   [malli.dev :as m.dev]
-   [medley.core :as medley]))
+   [malli.dev :as m.dev]))
 
-(def ^:private last-message-store (atom nil))
-(def ^:private store-last-message-interceptor
-  {:name ::store-last-message-interceptor
-   :kind e.c.interceptor/handler
-   :enter (fn [{:as ctx :keys [message]}]
-            (reset! last-message-store message)
-            ctx)})
-
-(def config
-  (e.config/load-config "." {:server {:host "nvim"
-                                      :port 12233}}))
-
-(def system-map
-  (e.system/new-system config))
-
+(def system-map (atom nil))
 (defonce sys (atom nil))
+
+(defn initialize
+  [{:keys [host port]}]
+  (let [config (e.config/load-config "." {:server {:host host :port port}})]
+    (reset! system-map (e.system/new-system config))))
 
 (defn start-system
   []
   (when-not @sys
     (e.log/info "Starting elin system")
-    (reset! sys (component/start-system system-map))
+    (reset! sys (component/start-system @system-map))
     ::started))
 
 (defn stop-system
@@ -56,7 +43,3 @@
   []
   (stop)
   (start))
-
-(defn last-message
-  []
-  @last-message-store)
