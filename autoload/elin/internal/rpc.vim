@@ -41,7 +41,7 @@ if has('nvim')
   function! s:connect(addr, options) abort
     let options = extend({
           \   'on_close': { -> 0 },
-          \ }, get(a:, 1, {}))
+          \ }, a:options)
     let id = sockconnect('tcp', a:addr, {'rpc': v:true})
     if id is# 0
       throw printf('Failed to connect: %s', a:addr)
@@ -50,10 +50,21 @@ if has('nvim')
           \ 'id': id,
           \ 'on_close': options.on_close,
           \}
+    let conn.healthcheck_timer = timer_start(100, funcref('s:healthcheck', [conn]), {'repeat': -1})
     return conn
   endfunction
 
+  function! s:healthcheck(conn, timer_id) abort
+    try
+      call rpcnotify(a:conn.id, 'elin.handler.internal/healthcheck')
+    catch
+      call timer_stop(a:conn.healthcheck_timer)
+      call a:conn.on_close(a:conn)
+    endtry
+  endfunction
+
   function! s:disconnect(conn) abort
+    call timer_stop(a:conn.healthcheck_timer)
     call sockclose(a:conn.id)
     call a:conn.on_close(a:conn)
   endfunction
@@ -75,7 +86,7 @@ else
   function! s:connect(addr, options) abort
     let options = extend({
           \   'on_close': { -> 0 },
-          \ }, get(a:, 1, {}))
+          \ }, a:options)
 
     let ch = ch_open(a:addr, {
           \ 'mode': 'json',
