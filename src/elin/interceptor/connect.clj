@@ -34,8 +34,8 @@
                     (-> ctx
                         (e.u.map/select-keys-by-namespace :component)
                         (assoc :output output)
-                        (->> (e.p.interceptor/execute interceptor e.c.interceptor/output))))
-                  (recur))))
+                        (->> (e.p.interceptor/execute interceptor e.c.interceptor/output)))
+                    (recur)))))
             ctx)})
 
 (def connected-interceptor
