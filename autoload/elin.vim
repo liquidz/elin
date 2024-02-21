@@ -19,10 +19,16 @@ function! elin#request(...) abort
 endfunction
 
 function! elin#intercept_notify(...) abort
+  if elin#server#connection() is# v:null
+    return v:null
+  endif
   return elin#notify('elin.handler.internal/intercept', a:000)
 endfunction
 
 function! elin#intercept_request(...) abort
+  if elin#server#connection() is# v:null
+    return v:null
+  endif
   return elin#request('elin.handler.internal/intercept', a:000)
 endfunction
 
