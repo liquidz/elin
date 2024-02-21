@@ -1,12 +1,11 @@
 (ns elin.component.server.http
   (:require
    [cheshire.core :as json]
-   [clojure.core.async :as async]
    [clojure.java.io :as io]
    [com.stuartsierra.component :as component]
    [elin.constant.server :as e.c.server]
-   [elin.function.vim :as e.f.vim]
    [elin.protocol.rpc :as e.p.rpc]
+   [elin.protocol.storage :as e.p.storage]
    [org.httpkit.server :as h.server])
   (:import
    (java.net
@@ -52,14 +51,13 @@
          m))
 
 (defrecord HttpServer
-  [lazy-host handler host port stop-server]
+  [session-storage handler host port stop-server]
   component/Lifecycle
   (start [this]
     (let [port' (get-empty-port)]
-      (async/go
-        (e.f.vim/set-variable! lazy-host
-                               e.c.server/http-server-port-variable
-                               port'))
+      (e.p.storage/set session-storage
+                       e.c.server/http-server-port-key
+                       port')
       (assoc this
              :port port'
              :stop-server (h.server/run-server

@@ -53,7 +53,7 @@
     :http-server (component/using
                   (e.c.s.http/new-http-server config)
                   [:handler
-                   :lazy-host])
+                   :session-storage])
 
     :server (component/using
              (e.c.server/new-server config)
