@@ -1,4 +1,5 @@
 {:interceptor {:includes [elin.interceptor.autocmd/ns-create-interceptor
+                          elin.interceptor.autocmd/setting-http-server-port-interceptor
                           elin.interceptor.connect/connected-interceptor
                           elin.interceptor.connect/output-channel-interceptor
                           elin.interceptor.connect/port-auto-detecting-interceptor
