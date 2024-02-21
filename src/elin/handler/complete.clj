@@ -47,14 +47,14 @@
        (sort-by :word)))
 
 (defn- cider-nrepl-complete
-  [{:component/keys [nrepl hsot]} prefix]
-  (e/let [ns-str (e.f.v.sexp/get-namespace!! hsot)
+  [{:component/keys [nrepl host]} prefix]
+  (e/let [ns-str (e.f.v.sexp/get-namespace!! host)
           candidates (e.f.n.cider/complete!! nrepl ns-str prefix)]
     (format-candidates candidates)))
 
 (defn- nrepl-completions
-  [{:component/keys [nrepl hsot]} prefix]
-  (e/let [ns-str (e.f.v.sexp/get-namespace!! hsot)
+  [{:component/keys [nrepl host]} prefix]
+  (e/let [ns-str (e.f.v.sexp/get-namespace!! host)
           candidates (e.f.nrepl/completions!! nrepl ns-str prefix)]
     (format-candidates candidates)))
 
