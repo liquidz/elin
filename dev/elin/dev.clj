@@ -19,6 +19,8 @@
     (e.log/info "Starting elin system")
     (let [config (e.config/load-config "." @server-config)
           system-map (e.system/new-system config)]
+      (when-let [level (get-in config [:log :level])]
+        (e.log/set-level! level))
       (reset! sys (component/start-system system-map)))
     ::started))
 
