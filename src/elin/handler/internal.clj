@@ -12,8 +12,11 @@
 
 (m/=> initialize [:=> [:cat e.s.handler/?Elin] any?])
 (defn initialize
-  [{:component/keys [host]}]
+  [{:component/keys [handler host]}]
   (e.f.vim/notify host "elin#internal#buffer#info#ready" [])
+  (doseq [[export-name export-value] (or (get-in handler [:initialize :export]) {})]
+    (e.log/debug (format "Exporting %s as %s" export-value export-name))
+    (e.f.vim/set-variable! host export-name export-value))
   true)
 
 (m/=> intercept [:=> [:cat e.s.handler/?Elin] any?])
