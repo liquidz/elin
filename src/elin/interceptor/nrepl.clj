@@ -43,8 +43,12 @@
    :kind e.c.interceptor/nrepl
    :leave (fn [{:as ctx :component/keys [host] :keys [request response]}]
             (when (= e.c.nrepl/eval-op (:op request))
-              (when-let [v (:value (e.u.nrepl/merge-messages response))]
-                (e.p.rpc/echo-text host (str v))))
+              (let [msg (e.u.nrepl/merge-messages response)]
+                (when-let [v (:value msg)]
+                  (e.p.rpc/echo-text host (str/trim (str v))))
+
+                (when-let [v (:err msg)]
+                  (e.p.rpc/echo-message host (str/trim (str v)) "ErrorMsg"))))
             ctx)})
 
 (def set-eval-result-to-virtual-text-interceptor
