@@ -62,7 +62,7 @@
 (t/deftest new-handler-test
   (with-redefs [e.c.interceptor/valid-interceptor? (constantly true)]
     (let [{:as sys :keys [handler lazy-host]} (-> (e.system/new-system test-config)
-                                                  (dissoc :server)
+                                                  (dissoc :server :http-server)
                                                   (component/start-system))
           call-test-handler' (partial call-test-handler handler)
           host (h/test-host {:handler (constantly true)})]
