@@ -109,7 +109,7 @@
                                                     (catch Exception ex ex)))])]
                 (when (and (not= stop-signal ch)
                            (not (instance? Exception raw-msg)))
-                  (e.log/debug "Neovim server received message:" (pr-str raw-msg))
+                  ;; (e.log/debug "Neovim server received message:" (pr-str raw-msg))
                   (on-accept {:message (map->NvimMessage {:host host
                                                           :message raw-msg
                                                           :response-manager response-manager})

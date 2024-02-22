@@ -107,7 +107,7 @@
                 (when (and (not= stop-signal ch)
                            raw-msg
                            (not (instance? Exception raw-msg)))
-                  (e.log/debug "Vim server received message:" (pr-str raw-msg))
+                  ;; (e.log/debug "Vim server received message:" (pr-str raw-msg))
                   (on-accept {:message (map->VimMessage {:host host
                                                          :message raw-msg
                                                          :response-manager response-manager})
