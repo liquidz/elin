@@ -97,12 +97,14 @@
    includes
    excludes
    config-map
+   initialize
    handler-map]
   component/Lifecycle
   (start [this]
     (let [components {:component/nrepl nrepl
                       :component/interceptor interceptor
                       :component/host lazy-host
+                      :component/handler this
                       :component/session-storage session-storage}
           exclude-set (set excludes)
           handlers (concat (or includes [])
