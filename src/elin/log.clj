@@ -44,10 +44,10 @@
         s (->> (map str texts)
                (str/join " "))]
     (if msg
-      (e.p.rpc/echo-message msg s highlight)
-      (do
-        (println s)
-        (spit *log-file* (str s "\n") :append true))))
+      (try
+        (e.p.rpc/echo-message msg s highlight)
+        (catch Exception _ nil))
+      (println s)))
   nil)
 
 (defn debug
