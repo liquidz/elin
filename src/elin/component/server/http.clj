@@ -3,24 +3,15 @@
    [cheshire.core :as json]
    [clojure.java.io :as io]
    [com.stuartsierra.component :as component]
-   [elin.constant.server :as e.c.server]
    [elin.protocol.rpc :as e.p.rpc]
-   [elin.protocol.storage :as e.p.storage]
    [org.httpkit.server :as h.server])
   (:import
-   (java.net
-    ServerSocket
-    URLDecoder)))
+   java.net.URLDecoder))
 
 (defn- valid-request?
   [{:keys [request-method headers]}]
   (and (= :post request-method)
        (= "application/json" (get headers "content-type"))))
-
-(defn- get-empty-port
-  []
-  (with-open [sock (ServerSocket. 0)]
-    (.getLocalPort sock)))
 
 (defprotocol IHttpHandler
   (new-message [this request params])
@@ -51,21 +42,15 @@
          m))
 
 (defrecord HttpServer
-  [session-storage handler host port stop-server]
+  [handler host port stop-server]
   component/Lifecycle
   (start [this]
-    (let [port' (get-empty-port)]
-      (e.p.storage/set session-storage
-                       e.c.server/http-server-port-key
-                       port')
-      (assoc this
-             :port port'
-             :stop-server (h.server/run-server
-                           #(handle this %)
-                           {:port port'}))))
+    (assoc this :stop-server (h.server/run-server
+                              #(handle this %)
+                              {:port port})))
   (stop [this]
     (stop-server)
-    (dissoc this :stop-server :port))
+    (dissoc this :stop-server))
 
   IHttpHandler
   (new-message [_ method params]

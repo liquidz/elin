@@ -49,11 +49,9 @@
                :plugin
                :session-storage])
 
-    ;; NOTE: The port will be stored to elin.constant.server/http-server-port-variable
     :http-server (component/using
                   (e.c.s.http/new-http-server config)
-                  [:handler
-                   :session-storage])
+                  [:handler])
 
     :server (component/using
              (e.c.server/new-server config)
