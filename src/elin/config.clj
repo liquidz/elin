@@ -6,7 +6,14 @@
    [elin.schema.config :as e.s.config]
    [elin.util.file :as e.u.file]
    [malli.core :as m]
-   [malli.transform :as mt]))
+   [malli.transform :as mt])
+  (:import
+   java.net.ServerSocket))
+
+(defmethod aero/reader 'empty-port
+  [_opts _tag _value]
+  (with-open [sock (ServerSocket. 0)]
+    (.getLocalPort sock)))
 
 (def ^:private config-transformer
   (mt/transformer
