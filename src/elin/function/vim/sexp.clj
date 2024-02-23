@@ -1,13 +1,12 @@
 (ns elin.function.vim.sexp
   (:require
    [clojure.core.async :as async]
-   [clojure.string :as str]
    [elin.error :as e]
    [elin.function.vim  :as e.f.vim]
    [elin.schema :as e.schema]
    [elin.schema.server :as e.s.server]
-   [malli.core :as m]
-   [rewrite-clj.zip :as r.zip]))
+   [elin.util.sexp :as e.u.sexp]
+   [malli.core :as m]))
 
 (def ^:private ?CodeAndPosition
   [:map
@@ -39,24 +38,6 @@
 (m/=> get-namespace!! [:=> [:cat e.s.server/?Host] (e.schema/error-or [:maybe string?])])
 (defn get-namespace!!
   [host]
-  (try
-    (e/let [ns-form (async/<!! (e.f.vim/call host "elin#internal#sexp#clojure#get_ns_form" []))
-            _ (when (empty? ns-form)
-                (e/not-found {:message "No namespace form found"}))
-            target-sym (if (str/includes? ns-form "in-ns") 'in-ns 'ns)
-            ns-str (-> ns-form
-                       (r.zip/of-string)
-                       (r.zip/find-value r.zip/next target-sym)
-                       (r.zip/right)
-                       (as-> zloc
-                         (if (= :quote (r.zip/tag zloc))
-                           (r.zip/down zloc)
-                           zloc))
-                       (r.zip/sexpr)
-                       (str))]
-      (if (empty? ns-str)
-        (e/not-found {:message "No namespace form found"})
-        ns-str))
-
-    (catch Exception ex
-      (e/not-found {:message (ex-message ex)}))))
+  (e/-> (e.f.vim/call host "elin#internal#sexp#clojure#get_ns_form" [])
+        (async/<!!)
+        (e.u.sexp/extract-namespace)))
