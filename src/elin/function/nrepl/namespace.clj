@@ -1,7 +1,9 @@
 (ns elin.function.nrepl.namespace
   (:require
+   [clojure.java.io :as io]
    [clojure.string :as str]
    [elin.util.file :as e.u.file]
+   [elin.util.sexp :as e.u.sexp]
    [malli.core :as m]))
 
 (m/=> get-cycled-namespace-path [:=> [:cat [:map
@@ -30,3 +32,25 @@
               (str/replace-first "/crs/" "/tset/")
               (str/reverse)
               (str relative-name "_test" ext)))))
+
+(defn guess-namespace-from-path
+  [path]
+  (let [sep (e.u.file/guess-file-separator path)
+        recent-file (-> (io/file path)
+                        (e.u.file/find-clojure-file-in-parent-directories))
+        recent-file-path (.getAbsolutePath recent-file)
+        ext (e.u.file/get-file-extension recent-file-path)
+        recent-namespace (-> (slurp recent-file)
+                             (e.u.sexp/extract-ns-form)
+                             (e.u.sexp/extract-namespace))
+        recent-relative-name (-> recent-namespace
+                                 (str/replace "." sep)
+                                 (str/replace "-" "_"))
+        base-dir (when-let [idx (str/index-of recent-file-path
+                                              (str recent-relative-name ext))]
+                   (subs recent-file-path 0 idx))]
+    (when (str/starts-with? path base-dir)
+      (-> (subs path (count base-dir))
+          (str/replace #"\.\w+$" "")
+          (str/replace sep ".")
+          (str/replace "_" "-")))))
