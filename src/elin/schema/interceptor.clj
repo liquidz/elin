@@ -20,6 +20,7 @@
   [:map
    [:name qualified-keyword?]
    [:kind ?Kind]
+   [:optional {:optional true} boolean?]
    [:enter {:optional true} fn?]
    [:leave {:optional true} fn?]])
 

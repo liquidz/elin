@@ -15,6 +15,9 @@
    [msgpack.clojure-extensions]))
 
 (def ^:private config-key :interceptor)
+(def ^:private invalid-group ::invalid)
+(def ^:private optional-group ::optional)
+(def ^:private valid-group ::valid)
 
 (defn- resolve-interceptor [lazy-host sym]
   (try
@@ -23,9 +26,17 @@
       (e.log/warning lazy-host "Failed to resolve interceptor" {:symbol sym :ex ex})
       nil)))
 
-(defn- valid-interceptor?
+(defn- interceptor-group
   [x]
-  (m/validate e.s.interceptor/?Interceptor x))
+  (cond
+    (not (m/validate e.s.interceptor/?Interceptor x))
+    invalid-group
+
+    (:optional x)
+    optional-group
+
+    :else
+    valid-group))
 
 (defrecord Interceptor
   [lazy-host       ; LazyHost component
@@ -41,9 +52,9 @@
                                     (distinct)
                                     (remove #(contains? exclude-set %))
                                     (keep #(resolve-interceptor lazy-host %))
-                                    (group-by valid-interceptor?))
-          interceptor-map (group-by :kind (get grouped-interceptors true))]
-      (when-let [invalid-interceptors (seq (get grouped-interceptors false))]
+                                    (group-by interceptor-group))
+          interceptor-map (group-by :kind (get grouped-interceptors valid-group))]
+      (when-let [invalid-interceptors (seq (get grouped-interceptors invalid-group))]
         (e.log/debug "Invalid interceptors:" invalid-interceptors)
         (e.log/warning lazy-host "Invalid interceptors:" invalid-interceptors))
       (e.log/debug lazy-host "Interceptor component: Started")
@@ -79,8 +90,9 @@
                            (set))
           grouped (->> (or includes [])
                        (keep #(resolve-interceptor lazy-host %))
-                       (group-by valid-interceptor?))
-          include-map (group-by :kind (get grouped true))
+                       (group-by interceptor-group))
+          include-map (group-by :kind (concat (get grouped valid-group)
+                                              (get grouped optional-group)))
           configured (reduce-kv
                       (fn [accm kind interceptors]
                         (assoc accm kind (concat (get accm kind []) interceptors)))
