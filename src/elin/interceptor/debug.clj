@@ -3,18 +3,19 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.log :as e.log]
    [elin.schema.interceptor :as e.s.interceptor]
+   [exoscale.interceptor :as ix]
    [malli.core :as m]
    [malli.error :as m.error]))
 
 (def nrepl-debug-interceptor
   {:name ::nrepl-debug-interceptor
    :kind e.c.interceptor/nrepl
-   :enter (fn [{:as ctx :keys [request]}]
-            (e.log/debug "Nrepl >>>" (pr-str request))
-            ctx)
-   :leave (fn [{:as ctx :keys [response]}]
-            (e.log/debug "Nrepl <<<" (pr-str response))
-            ctx)})
+   :enter (-> (fn [{:keys [request]}]
+                (e.log/debug "Nrepl >>>" (pr-str request)))
+              (ix/discard))
+   :leave (-> (fn [{:keys [response]}]
+                (e.log/debug "Nrepl <<<" (pr-str response)))
+              (ix/discard))})
 
 (def ^:private kind-schema-map
   {e.c.interceptor/all any?

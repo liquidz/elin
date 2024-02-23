@@ -5,7 +5,8 @@
    [elin.function.vim :as e.f.vim]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.util.file :as e.u.file]
-   [elin.util.map :as e.u.map]))
+   [elin.util.map :as e.u.map]
+   [exoscale.interceptor :as ix]))
 
 (def port-auto-detecting-interceptor
   {:name ::port-auto-detecting-interceptor
@@ -25,18 +26,18 @@
 (def output-channel-interceptor
   {:name ::output-channel-interceptor
    :kind e.c.interceptor/connect
-   :leave (fn [{:as ctx :component/keys [interceptor] :keys [client]}]
-            (when client
-              (async/go-loop []
-                (let [ch (get-in client [:connection :output-channel])
-                      output (async/<! ch)]
-                  (when output
-                    (-> ctx
-                        (e.u.map/select-keys-by-namespace :component)
-                        (assoc :output output)
-                        (->> (e.p.interceptor/execute interceptor e.c.interceptor/output)))
-                    (recur)))))
-            ctx)})
+   :leave (-> (fn [{:as ctx :component/keys [interceptor] :keys [client]}]
+                (async/go-loop []
+                  (let [ch (get-in client [:connection :output-channel])
+                        output (async/<! ch)]
+                    (when output
+                      (-> ctx
+                          (e.u.map/select-keys-by-namespace :component)
+                          (assoc :output output)
+                          (->> (e.p.interceptor/execute interceptor e.c.interceptor/output)))
+                      (recur)))))
+              (ix/when #(:client %))
+              (ix/discard))})
 
 (def connected-interceptor
   {:name ::connected-interceptor

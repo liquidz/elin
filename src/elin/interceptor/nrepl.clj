@@ -6,18 +6,18 @@
    [elin.function.vim.virtual-text :as e.f.v.virtual-text]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.file :as e.u.file]
-   [elin.util.nrepl :as e.u.nrepl]))
+   [elin.util.nrepl :as e.u.nrepl]
+   [exoscale.interceptor :as ix]))
 
 (def eval-ns-interceptor
   {:name ::eval-ns-interceptor
    :kind e.c.interceptor/nrepl
-   :enter (fn [{:as ctx :keys [request]}]
-            (if (not= e.c.nrepl/eval-op (:op request))
-              ctx
-              (let [{:keys [code]} request]
-                (if (str/starts-with? code "(ns")
-                  (update ctx :request dissoc :ns)
-                  ctx))))})
+   :enter (-> (fn [{:as ctx :keys [request]}]
+                (let [{:keys [code]} request]
+                  (if (str/starts-with? code "(ns")
+                    (update ctx :request dissoc :ns)
+                    ctx)))
+              (ix/when #(= e.c.nrepl/eval-op (get-in % [:request :op]))))})
 
 (def normalize-path-interceptor
   {:name ::normalize-path-interceptor
