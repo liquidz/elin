@@ -54,3 +54,10 @@
   [path]
   (when-let [idx (str/last-index-of path ".")]
     (subs path idx)))
+
+(m/=> guess-file-separator [:=> [:cat string?] string?])
+(defn guess-file-separator
+  [path]
+  (if (= \/ (first path))
+    "/"
+    "\\"))
