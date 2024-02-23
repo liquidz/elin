@@ -60,7 +60,7 @@
      (handler-fn (h/test-message [0 1 method [params options]])))))
 
 (t/deftest new-handler-test
-  (with-redefs [e.c.interceptor/valid-interceptor? (constantly true)]
+  (with-redefs [e.c.interceptor/interceptor-group (constantly (deref #'e.c.interceptor/valid-group))]
     (let [{:as sys :keys [handler lazy-host]} (-> (e.system/new-system test-config)
                                                   (dissoc :server :http-server)
                                                   (component/start-system))
