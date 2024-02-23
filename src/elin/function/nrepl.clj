@@ -115,18 +115,20 @@
   [nrepl ns-str sym-str]
   (e/let [res (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/lookup-op :ns ns-str :sym sym-str})
                     (async/<!!)
-                    (e.u.nrepl/merge-messages))]
+                    (e.u.nrepl/merge-messages))
+          _ (when (e.u.nrepl/has-status? res "lookup-error")
+              (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)}))
+          _ (when (= [] (:info res))
+              (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)}))
+          res' (or (:info res)
+                   res)]
     (cond
-      (e.u.nrepl/has-status? res "lookup-error")
+      (or (= [] (:ns res'))
+          (= [] (:name res')))
       (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)})
 
-      (contains? res :info)
-      (if (= [] (:info res))
-        {}
-        (:info res))
-
       :else
-      res)))
+      res')))
 
 (m/=> ls-sessions!! [:=> [:cat e.s.component/?Nrepl] e.schema/?ManyToManyChannel])
 (defn ls-sessions!!
