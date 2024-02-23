@@ -23,6 +23,17 @@
            file
            (recur (.getParentFile dir))))))))
 
+(defn find-clojure-file-in-parent-directories
+  [base-file]
+  (loop [file base-file]
+    (when-let [parent (.getParentFile file)]
+      (if-let [clojure-file (->> (file-seq parent)
+                                 (filter #(and (.isFile %)
+                                               (re-seq #"\.clj[csd]?$" (.getName %))))
+                                 (first))]
+        clojure-file
+        (recur parent)))))
+
 (m/=> normalize-path [:=> [:cat string?] string?])
 (defn normalize-path [path]
   (let [path (str/replace-first path #"^file:" "")]
