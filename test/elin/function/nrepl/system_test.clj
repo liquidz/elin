@@ -10,7 +10,7 @@
 (t/use-fixtures :once h/malli-instrument-fixture)
 (t/use-fixtures :each h/test-nrepl-server-port-fixture)
 
-(defn test-handler [session msg]
+(defn- test-handler [session msg]
   (when (= "clone" (:op msg))
     [{:new-session session}]))
 
