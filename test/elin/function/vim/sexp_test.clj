@@ -1,6 +1,7 @@
 (ns elin.function.vim.sexp-test
   (:require
    [clojure.test :as t]
+   [elin.error :as e]
    [elin.function.vim.sexp :as sut]
    [elin.test-helper :as h]))
 
@@ -26,4 +27,10 @@
 
   (t/testing "in-ns"
     (t/is (= "foo.bar"
-             (sut/get-namespace!! (get-namespace-host "(in-ns 'foo.bar)"))))))
+             (sut/get-namespace!! (get-namespace-host "(in-ns 'foo.bar)")))))
+
+  (t/testing "no namespace"
+    (t/is (e/not-found?
+           (sut/get-namespace!! (get-namespace-host "(foo)"))))
+    (t/is (e/not-found?
+           (sut/get-namespace!! (get-namespace-host ""))))))

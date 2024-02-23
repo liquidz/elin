@@ -41,17 +41,22 @@
   [host]
   (try
     (e/let [ns-form (async/<!! (e.f.vim/call host "elin#internal#sexp#clojure#get_ns_form" []))
-            target-sym (if (str/includes? ns-form "in-ns") 'in-ns 'ns)]
-      (when (seq ns-form)
-        (-> ns-form
-            (r.zip/of-string)
-            (r.zip/find-value r.zip/next target-sym)
-            (r.zip/right)
-            (as-> zloc
-              (if (= :quote (r.zip/tag zloc))
-                (r.zip/down zloc)
-                zloc))
-            (r.zip/sexpr)
-            (str))))
+            _ (when (empty? ns-form)
+                (e/not-found {:message "No namespace form found"}))
+            target-sym (if (str/includes? ns-form "in-ns") 'in-ns 'ns)
+            ns-str (-> ns-form
+                       (r.zip/of-string)
+                       (r.zip/find-value r.zip/next target-sym)
+                       (r.zip/right)
+                       (as-> zloc
+                         (if (= :quote (r.zip/tag zloc))
+                           (r.zip/down zloc)
+                           zloc))
+                       (r.zip/sexpr)
+                       (str))]
+      (if (empty? ns-str)
+        (e/not-found {:message "No namespace form found"})
+        ns-str))
+
     (catch Exception ex
       (e/not-found {:message (ex-message ex)}))))
