@@ -4,7 +4,8 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.vim.virtual-text :as e.f.v.virtual-text]
    [elin.protocol.rpc :as e.p.rpc]
-   [exoscale.interceptor :as ix]))
+   [exoscale.interceptor :as ix]
+   [rewrite-clj.zip :as r.zip]))
 
 (def output-eval-result-to-cmdline-interceptor
   {:name ::output-eval-result-to-cmdline-interceptor
@@ -26,3 +27,30 @@
                                           (str v)
                                           {:highlight "DiffText"})))
               (ix/discard))})
+
+(defn- up-until-top [zloc]
+  (loop [zloc zloc]
+    (let [up-zloc (r.zip/up zloc)]
+      (if (-> up-zloc
+              (r.zip/down)
+              (r.zip/sexpr)
+              (= 'comment))
+        zloc
+        (recur up-zloc)))))
+
+(def eval-in-comment-interceptor
+  {:name ::eval-in-comment-interceptor
+   :kind e.c.interceptor/evaluate
+   :enter (-> (fn [{:as ctx :keys [code options]}]
+                (let [{:keys [line column cursor-line cursor-column]} options
+                      one-based-rel-line (inc (- cursor-line line))
+                      one-based-rel-column (inc (- cursor-column column))
+                      zloc (-> (r.zip/of-string code {:track-position? true})
+                               (r.zip/find-last-by-pos [one-based-rel-line
+                                                        one-based-rel-column])
+                               (up-until-top))
+                      code' (if (r.zip/seq? zloc)
+                              (str (r.zip/sexpr zloc))
+                              (str/replace-first code #"^\(comment" "(do"))]
+                  (assoc ctx :code code')))
+              (ix/when #(str/starts-with? (:code %) "(comment")))})

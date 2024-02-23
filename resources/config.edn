@@ -9,7 +9,8 @@
                           elin.interceptor.output/print-output-interceptor
                           elin.interceptor.test/done-test-interceptor]
                :preset {:evaluation {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor
-                                                elin.interceptor.evaluate/set-eval-result-to-virtual-text-interceptor]}}}
+                                                elin.interceptor.evaluate/set-eval-result-to-virtual-text-interceptor
+                                                elin.interceptor.evaluate/eval-in-comment-interceptor]}}}
 
  :handler {:includes [elin.handler.complete/complete
                       elin.handler.connect/connect
