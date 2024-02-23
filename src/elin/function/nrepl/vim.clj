@@ -18,34 +18,37 @@
      :response (e.f.nrepl/eval!! nrepl code options)}))
 
 (defn evaluate-current-top-list!!
-  [{:keys [nrepl host]}]
+  [{:keys [nrepl host options]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
           path (e.f.vim/get-full-path!! host)
           {:keys [code lnum col]} (e.f.v.sexp/get-top-list!! host lnum col)]
-    (eval!! nrepl code {:line lnum
-                        :column col
-                        :ns ns-str
-                        :file path})))
+    (eval!! nrepl code (merge options
+                              {:line lnum
+                               :column col
+                               :ns ns-str
+                               :file path}))))
 
 (defn evaluate-current-list!!
-  [{:keys [nrepl host]}]
+  [{:keys [nrepl host options]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
           path (e.f.vim/get-full-path!! host)
           {:keys [code lnum col]} (e.f.v.sexp/get-list!! host lnum col)]
-    (eval!! nrepl code {:line lnum
-                        :column col
-                        :ns ns-str
-                        :file path})))
+    (eval!! nrepl code (merge options
+                              {:line lnum
+                               :column col
+                               :ns ns-str
+                               :file path}))))
 
 (defn evaluate-current-expr!!
-  [{:keys [nrepl host]}]
+  [{:keys [nrepl host options]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
           path (e.f.vim/get-full-path!! host)
           {:keys [code lnum col]} (e.f.v.sexp/get-expr!! host lnum col)]
-    (eval!! nrepl code {:line lnum
-                        :column col
-                        :ns ns-str
-                        :file path})))
+    (eval!! nrepl code (merge options
+                              {:line lnum
+                               :column col
+                               :ns ns-str
+                               :file path}))))

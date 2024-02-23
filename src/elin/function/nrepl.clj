@@ -56,11 +56,17 @@
    (eval!! nrepl code {}))
   ([nrepl code options]
    (if-let [session (e.p.nrepl/current-session nrepl)]
-     (->> (merge (select-keys options eval-option-keys)
-                 {:op e.c.nrepl/eval-op :session session  :code code})
-          (e.p.nrepl/request nrepl)
-          (async/<!!)
-          (e.u.nrepl/merge-messages))
+     (let [{:keys [middleware]} options
+           eval-fn (fn [code' options']
+                     (->> (merge (select-keys options' eval-option-keys)
+                                 {:op e.c.nrepl/eval-op :session session  :code code'})
+                          (e.p.nrepl/request nrepl)
+                          (async/<!!)
+                          (e.u.nrepl/merge-messages)))
+           eval-fn' (if middleware
+                      (middleware eval-fn)
+                      eval-fn)]
+       (eval-fn' code options))
      (e/unavailable {:message "Not connected"}))))
 
 (m/=> interrupt!! [:function
