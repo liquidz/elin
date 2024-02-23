@@ -48,3 +48,9 @@
                (io/file home ".cache" e.c.project/name))]
     (.mkdirs file)
     (.getAbsolutePath file)))
+
+(m/=> get-file-extension [:=> [:cat string?] [:maybe string?]])
+(defn get-file-extension
+  [path]
+  (when-let [idx (str/last-index-of path ".")]
+    (subs path idx)))

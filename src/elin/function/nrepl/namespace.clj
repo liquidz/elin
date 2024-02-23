@@ -1,12 +1,8 @@
 (ns elin.function.nrepl.namespace
   (:require
    [clojure.string :as str]
+   [elin.util.file :as e.u.file]
    [malli.core :as m]))
-
-(defn- get-file-extension
-  [path]
-  (when-let [idx (str/last-index-of path ".")]
-    (subs path idx)))
 
 (m/=> get-cycled-namespace-path [:=> [:cat [:map
                                             [:ns string?]
@@ -15,7 +11,7 @@
                                  [:maybe string?]])
 (defn get-cycled-namespace-path
   [{ns-str :ns ns-path :path file-separator :file-separator}]
-  (let [ext (get-file-extension ns-path)
+  (let [ext (e.u.file/get-file-extension ns-path)
         relative-name (-> ns-str
                           (str/replace "." file-separator)
                           (str/replace "-" "_"))
