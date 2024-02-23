@@ -67,3 +67,9 @@ endfunction
 function! elin#internal#buffer#clear(buf_name) abort
   return deletebufline(a:buf_name, 1, "$")
 endfunction
+
+function! elin#internal#buffer#set(buf_name, lines) abort
+  for line in reverse(copy(a:lines))
+    call appendbufline(a:buf_name, '0', line)
+  endfor
+endfunction
