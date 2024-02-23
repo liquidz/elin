@@ -8,11 +8,12 @@
 (def ?Kind
   [:enum
    e.c.interceptor/all
-   e.c.interceptor/handler
+   e.c.interceptor/autocmd
    e.c.interceptor/connect
+   e.c.interceptor/evaluate
+   e.c.interceptor/handler
    e.c.interceptor/nrepl
    e.c.interceptor/output
-   e.c.interceptor/autocmd
    e.c.interceptor/test])
 
 (def ?Interceptor
@@ -65,6 +66,15 @@
        ;; ENTER
        [:ns string?]
        [:vars [:sequential string?]]
+       ;; LEAVE
+       [:response {:optional true} map?]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?EvaluateContext
+  (-> [:map
+       ;; ENTER
+       [:code string?]
+       [:options map?]
        ;; LEAVE
        [:response {:optional true} map?]]
       (m.util/merge e.s.handler/?Components)))

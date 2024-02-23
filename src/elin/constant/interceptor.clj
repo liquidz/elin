@@ -3,9 +3,10 @@
   (:refer-clojure :exclude [test]))
 
 (def all ::all)
-(def handler ::handler)
+(def autocmd ::autocmd)
 (def connect ::connect)
+(def evaluate ::evaluate)
+(def handler ::handler)
 (def nrepl ::nrepl)
 (def output ::output)
-(def autocmd ::autocmd)
 (def test ::test)
