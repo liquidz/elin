@@ -3,8 +3,6 @@
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
-   [elin.function.vim.virtual-text :as e.f.v.virtual-text]
-   [elin.protocol.rpc :as e.p.rpc]
    [elin.util.file :as e.u.file]
    [elin.util.nrepl :as e.u.nrepl]
    [exoscale.interceptor :as ix]))
@@ -37,27 +35,3 @@
 
               :else
               ctx))})
-
-(def output-eval-result-to-cmdline-interceptor
-  {:name ::output-eval-result-to-cmdline-interceptor
-   :kind e.c.interceptor/nrepl
-   :leave (fn [{:as ctx :component/keys [host] :keys [request response]}]
-            (when (= e.c.nrepl/eval-op (:op request))
-              (let [msg (e.u.nrepl/merge-messages response)]
-                (when-let [v (:value msg)]
-                  (e.p.rpc/echo-text host (str/trim (str v))))
-
-                (when-let [v (:err msg)]
-                  (e.p.rpc/echo-message host (str/trim (str v)) "ErrorMsg"))))
-            ctx)})
-
-(def set-eval-result-to-virtual-text-interceptor
-  {:name ::set-eval-result-to-virtual-text-interceptor
-   :kind e.c.interceptor/nrepl
-   :leave (fn [{:as ctx :component/keys [host] :keys [request response]}]
-            (when (= e.c.nrepl/eval-op (:op request))
-              (when-let [v (:value (e.u.nrepl/merge-messages response))]
-                (e.f.v.virtual-text/set host
-                                        (str v)
-                                        {:highlight "DiffText"})))
-            ctx)})
