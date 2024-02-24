@@ -39,3 +39,28 @@ function! elin#util#start_lazily(id, time, callback) abort
         \ {'repeat': 0},
         \ )
 endfunction
+
+function! elin#util#shorten(msg, ...) abort
+  let max_length = 0
+  if exists('v:echospace')
+    let max_length = v:echospace + ((&cmdheight - 1) * &columns)
+  else
+    let max_length = (&columns * &cmdheight) - 1
+    " from experimenting: seems to use 12 characters
+    if &showcmd
+      let max_length -= 12
+    endif
+
+    " from experimenting
+    if &laststatus != 2
+      let max_length -= 25
+    endif
+  endif
+
+  let max_length = min([max_length, get(a:, 1, max_length)])
+  let msg = substitute(a:msg, '\r\?\n', ' ', 'g')
+  return (max_length >= 3 && len(msg) > max_length)
+        \ ? strpart(msg, 0, max_length - 3).'...'
+        \ : msg
+endfunction
+

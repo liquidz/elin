@@ -9,6 +9,10 @@ function! elin#internal#echom(text, highlight) abort
 	endtry
 endfunction
 
+function! elin#internal#shortening_echo(text) abort
+  echo elin#util#shorten(a:text)
+endfunction
+
 function! elin#internal#add_curpos_to_jumplist() abort
   " :h jumplist
   " > You can explicitly add a jump by setting the ' mark with "m'".
