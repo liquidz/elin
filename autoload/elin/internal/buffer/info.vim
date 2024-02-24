@@ -58,7 +58,9 @@ function! elin#internal#buffer#info#append(s) abort
   " endif
 endfunction
 
-
+function! elin#internal#buffer#info#clear() abort
+	call elin#internal#buffer#clear(s:buf_name)
+endfunction
 
 " import { Diced } from "../../types.ts";
 " import * as vimBuf from "../../std/vim/buffer.ts";
