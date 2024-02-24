@@ -54,7 +54,7 @@
   {:name ::skelton-interceptor
    :kind e.c.interceptor/autocmd
    :enter (-> (fn [{:component/keys [host]}]
-                (e/let [path (e.f.vim/get-full-path!! host)
+                (e/let [path (e.f.vim/get-current-file-path!! host)
                         ns-str (or (e.f.n.namespace/guess-namespace-from-path path)
                                    ;; TODO fallback to another process
                                    (e/fault))

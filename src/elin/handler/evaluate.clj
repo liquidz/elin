@@ -62,7 +62,7 @@
 (m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
 (defn load-current-file
   [{:component/keys [nrepl host]}]
-  (e/let [path (e.f.vim/get-full-path!! host)
+  (e/let [path (e.f.vim/get-current-file-path!! host)
           _ (e.f.nrepl/load-file!! nrepl path)]
     (e.p.rpc/echo-text host "Required")
     true))

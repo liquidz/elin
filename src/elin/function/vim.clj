@@ -62,11 +62,6 @@
      :off off
      :curswant curswant}))
 
-(m/=> get-full-path!! [:=> [:cat e.s.server/?Host] (e.schema/error-or string?)])
-(defn get-full-path!!
-  [host]
-  (async/<!! (call host "expand" ["%:p"])))
-
 (m/=> jump!! [:=> [:cat e.s.server/?Host string? int? int? [:* any?]] [:maybe e.schema/?Error]])
 (defn jump!!
   [host path lnum col & [jump-command]]

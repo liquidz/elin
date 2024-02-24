@@ -21,7 +21,7 @@
   [{:keys [nrepl host options]}]
   (e/let [{cur-lnum :lnum cur-col :col} (e.f.vim/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
-          path (e.f.vim/get-full-path!! host)
+          path (e.f.vim/get-current-file-path!! host)
           {:keys [code lnum col]} (e.f.v.sexp/get-top-list!! host cur-lnum cur-col)]
     (eval!! nrepl code (merge options
                               {:line lnum
@@ -35,7 +35,7 @@
   [{:keys [nrepl host options]}]
   (e/let [{cur-lnum :lnum cur-col :col} (e.f.vim/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
-          path (e.f.vim/get-full-path!! host)
+          path (e.f.vim/get-current-file-path!! host)
           {:keys [code lnum col]} (e.f.v.sexp/get-list!! host cur-lnum cur-col)]
     (eval!! nrepl code (merge options
                               {:line lnum
@@ -49,7 +49,7 @@
   [{:keys [nrepl host options]}]
   (e/let [{cur-lnum :lnum cur-col :col} (e.f.vim/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
-          path (e.f.vim/get-full-path!! host)
+          path (e.f.vim/get-current-file-path!! host)
           {:keys [code lnum col]} (e.f.v.sexp/get-expr!! host cur-lnum cur-col)]
     (eval!! nrepl code (merge options
                               {:line lnum
