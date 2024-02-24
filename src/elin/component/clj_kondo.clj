@@ -7,12 +7,9 @@
    [clojure.string :as str]
    [com.stuartsierra.component :as component]
    [elin.error :as e]
-   [elin.function.nrepl.system :as e.f.n.system]
    [elin.function.vim :as e.f.vim]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
-   [elin.protocol.nrepl :as e.p.nrepl]
-   [elin.util.file :as e.u.file]
-   [elin.util.function :as e.u.function]))
+   [elin.util.file :as e.u.file]))
 
 (defn- get-project-root-directory
   [host]
@@ -91,86 +88,3 @@
 (defn new-clj-kondo
   [_]
   (map->CljKondo {}))
-
-(comment
-  (def result (clj-kondo/run! {:lint ["."]
-                               :config {:output {:analysis {:protocol-impls true}}}}))
-
-  (def clj-kondo (map->CljKondo {:analyzed-atom (atom result)})))
-
-(defn namespace-usages
-  [clj-kondo]
-  (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
-    (or (:namespace-usages ana)
-        [])))
-
-(defn var-usages
-  [clj-kondo]
-  (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
-    (or (:var-usages ana)
-        [])))
-
-(defn namespace-definitions
-  [clj-kondo]
-  (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
-    (or (:namespace-definitions ana)
-        [])))
-
-(defn local-usages
-  [clj-kondo]
-  (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
-    (or (:local-usages ana)
-        [])))
-
-(defn local-definitions
-  [clj-kondo]
-  (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
-    (or (:locals ana)
-        [])))
-
-(defn keywords [clj-kondo]
-  (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
-    (or (:keywords ana)
-        [])))
-
-(defn keyword-usages
-  [clj-kondo keyword']
-  (when-let [keywords' (keywords clj-kondo)]
-    (let [[kw-ns kw-name] ((juxt namespace name) keyword')
-          pred (if kw-ns
-                 #(and (= kw-ns (:ns %))
-                       (= kw-name (:name %)))
-                 #(= kw-name (:name %)))]
-      (filter pred keywords'))))
-
-(defn keyword-definition
-  [clj-kondo filename keyword']
-  (when-let [keywords' (keywords clj-kondo)]
-    (let [[kw-ns kw-name] ((juxt namespace name) keyword')]
-      (if kw-ns
-        (when-let [targets (->> keywords'
-                                (filter #(and (= filename (:filename %))
-                                              (= kw-ns (:alias %))
-                                              (= kw-name (:name %))))
-                                (seq))]
-          (let [target-ns (-> targets (first) (:ns) (or ""))
-                target-name (-> targets (first) (:name) (or ""))]
-            (->> keywords'
-                 (filter #(and (= target-ns (:ns %))
-                               (= target-name (:name %))
-                               (not= "" (:reg %))))
-                 (first))))
-        (->> keywords'
-             (filter #(and (= filename (:filename %))
-                           (= "" (:alias %))
-                           (= kw-name (:name %))
-                           (not= "" (:reg %))))
-             (first))))))
-
-(defn references
-  [clj-kondo ns-str var-name]
-  (let [var-name (str/replace-first var-name #"^'+" "")]
-    (some->> (var-usages clj-kondo)
-             (filter #(and (= ns-str (:to %))
-                           (= var-name (:name %))))
-             (sort-by :filename))))
