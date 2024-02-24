@@ -2,6 +2,7 @@
   (:require
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.function.vim :as e.f.vim]
    [elin.function.vim.virtual-text :as e.f.v.virtual-text]
    [elin.protocol.rpc :as e.p.rpc]
    [exoscale.interceptor :as ix]
@@ -12,7 +13,7 @@
    :kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (when-let [v (:value response)]
-                  (e.p.rpc/echo-text host (str/trim (str v))))
+                  (e.f.vim/notify host "elin#internal#shortening_echo" [(str/trim (str v))]))
 
                 (when-let [v (:err response)]
                   (e.p.rpc/echo-message host (str/trim (str v)) "ErrorMsg")))
