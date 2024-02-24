@@ -36,8 +36,9 @@
 (defn guess-namespace-from-path
   [path]
   (let [sep (e.u.file/guess-file-separator path)
-        recent-file (-> (io/file path)
-                        (e.u.file/find-clojure-file-in-parent-directories))
+        recent-file (e.u.file/find-file-in-parent-directories
+                     (.getAbsolutePath (.getParentFile (io/file path)))
+                     #"\.clj[csd]?$")
         recent-file-path (.getAbsolutePath recent-file)
         ext (e.u.file/get-file-extension recent-file-path)
         recent-namespace (-> (slurp recent-file)
