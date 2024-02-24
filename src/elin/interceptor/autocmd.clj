@@ -7,6 +7,7 @@
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
+   [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.nrepl :as e.p.nrepl]
    [exoscale.interceptor :as ix]))
 
@@ -66,4 +67,12 @@
                                            (str/split-lines))]
                   (e.f.vim/notify host "elin#internal#buffer#set" ["%" ns-form-lines])))
               (ix/when #(= "BufNewFile" (:autocmd-type %)))
+              (ix/discard))})
+
+(def clj-kondo-analyzing-interceptor
+  {:name ::clj-kondo-analyzing-interceptor
+   :kind e.c.interceptor/autocmd
+   :leave (-> (fn [{:component/keys [clj-kondo]}]
+                (e.p.clj-kondo/analyze clj-kondo))
+              (ix/when #(= "BufWritePost" (:autocmd-type %)))
               (ix/discard))})

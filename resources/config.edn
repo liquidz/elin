@@ -2,6 +2,7 @@
 
  :interceptor {:includes [elin.interceptor.autocmd/ns-create-interceptor
                           elin.interceptor.autocmd/skeleton-interceptor
+                          elin.interceptor.autocmd/clj-kondo-analyzing-interceptor
                           elin.interceptor.connect/connected-interceptor
                           elin.interceptor.connect/output-channel-interceptor
                           elin.interceptor.connect/port-auto-detecting-interceptor
