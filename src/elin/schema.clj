@@ -5,7 +5,8 @@
    clojure.core.async.impl.channels.ManyToManyChannel
    (clojure.lang
     Atom
-    ExceptionInfo)))
+    ExceptionInfo)
+   java.util.regex.Pattern))
 
 (defn ?instance
   [klass]
@@ -29,6 +30,9 @@
 
 (def ?Atom
   (?instance Atom))
+
+(def ?Pattern
+  (?instance Pattern))
 
 (defn error-or
   [schema]
