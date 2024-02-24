@@ -46,3 +46,6 @@
   []
   (stop)
   (start))
+
+(defn $ [& kws]
+  (get-in @sys kws))
