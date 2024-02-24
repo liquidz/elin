@@ -43,7 +43,8 @@
 
     :handler (component/using
               (e.c.handler/new-handler config)
-              [:interceptor
+              [:clj-kondo
+               :interceptor
                :lazy-host
                :nrepl
                :plugin

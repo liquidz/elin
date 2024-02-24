@@ -89,7 +89,8 @@
         (:response))))
 
 (defrecord Handler
-  [interceptor     ; Interceptor component
+  [clj-kondo       ; CljKondo component
+   interceptor     ; Interceptor component
    lazy-host       ; LazyHost component
    nrepl           ; Nrepl component
    plugin          ; Plugin component
@@ -105,7 +106,8 @@
                       :component/interceptor interceptor
                       :component/host lazy-host
                       :component/handler this
-                      :component/session-storage session-storage}
+                      :component/session-storage session-storage
+                      :component/clj-kondo clj-kondo}
           exclude-set (set excludes)
           handlers (concat (or includes [])
                            (or (get-in plugin [:loaded-plugin :handlers]) []))
