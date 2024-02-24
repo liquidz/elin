@@ -14,21 +14,12 @@
    [elin.util.file :as e.u.file]
    [elin.util.function :as e.u.function]))
 
-(defn- get-parent-absolute-path
-  [path]
-  (.getAbsolutePath (.getParentFile (io/file path))))
-
-(defn- get-user-dir*
-  [nrepl lazy-host]
-  (e/let [user-dir (e.f.n.system/get-user-dir nrepl)]
-    (if (empty? user-dir)
-      (e/-> (e.f.vim/get-current-file-path!! lazy-host)
-            (get-parent-absolute-path))
-      user-dir)))
-(def get-user-dir
-  (e.u.function/memoize-by
-   (comp e.p.nrepl/current-session first)
-   get-user-dir*))
+(defn- get-project-root-directory
+  [host]
+  (e/let [cwd (e.f.vim/get-current-working-directory!! host)
+          root (or (e.u.file/get-project-root-directory cwd)
+                   (e/not-found))]
+    (.getAbsolutePath root)))
 
 (defn- get-cache-file-path
   [user-dir]
@@ -47,7 +38,7 @@
   (require '[pod.borkdude.clj-kondo :as clj-kondo]))
 
 (defrecord CljKondo
-  [lazy-host nrepl analyzing?-atom analyzed-atom]
+  [lazy-host analyzing?-atom analyzed-atom]
   component/Lifecycle
   (start [this]
     (assoc this
@@ -65,10 +56,10 @@
           (async/thread
             (try
               #_{:clj-kondo/ignore [:unresolved-namespace]}
-              (e/let [user-dir (get-user-dir nrepl lazy-host)
-                      res (clj-kondo/run! {:lint [user-dir]
+              (e/let [project-root-dir (get-project-root-directory lazy-host)
+                      res (clj-kondo/run! {:lint [project-root-dir]
                                            :config {:output {:analysis {:protocol-impls true}}}})
-                      cache-path (get-cache-file-path user-dir)]
+                      cache-path (get-cache-file-path project-root-dir)]
                 (spit cache-path (json/generate-string res))
                 (reset! analyzed-atom res))
               (finally
@@ -80,8 +71,8 @@
       (do (reset! analyzing?-atom true)
           (async/thread
             (try
-              (e/let [user-dir (get-user-dir nrepl lazy-host)
-                      cache-file (get-cache-file-path user-dir)
+              (e/let [project-root-dir (get-project-root-directory lazy-host)
+                      cache-file (get-cache-file-path project-root-dir)
                       analyzed (json/parse-stream (io/reader cache-file) keyword)]
                 (reset! analyzed-atom analyzed))
               (finally

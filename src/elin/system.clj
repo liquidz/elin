@@ -36,10 +36,10 @@
              :lazy-host
              :session-storage])
 
+    ;; NOTE clj-kondo component should not depend on nrepl component
     :clj-kondo (component/using
                 (e.c.clj-kondo/new-clj-kondo config)
-                [:lazy-host
-                 :nrepl])
+                [:lazy-host])
 
     :handler (component/using
               (e.c.handler/new-handler config)
