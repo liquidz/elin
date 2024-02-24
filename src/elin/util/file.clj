@@ -7,21 +7,34 @@
    [elin.util.os :as e.u.os]
    [malli.core :as m]))
 
+(defn- find-file-in-parent-directories-by-string
+  [cwd file-name]
+  (loop [dir (.getAbsoluteFile (io/file cwd))]
+    (when dir
+      (let [file (io/file dir file-name)]
+        (if (.exists file)
+          file
+          (recur (.getParentFile dir)))))))
+
+(defn- find-file-in-parent-directories-by-pattern
+  [cwd file-name-pattern]
+  (loop [dir (io/file cwd)]
+    (when dir
+      (if-let [target-file (->> (file-seq dir)
+                                (filter #(re-seq file-name-pattern (.getName %)))
+                                (first))]
+        target-file
+        (recur (.getParentFile dir))))))
+
 (m/=> find-file-in-parent-directories
-      [:function
-       [:=> [:cat string?] [:maybe e.schema/?File]]
-       [:=> [:cat string? string?] [:maybe e.schema/?File]]])
+      [:=>
+       [:cat string? [:or string? e.schema/?Pattern]]
+       [:maybe e.schema/?File]])
 (defn find-file-in-parent-directories
-  ([file-name]
-   (find-file-in-parent-directories "." file-name))
-  ([cwd
-    file-name]
-   (loop [dir (.getAbsoluteFile (io/file cwd))]
-     (when dir
-       (let [file (io/file dir file-name)]
-         (if (.exists file)
-           file
-           (recur (.getParentFile dir))))))))
+  [cwd file-name]
+  (if (string? file-name)
+    (find-file-in-parent-directories-by-string cwd file-name)
+    (find-file-in-parent-directories-by-pattern cwd file-name)))
 
 (defn find-clojure-file-in-parent-directories
   [base-file]
