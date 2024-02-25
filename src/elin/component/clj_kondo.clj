@@ -35,7 +35,7 @@
   (require '[pod.borkdude.clj-kondo :as clj-kondo]))
 
 (defrecord CljKondo
-  [lazy-host analyzing?-atom analyzed-atom]
+  [lazy-host analyzing?-atom analyzed-atom config]
   component/Lifecycle
   (start [this]
     (assoc this
@@ -55,7 +55,7 @@
               #_{:clj-kondo/ignore [:unresolved-namespace]}
               (e/let [project-root-dir (get-project-root-directory lazy-host)
                       res (clj-kondo/run! {:lint [project-root-dir]
-                                           :config {:output {:analysis {:protocol-impls true}}}})
+                                           :config config})
                       cache-path (get-cache-file-path project-root-dir)]
                 (spit cache-path (json/generate-string res))
                 (reset! analyzed-atom res))
@@ -86,5 +86,5 @@
       (:analysis @analyzed-atom))))
 
 (defn new-clj-kondo
-  [_]
-  (map->CljKondo {}))
+  [config]
+  (map->CljKondo (or (:clj-kondo config) {})))

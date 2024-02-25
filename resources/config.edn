@@ -36,4 +36,7 @@
                         elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
                         elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}}
 
-           :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}}
+           :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
+
+ :clj-kondo {:config {:output {:analysis {:protocol-impls true
+                                          :arglists true}}}}}
