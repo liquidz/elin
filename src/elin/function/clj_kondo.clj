@@ -1,7 +1,13 @@
 (ns elin.function.clj-kondo
   (:require
+   [clojure.set :as set]
    [clojure.string :as str]
-   [elin.protocol.clj-kondo :as e.p.clj-kondo]))
+   [elin.error :as e]
+   [elin.protocol.clj-kondo :as e.p.clj-kondo]
+   [elin.schema :as e.schema]
+   [elin.schema.component :as e.s.component]
+   [elin.schema.nrepl.op :as e.s.n.op]
+   [malli.core :as m]))
 
 (defn namespace-usages
   [clj-kondo]
@@ -105,12 +111,58 @@
            (last)
            (key)))))
 
+(m/=> lookup [:=> [:cat e.s.component/?CljKondo string? string?] (e.schema/error-or e.s.n.op/?Lookup)])
+(defn lookup
+  [clj-kondo ns-str sym-str]
+  (e/let [from-ns-sym (symbol ns-str)
+          [sym-ns sym-name] (str/split sym-str #"/" 2)
+          [alias-sym var-sym] (if sym-name
+                                [(symbol sym-ns) (symbol sym-name)]
+                                [nil (symbol sym-ns)])
+          to-ns-sym (if alias-sym
+                      (some->> (namespace-usages clj-kondo)
+                               (filter #(and (= from-ns-sym (:from %))
+                                             (= alias-sym (:alias %))))
+                               (first)
+                               (:to))
+                      from-ns-sym)
+          var-def (or (->> (var-definitions clj-kondo)
+                           (filter #(and (= to-ns-sym (:ns %))
+                                         (= var-sym (:name %))))
+                           (first))
+                      (e/not-found {:message (format "Var '%s' is not found in %s" sym-str ns-str)}))]
+    (-> var-def
+        (select-keys [:ns :name :filename :row :col :doc :arglist-strs])
+        (set/rename-keys {:filename :file
+                          :row :line
+                          :col :column
+                          :arglist-strs :arglists-str})
+        (update :ns str)
+        (update :name str)
+        (update :arglists-str #(if (sequential? %)
+                                 (str/join " " %)
+                                 (str %))))))
+
+
 #_{:clj-kondo/ignore [:unresolved-namespace]}
 (comment
+  (def clj-kondo (elin.dev/$ :clj-kondo))
   (e.p.clj-kondo/analyzing? (elin.dev/$ :clj-kondo))
 
   (async/<!! (e.p.clj-kondo/analyze (elin.dev/$ :clj-kondo)))
 
+  (keys (e.p.clj-kondo/analysis (elin.dev/$ :clj-kondo)))
+
   (:summary @(elin.dev/$ :clj-kondo :analyzed-atom))
 
-  (namespace-usages (elin.dev/$ :clj-kondo)))
+  (clojure.pprint/pprint
+    (filter #(= 'references (:name %)) (var-definitions (elin.dev/$ :clj-kondo))))
+    ;(first (var-definitions (elin.dev/$ :clj-kondo))))
+  (clojure.pprint/pprint
+    (first (namespace-usages (elin.dev/$ :clj-kondo))))
+
+  (let [ns-str "elin.handler.lookup"
+        sym-str "e.f.vim/get-cursor-position!!"
+        sym-str "generate-cljdocc"]
+      (clojure.pprint/pprint
+        (lookup clj-kondo ns-str sym-str))))
