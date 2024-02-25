@@ -21,6 +21,12 @@
     (or (:namespace-definitions ana)
         [])))
 
+(defn var-definitions
+  [clj-kondo]
+  (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
+    (or (:var-definitions ana)
+        [])))
+
 (defn local-usages
   [clj-kondo]
   (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
