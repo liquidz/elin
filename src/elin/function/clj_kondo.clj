@@ -143,8 +143,6 @@
                                  (str/join " " %)
                                  (str %))))))
 
-
-#_{:clj-kondo/ignore [:unresolved-namespace]}
 (comment
   (def clj-kondo (elin.dev/$ :clj-kondo))
   (e.p.clj-kondo/analyzing? (elin.dev/$ :clj-kondo))
