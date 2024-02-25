@@ -34,9 +34,11 @@
                                                 :sym sym-str})
                       (async/<!!)
                       (e.u.nrepl/merge-messages))]
-      (if (e.u.nrepl/has-status? res "no-info")
+      (if (or (e.u.nrepl/has-status? res "no-info")
+              (= [] (:ns res) (:name res)))
         (e/not-found {:message (format "Not found: %s/%s" ns-str sym-str)})
-        res))))
+        (merge {:column 1}
+               res)))))
 
 (m/=> ns-path!! [:=> [:cat e.s.component/?Nrepl string?] [:maybe string?]])
 (defn ns-path!!
