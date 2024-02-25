@@ -7,7 +7,13 @@ function! elin#internal#sexp#get_list(lnum, col) abort
 endfunction
 
 function! elin#internal#sexp#get_expr(lnum, col) abort
-  return s:get_expr(a:lnum, a:col)
+  let view = winsaveview()
+  try
+    call cursor(a:lnum, a:col)
+    return {'code': elin#util#cword(), 'lnum': a:lnum, 'col': a:col}
+  finally
+    call winrestview(view)
+  endtry
 endfunction
 
 function! s:skip_in_string_or_comment() abort
@@ -25,10 +31,6 @@ if has('nvim') && exists('*nvim_get_runtime_file') && len(nvim_get_runtime_file(
 
   function! s:get_list(lnum, col) abort
     return luaeval('require("vim-elin.sexp").get_list(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
-  endfunction
-
-  function! s:get_expr(lnum, col) abort
-    return luaeval('require("vim-elin.sexp").get_expr(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
   endfunction
 
 else
@@ -75,16 +77,6 @@ else
       endif
 
       return {'code': join(lines, "\n"), 'lnum': start_pos[0], 'col': start_pos[1]}
-    finally
-      call winrestview(view)
-    endtry
-  endfunction
-
-  function! s:get_expr(lnum, col) abort
-    let view = winsaveview()
-    try
-      call cursor(a:lnum, a:col)
-      return {'code': elin#util#cword(), 'lnum': a:lnum, 'col': a:col}
     finally
       call winrestview(view)
     endtry
