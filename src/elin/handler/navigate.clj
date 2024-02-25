@@ -1,7 +1,7 @@
 (ns elin.handler.navigate
   (:require
    [elin.error :as e]
-   [elin.function.nrepl :as e.f.nrepl]
+   [elin.function.core :as e.f.core]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.nrepl.system :as e.f.n.system]
    [elin.function.vim :as e.f.vim]
@@ -11,12 +11,11 @@
 
 (m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
 (defn jump-to-definition
-  [{:component/keys [nrepl host]}]
+  [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
           ns (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
-          ;; TODO Use cider-nrepl's info!!
-          {:keys [file line column]} (e.f.nrepl/lookup!! nrepl ns code)]
+          {:keys [file line column]} (e.f.core/lookup!! elin ns code)]
     (when (and file line)
       (e.f.vim/jump!! host file line (or column 1)))
     true))

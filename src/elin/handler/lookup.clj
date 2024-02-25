@@ -2,7 +2,7 @@
   (:require
    [clojure.string :as str]
    [elin.error :as e]
-   [elin.function.nrepl.cider :as e.f.n.cider]
+   [elin.function.core :as e.f.core]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.popup :as e.f.v.popup]
    [elin.function.vim.sexp :as e.f.v.sexp]
@@ -103,11 +103,11 @@
 
 (m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
-  [{:component/keys [nrepl host]}]
+  [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
-          resp (e.f.n.cider/info!! nrepl ns-str code)]
+          resp (e.f.core/lookup!! elin ns-str code)]
     (e.f.v.popup/open!!
      host
      (generate-doc resp)
