@@ -4,14 +4,14 @@
    [elin.function.clj-kondo :as e.f.clj-kondo]
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.schema.handler :as e.s.handler]
-   [elin.schema.nrepl.op :as e.s.n.op]
+   [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m]
    [malli.util :as m.util]))
 
 (def ?NreplAndCljKondo
   (m.util/select-keys e.s.handler/?Components [:component/nrepl :component/clj-kondo]))
 
-(m/=> lookup!! [:=> [:cat ?NreplAndCljKondo string? string?] e.s.n.op/?Lookup])
+(m/=> lookup!! [:=> [:cat ?NreplAndCljKondo string? string?] e.s.nrepl/?Lookup])
 (defn lookup!!
   [{:component/keys [nrepl clj-kondo]} ns-str sym-str]
   (let [res (e.f.n.cider/info!! nrepl ns-str sym-str)]

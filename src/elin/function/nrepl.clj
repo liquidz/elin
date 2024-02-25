@@ -9,7 +9,7 @@
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema :as e.schema]
    [elin.schema.component :as e.s.component]
-   [elin.schema.nrepl.op :as e.s.n.op]
+   [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.nrepl :as e.u.nrepl]
    [malli.core :as m]))
 
@@ -110,7 +110,7 @@
             (async/<!!)
             (e.u.nrepl/merge-messages))))))
 
-(m/=> lookup!! [:=> [:cat e.s.component/?Nrepl string? string?] (e.schema/error-or e.s.n.op/?Lookup)])
+(m/=> lookup!! [:=> [:cat e.s.component/?Nrepl string? string?] (e.schema/error-or e.s.nrepl/?Lookup)])
 (defn lookup!!
   [nrepl ns-str sym-str]
   (e/let [res (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/lookup-op :ns ns-str :sym sym-str})

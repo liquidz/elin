@@ -6,7 +6,7 @@
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.schema :as e.schema]
    [elin.schema.component :as e.s.component]
-   [elin.schema.nrepl.op :as e.s.n.op]
+   [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m]))
 
 (defn namespace-usages
@@ -111,7 +111,7 @@
            (last)
            (key)))))
 
-(m/=> lookup [:=> [:cat e.s.component/?CljKondo string? string?] (e.schema/error-or e.s.n.op/?Lookup)])
+(m/=> lookup [:=> [:cat e.s.component/?CljKondo string? string?] (e.schema/error-or e.s.nrepl/?Lookup)])
 (defn lookup
   [clj-kondo ns-str sym-str]
   (e/let [from-ns-sym (symbol ns-str)

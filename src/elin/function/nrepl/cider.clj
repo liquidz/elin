@@ -7,7 +7,7 @@
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema :as e.schema]
    [elin.schema.component :as e.s.component]
-   [elin.schema.nrepl.op :as e.s.n.op]
+   [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.nrepl :as e.u.nrepl]
    [malli.core :as m]))
 
@@ -22,7 +22,7 @@
         (e.u.nrepl/merge-messages)
         (:completions)))
 
-(m/=> info!! [:=> [:cat e.s.component/?Nrepl string? string?] (e.schema/error-or e.s.n.op/?Lookup)])
+(m/=> info!! [:=> [:cat e.s.component/?Nrepl string? string?] (e.schema/error-or e.s.nrepl/?Lookup)])
 (defn info!!
   "If info op is not supported, fallback to lookup op."
   [nrepl ns-str sym-str]
