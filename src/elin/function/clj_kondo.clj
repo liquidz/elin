@@ -92,6 +92,19 @@
   (->> (namespace-definitions clj-kondo)
        (map :name)))
 
+(m/=> most-used-namespace-alias [:=> [:cat e.s.component/?CljKondo symbol?] [:maybe symbol?]])
+(defn most-used-namespace-alias
+  [clj-kondo ns-sym]
+  (let [grouped (->> (namespace-usages clj-kondo)
+                     (filter #(= ns-sym (:to %)))
+                     (map :alias)
+                     (group-by identity))]
+    (when (seq grouped)
+      (->> (update-vals grouped count)
+           (sort-by val)
+           (last)
+           (key)))))
+
 #_{:clj-kondo/ignore [:unresolved-namespace]}
 (comment
   (e.p.clj-kondo/analyzing? (elin.dev/$ :clj-kondo))
