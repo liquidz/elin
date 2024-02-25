@@ -86,6 +86,12 @@
                            (= var-name (:name %))))
              (sort-by :filename))))
 
+(m/=> namespace-symbols [:=> [:cat e.s.component/?CljKondo] [:sequential symbol?]])
+(defn namespace-symbols
+  [clj-kondo]
+  (->> (namespace-definitions clj-kondo)
+       (map :name)))
+
 #_{:clj-kondo/ignore [:unresolved-namespace]}
 (comment
   (e.p.clj-kondo/analyzing? (elin.dev/$ :clj-kondo))
