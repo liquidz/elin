@@ -8,7 +8,8 @@
    [:component/nrepl any?]
    [:component/interceptor any?]
    [:component/host e.s.server/?Host]
-   [:component/session-storage any?]])
+   [:component/session-storage any?]
+   [:component/clj-kondo any?]])
 
 (def ?Elin
   (m.util/merge
