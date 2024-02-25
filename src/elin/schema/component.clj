@@ -3,12 +3,9 @@
    [elin.schema :as e.schema]
    [elin.schema.nrepl :as e.s.nrepl]))
 
-(def ?Atom
-  (e.schema/?instance clojure.lang.Atom))
-
 (def ?LazyHost
   [:map
-   [:host-store (e.schema/?instance clojure.lang.Atom)]])
+   [:host-store e.schema/?Atom]])
 
 (def ?Interceptor
   [:map
@@ -19,10 +16,16 @@
   [:map
    [:interceptor ?Interceptor]
    [:lazy-host ?LazyHost]
-   [:clients-store ?Atom]
-   [:current-client-key-store ?Atom]])
+   [:clients-store e.schema/?Atom]
+   [:current-client-key-store e.schema/?Atom]])
 
 (def ?Nrepl
   [:or
    NreplComponent
    e.s.nrepl/?Client])
+
+(def ?CljKondo
+  [:map
+   [:lazy-host ?LazyHost]
+   [:analyzing?-atom e.schema/?Atom]
+   [:analyzed-atom e.schema/?Atom]])
