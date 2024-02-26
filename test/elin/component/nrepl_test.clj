@@ -14,7 +14,7 @@
 
 (t/deftest new-nrepl-test
   (let [{:as sys :keys [nrepl]} (-> (e.system/new-system)
-                                    (dissoc :clj-kondo :handler :http-server :server)
+                                    (dissoc :handler :http-server :server)
                                     (component/start-system))]
     (try
       (t/is (nil? (e.p.nrepl/current-client nrepl)))

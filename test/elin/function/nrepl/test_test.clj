@@ -13,7 +13,7 @@
 
 (t/deftest test-var-query!!-test
   (let [{:as sys :keys [nrepl]} (-> (e.system/new-system)
-                                    (dissoc :clj-kondo :handler :http-server :server)
+                                    (dissoc :handler :http-server :server)
                                     (component/start-system))]
     (try
       (let [client (e.p.nrepl/add-client! nrepl "localhost" h/*nrepl-server-port*)]
