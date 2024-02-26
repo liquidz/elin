@@ -32,7 +32,8 @@
 
     :nrepl (component/using
             (e.c.nrepl/new-nrepl config)
-            [:interceptor
+            [:clj-kondo
+             :interceptor
              :lazy-host
              :session-storage])
 

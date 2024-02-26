@@ -22,7 +22,8 @@
    (format "%s:%s" (get-in c [:connection :host]) (get-in c [:connection :port]))))
 
 (defrecord Nrepl
-  [interceptor     ; Interceptor component
+  [clj-kondo       ; CljKondo component
+   interceptor     ; Interceptor component
    lazy-host       ; LazyHost component
    session-storage ; SessionStorage component
    clients-store ; atom of [:map-of string? e.c.n.client/?Client]
@@ -115,6 +116,7 @@
           (-> {:component/host lazy-host
                :component/interceptor interceptor
                :component/session-storage session-storage
+               :component/clj-kondo clj-kondo
                :request msg}
               (intercept
                (fn [{:as ctx :keys [request]}]
