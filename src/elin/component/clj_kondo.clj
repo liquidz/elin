@@ -1,8 +1,8 @@
 (ns elin.component.clj-kondo
   (:require
    [babashka.pods :as b.pods]
-   [cheshire.core :as json]
    [clojure.core.async :as async]
+   [clojure.edn :as edn]
    [clojure.java.io :as io]
    [clojure.string :as str]
    [com.stuartsierra.component :as component]
@@ -23,7 +23,7 @@
   (.getAbsolutePath
    (io/file (e.u.file/get-cache-directory)
             (str (str/replace user-dir "/" "_")
-                 ".json"))))
+                 ".edn"))))
 
 (def clj-kondo-available?
   (try
@@ -57,7 +57,7 @@
                       res (clj-kondo/run! {:lint [project-root-dir]
                                            :config config})
                       cache-path (get-cache-file-path project-root-dir)]
-                (spit cache-path (json/generate-string res))
+                (spit cache-path (pr-str res))
                 (reset! analyzed-atom res))
               (finally
                 (reset! analyzing?-atom false)))))))
@@ -70,7 +70,8 @@
             (try
               (e/let [project-root-dir (get-project-root-directory lazy-host)
                       cache-file (get-cache-file-path project-root-dir)
-                      analyzed (json/parse-stream (io/reader cache-file) keyword)]
+                      analyzed (with-open [r (io/reader cache-file)]
+                                 (edn/read (java.io.PushbackReader. r)))]
                 (reset! analyzed-atom analyzed))
               (finally
                 (reset! analyzing?-atom false)))))))
