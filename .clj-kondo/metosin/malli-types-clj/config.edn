@@ -197,7 +197,12 @@
                                                                                          :ret :any}}},
                                                                 get-expr!! {:arities {3 {:args [:any :int :int],
                                                                                          :ret :any}}},
-                                                                get-namespace!! {:arities {1 {:args [:any], :ret :any}}}},
+                                                                get-namespace-form!! {:arities {1 {:args [:any],
+                                                                                                   :ret :any}}},
+                                                                get-namespace!! {:arities {1 {:args [:any], :ret :any}}},
+                                                                replace-namespace-form!! {:arities {2 {:args [:any
+                                                                                                              :string],
+                                                                                                       :ret :any}}}},
                                         elin.handler.test {run-test-under-cursor {:arities {1 {:args [{:op :keys,
                                                                                                        :req {:message {:op :keys,
                                                                                                                        :req {:host :string,
@@ -252,6 +257,12 @@
                                                                                                      :ret :any}}},
                                                                     get-project-name {:arities {1 {:args [:any],
                                                                                                    :ret :any}}}},
+                                        elin.util.sexp {extract-ns-form {:arities {1 {:args [:string], :ret :any}}},
+                                                        extract-namespace {:arities {1 {:args [:string], :ret :any}}},
+                                                        add-require {:arities {3 {:args [:string
+                                                                                         :symbol
+                                                                                         :nilable/symbol],
+                                                                                  :ret :any}}}},
                                         elin.function.nrepl.namespace {get-cycled-namespace-path {:arities {1 {:args [{:op :keys,
                                                                                                                        :req {:ns :string,
                                                                                                                              :path :string,
