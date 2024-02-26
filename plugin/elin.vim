@@ -23,11 +23,11 @@ function! s:init() abort
 
   aug elin_autocmd_group
     au!
-    au BufEnter *.clj,*.cljs,*.cljc call elin#intercept_notify('BufEnter')
-    au BufNewFile *.clj,*.cljs,*.cljc call elin#intercept_notify('BufNewFile')
-    au BufRead *.clj,*.cljs,*.cljc call elin#intercept_notify('BufRead')
-    au BufWritePost *.clj,*.cljs,*.cljc call elin#intercept_notify('BufWritePost')
-    au BufWritePre *.clj,*.cljs,*.cljc call elin#intercept_request('BufWritePre')
+    au BufEnter *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufEnter')
+    au BufNewFile *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufNewFile')
+    au BufRead *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufRead')
+    au BufWritePost *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufWritePost')
+    au BufWritePre *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_request('BufWritePre')
     au VimLeave * call s:deinit()
   aug END
 endfunction
@@ -41,7 +41,7 @@ endfunction
 if has('vim_starting')
   aug elin_starting_group
     au!
-    au VimEnter * call s:init()
+    au VimEnter *.clj,*.cljs,*.cljc,*.cljd call s:init()
   aug END
 else
   call s:init()
