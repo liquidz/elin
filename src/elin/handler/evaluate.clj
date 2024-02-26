@@ -6,7 +6,6 @@
    [elin.function.nrepl.vim :as e.f.n.vim]
    [elin.function.vim :as e.f.vim]
    [elin.protocol.interceptor :as e.p.interceptor]
-   [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.handler :as e.s.handler]
    [elin.util.map :as e.u.map]
    [malli.core :as m]))
@@ -62,7 +61,6 @@
 (m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
 (defn load-current-file
   [{:component/keys [nrepl host]}]
-  (e/let [path (e.f.vim/get-current-file-path!! host)
-          _ (e.f.nrepl/load-file!! nrepl path)]
-    (e.p.rpc/echo-text host "Required")
+  (e/let [path (e.f.vim/get-current-file-path!! host)]
+    (e.f.nrepl/load-file!! nrepl path)
     true))
