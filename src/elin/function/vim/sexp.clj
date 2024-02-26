@@ -35,9 +35,20 @@
       (async/<!!)
       (update-keys keyword)))
 
+(m/=> get-namespace-form!! [:=> [:cat e.s.server/?Host] (e.schema/error-or [:maybe string?])])
+(defn get-namespace-form!!
+  [host]
+  (e/-> (e.f.vim/call host "elin#internal#sexp#clojure#get_ns_form" [])
+        (async/<!!)))
+
 (m/=> get-namespace!! [:=> [:cat e.s.server/?Host] (e.schema/error-or [:maybe string?])])
 (defn get-namespace!!
   [host]
-  (e/-> (e.f.vim/call host "elin#internal#sexp#clojure#get_ns_form" [])
-        (async/<!!)
+  (e/-> (get-namespace-form!! host)
         (e.u.sexp/extract-namespace)))
+
+(m/=> replace-namespace-form!! [:=> [:cat e.s.server/?Host string?] (e.schema/error-or [:maybe string?])])
+(defn replace-namespace-form!!
+  [host new-ns-form]
+  (e/-> (e.f.vim/call host "elin#internal#sexp#clojure#replace_ns_form" [new-ns-form])
+        (async/<!!)))
