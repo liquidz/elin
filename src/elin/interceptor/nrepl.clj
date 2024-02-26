@@ -3,6 +3,7 @@
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
+   [elin.protocol.rpc :as e.p.rpc]
    [elin.util.file :as e.u.file]
    [elin.util.nrepl :as e.u.nrepl]
    [exoscale.interceptor :as ix]))
@@ -35,3 +36,15 @@
 
               :else
               ctx))})
+
+(def output-load-file-result-to-cmdline-interceptor
+  {:name ::output-load-file-result-to-cmdline-interceptor
+   :kind e.c.interceptor/nrepl
+   :leave (-> (fn [{:component/keys [host] :keys [response]}]
+                (let [msg (e.u.nrepl/merge-messages response)]
+                  (if (e.u.nrepl/has-status? msg "eval-error")
+                    (when-let [v (:err msg)]
+                      (e.p.rpc/echo-message host (str/trim (str v)) "ErrorMsg"))
+                    (e.p.rpc/echo-text host "Required."))))
+              (ix/when #(= e.c.nrepl/load-file-op (get-in % [:request :op])))
+              (ix/discard))})
