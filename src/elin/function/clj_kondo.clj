@@ -96,7 +96,8 @@
 (defn namespace-symbols
   [clj-kondo]
   (->> (namespace-definitions clj-kondo)
-       (map :name)))
+       (map :name)
+       (sort)))
 
 (m/=> most-used-namespace-alias [:=> [:cat e.s.component/?CljKondo symbol?] [:maybe symbol?]])
 (defn most-used-namespace-alias
