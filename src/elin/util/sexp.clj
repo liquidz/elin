@@ -2,16 +2,23 @@
   (:require
    [clojure.string :as str]
    [elin.error :as e]
+   [elin.schema :as e.schema]
+   [malli.core :as m]
+   [rewrite-clj.node :as r.node]
+   [rewrite-clj.parser :as r.parser]
    [rewrite-clj.zip :as r.zip]))
 
+(m/=> extract-ns-form [:=> [:cat string?] (e.schema/error-or string?)])
 (defn extract-ns-form
   [code]
-  (some-> (r.zip/of-string code)
-          (r.zip/find-value r.zip/next 'ns)
-          (r.zip/up)
-          (r.zip/sexpr)
-          (str)))
+  (or (some-> (r.zip/of-string code)
+              (r.zip/find-value r.zip/next 'ns)
+              (r.zip/up)
+              (r.zip/sexpr)
+              (str))
+      (e/not-found)))
 
+(m/=> extract-namespace [:=> [:cat string?] (e.schema/error-or string?)])
 (defn extract-namespace
   [form-code]
   (try
@@ -34,3 +41,48 @@
 
     (catch Exception ex
       (e/not-found {:message (ex-message ex)}))))
+
+(m/=> add-require [:=> [:cat string? symbol? [:maybe symbol?]] (e.schema/error-or string?)])
+(defn add-require
+  [form-code ns-sym alias-sym]
+  (e/let [require-node (if alias-sym
+                         (r.parser/parse-string (format "[%s :as %s]" ns-sym alias-sym))
+                         (r.parser/parse-string (str ns-sym)))
+          zloc (r.zip/of-string form-code)
+          zloc (if-let [zloc' (r.zip/find-value zloc r.zip/next :require)]
+                 zloc'
+                 (or (some-> zloc
+                             (r.zip/down)
+                             (r.zip/rightmost)
+                             (r.zip/insert-right (r.parser/parse-string "(:require)"))
+                             (r.zip/insert-space-right)
+                             (r.zip/insert-newline-right)
+                             (r.zip/find-value r.zip/next :require))
+                     (e/not-found)))
+          right-zloc (some-> zloc r.zip/right*)
+          linebreaked? (some-> right-zloc r.zip/node r.node/linebreak?)
+          zloc (r.zip/insert-right zloc require-node)]
+    (r.zip/root-string
+     (cond
+       linebreaked?
+       (-> zloc
+           (r.zip/insert-space-right 2)
+           (r.zip/insert-newline-right))
+
+       (some? right-zloc)
+       (-> zloc
+           (r.zip/right)
+           (r.zip/insert-space-right 11)
+           (r.zip/insert-newline-right))
+
+       :else
+       zloc))))
+
+(comment
+  (def form-code
+    (let [host (elin.dev/$ :lazy-host)]
+      (elin.function.vim.sexp/get-namespace-form!! host)))
+
+  (println (add-require form-code "foo.core" nil))
+  (println (add-require "(ns bar.core)" "foo.core" nil))
+  (println (add-require "(ns bar.core\n  (:require [neko.core :as n]))" "foo.core" nil)))
