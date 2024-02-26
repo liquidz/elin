@@ -51,3 +51,14 @@ endfunction
 function! elin#internal#execute(cmd) abort
   call execute(a:cmd)
 endfunction
+
+" FIXME WIP ddu only for now
+function! elin#internal#select(candidates, callback_handler) abort
+   let id = denops#callback#register(
+         \ {s -> elin#notify(a:callback_handler, [s])},
+         \ {'once': v:true},
+         \ )
+   silent call ddu#start({
+         \ 'sources': [{'name': 'custom-list', 'params': {'texts': a:candidates, 'callbackId': id}}],
+         \ })
+endfunction
