@@ -21,6 +21,8 @@
                       elin.handler.evaluate/evaluate-current-expr
                       elin.handler.evaluate/evaluate-current-list
                       elin.handler.evaluate/evaluate-current-top-list
+                      elin.handler.namespace/add-namespace
+                      elin.handler.namespace/add-namespace*
                       elin.handler.test/run-test-under-cursor
                       elin.handler.evaluate/load-current-file
                       elin.handler.internal/healthcheck
