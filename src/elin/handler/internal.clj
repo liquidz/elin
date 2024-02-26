@@ -3,6 +3,7 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.vim :as e.f.vim]
    [elin.log :as e.log]
+   [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.handler :as e.s.handler]
    [elin.util.map :as e.u.map]
@@ -12,8 +13,9 @@
 
 (m/=> initialize [:=> [:cat e.s.handler/?Elin] any?])
 (defn initialize
-  [{:component/keys [handler host]}]
+  [{:component/keys [handler host clj-kondo]}]
   (e.f.vim/notify host "elin#internal#buffer#info#ready" [])
+  (e.p.clj-kondo/restore clj-kondo)
   (doseq [[export-name export-value] (or (get-in handler [:initialize :export]) {})]
     (e.log/debug (format "Exporting %s as %s" export-value export-name))
     (e.f.vim/set-variable! host export-name export-value))
