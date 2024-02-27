@@ -1,13 +1,25 @@
 let s:buf_name = 'elin_info_buffer'
+let s:title = ';; Elin Info Buffer'
 let s:delimiter = ';; ----------'
 
-function! elin#internal#buffer#info#open() abort
+function! elin#internal#buffer#info#open(...) abort
   if elin#internal#buffer#is_visible(s:buf_name)
     return
   endif
 
-  call elin#internal#buffer#open(s:buf_name, {})
-  "call elin#internal#buffer#focus_by_name(s:buf_name)
+  let option = get(a:, 1, {})
+  call elin#internal#buffer#open(s:buf_name, option)
+endfunction
+
+function! elin#internal#buffer#info#close() abort
+  call elin#internal#buffer#close(s:buf_name)
+endfunction
+
+function! elin#internal#buffer#info#toggle(...) abort
+  if elin#internal#buffer#is_visible(s:buf_name)
+    return elin#internal#buffer#info#close()
+  endif
+  return elin#internal#buffer#info#open(get(a:, 1, {}))
 endfunction
 
 function! elin#internal#buffer#info#ready() abort
@@ -24,6 +36,9 @@ function! elin#internal#buffer#info#ready() abort
   call setbufvar(s:buf_name, '&filetype', 'clojure')
   call setbufvar(s:buf_name, '&swapfile', 0)
   call setbufvar(s:buf_name, '&wrap', 0)
+
+  call elin#internal#buffer#append(s:buf_name, s:title)
+  call deletebufline(s:buf_name, 1)
 endfunction
 
 function! elin#internal#buffer#info#append(s) abort
@@ -59,7 +74,9 @@ function! elin#internal#buffer#info#append(s) abort
 endfunction
 
 function! elin#internal#buffer#info#clear() abort
-	call elin#internal#buffer#clear(s:buf_name)
+  call elin#internal#buffer#clear(s:buf_name)
+  call elin#internal#buffer#append(s:buf_name, s:title)
+  call deletebufline(s:buf_name, 1)
 endfunction
 
 " import { Diced } from "../../types.ts";

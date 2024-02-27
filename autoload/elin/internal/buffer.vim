@@ -15,10 +15,19 @@ function! elin#internal#buffer#is_visible(buf_name) abort
 endfunction
 
 function! elin#internal#buffer#open(buf_name, option) abort
+  let current_window = winnr()
+
   let opt = type(a:option) == v:t_dict ? a:option : {}
-  let mods = get(opt, 'mods', '')
+  let mods = get(opt, 'mods', 'vertical')
   let opener = get(opt, 'opener', 'split')
-  execute printf('%s %s %s', mods, opener, a:buf_name)
+
+  try
+    let &eventignore = 'WinEnter,WinLeave,BufEnter,BufLeave'
+    execute printf('%s %s %s', mods, opener, a:buf_name)
+  finally
+    let &eventignore = ''
+    call elin#internal#buffer#focus_by_win_nr(current_window)
+  endtry
 endfunction
 
 function! elin#internal#buffer#append_line(buf_name, one_line) abort
@@ -72,4 +81,22 @@ function! elin#internal#buffer#set(buf_name, lines) abort
   for line in reverse(copy(a:lines))
     call appendbufline(a:buf_name, '0', line)
   endfor
+endfunction
+
+function! elin#internal#buffer#close(buf_name) abort
+  if !elin#internal#buffer#is_visible(a:buf_name)
+    return
+  endif
+
+  let current_window = winnr()
+  let target_window = bufwinnr(a:buf_name)
+  if current_window != target_window
+    call elin#internal#buffer#focus_by_win_nr(target_window)
+  endif
+
+  silent execute ':q'
+
+  if target_window > current_window
+    call elin#internal#buffer#focus_by_win_nr(current_window)
+  endif
 endfunction
