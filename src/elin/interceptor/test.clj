@@ -16,7 +16,8 @@
    :kind e.c.interceptor/test
    :leave (-> (fn [{:component/keys [host nrepl] :keys [response]}]
                 (let [{:keys [passed failed]} (->> (e.f.n.c.test/collect-results nrepl response)
-                                                   (group-by :result))]
+                                                   (group-by :result))
+                      {:keys [succeeded? summary]} (e.f.n.c.test/summary response)]
                   ;; unsign
                   (if (seq passed)
                     (doseq [var-str (distinct (map :var passed))]
@@ -43,10 +44,10 @@
                        (e.f.v.info-buffer/append host))
                   ;; TODO quickfix
                   ;; call iced#qf#set(errors)
-                  (comment nil))
+                  (comment nil)
 
-                ;; show summary
-                (let [{:keys [succeeded? summary]} (e.f.n.c.test/summary response)]
+                  ;; show summary
+                  (e.f.v.info-buffer/append host summary)
                   (if succeeded?
                     (e.log/info host summary)
                     (e.log/error host summary))))
