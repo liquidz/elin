@@ -2,6 +2,7 @@
   (:require
    [bencode.core :as b]
    [clojure.core.async :as async]
+   [elin.error :as e]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema :as e.schema]
    [elin.schema.nrepl :as e.s.nrepl]
@@ -108,7 +109,7 @@
 
   (request [this msg]
     (if (e.p.nrepl/disconnected? this)
-      (async/go nil)
+      (async/go (e/unavailable {:message "Not connected"}))
       (let [id (or (:id msg) (e.u.id/next-id))
             msg (assoc msg :id id)]
         (swap! response-manager register-message msg)

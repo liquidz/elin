@@ -58,11 +58,11 @@
    (if-let [session (e.p.nrepl/current-session nrepl)]
      (let [{:keys [middleware]} options
            eval-fn (fn [code' options']
-                     (->> (merge (select-keys options' eval-option-keys)
-                                 {:op e.c.nrepl/eval-op :session session  :code code'})
-                          (e.p.nrepl/request nrepl)
-                          (async/<!!)
-                          (e.u.nrepl/merge-messages)))
+                     (e/->> (merge (select-keys options' eval-option-keys)
+                                   {:op e.c.nrepl/eval-op :session session  :code code'})
+                            (e.p.nrepl/request nrepl)
+                            (async/<!!)
+                            (e.u.nrepl/merge-messages)))
            eval-fn' (if middleware
                       (middleware eval-fn)
                       eval-fn)]
