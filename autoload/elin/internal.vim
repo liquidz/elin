@@ -1,3 +1,12 @@
+function! elin#internal#echo(text, highlight) abort
+  execute 'echohl' a:highlight
+  try
+    echo a:text
+  finally
+    echohl None
+  endtry
+endfunction
+
 function! elin#internal#echom(text, highlight) abort
   execute 'echohl' a:highlight
 	try
