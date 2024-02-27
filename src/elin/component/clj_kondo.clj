@@ -47,8 +47,14 @@
 
   e.p.clj-kondo/ICljKondo
   (analyze [this]
-    (if (e.p.clj-kondo/analyzing? this)
+    (cond
+      (not clj-kondo-available?)
+      (async/go (e/unavailable {:message "clj-kondo is unavailable"}))
+
+      (e.p.clj-kondo/analyzing? this)
       (async/go (e/busy {:message "clj-kondo is already analyzing"}))
+
+      :else
       (do (reset! analyzing?-atom true)
           (async/thread
             (try
@@ -63,8 +69,14 @@
                 (reset! analyzing?-atom false)))))))
 
   (restore [this]
-    (if (e.p.clj-kondo/analyzing? this)
+    (cond
+      (not clj-kondo-available?)
+      (async/go (e/unavailable {:message "clj-kondo is unavailable"}))
+
+      (e.p.clj-kondo/analyzing? this)
       (async/go (e/busy {:message "clj-kondo is already analyzing"}))
+
+      :else
       (do (reset! analyzing?-atom true)
           (async/thread
             (try
@@ -83,7 +95,8 @@
     (some? @analyzed-atom))
 
   (analysis [this]
-    (when (e.p.clj-kondo/analyzed? this)
+    (when (and clj-kondo-available?
+               (e.p.clj-kondo/analyzed? this))
       (:analysis @analyzed-atom))))
 
 (defn new-clj-kondo
