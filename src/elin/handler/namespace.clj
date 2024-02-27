@@ -2,12 +2,13 @@
   (:require
    [elin.error :as e]
    [elin.function.core.namespace :as e.f.c.namespace]
+   [elin.function.nrepl.vim :as e.f.n.vim]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.util.sexp :as e.u.sexp]))
 
 (defn add-namespace*
-  [{:as elin :component/keys [host] :keys [message]}]
+  [{:as elin :component/keys [host nrepl] :keys [message]}]
   (e/let [ns-sym (-> (:params message)
                      (first)
                      (symbol)
@@ -15,7 +16,8 @@
           alias-sym (e.f.c.namespace/most-used-namespace-alias elin ns-sym)
           ns-form (e/-> (e.f.v.sexp/get-namespace-form!! host)
                         (e.u.sexp/add-require ns-sym alias-sym))]
-    (e.f.v.sexp/replace-namespace-form!! host ns-form)))
+    (e.f.v.sexp/replace-namespace-form!! host ns-form)
+    (e.f.n.vim/evaluate-namespace-form!! {:host host :nrepl nrepl})))
 
 (defn add-namespace
   [{:as elin :component/keys [host]}]
