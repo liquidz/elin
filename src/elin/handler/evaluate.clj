@@ -58,6 +58,15 @@
         (e.f.n.vim/evaluate-current-expr!!)
         (:response)))
 
+(m/=> evaluate-namespace-form [:=> [:cat e.s.handler/?Elin] any?])
+(defn evaluate-namespace-form
+  [{:as elin :component/keys [host nrepl]}]
+  (e/-> {:host host
+         :nrepl nrepl
+         :options {:middleware (evaluate-interceptor-middleware elin)}}
+        (e.f.n.vim/evaluate-namespace-form!!)
+        (:response)))
+
 (m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
 (defn load-current-file
   [{:component/keys [nrepl host]}]

@@ -21,6 +21,7 @@
                       elin.handler.evaluate/evaluate-current-expr
                       elin.handler.evaluate/evaluate-current-list
                       elin.handler.evaluate/evaluate-current-top-list
+                      elin.handler.evaluate/evaluate-namespace-form
                       elin.handler.namespace/add-namespace
                       elin.handler.namespace/add-namespace*
                       elin.handler.test/run-test-under-cursor
@@ -37,6 +38,7 @@
                         elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
                         elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
                         elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}
+                        elin.handler.evaluate/evaluate-namespace-form {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor]}}
                         elin.handler.evaluate/load-current-file {:interceptor {:includes [elin.interceptor.nrepl/output-load-file-result-to-cmdline-interceptor]}}}
 
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
