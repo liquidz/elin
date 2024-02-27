@@ -1,11 +1,23 @@
 (ns elin.function.core.namespace
   (:require
-   [elin.function.clj-kondo :as e.f.clj-kondo]))
+   [clojure.edn :as edn]
+   [elin.error :as e]
+   [elin.function.clj-kondo :as e.f.clj-kondo]
+   [elin.function.nrepl :as e.f.nrepl]))
 
 (defn get-namespaces
-  [{:component/keys [clj-kondo]}]
-  (->> (e.f.clj-kondo/namespace-symbols clj-kondo)
-       (map str)))
+  [{:component/keys [clj-kondo nrepl]}]
+  (let [ns-list (e/-> (e.f.nrepl/eval!! nrepl (str '(map (comp str ns-name) (all-ns))))
+                      (:value)
+                      (edn/read-string))
+        ns-list (if (e/error? ns-list)
+                  []
+                  ns-list)]
+    (->> (e.f.clj-kondo/namespace-symbols clj-kondo)
+         (map str)
+         (concat ns-list)
+         (distinct)
+         (sort))))
 
 ;; TODO use :fachvorite-ns-aliases
 (defn most-used-namespace-alias
