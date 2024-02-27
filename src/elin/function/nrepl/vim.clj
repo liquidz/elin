@@ -58,3 +58,10 @@
                                :cursor-column cur-col
                                :ns ns-str
                                :file path}))))
+
+(defn evaluate-namespace-form!!
+  [{:keys [nrepl host options]}]
+  (e/let [ns-form (e.f.v.sexp/get-namespace-form!! host)
+          path (e.f.vim/get-current-file-path!! host)]
+    (eval!! nrepl ns-form (merge options
+                                 {:file path}))))
