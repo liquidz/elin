@@ -77,6 +77,10 @@
     (if-let [host @host-store]
       (e.p.rpc/echo-text host text)
       (async/put! host-channel [::echo-text text])))
+  (echo-text [_ text highlight]
+    (if-let [host @host-store]
+      (e.p.rpc/echo-text host text highlight)
+      (async/put! host-channel [::echo-text text highlight])))
   (echo-message [_ text]
     (if-let [host @host-store]
       (e.p.rpc/echo-message host text)

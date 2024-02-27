@@ -85,6 +85,8 @@
 
   (echo-text [this text]
     (e.p.rpc/notify! this ["nvim_echo" [[[text "Normal"]] false {}]]))
+  (echo-text [this text highlight]
+    (e.p.rpc/notify! this ["nvim_echo" [[[text highlight]] false {}]]))
 
   (echo-message [this text]
     (e.p.rpc/echo-message this text "Normal"))

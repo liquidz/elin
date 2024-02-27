@@ -81,7 +81,9 @@
     (e.p.rpc/notify! this ["call" method params]))
 
   (echo-text [this text]
-    (e.p.rpc/notify! this ["ex" (format "echo '%s'" text)]))
+    (e.p.rpc/echo-text this text "Normal"))
+  (echo-text [this text highlight]
+    (e.p.rpc/notify! this ["call" "elin#internal#echo" [text highlight]]))
 
   (echo-message [this text]
     (e.p.rpc/echo-message this text "Normal"))
