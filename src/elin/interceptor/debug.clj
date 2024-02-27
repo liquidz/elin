@@ -7,14 +7,19 @@
    [malli.core :as m]
    [malli.error :as m.error]))
 
+(def ^:private do-not-log-ops
+  #{"completions" "complete"})
+
 (def nrepl-debug-interceptor
   {:name ::nrepl-debug-interceptor
    :kind e.c.interceptor/nrepl
    :enter (-> (fn [{:keys [request]}]
                 (e.log/debug "Nrepl >>>" (pr-str request)))
+              (ix/when #(not (contains? do-not-log-ops (get-in % [:request :op]))))
               (ix/discard))
    :leave (-> (fn [{:keys [response]}]
                 (e.log/debug "Nrepl <<<" (pr-str response)))
+              (ix/when #(not (contains? do-not-log-ops (get-in % [:request :op]))))
               (ix/discard))})
 
 (def ^:private kind-schema-map
