@@ -33,9 +33,11 @@ function! s:init() abort
 endfunction
 
 function! s:deinit() abort
-  call elin#intercept('VimLeave')
+  call elin#intercept_request('VimLeave')
   call elin#server#disconnect()
-  call elin#server#stop()
+  if g:elin_server_port is v:null
+    call elin#server#stop()
+  endif
 endfunction
 
 if has('vim_starting')
