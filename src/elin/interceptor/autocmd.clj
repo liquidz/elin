@@ -14,6 +14,14 @@
 (def ^:priavte ns-created-var-name
   "b:elin_ns_created")
 
+(def deinitialize-interceptor
+  {:name ::deinitialize-interceptor
+   :kind e.c.interceptor/autocmd
+   :enter (-> (fn [{:component/keys [nrepl]}]
+                (e.p.nrepl/remove-all! nrepl))
+              (ix/when #(= "VimLeave" (:autocmd-type %)))
+              (ix/discard))})
+
 (def ns-create-interceptor
   {:name ::ns-create-interceptor
    :kind e.c.interceptor/autocmd

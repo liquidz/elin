@@ -1,6 +1,7 @@
 {:http-server {:port #empty-port []}
 
- :interceptor {:includes [elin.interceptor.autocmd/ns-create-interceptor
+ :interceptor {:includes [elin.interceptor.autocmd/deinitialize-interceptor
+                          elin.interceptor.autocmd/ns-create-interceptor
                           elin.interceptor.autocmd/skeleton-interceptor
                           elin.interceptor.autocmd/clj-kondo-analyzing-interceptor
                           elin.interceptor.connect/connected-interceptor
