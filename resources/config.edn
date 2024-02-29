@@ -1,4 +1,7 @@
-{:http-server {:port #empty-port []}
+{:log {;; cf. https://taoensso.github.io/timbre/taoensso.timbre.html#var-default-config
+       :min-level :info}
+
+ :http-server {:port #empty-port []}
 
  :interceptor {:includes [elin.interceptor.autocmd/deinitialize-interceptor
                           elin.interceptor.autocmd/ns-create-interceptor

@@ -12,8 +12,8 @@
         config (e.config/load-config (:cwd env) config)
         sys-map (e.system/new-system config)]
 
-    (when-let [level (get-in config [:log :level])]
-      (timbre/set-level! level))
+    (when-let [log-config (:log config)]
+      (timbre/merge-config! log-config))
 
     (timbre/debug "elin.core Starting server:" (pr-str config) "\n\n\n")
     (component/start-system sys-map)

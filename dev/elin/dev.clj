@@ -19,8 +19,8 @@
     (timbre/info "Starting elin system")
     (let [config (e.config/load-config "." @server-config)
           system-map (e.system/new-system config)]
-      (when-let [level (get-in config [:log :level])]
-        (timbre/set-level! level))
+      (when-let [log-config (:log config)]
+        (timbre/merge-config! log-config))
       (reset! sys (component/start-system system-map)))
     ::started))
 
