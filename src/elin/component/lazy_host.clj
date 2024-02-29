@@ -2,7 +2,8 @@
   (:require
    [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
-   [elin.protocol.rpc :as e.p.rpc]))
+   [elin.protocol.rpc :as e.p.rpc]
+   [taoensso.timbre :as timbre]))
 
 (defrecord LazyHost
   [;; PARAMS
@@ -34,10 +35,12 @@
             (async/<! (async/timeout 100))
             (recur))))
 
+      (timbre/info "LazyHost component: Started")
       (assoc this :host-channel ch)))
   (stop [this]
     (reset! host-store nil)
     (async/close! host-channel)
+    (timbre/info "LazyHost component: Stopped")
     (dissoc this :host-channel))
 
   e.p.rpc/ILazyHost

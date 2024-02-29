@@ -3,8 +3,8 @@
    [cheshire.core :as json]
    [com.stuartsierra.component :as component]
    [elin.config :as e.config]
-   [elin.log :as e.log]
-   [elin.system :as e.system]))
+   [elin.system :as e.system]
+   [taoensso.timbre :as timbre]))
 
 (defn -main
   [json-config]
@@ -13,8 +13,8 @@
         sys-map (e.system/new-system config)]
 
     (when-let [level (get-in config [:log :level])]
-      (e.log/set-level! level))
+      (timbre/set-level! level))
 
-    (e.log/debug "elin.core Starting server:" (pr-str config) "\n\n\n")
+    (timbre/debug "elin.core Starting server:" (pr-str config) "\n\n\n")
     (component/start-system sys-map)
     (deref (promise))))

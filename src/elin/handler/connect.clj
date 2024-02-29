@@ -1,7 +1,7 @@
 (ns elin.handler.connect
   (:require
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.log :as e.log]
+   [elin.message :as e.message]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
@@ -23,7 +23,7 @@
   [{:as elin :component/keys [nrepl interceptor host] :keys [message]}]
   (let [[{:keys [hostname port]} error] (e.u.param/parse ?Params (:params message))]
     (if error
-      (e.log/error host "Invalid parameter" error)
+      (e.message/error host "Invalid parameter" error)
       (let [context (-> elin
                         (e.u.map/select-keys-by-namespace :component)
                         (assoc :hostname hostname
@@ -37,6 +37,6 @@
             result (e.p.interceptor/execute interceptor e.c.interceptor/connect
                                             context connect-fn)]
         (if (contains? result :client)
-          (e.log/info host (format "Connected to %s:%s" (:hostname result) (:port result)))
-          (e.log/warning host (format "Host or port is not specified: %s"
-                                      (pr-str (select-keys result [:hostname :port])))))))))
+          (e.message/info host (format "Connected to %s:%s" (:hostname result) (:port result)))
+          (e.message/warning host (format "Host or port is not specified: %s"
+                                          (pr-str (select-keys result [:hostname :port])))))))))

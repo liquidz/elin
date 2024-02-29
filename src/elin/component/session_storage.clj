@@ -1,7 +1,8 @@
 (ns elin.component.session-storage
   (:require
    [com.stuartsierra.component :as component]
-   [elin.protocol.storage :as e.p.storage]))
+   [elin.protocol.storage :as e.p.storage]
+   [taoensso.timbre :as timbre]))
 
 (defn- now
   []
@@ -16,8 +17,10 @@
    memory]
   component/Lifecycle
   (start [this]
+    (timbre/info "SessionStorage component: Started")
     (assoc this :memory (atom {})))
   (stop [this]
+    (timbre/info "SessionStorage component: Stopped")
     (dissoc this :memory))
 
   e.p.storage/IStorage

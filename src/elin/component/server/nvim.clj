@@ -2,12 +2,12 @@
   "https://github.com/msgpack-rpc/msgpack-rpc/blob/master/spec.md"
   (:require
    [clojure.core.async :as async]
-   [elin.log :as e.log]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.id :as e.u.id]
    [elin.util.server :as e.u.server]
    [msgpack.clojure-extensions]
-   [msgpack.core :as msg])
+   [msgpack.core :as msg]
+   [taoensso.timbre :as timbre])
   (:import
    (java.io
     DataInputStream
@@ -119,10 +119,10 @@
                                                     :response-manager response-manager})})
                   (when-not (.isClosed client-sock)
                     (recur))))))
-          (e.log/debug "Client socket is closed"))
+          (timbre/debug "Client socket is closed"))
         (catch EOFException _
           nil)
         (catch Exception ex
-          (e.log/debug "Client connection is closed" (ex-message ex))))
+          (timbre/debug "Client connection is closed" (ex-message ex))))
       (when-not (.isClosed server-socket)
         (recur)))))

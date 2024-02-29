@@ -6,13 +6,14 @@
    [elin.interceptor.connect]
    [elin.interceptor.nrepl]
    [elin.interceptor.output]
-   [elin.log :as e.log]
+   [elin.message :as e.message]
    [elin.protocol.config :as e.p.config]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.interceptor :as e.s.interceptor]
    [exoscale.interceptor :as interceptor]
    [malli.core :as m]
-   [msgpack.clojure-extensions]))
+   [msgpack.clojure-extensions]
+   [taoensso.timbre :as timbre]))
 
 (def ^:private config-key :interceptor)
 (def ^:private invalid-group ::invalid)
@@ -23,7 +24,7 @@
   (try
     (deref (requiring-resolve sym))
     (catch Exception ex
-      (e.log/warning lazy-host "Failed to resolve interceptor" {:symbol sym :ex ex})
+      (e.message/warning lazy-host "Failed to resolve interceptor" {:symbol sym :ex ex})
       nil)))
 
 (defn- interceptor-group
@@ -58,12 +59,11 @@
                                     (group-by interceptor-group))
           interceptor-map (group-by :kind (get grouped-interceptors valid-group))]
       (when-let [invalid-interceptors (seq (get grouped-interceptors invalid-group))]
-        (e.log/debug "Invalid interceptors:" invalid-interceptors)
-        (e.log/warning lazy-host "Invalid interceptors:" invalid-interceptors))
-      (e.log/debug lazy-host "Interceptor component: Started")
+        (e.message/warning "Invalid interceptors:" invalid-interceptors))
+      (timbre/info "Interceptor component: Started")
       (assoc this :interceptor-map interceptor-map)))
   (stop [this]
-    (e.log/debug lazy-host "Interceptor component: Stopped")
+    (timbre/info "Interceptor component: Stopped")
     (dissoc this :interceptor-map))
 
   e.p.interceptor/IInterceptor
@@ -81,9 +81,9 @@
       (try
         (interceptor/execute context' (concat interceptors [terminator']))
         (catch Exception ex
-          (e.log/error lazy-host (format "Failed to intercept for %s: %s"
-                                         kind
-                                         (ex-message ex)))))))
+          (e.message/error lazy-host (format "Failed to intercept for %s: %s"
+                                             kind
+                                             (ex-message ex)))))))
 
   e.p.config/IConfigure
   (configure [this config]

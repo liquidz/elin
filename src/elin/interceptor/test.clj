@@ -5,7 +5,7 @@
    [elin.function.nrepl.cider.test :as e.f.n.c.test]
    [elin.function.vim.info-buffer :as e.f.v.info-buffer]
    [elin.function.vim.sign :as e.f.v.sign]
-   [elin.log :as e.log]
+   [elin.message :as e.message]
    [elin.util.map :as e.u.map]
    [exoscale.interceptor :as ix]))
 
@@ -49,6 +49,6 @@
                   ;; show summary
                   (e.f.v.info-buffer/append host summary)
                   (if succeeded?
-                    (e.log/info host summary)
-                    (e.log/error host summary))))
+                    (e.message/info host summary)
+                    (e.message/error host summary))))
               (ix/discard))})

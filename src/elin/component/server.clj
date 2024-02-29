@@ -6,8 +6,8 @@
    [elin.component.server.vim :as e.c.s.vim]
    [elin.constant.host :as e.c.host]
    [elin.error :as e]
-   [elin.log :as e.log]
-   [elin.protocol.rpc :as e.p.rpc])
+   [elin.protocol.rpc :as e.p.rpc]
+   [taoensso.timbre :as timbre])
   (:import
    java.net.ServerSocket))
 
@@ -52,7 +52,7 @@
   component/Lifecycle
   (start [this]
     (when-not server
-      (e.log/debug "Server component: Starting" host port)
+      (timbre/info "Server component: Starting" host port)
       (let [server-socket (ServerSocket. port)
             stop-signal (async/chan)
             handler' (:handler handler)
@@ -64,7 +64,7 @@
                      (if (= e.c.host/nvim host)
                        (e.c.s.nvim/start-server server-arg)
                        (e.c.s.vim/start-server server-arg)))]
-        (e.log/debug "Server component: Started" host port)
+        (timbre/info "Server component: Started" host port)
         (assoc this
                :stop-signal stop-signal
                :server server
@@ -72,12 +72,12 @@
 
   (stop [this]
     (when server
-      (e.log/debug "Server component: Stopping" host port stop-signal)
+      (timbre/info "Server component: Stopping" host port stop-signal)
       (.close server-socket)
       (async/put! stop-signal true)
       @server
       (async/close! stop-signal)
-      (e.log/debug "Server component: Stopped")
+      (timbre/info "Server component: Stopped")
       (assoc this :server-socket nil :server nil))))
 
 (defn new-server

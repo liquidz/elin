@@ -5,12 +5,12 @@
    [elin.component.nrepl.client :as e.c.n.client]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
-   [elin.log :as e.log]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m]
-   [msgpack.clojure-extensions]))
+   [msgpack.clojure-extensions]
+   [taoensso.timbre :as timbre]))
 
 (m/=> client-key [:function
                   [:=> [:cat string? int?] string?]
@@ -33,12 +33,12 @@
 
   component/Lifecycle
   (start [this]
-    (e.log/debug "Nrepl component: Started")
+    (timbre/info "Nrepl component: Started")
     this)
   (stop [this]
-    (e.log/debug "Nrepl component: Stopping")
+    (timbre/info "Nrepl component: Stopping")
     (e.p.nrepl/remove-all! this)
-    (e.log/debug "Nrepl component: Stopped")
+    (timbre/info "Nrepl component: Stopped")
     (dissoc this :client-manager))
 
   e.p.nrepl/IClientManager

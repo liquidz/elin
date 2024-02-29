@@ -5,11 +5,12 @@
    [clojure.java.io :as io]
    [clojure.string :as str]
    [com.stuartsierra.component :as component]
-   [elin.log :as e.log]
+   [elin.message :as e.message]
    [elin.schema.plugin :as e.s.plugin]
    [elin.schema.server :as e.s.server]
    [malli.core :as m]
-   [malli.error :as m.error]))
+   [malli.error :as m.error]
+   [taoensso.timbre :as timbre]))
 
 (defn- validation-error
   [edn-content]
@@ -30,7 +31,7 @@
   (let [content (edn/read-string (slurp edn-file))
         err (validation-error content)]
     (if err
-      (e.log/error lazy-host "Invalid plugin.edn: " (pr-str err))
+      (e.message/warning lazy-host "Invalid plugin.edn: " (pr-str err))
       content)))
 
 (m/=> load-plugins [:=> [:cat e.s.server/?Host [:sequential string?]] e.s.plugin/?Plugin])
@@ -71,9 +72,11 @@
   component/Lifecycle
   (start [this]
     (add-classpaths! edn-files)
+    (timbre/info "Plugin component: Started")
     (assoc this :loaded-plugin (load-plugins lazy-host (or edn-files []))))
 
   (stop [this]
+    (timbre/info "Plugin component: Stopped")
     (dissoc this :loaded-plugin)))
 
 (defn new-plugin

@@ -1,11 +1,11 @@
 (ns elin.interceptor.debug
   (:require
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.log :as e.log]
    [elin.schema.interceptor :as e.s.interceptor]
    [exoscale.interceptor :as ix]
    [malli.core :as m]
-   [malli.error :as m.error]))
+   [malli.error :as m.error]
+   [taoensso.timbre :as timbre]))
 
 (def ^:private do-not-log-ops
   #{"completions" "complete"})
@@ -14,11 +14,11 @@
   {:name ::nrepl-debug-interceptor
    :kind e.c.interceptor/nrepl
    :enter (-> (fn [{:keys [request]}]
-                (e.log/debug "Nrepl >>>" (pr-str request)))
+                (timbre/debug "Nrepl >>>" (pr-str request)))
               (ix/when #(not (contains? do-not-log-ops (get-in % [:request :op]))))
               (ix/discard))
    :leave (-> (fn [{:keys [response]}]
-                (e.log/debug "Nrepl <<<" (pr-str response)))
+                (timbre/debug "Nrepl <<<" (pr-str response)))
               (ix/when #(not (contains? do-not-log-ops (get-in % [:request :op]))))
               (ix/discard))})
 

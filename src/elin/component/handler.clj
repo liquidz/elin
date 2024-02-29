@@ -10,14 +10,15 @@
    [elin.handler.internal]
    [elin.handler.lookup]
    [elin.handler.navigate]
-   [elin.log :as e.log]
+   [elin.message :as e.message]
    [elin.protocol.config :as e.p.config]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.server :as e.s.server]
    [elin.util.server :as e.u.server]
-   [malli.core :as m]))
+   [malli.core :as m]
+   [taoensso.timbre :as timbre]))
 
 (m/=> resolve-handler [:=> [:cat e.s.server/?Host qualified-symbol?]
                        [:or :nil [:cat qualified-keyword? fn?]]])
@@ -25,7 +26,7 @@
   (when-let [f (try
                  @(requiring-resolve sym)
                  (catch Exception _
-                   (e.log/warning lazy-host "Failed to resolve handler:" sym)
+                   (e.message/warning lazy-host "Failed to resolve handler:" sym)
                    nil))]
     [(keyword sym) f]))
 
@@ -75,7 +76,7 @@
                  resp (if-let [handler-fn (get handler-map handler-key)]
                         (handler-fn elin)
                         (let [msg (format "Unknown handler: %s" handler-key)]
-                          (e.log/error host msg)
+                          (e.message/error host msg)
                           msg))
                  resp' (e.u.server/format resp)
                  resp' (if-let [callback (get-in elin [:message :options :callback])]
@@ -83,7 +84,7 @@
                            (e.p.rpc/notify-function host "elin#callback#call" [callback resp'])
                            ;; FIXME
                            (catch Exception ex
-                             (e.log/error host "Failed to callback" (ex-message ex))))
+                             (e.message/error host "Failed to callback" (ex-message ex))))
                          resp')]
              (assoc context :response resp'))))
         (:response))))
@@ -117,11 +118,13 @@
           handlers (remove #(contains? exclude-set %) handlers)
           handler-map (build-handler-map lazy-host handlers)
           handler (partial handler components config-map handler-map)]
+      (timbre/info "Handler component: Started")
       (assoc this
              :handler-map handler-map
              :handler handler)))
 
   (stop [this]
+    (timbre/info "Handler component: Stopped")
     (dissoc this :handler :handler-map)))
 
 (defn new-handler

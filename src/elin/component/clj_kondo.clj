@@ -9,7 +9,8 @@
    [elin.error :as e]
    [elin.function.vim :as e.f.vim]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
-   [elin.util.file :as e.u.file]))
+   [elin.util.file :as e.u.file]
+   [taoensso.timbre :as timbre]))
 
 (defn- get-project-root-directory
   [host]
@@ -44,11 +45,13 @@
    analyzed-atom]
   component/Lifecycle
   (start [this]
+    (timbre/info "CljKondo component: Started")
     (assoc this
            :analyzing?-atom (atom false)
            :analyzed-atom (atom nil)))
 
   (stop [this]
+    (timbre/info "CljKondo component: Stopped")
     (dissoc this :analyzing?-atom :analyzed-atom))
 
   e.p.clj-kondo/ICljKondo

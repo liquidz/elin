@@ -30,6 +30,8 @@
 
   test {:extra-paths ["test"]
         :extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+        :requires ([taoensso.timbre :as timbre])
+        :enter (timbre/set-level! :warn)
         :task (exec 'cognitect.test-runner.api/test)
         :exec-args {:dirs ["test"]}
         :org.babashka/cli {:coerce {:nses [:symbol]
