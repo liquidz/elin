@@ -5,7 +5,9 @@
    [elin.protocol.rpc :as e.p.rpc]))
 
 (defrecord LazyHost
-  [host-store host-channel]
+  [;; PARAMS
+   host-store
+   host-channel]
   component/Lifecycle
   (start [this]
     (let [ch (async/chan)]

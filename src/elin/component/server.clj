@@ -39,8 +39,16 @@
           (e.p.rpc/flush! host))))))
 
 (defrecord Server
-  [host port server-socket server stop-signal
-   handler lazy-host]
+  [;; COMPONENTS
+   handler
+   lazy-host
+   ;; CONFIGS
+   host
+   port
+   ;; PARAMS
+   server
+   server-socket
+   stop-signal]
   component/Lifecycle
   (start [this]
     (when-not server

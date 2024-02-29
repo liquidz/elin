@@ -12,7 +12,8 @@
   (* 60 60 24 7))
 
 (defrecord SessionStorage
-  [memory]
+  [;; PARAMS
+   memory]
   component/Lifecycle
   (start [this]
     (assoc this :memory (atom {})))

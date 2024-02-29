@@ -39,10 +39,13 @@
     valid-group))
 
 (defrecord Interceptor
-  [lazy-host       ; LazyHost component
-   plugin          ; Plugin component
+  [;; COMPONENTS
+   lazy-host
+   plugin
+   ;; CONFIGS
    includes
    excludes
+   ;; PARAMS
    interceptor-map]
   component/Lifecycle
   (start [this]

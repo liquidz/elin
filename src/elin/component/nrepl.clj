@@ -22,10 +22,12 @@
    (format "%s:%s" (get-in c [:connection :host]) (get-in c [:connection :port]))))
 
 (defrecord Nrepl
-  [clj-kondo       ; CljKondo component
-   interceptor     ; Interceptor component
-   lazy-host       ; LazyHost component
-   session-storage ; SessionStorage component
+  [;; COMPONENTS
+   clj-kondo
+   interceptor
+   lazy-host
+   session-storage
+   ;; PARAMS
    clients-store ; atom of [:map-of string? e.c.n.client/?Client]
    current-client-key-store] ; atom of [:maybe string?]]
 

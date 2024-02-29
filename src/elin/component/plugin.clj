@@ -61,7 +61,13 @@
         (recur rest-edn-files loaded-files' result')))))
 
 (defrecord Plugin
-  [lazy-host edn-files loaded-plugin]
+  [;; COMPONENTS
+   lazy-host
+   ;; CONFIGS
+   edn-files
+   ;; PARAMS
+   loaded-plugin]
+
   component/Lifecycle
   (start [this]
     (add-classpaths! edn-files)

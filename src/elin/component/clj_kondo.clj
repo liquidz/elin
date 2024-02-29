@@ -35,7 +35,13 @@
   (require '[pod.borkdude.clj-kondo :as clj-kondo]))
 
 (defrecord CljKondo
-  [lazy-host analyzing?-atom analyzed-atom config]
+  [;; COMPONENTS
+   lazy-host
+   ;; CONFIGS
+   config
+   ;; PARAMS
+   analyzing?-atom
+   analyzed-atom]
   component/Lifecycle
   (start [this]
     (assoc this

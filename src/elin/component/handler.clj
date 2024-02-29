@@ -89,16 +89,19 @@
         (:response))))
 
 (defrecord Handler
-  [clj-kondo       ; CljKondo component
-   interceptor     ; Interceptor component
-   lazy-host       ; LazyHost component
-   nrepl           ; Nrepl component
-   plugin          ; Plugin component
-   session-storage ; SessionStorage component
+  [;; COMPONENTS
+   clj-kondo
+   interceptor
+   lazy-host
+   nrepl
+   plugin
+   session-storage
+   ;; CONFIGS
    includes
    excludes
    config-map
    initialize
+   ;; PARAMS
    handler-map]
   component/Lifecycle
   (start [this]
