@@ -1,4 +1,5 @@
-{:log {:level :debug}
+{:log {:min-level :debug
+       :appenders {:spit #spit-appender {:fname "./elin-debug.log"}}}
  :interceptor {:includes [elin.interceptor.debug/interceptor-context-checking-interceptor
                           elin.interceptor.debug/nrepl-debug-interceptor]}
  :env {:cwd "."}}
