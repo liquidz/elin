@@ -6,7 +6,8 @@
    [elin.schema.config :as e.s.config]
    [elin.util.file :as e.u.file]
    [malli.core :as m]
-   [malli.transform :as mt])
+   [malli.transform :as mt]
+   [taoensso.timbre :as timbre])
   (:import
    java.net.ServerSocket))
 
@@ -14,6 +15,11 @@
   [_opts _tag _value]
   (with-open [sock (ServerSocket. 0)]
     (.getLocalPort sock)))
+
+(defmethod aero/reader 'spit-appender
+  [_opts _tag value]
+  #_{:clj-kondo/ignore [:unresolved-var]}
+  (timbre/spit-appender value))
 
 (def ^:private config-transformer
   (mt/transformer
