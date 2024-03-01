@@ -29,7 +29,12 @@
       (e/let [ns-form' (e.u.sexp/add-require ns-form ns-sym alias-sym)]
         (e.f.v.sexp/replace-namespace-form!! host ns-form')
         (e.f.n.vim/evaluate-namespace-form!! {:host host :nrepl nrepl})
-        (e.p.rpc/echo-text host (format "'%s' added." ns-sym) "MoreMsg")))))
+        (e.p.rpc/echo-text host (if alias-sym
+                                  (format "'%s' added as '%s'."
+                                          ns-sym alias-sym)
+                                  (format "'%s' added."
+                                          ns-sym))
+                           "MoreMsg")))))
 
 (defn add-namespace
   [{:as elin :component/keys [host]}]
