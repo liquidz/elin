@@ -28,6 +28,7 @@
    e.c.interceptor/connect e.s.interceptor/?ConnectContext
    e.c.interceptor/evaluate e.s.interceptor/?EvaluateContext
    e.c.interceptor/handler e.s.interceptor/?HandlerContext
+   e.c.interceptor/lookup e.s.interceptor/?LookupContext
    e.c.interceptor/nrepl e.s.interceptor/?NreplContext
    e.c.interceptor/output e.s.interceptor/?OutputContext
    e.c.interceptor/test e.s.interceptor/?TestContext})

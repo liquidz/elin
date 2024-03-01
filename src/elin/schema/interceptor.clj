@@ -12,6 +12,7 @@
    e.c.interceptor/connect
    e.c.interceptor/evaluate
    e.c.interceptor/handler
+   e.c.interceptor/lookup
    e.c.interceptor/nrepl
    e.c.interceptor/output
    e.c.interceptor/test])
@@ -78,4 +79,13 @@
        [:options map?]
        ;; LEAVE
        [:response {:optional true} map?]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?LookupContext
+  (-> [:map
+       ;; ENTER
+       [:lookup e.s.nrepl/?Lookup]
+       [:popup-options map?]
+       ;; LEAVE
+       [:popup-body {:optional true} string?]]
       (m.util/merge e.s.handler/?Components)))

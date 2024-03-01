@@ -7,6 +7,7 @@
 (def connect ::connect)
 (def evaluate ::evaluate)
 (def handler ::handler)
+(def lookup ::lookup)
 (def nrepl ::nrepl)
 (def output ::output)
 (def test ::test)
