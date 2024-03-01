@@ -32,6 +32,13 @@ function! elin#intercept_request(...) abort
   return elin#request('elin.handler.internal/intercept', a:000)
 endfunction
 
+function! elin#status() abort
+  if elin#server#connection() is# v:null
+    return ''
+  endif
+  return elin#request('elin.handler.internal/status', [])
+endfunction
+
 function! s:callback(...) abort
   echom printf('FIXME callback %s', a:000)
 endfunction

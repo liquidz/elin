@@ -5,6 +5,7 @@
    [elin.message :as e.message]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.interceptor :as e.p.interceptor]
+   [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
    [elin.util.map :as e.u.map]
    [malli.core :as m]
@@ -36,3 +37,12 @@
   [{:component/keys [host] :keys [message]}]
   (e.message/error host (str "Unexpected error: " (pr-str (:params message))))
   true)
+
+(defn status
+  [{:component/keys [handler nrepl]}]
+  (let [{:keys [disconnected connected]} (get-in handler [:config-map
+                                                          (symbol #'status)
+                                                          :label])]
+    (if (e.p.nrepl/disconnected? nrepl)
+      disconnected
+      connected)))
