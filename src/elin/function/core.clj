@@ -20,6 +20,4 @@
         (e.f.clj-kondo/lookup clj-kondo ns-str sym-str)
         (catch Exception e
           (e/fault {:message (pr-str e)})))
-      (do
-        (println "FIXME kotti???")
-        res))))
+      res)))
