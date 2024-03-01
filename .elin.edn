@@ -2,4 +2,5 @@
        :appenders {:spit #spit-appender {:fname "./elin-debug.log"}}}
  :interceptor {:includes [elin.interceptor.debug/interceptor-context-checking-interceptor
                           elin.interceptor.debug/nrepl-debug-interceptor]}
+ :handler {:config-map {elin.handler.lookup/lookup {:interceptor {:includes [elin.interceptor.lookup/malli-function-schema-interceptor]}}}}
  :env {:cwd "."}}
