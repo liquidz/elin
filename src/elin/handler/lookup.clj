@@ -1,13 +1,11 @@
 (ns elin.handler.lookup
   (:require
    [clojure.string :as str]
-   [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
    [elin.function.core :as e.f.core]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.popup :as e.f.v.popup]
    [elin.function.vim.sexp :as e.f.v.sexp]
-   [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.handler :as e.s.handler]
    [malli.core :as m]))
 
@@ -105,21 +103,15 @@
 
 (m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
-  [{:as elin :component/keys [host interceptor]}]
+  [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
-          resp (e.f.core/lookup!! elin ns-str code)
-          context (assoc elin
-                         :lookup resp
-                         :popup-options {:line "near-cursor"
-                                         :border []
-                                         :filetype "help"
-                                         :moved "current-line"})
-          {:keys [popup-body popup-options]} (e.p.interceptor/execute
-                                              interceptor
-                                              e.c.interceptor/lookup
-                                              context
-                                              (fn [{:as ctx :keys [lookup]}]
-                                                (update ctx :popup-body #(or % (generate-doc lookup)))))]
-    (e.f.v.popup/open!! host popup-body popup-options)))
+          resp (e.f.core/lookup!! elin ns-str code)]
+    (e.f.v.popup/open!!
+     host
+     (generate-doc resp)
+     {:line "near-cursor"
+      :border []
+      :filetype "help"
+      :moved "current-line"})))
