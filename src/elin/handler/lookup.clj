@@ -1,6 +1,7 @@
 (ns elin.handler.lookup
   (:require
    [clojure.string :as str]
+   [elin.constant.lookup :as e.c.lookup]
    [elin.error :as e]
    [elin.function.core :as e.f.core]
    [elin.function.vim :as e.f.vim]
@@ -8,9 +9,6 @@
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.schema.handler :as e.s.handler]
    [malli.core :as m]))
-
-(def ^:private subsection-separator
-  "----------------------------------------------------------------------------")
 
 ;; (def ^:private spec-fn-set
 ;;   #{"clojure.spec.alpha/fspec"
@@ -60,7 +58,7 @@
                     (str/split-lines))
           returns (when-let [returns (:returns lookup-resp)]
                     [""
-                     subsection-separator
+                     e.c.lookup/subsection-separator
                      "*Returns*"
                      (format "  %s" returns)])
           javadoc (when-let [javadoc (:javadoc lookup-resp)]
@@ -88,7 +86,7 @@
           see-also (when-let [see-also (:see-also lookup-resp)]
                      (concat
                       [""
-                       subsection-separator
+                       e.c.lookup/subsection-separator
                        "*see-also*"]
                       (map #(format " - %s" %) see-also)))]
     (->> (concat title arglist docs see-also)
