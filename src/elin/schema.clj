@@ -11,7 +11,7 @@
 (defn ?instance
   [klass]
   (m/-simple-schema
-   {:type ::instance
+   {:type klass
     :pred #(instance? klass %)}))
 
 (def ?File
