@@ -48,9 +48,7 @@
        [:request e.s.nrepl/?Message]
        ;; LEAVE
        [:response {:optional true} any?]]
-      (m.util/merge
-       (m.util/dissoc e.s.handler/?Components
-                      :component/nrepl))))
+      (m.util/merge e.s.handler/?Components)))
 
 (def ?AutocmdContext
   (-> [:map

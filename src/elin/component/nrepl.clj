@@ -119,6 +119,7 @@
                :component/interceptor interceptor
                :component/session-storage session-storage
                :component/clj-kondo clj-kondo
+               :component/nrepl this
                :request msg}
               (intercept
                (fn [{:as ctx :keys [request]}]
