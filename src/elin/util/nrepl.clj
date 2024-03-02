@@ -25,12 +25,22 @@
 (m/=> update-messages [:=> [:cat keyword? fn? ?Messages] ?Messages])
 (defn update-messages
   [k f messages]
-  (map
-   (fn [res]
-     (cond-> res
-       (contains? res k)
-       (update k f)))
-   messages))
+  (loop [[msg & rest-msg] messages
+         result []
+         changed? false]
+    (cond
+      (not msg)
+      (if changed?
+        result
+        (conj result {k (f nil)}))
+
+      (contains? msg k)
+      (recur rest-msg
+             (conj result (update msg k f))
+             true)
+
+      :else
+      (recur rest-msg (conj result msg) changed?))))
 
 (m/=> has-status? [:=> [:cat e.s.nrepl/?Message string?] boolean?])
 (defn has-status?
