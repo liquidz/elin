@@ -3,10 +3,10 @@
    [elin.error :as e]
    [elin.function.core :as e.f.core]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
-   [elin.function.nrepl.system :as e.f.n.system]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.schema.handler :as e.s.handler]
+   [elin.util.file :as e.u.file]
    [malli.core :as m]))
 
 (m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
@@ -22,10 +22,10 @@
 
 (m/=> cycle-source-and-test [:=> [:cat e.s.handler/?Elin] any?])
 (defn cycle-source-and-test
-  [{:component/keys [host nrepl]}]
+  [{:component/keys [host]}]
   (let [ns-path (e.f.vim/get-current-file-path!! host)
         ns-str (e.f.v.sexp/get-namespace!! host)
-        file-sep (e.f.n.system/get-file-separator nrepl)
+        file-sep (e.u.file/guess-file-separator ns-path)
         cycled-path (e.f.n.namespace/get-cycled-namespace-path
                      {:ns ns-str :path ns-path :file-separator file-sep})]
     (e.f.vim/notify host "elin#internal#open_file" [cycled-path])))
