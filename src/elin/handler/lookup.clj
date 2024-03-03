@@ -8,6 +8,7 @@
    [elin.function.vim.popup :as e.f.v.popup]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.schema.handler :as e.s.handler]
+   [elin.util.sexp :as e.u.sexp]
    [malli.core :as m]))
 
 ;; (def ^:private spec-fn-set
@@ -113,3 +114,21 @@
       :border []
       :filetype "help"
       :moved "current-line"})))
+
+(defn show-source
+  [{:as elin :component/keys [host]}]
+  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+          ns-str (e.f.v.sexp/get-namespace!! host)
+          {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
+          resp (e.f.core/lookup!! elin ns-str code)
+          source (e.u.sexp/extract-form-by-position
+                  (slurp (:file resp))
+                  (:line resp)
+                  (:column resp))]
+    (e.f.v.popup/open!!
+     host
+     source
+     {:line "near-cursor"
+      :border []
+      :filetype "clojure"
+      :moved "any"})))

@@ -36,6 +36,7 @@
                       elin.handler.internal/intercept
                       elin.handler.internal/status
                       elin.handler.lookup/lookup
+                      elin.handler.lookup/show-source
                       elin.handler.navigate/jump-to-definition
                       elin.handler.navigate/cycle-source-and-test]
 
