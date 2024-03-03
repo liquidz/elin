@@ -37,6 +37,8 @@
                                                                                 :ret :nil}}},
                                                            luaeval {:arities {3 {:args [:any :string :sequential],
                                                                                  :ret :any}}},
+                                                           input!! {:arities {3 {:args [:any :string :string],
+                                                                                 :ret :string}}},
                                                            eval!! {:arities {2 {:args [:any :string], :ret :any}}},
                                                            execute! {:arities {2 {:args [:any :string], :ret :any}}},
                                                            set-variable! {:arities {3 {:args [:any :string :any],
