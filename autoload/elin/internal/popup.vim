@@ -59,6 +59,8 @@ function! s:init_win(winid, opts) abort
       aug elin_nvim_popup_moved
         au!
         au CursorMoved,CursorMovedI <buffer> call s:__moved()
+        au BufEnter * call s:__moved()
+        au BufReadPre * call s:__moved()
       aug END
     endif
   endif
