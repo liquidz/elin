@@ -262,7 +262,9 @@
                                                         add-require {:arities {3 {:args [:string
                                                                                          :symbol
                                                                                          :nilable/symbol],
-                                                                                  :ret :any}}}},
+                                                                                  :ret :any}}},
+                                                        extract-form-by-position {:arities {3 {:args [:string :int :int],
+                                                                                               :ret :any}}}},
                                         elin.function.nrepl.namespace {get-cycled-namespace-path {:arities {1 {:args [{:op :keys,
                                                                                                                        :req {:ns :string,
                                                                                                                              :path :string,
