@@ -78,6 +78,16 @@
        :else
        zloc))))
 
+(m/=> extract-form-by-position [:=> [:cat string? int? int?] (e.schema/error-or string?)])
+(defn extract-form-by-position
+  [code line col]
+  (try
+    (-> (r.zip/of-string code {:track-position? true})
+        (r.zip/find-last-by-pos [line col])
+        (r.zip/string))
+    (catch Exception ex
+      (e/not-found {:message (ex-message ex)}))))
+
 (comment
   (def form-code
     (let [host (elin.dev/$ :lazy-host)]
