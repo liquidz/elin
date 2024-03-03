@@ -22,7 +22,12 @@
                      (first)
                      (symbol)
                      (or (e/not-found)))
-          alias-sym (e.f.c.namespace/most-used-namespace-alias elin ns-sym)
+          default-alias-sym (e.f.c.namespace/most-used-namespace-alias elin ns-sym)
+          alias-str (e.f.vim/input!! host
+                                     (format "Alias for '%s': " ns-sym)
+                                     (str default-alias-sym))
+          alias-sym (when (seq alias-str)
+                      (symbol alias-str))
           ns-form (e.f.v.sexp/get-namespace-form!! host)]
     (if (has-namespace? ns-form ns-sym)
       (e.p.rpc/echo-text host (format "'%s' already exists." ns-sym) "WarningMsg")
