@@ -3,7 +3,8 @@
    [elin.error :as e]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.vim :as e.f.vim]
-   [elin.function.vim.sexp :as e.f.v.sexp]))
+   [elin.function.vim.sexp :as e.f.v.sexp]
+   [elin.util.nrepl :as e.u.nrepl]))
 
 (defn- eval!!
   [nrepl code options]
@@ -12,10 +13,13 @@
                                  (assoc accm k v)
                                  accm))
                              {:nrepl.middleware.print/stream? 1}
-                             options)]
-    {:code code
-     :options options
-     :response (e.f.nrepl/eval!! nrepl code options)}))
+                             options)
+          resp (e.f.nrepl/eval!! nrepl code options)]
+    (if (e.u.nrepl/has-status? resp "eval-error")
+      (e/fault {:message (:err resp)})
+      {:code code
+       :options options
+       :response (e.f.nrepl/eval!! nrepl code options)})))
 
 (defn evaluate-current-top-list!!
   [{:keys [nrepl host options]}]
