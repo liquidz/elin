@@ -81,6 +81,7 @@
       (try
         (interceptor/execute context' (concat interceptors [terminator']))
         (catch Exception ex
+          (timbre/debug (format "Failed to intercept for %s" kind) ex)
           (e.message/error lazy-host (format "Failed to intercept for %s: %s"
                                              kind
                                              (ex-message ex)))))))
