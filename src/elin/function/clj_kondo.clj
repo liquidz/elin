@@ -112,6 +112,19 @@
            (last)
            (key)))))
 
+(m/=> namespace-by-alias [:=> [:cat e.s.component/?CljKondo symbol?] [:maybe symbol?]])
+(defn namespace-by-alias
+  [clj-kondo alias-sym]
+  (let [grouped (->> (namespace-usages clj-kondo)
+                     (filter #(= alias-sym (:alias %)))
+                     (map :to)
+                     (group-by identity))]
+    (when (seq grouped)
+      (->> (update-vals grouped count)
+           (sort-by val)
+           (last)
+           (key)))))
+
 (m/=> lookup [:=> [:cat e.s.component/?CljKondo string? string?] (e.schema/error-or e.s.nrepl/?Lookup)])
 (defn lookup
   [clj-kondo ns-str sym-str]
