@@ -67,6 +67,8 @@ else
         return ''
       endif
 
+      " TODO use getregion
+      " https://zenn.dev/kawarimidoll/articles/4357f07f210d2f
       let lines = getline(start_pos[0], end_pos[0])
       if len(lines) == 1
         let lines[0] = strpart(lines[0], start_pos[1] - 1)
