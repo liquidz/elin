@@ -17,12 +17,14 @@
       (some?)))
 
 (defn add-namespace*
-  [{:as elin :component/keys [host nrepl] :keys [message]}]
-  (e/let [ns-sym (-> (:params message)
+  [{:as elin :component/keys [handler host nrepl] :keys [message]}]
+  (e/let [favorites (get-in handler [:config-map (symbol #'add-namespace*) :favorites])
+          ns-sym (-> (:params message)
                      (first)
                      (symbol)
                      (or (e/not-found)))
-          default-alias-sym (e.f.c.namespace/most-used-namespace-alias elin ns-sym)
+          default-alias-sym (or (get favorites ns-sym)
+                                (e.f.c.namespace/most-used-namespace-alias elin ns-sym))
           alias-str (e.f.vim/input!! host
                                      (format "Alias for '%s': " ns-sym)
                                      (str default-alias-sym))
