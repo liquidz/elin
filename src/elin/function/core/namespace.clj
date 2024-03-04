@@ -19,7 +19,10 @@
          (distinct)
          (sort))))
 
-;; TODO use :fachvorite-ns-aliases
 (defn most-used-namespace-alias
   [{:component/keys [clj-kondo]} ns-sym]
   (e.f.clj-kondo/most-used-namespace-alias clj-kondo ns-sym))
+
+(defn namespace-by-alias
+  [{:component/keys [clj-kondo]} alias-sym]
+  (e.f.clj-kondo/namespace-by-alias clj-kondo alias-sym))
