@@ -42,6 +42,7 @@
 
            :config-map {elin.handler.internal/status {:label {:disconnected "🍏"
                                                               :connected "🍎"}}
+                        elin.handler.namespace/add-namespace* {:favorites #include "favorite_aliases.edn"}
                         elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor]}}
                         elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
                         elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
@@ -52,38 +53,4 @@
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 
  :clj-kondo {:config {:output {:analysis {:protocol-impls true
-                                          :arglists true}}}}
-
- ;; cf. https://github.com/bbatsov/clojure-style-guide?tab=readme-ov-file#use-idiomatic-namespace-aliases
- :elin.function.core/most-used-namespace-alias
- {:favorites {;; Clojure
-              cheshire.core json
-              clj-http.client http
-              clj-yaml.core yaml
-              clojure.core.async async
-              clojure.core.matrix mat
-              clojure.data.csv csv
-              clojure.data.xml xml
-              clojure.datafy datafy
-              clojure.edn edn
-              clojure.java.io io
-              clojure.java.shell sh
-              clojure.pprint pp
-              clojure.set set
-              clojure.spec.alpha s
-              clojure.spec.gen.alpha sgen
-              clojure.spec.test.alpha stest
-              clojure.string str
-              clojure.tools.logging log
-              clojure.walk walk
-              clojure.zip zip
-              hugsql.core sql
-              java-time.api time
-              next.jdbc jdbc
-              ;; ClojureScript
-              cljs.core.async async
-              cljs.pprint pp
-              cljs.reader reader
-              cljs.spec.alpha s
-              cljs.spec.gen.alpha sgen
-              cljs.spec.test.alpha stest}}}
+                                          :arglists true}}}}}
