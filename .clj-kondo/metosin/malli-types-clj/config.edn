@@ -389,6 +389,13 @@
                                                                                                                        :analyzed-atom :any}}
                                                                                                                 :symbol],
                                                                                                          :ret :nilable/symbol}}},
+                                                                 namespace-by-alias {:arities {2 {:args [{:op :keys,
+                                                                                                          :req {:lazy-host {:op :keys,
+                                                                                                                            :req {:host-store :any}},
+                                                                                                                :analyzing?-atom :any,
+                                                                                                                :analyzed-atom :any}}
+                                                                                                         :symbol],
+                                                                                                  :ret :nilable/symbol}}},
                                                                  lookup {:arities {3 {:args [{:op :keys,
                                                                                               :req {:lazy-host {:op :keys,
                                                                                                                 :req {:host-store :any}},
