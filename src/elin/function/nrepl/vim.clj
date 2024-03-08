@@ -19,7 +19,7 @@
       (e/fault {:message (:err resp)})
       {:code code
        :options options
-       :response (e.f.nrepl/eval!! nrepl code options)})))
+       :response resp})))
 
 (defn evaluate-current-top-list!!
   [{:keys [nrepl host options]}]
