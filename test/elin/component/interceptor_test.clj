@@ -2,7 +2,7 @@
   (:require
    [clojure.test :as t]
    [com.stuartsierra.component :as component]
-   [elin.component.interceptor]
+   [elin.component.interceptor :as sut]
    [elin.protocol.config :as e.p.config]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.system :as e.system]
@@ -10,6 +10,7 @@
    [malli.core :as m]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
+(t/use-fixtures :once h/warn-log-level-fixture)
 
 (def ^:private test-interceptor
   {:name ::test-interceptor
@@ -76,3 +77,75 @@
 
       (finally
         (component/stop-system sys)))))
+
+(t/deftest new-interceptor-includes-excludes-test
+  (with-redefs [m/validate (constantly true)]
+    (t/testing "only includes"
+      (t/is (= {::test [test-interceptor]}
+               (-> {:includes [(symbol #'test-interceptor)]}
+                   (sut/map->Interceptor)
+                   (component/start)
+                   (:interceptor-map)))))
+
+    (t/testing "only excludes"
+      (t/is (empty? (-> {:excludes [(symbol #'test-interceptor)]}
+                        (sut/map->Interceptor)
+                        (component/start)
+                        (:interceptor-map)))))
+
+    (t/testing "includes and excludes"
+      (t/is (= {::test [test-interceptor]}
+               (-> {:includes [(symbol #'test-interceptor)]
+                    :excludes [(symbol #'test-interceptor)]}
+                   (sut/map->Interceptor)
+                   (component/start)
+                   (:interceptor-map)))
+            "includes should be prioritized over excludes"))))
+
+(t/deftest new-interceptor-configure-includes-excludes-test
+  (with-redefs [m/validate (constantly true)]
+    (let [interceptor (-> {:includes [(symbol #'test-interceptor)]}
+                          (sut/map->Interceptor)
+                          (component/start))]
+      (t/testing "only includes"
+        (t/is (= {::test [test-interceptor test-interceptor2]}
+                 (-> interceptor
+                     (e.p.config/configure {:interceptor {:includes [(symbol #'test-interceptor2)]}})
+                     (:interceptor-map))))
+
+        (t/testing "optional"
+          (t/is (= {::test [test-interceptor test-optional-interceptor]}
+                   (-> interceptor
+                       (e.p.config/configure {:interceptor {:includes [(symbol #'test-optional-interceptor)]}})
+                       (:interceptor-map))))))
+
+      (t/testing "only excludes"
+        (t/is (= {::test [test-interceptor]}
+                 (-> interceptor
+                     (e.p.config/configure {:interceptor {:excludes [(symbol #'test-interceptor2)]}})
+                     (:interceptor-map))))
+
+        (t/is (= {::test []}
+                 (-> interceptor
+                     (e.p.config/configure {:interceptor {:excludes [(symbol #'test-interceptor)]}})
+                     (:interceptor-map)))))
+
+      (t/testing "includes and excludes"
+        (t/is (= {::test [test-interceptor test-interceptor2]}
+                 (-> interceptor
+                     (e.p.config/configure {:interceptor {:includes [(symbol #'test-interceptor2)]
+                                                          :excludes [(symbol #'test-interceptor2)]}})
+                     (:interceptor-map))))
+
+        (t/is (= {::test [test-interceptor2]}
+                 (-> interceptor
+                     (e.p.config/configure {:interceptor {:includes [(symbol #'test-interceptor2)]
+                                                          :excludes [(symbol #'test-interceptor)]}})
+                     (:interceptor-map))))
+
+        (t/is (= {::test [test-interceptor2 test-interceptor]}
+                 (-> interceptor
+                     (e.p.config/configure {:interceptor {:includes [(symbol #'test-interceptor2)
+                                                                     (symbol #'test-interceptor)]
+                                                          :excludes [(symbol #'test-interceptor)]}})
+                     (:interceptor-map))))))))
