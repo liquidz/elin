@@ -5,7 +5,8 @@
    [elin.test-helper.message :as h.message]
    [elin.test-helper.nrepl :as h.nrepl]
    [malli.dev.pretty :as m.d.pretty]
-   [malli.instrument :as m.inst]))
+   [malli.instrument :as m.inst]
+   [taoensso.timbre :as timbre]))
 
 (def ^:dynamic *nrepl-server-port* nil)
 
@@ -24,6 +25,10 @@
         (f))
       (finally
         (b.n.server/stop-server! server)))))
+
+(defn warn-log-level-fixture
+  [f]
+  (timbre/with-level :warn (f)))
 
 (defn call-function? [msg fn-name]
   (and
