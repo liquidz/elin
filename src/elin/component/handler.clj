@@ -60,34 +60,40 @@
                           :component/nrepl (assoc nrepl :interceptor interceptor')))]
     (assoc context' :message message')))
 
+(defn- handler* [handler-map context]
+  (:response
+   (e.p.interceptor/execute
+    (:component/interceptor context) e.c.interceptor/handler context
+    (fn [{:as context :component/keys [host]}]
+      (let [elin (construct-handler-parameter context)
+            handler-key (get-in elin [:message :method])
+            resp (if-let [handler-fn (get handler-map handler-key)]
+                   (handler-fn elin)
+                   (let [msg (format "Unknown handler: %s" handler-key)]
+                     (e.message/error host msg)
+                     msg))
+            resp' (e.u.server/format resp)
+            resp' (if-let [callback (get-in elin [:message :options :callback])]
+                    (try
+                      (e.p.rpc/notify-function host "elin#callback#call" [callback resp'])
+                      ;; FIXME
+                      (catch Exception ex
+                        (e.message/error host "Failed to callback" (ex-message ex))))
+                    resp')]
+        (assoc context :response resp'))))))
+
 (m/=> handler [:=> [:cat e.s.handler/?Components map? e.s.handler/?HandlerMap e.s.server/?Message]
                any?])
 (defn- handler
-  [{:as components :component/keys [interceptor]}
+  [components
    config-map
    handler-map
    message]
-  (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/handler %&)]
-    (-> (assoc components :message message :config-map config-map)
-        (intercept
-         (fn [{:as context :component/keys [host]}]
-           (let [elin (construct-handler-parameter context)
-                 handler-key (get-in elin [:message :method])
-                 resp (if-let [handler-fn (get handler-map handler-key)]
-                        (handler-fn elin)
-                        (let [msg (format "Unknown handler: %s" handler-key)]
-                          (e.message/error host msg)
-                          msg))
-                 resp' (e.u.server/format resp)
-                 resp' (if-let [callback (get-in elin [:message :options :callback])]
-                         (try
-                           (e.p.rpc/notify-function host "elin#callback#call" [callback resp'])
-                           ;; FIXME
-                           (catch Exception ex
-                             (e.message/error host "Failed to callback" (ex-message ex))))
-                         resp')]
-             (assoc context :response resp'))))
-        (:response))))
+  (let [method (:method (e.p.rpc/parse-message message))
+        context (assoc components :message message :config-map config-map)]
+    (if-let [log-level (get-in config-map [(symbol method) :log :min-level])]
+      (timbre/with-level log-level (handler* handler-map context))
+      (handler* handler-map context))))
 
 (defrecord Handler
   [;; COMPONENTS
