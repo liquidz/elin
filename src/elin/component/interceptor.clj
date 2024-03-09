@@ -1,5 +1,6 @@
 (ns elin.component.interceptor
   (:require
+   [clojure.string :as str]
    [com.stuartsierra.component :as component]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.interceptor.autocmd]
@@ -86,6 +87,8 @@
                           :elin/interceptor this
                           :elin/kind kind)]
       (try
+        (timbre/debug (format "Start to intercept %s with [%s]" kind (->> (map :name interceptors)
+                                                                          (str/join ", "))))
         (interceptor/execute context' (concat interceptors [terminator']))
         (catch Exception ex
           (timbre/debug (format "Failed to intercept for %s" kind) ex)
