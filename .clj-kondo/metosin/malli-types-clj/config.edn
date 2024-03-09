@@ -261,6 +261,13 @@
                                                              lookup!! {:arities {3 {:args [:any :string :string],
                                                                                     :ret :any}}},
                                                              ls-sessions!! {:arities {1 {:args [:any], :ret :any}}}},
+                                        elin.function.nrepl.system {get-system-info* {:arities {1 {:args [:any],
+                                                                                                   :ret :any}}},
+                                                                    get-user-dir {:arities {1 {:args [:any], :ret :any}}},
+                                                                    get-file-separator {:arities {1 {:args [:any],
+                                                                                                     :ret :any}}},
+                                                                    get-project-name {:arities {1 {:args [:any],
+                                                                                                   :ret :any}}}},
                                         elin.util.sexp {extract-ns-form {:arities {1 {:args [:string], :ret :any}}},
                                                         extract-namespace {:arities {1 {:args [:string], :ret :any}}},
                                                         add-require {:arities {3 {:args [:string
