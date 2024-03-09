@@ -22,7 +22,14 @@
 
 (defn- resolve-interceptor [lazy-host sym]
   (try
-    (deref (requiring-resolve sym))
+    (if (and (sequential? sym)
+             (symbol? (first sym)))
+      (-> (first sym)
+          (requiring-resolve)
+          (deref)
+          (assoc :params (rest sym)))
+      (-> (requiring-resolve sym)
+          (deref)))
     (catch Exception ex
       (e.message/warning lazy-host "Failed to resolve interceptor" {:symbol sym :ex ex})
       nil)))

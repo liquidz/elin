@@ -21,6 +21,7 @@
    [:name qualified-keyword?]
    [:kind ?Kind]
    [:optional {:optional true} boolean?]
+   [:params {:optional true} sequential?]
    [:enter {:optional true} fn?]
    [:leave {:optional true} fn?]])
 
