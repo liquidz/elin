@@ -68,10 +68,10 @@
           interceptor-map (group-by :kind (get grouped-interceptors valid-group))]
       (when-let [invalid-interceptors (seq (get grouped-interceptors invalid-group))]
         (e.message/warning "Invalid interceptors:" invalid-interceptors))
-      (timbre/info "Interceptor component: Started")
+      (timbre/debug "Interceptor component: Started")
       (assoc this :interceptor-map interceptor-map)))
   (stop [this]
-    (timbre/info "Interceptor component: Stopped")
+    (timbre/debug "Interceptor component: Stopped")
     (dissoc this :interceptor-map))
 
   e.p.interceptor/IInterceptor
