@@ -8,6 +8,7 @@
    [elin.test-helper :as h]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
+(t/use-fixtures :once h/warn-log-level-fixture)
 (t/use-fixtures :each h/test-nrepl-server-port-fixture)
 
 (defn- test-handler [session msg]
