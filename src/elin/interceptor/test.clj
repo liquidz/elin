@@ -21,8 +21,8 @@
                   ;; unsign
                   (if (seq passed)
                     (doseq [var-str (distinct (map :var passed))]
-                      (e.f.v.sign/unplace-by host {:group var-str}))
-                    (e.f.v.sign/unplace-by host {:group "*"}))
+                      (e.f.v.sign/unplace-by host {:name sign-name :group var-str}))
+                    (e.f.v.sign/unplace-by host {:name sign-name :group "*"}))
                   ;; sign
                   (doseq [{:as result :keys [lnum]} failed
                           :when lnum]
