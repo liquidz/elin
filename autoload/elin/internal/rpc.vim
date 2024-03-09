@@ -50,7 +50,7 @@ if has('nvim')
           \ 'id': id,
           \ 'on_close': options.on_close,
           \}
-    let conn.healthcheck_timer = timer_start(100, funcref('s:healthcheck', [conn]), {'repeat': -1})
+    let conn.healthcheck_timer = timer_start(500, funcref('s:healthcheck', [conn]), {'repeat': -1})
     return conn
   endfunction
 
