@@ -59,10 +59,11 @@
   component/Lifecycle
   (start [this]
     (let [exclude-set (set excludes)
-          grouped-interceptors (->> (concat (or includes [])
-                                            (or (get-in plugin [:loaded-plugin :interceptors]) []))
-                                    (distinct)
+          grouped-interceptors (->> (or (get-in plugin [:loaded-plugin :interceptors]) [])
                                     (remove #(contains? exclude-set %))
+                                    ;; NOTE includes should be prioritized over excludes
+                                    (concat (or includes []))
+                                    (distinct)
                                     (keep #(resolve-interceptor lazy-host %))
                                     (group-by interceptor-group))
           interceptor-map (group-by :kind (get grouped-interceptors valid-group))]
@@ -107,15 +108,16 @@
                        (group-by interceptor-group))
           include-map (group-by :kind (concat (get grouped valid-group)
                                               (get grouped optional-group)))
-          configured (reduce-kv
-                      (fn [accm kind interceptors]
-                        (assoc accm kind (concat (get accm kind []) interceptors)))
-                      interceptor-map
-                      include-map)
-          configured (update-vals configured
-                                  (fn [interceptors]
-                                    (remove #(contains? exclude-set (:name %)) interceptors)))]
-      (assoc this :interceptor-map configured))))
+          interceptor-map' (update-vals interceptor-map
+                                        (fn [interceptors]
+                                          (remove #(contains? exclude-set (:name %)) interceptors)))
+          ;; NOTE includes should be prioritized over excludes
+          interceptor-map' (reduce-kv
+                            (fn [accm kind interceptors]
+                              (assoc accm kind (concat (or (get accm kind) [])
+                                                       interceptors)))
+                            interceptor-map' include-map)]
+      (assoc this :interceptor-map interceptor-map'))))
 
 (defn new-interceptor
   [config]
