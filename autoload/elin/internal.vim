@@ -62,12 +62,13 @@ function! elin#internal#execute(cmd) abort
 endfunction
 
 " FIXME WIP ddu only for now
-function! elin#internal#select(candidates, callback_handler) abort
-   let id = denops#callback#register(
-         \ {s -> elin#notify(a:callback_handler, [s])},
-         \ {'once': v:true},
-         \ )
-   silent call ddu#start({
-         \ 'sources': [{'name': 'custom-list', 'params': {'texts': a:candidates, 'callbackId': id}}],
-         \ })
+function! elin#internal#select(candidates, callback_handler, ...) abort
+  let optional_params = get(a:, 1, [])
+  let id = denops#callback#register(
+        \ {s -> elin#notify(a:callback_handler, optional_params + [s])},
+        \ {'once': v:true},
+        \ )
+  silent call ddu#start({
+        \ 'sources': [{'name': 'custom-list', 'params': {'texts': a:candidates, 'callbackId': id}}],
+        \ })
 endfunction
