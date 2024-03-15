@@ -21,3 +21,7 @@
 (def info-op "info")
 (def ns-path-op "ns-path")
 (def test-var-query-op "test-var-query")
+
+;; refactor-nrepl ops
+
+(def resolve-missing-op "resolve-missing")
