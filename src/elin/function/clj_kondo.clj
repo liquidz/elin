@@ -157,6 +157,13 @@
                                  (str/join " " %)
                                  (str %))))))
 
+(defn requiring-namespaces
+  [clj-kondo ns-str]
+  (let [ns-sym (symbol ns-str)]
+    (some->> (namespace-usages clj-kondo)
+             (filter #(= ns-sym (:from %)))
+             (map :to))))
+
 (comment
   (def clj-kondo (elin.dev/$ :clj-kondo))
   (e.p.clj-kondo/analyzing? (elin.dev/$ :clj-kondo))
