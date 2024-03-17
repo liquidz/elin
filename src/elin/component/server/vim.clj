@@ -4,6 +4,7 @@
    [cheshire.core :as json]
    [clojure.core.async :as async]
    [clojure.java.io :as io]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.id :as e.u.id]
    [elin.util.server :as e.u.server]
@@ -14,7 +15,7 @@
 
 (defrecord VimMessage
   [host message response-manager]
-  e.p.rpc/IMessage
+  e.p.h.rpc/IRpcMessage
   (request? [_]
     (and (sequential? message)
          (int? (first message))
@@ -29,13 +30,13 @@
 
   (parse-message [this]
     (cond
-      (e.p.rpc/response? this)
+      (e.p.h.rpc/response? this)
       (let [[id result] message]
         {:id id
          :error nil
          :result result})
 
-      (e.p.rpc/request? this)
+      (e.p.h.rpc/request? this)
       (let [[id [method params options]] message]
         {:id id
          :method (keyword method)

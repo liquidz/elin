@@ -2,6 +2,7 @@
   "https://github.com/msgpack-rpc/msgpack-rpc/blob/master/spec.md"
   (:require
    [clojure.core.async :as async]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.id :as e.u.id]
    [elin.util.server :as e.u.server]
@@ -15,7 +16,7 @@
 
 (defrecord NvimMessage
   [host message response-manager]
-  e.p.rpc/IMessage
+  e.p.h.rpc/IRpcMessage
   (request? [_]
     (= 0 (first message)))
 

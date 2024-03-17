@@ -1,10 +1,5 @@
 (ns elin.protocol.rpc)
 
-(defprotocol IMessage
-  (request? [this])
-  (response? [this])
-  (parse-message [this]))
-
 (defprotocol ILazyHost
   (set-host! [this host]))
 

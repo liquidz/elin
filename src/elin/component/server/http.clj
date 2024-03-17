@@ -3,7 +3,7 @@
    [cheshire.core :as json]
    [clojure.java.io :as io]
    [com.stuartsierra.component :as component]
-   [elin.protocol.rpc :as e.p.rpc]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
    [org.httpkit.server :as h.server])
   (:import
    java.net.URLDecoder))
@@ -19,7 +19,7 @@
 
 (defrecord ApiMessage
   [host message method params]
-  e.p.rpc/IMessage
+  e.p.h.rpc/IRpcMessage
   (request? [_] true)
   (response? [_] false)
   (parse-message [_]

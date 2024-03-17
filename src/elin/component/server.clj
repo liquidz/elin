@@ -6,6 +6,7 @@
    [elin.component.server.vim :as e.c.s.vim]
    [elin.constant.host :as e.c.host]
    [elin.error :as e]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [taoensso.timbre :as timbre])
   (:import
@@ -15,10 +16,10 @@
   [handler lazy-host {:keys [message host]}]
   (e.p.rpc/set-host! lazy-host host)
 
-  (if (e.p.rpc/response? message)
+  (if (e.p.h.rpc/response? message)
     ;; Receive response
     (let [{:keys [response-manager]} message
-          {:keys [id error result]} (e.p.rpc/parse-message message)]
+          {:keys [id error result]} (e.p.h.rpc/parse-message message)]
       (when-let [ch (get @response-manager id)]
         (swap! response-manager dissoc id)
         (async/put! ch {:result result :error error})))
@@ -32,9 +33,9 @@
                             [res]))
                         (catch Exception ex
                           [nil (ex-message ex)]))]
-        (when (e.p.rpc/request? message)
+        (when (e.p.h.rpc/request? message)
           (e.p.rpc/response! host
-                             (:id (e.p.rpc/parse-message message))
+                             (:id (e.p.h.rpc/parse-message message))
                              err res)
           (e.p.rpc/flush! host))))))
 

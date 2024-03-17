@@ -12,6 +12,7 @@
    [elin.handler.navigate]
    [elin.message :as e.message]
    [elin.protocol.config :as e.p.config]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.handler :as e.s.handler]
@@ -45,7 +46,7 @@
   [{:as context :keys [message config-map]}]
   (let [{:component/keys [interceptor nrepl]} context
         {:as message' :keys [method]} (merge message
-                                             (e.p.rpc/parse-message message))
+                                             (e.p.h.rpc/parse-message message))
         handler-config (or (get config-map (symbol method))
                            {})
         message-config (some-> (get-in message' [:options :config])
@@ -89,7 +90,7 @@
    config-map
    handler-map
    message]
-  (let [method (:method (e.p.rpc/parse-message message))
+  (let [method (:method (e.p.h.rpc/parse-message message))
         context (assoc components :message message :config-map config-map)]
     (if-let [log-level (get-in config-map [(symbol method) :log :min-level])]
       (timbre/with-level log-level (handler* handler-map context))

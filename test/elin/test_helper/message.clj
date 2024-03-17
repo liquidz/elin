@@ -1,6 +1,6 @@
 (ns elin.test-helper.message
   (:require
-   [elin.protocol.rpc :as e.p.rpc]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.schema.server :as e.s.server]
    [elin.util.server :as e.u.server]
    [malli.core :as m]))
@@ -11,7 +11,7 @@
 
 (defrecord TestMessage
   [host message]
-  e.p.rpc/IMessage
+  e.p.h.rpc/IRpcMessage
   (request? [_]
     (= 0 (first message)))
 
