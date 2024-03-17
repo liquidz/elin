@@ -2,6 +2,7 @@
   (:require
    [babashka.nrepl.server :as b.n.server]
    [elin.config :as e.config]
+   [elin.test-helper.clj-kondo :as h.clj-kondo]
    [elin.test-helper.host :as h.host]
    [elin.test-helper.message :as h.message]
    [elin.test-helper.nrepl :as h.nrepl]
@@ -45,3 +46,4 @@
 (def test-nrepl-connection #'h.nrepl/test-nrepl-connection)
 (def test-nrepl-client #'h.nrepl/test-nrepl-client)
 (def test-nrepl #'h.nrepl/test-nrepl)
+(def test-clj-kondo #'h.clj-kondo/test-clj-kondo)
