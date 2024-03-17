@@ -3,8 +3,8 @@
    [clojure.core.async :as async]
    [clojure.test :as t]
    [com.stuartsierra.component :as component]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
-   [elin.protocol.rpc :as e.p.rpc]
    [elin.system :as e.system]
    [elin.test-helper :as h]))
 
@@ -19,7 +19,7 @@
                                          "OK")})]
     (try
       (e.p.h.rpc/notify! lazy-host ["before"])
-      (e.p.rpc/set-host! lazy-host host)
+      (e.p.host/set-host! lazy-host host)
       (e.p.h.rpc/notify! lazy-host ["after"])
 
       (t/is (= [[2 "after"]] @wrote))

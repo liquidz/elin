@@ -3,6 +3,7 @@
    [clojure.test :as t]
    [com.stuartsierra.component :as component]
    [elin.component.interceptor :as e.c.interceptor]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.system :as e.system]
@@ -67,7 +68,7 @@
           call-test-handler' (partial call-test-handler handler)
           host (h/test-host {:handler (constantly true)})]
       (try
-        (e.p.rpc/set-host! lazy-host host)
+        (e.p.host/set-host! lazy-host host)
 
         (t/testing "Normal handler"
           (let [res (call-test-handler' #'test-handler ["world"])]

@@ -2,6 +2,7 @@
   (:require
    [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [taoensso.timbre :as timbre]))
@@ -45,7 +46,7 @@
     (timbre/info "LazyHost component: Stopped")
     (dissoc this :host-channel))
 
-  e.p.rpc/ILazyHost
+  e.p.host/ILazyHost
   (set-host! [_ host]
     (reset! host-store host))
 
