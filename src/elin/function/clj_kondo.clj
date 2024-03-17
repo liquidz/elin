@@ -112,6 +112,14 @@
            (last)
            (key)))))
 
+(m/=> namespaces-by-alias [:=> [:cat e.s.component/?CljKondo symbol?] [:sequential symbol?]])
+(defn namespaces-by-alias
+  [clj-kondo alias-sym]
+  (->> (namespace-usages clj-kondo)
+       (filter #(= alias-sym (:alias %)))
+       (map :to)
+       (distinct)))
+
 (m/=> namespace-by-alias [:=> [:cat e.s.component/?CljKondo symbol?] [:maybe symbol?]])
 (defn namespace-by-alias
   [clj-kondo alias-sym]
