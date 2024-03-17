@@ -1,6 +1,7 @@
 (ns elin.test-helper
   (:require
    [babashka.nrepl.server :as b.n.server]
+   [elin.config :as e.config]
    [elin.test-helper.host :as h.host]
    [elin.test-helper.message :as h.message]
    [elin.test-helper.nrepl :as h.nrepl]
@@ -34,6 +35,9 @@
   (and
    (= "test_call_function" (nth msg 2))
    (= fn-name (first (nth msg 3)))))
+
+(def test-config
+  (e.config/load-config "." {:server {:host "vim" :port 0}}))
 
 (def test-message #'h.message/test-message)
 (def get-outputs #'h.host/get-outputs)
