@@ -44,9 +44,15 @@
 (defn get-outputs [test-host]
   @(:outputs test-host))
 
-(m/=> test-host [:=> [:cat h.message/?TestMessageOption] e.s.server/?Host])
+(m/=> test-host
+      [:function
+       [:=> :cat  e.s.server/?Host]
+       [:=> [:cat h.message/?TestMessageOption] e.s.server/?Host]])
 (defn test-host
-  [option]
-  (map->TestHost {:host-store (atom nil)
-                  :outputs (atom [])
-                  :option option}))
+  ([]
+   (test-host {:handler identity}))
+  ([option]
+   (map->TestHost {:host-store (atom nil)
+                   :outputs (atom [])
+                   :option (merge {:handler identity}
+                                  option)})))
