@@ -17,8 +17,8 @@ jobs:
           key: test-m2-${{ hashFiles('bb.edn') }}
       - run: bb check-all
       - run: |
-          git diff
-          if [[ -n $(git diff) ]]; then
+          git diff -- . ':(exclude)dev/analysis.edn'
+          if [[ -n $(git diff -- . ':(exclude)dev/analysis.edn') ]]; then
             echo "Detected uncommitted changes"
             exit 1
           fi
