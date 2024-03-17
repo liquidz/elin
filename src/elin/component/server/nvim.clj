@@ -53,7 +53,7 @@
 
 (defrecord NvimHost
   [output-stream response-manager]
-  e.p.rpc/IHost
+  e.p.h.rpc/IRpc
   (request! [_ content]
     (let [id (e.u.id/next-id)
           ch (async/promise-chan)]
@@ -79,20 +79,20 @@
 
   e.p.rpc/IFunction
   (call-function [this method params]
-    (e.p.rpc/request! this ["nvim_call_function" [method params]]))
+    (e.p.h.rpc/request! this ["nvim_call_function" [method params]]))
 
   (notify-function [this method params]
-    (e.p.rpc/notify! this ["nvim_call_function" [method params]]))
+    (e.p.h.rpc/notify! this ["nvim_call_function" [method params]]))
 
   (echo-text [this text]
-    (e.p.rpc/notify! this ["nvim_echo" [[[text "Normal"]] false {}]]))
+    (e.p.h.rpc/notify! this ["nvim_echo" [[[text "Normal"]] false {}]]))
   (echo-text [this text highlight]
-    (e.p.rpc/notify! this ["nvim_echo" [[[text highlight]] false {}]]))
+    (e.p.h.rpc/notify! this ["nvim_echo" [[[text highlight]] false {}]]))
 
   (echo-message [this text]
     (e.p.rpc/echo-message this text "Normal"))
   (echo-message [this text highlight]
-    (e.p.rpc/notify! this ["nvim_echo" [[[text highlight]] true {}]])))
+    (e.p.h.rpc/notify! this ["nvim_echo" [[[text highlight]] true {}]])))
 
 (defn start-server
   [{:keys [host server-socket on-accept stop-signal]}]

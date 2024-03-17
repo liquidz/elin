@@ -3,12 +3,6 @@
 (defprotocol ILazyHost
   (set-host! [this host]))
 
-(defprotocol IHost
-  (request! [this content])
-  (notify! [this content])
-  (response! [this id error result])
-  (flush! [this]))
-
 (defprotocol IFunction
   (call-function [this method params])
   (notify-function [this method params])

@@ -2,6 +2,7 @@
   (:require
    [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [taoensso.timbre :as timbre]))
 
@@ -17,11 +18,12 @@
           (let [[type & args] (async/<! ch)]
             (case type
               ::request! (let [[ch & args] args
-                               res (async/<! (apply e.p.rpc/request! host args))]
+                               res (async/<! (apply e.p.h.rpc/request! host args))]
                            (async/put! ch res))
-              ::notify! (apply e.p.rpc/notify! host args)
-              ::response! (apply e.p.rpc/response! host args)
-              ::flush! (e.p.rpc/flush! host)
+              ::notify! (apply e.p.h.rpc/notify! host args)
+              ::response! (apply e.p.h.rpc/response! host args)
+              ::flush! (e.p.h.rpc/flush! host)
+
               ::call-function (let [[ch & args] args
                                     res (async/<! (apply e.p.rpc/call-function host args))]
                                 (async/put! ch res))
@@ -47,24 +49,24 @@
   (set-host! [_ host]
     (reset! host-store host))
 
-  e.p.rpc/IHost
+  e.p.h.rpc/IRpc
   (request! [_ content]
     (if-let [host @host-store]
-      (e.p.rpc/request! host content)
+      (e.p.h.rpc/request! host content)
       (let [ch (async/promise-chan)]
         (async/put! host-channel [::request! ch content])
         ch)))
   (notify! [_ content]
     (if-let [host @host-store]
-      (e.p.rpc/notify! host content)
+      (e.p.h.rpc/notify! host content)
       (async/put! host-channel [::notify! content])))
   (response! [_ id error result]
     (if-let [host @host-store]
-      (e.p.rpc/response! host id error result)
+      (e.p.h.rpc/response! host id error result)
       (async/put! host-channel [::response! id error result])))
   (flush! [_]
     (if-let [host @host-store]
-      (e.p.rpc/flush! host)
+      (e.p.h.rpc/flush! host)
       (async/put! host-channel [::flush!])))
 
   e.p.rpc/IFunction

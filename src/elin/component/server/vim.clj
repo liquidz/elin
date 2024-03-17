@@ -52,7 +52,7 @@
 
 (defrecord VimHost
   [output-stream response-manager]
-  e.p.rpc/IHost
+  e.p.h.rpc/IRpc
   (request! [_ [method :as content]]
     (let [id (cond
                (= "call" method) (nth content 3)
@@ -76,20 +76,20 @@
 
   e.p.rpc/IFunction
   (call-function [this method params]
-    (e.p.rpc/request! this ["call" method params (e.u.id/next-id)]))
+    (e.p.h.rpc/request! this ["call" method params (e.u.id/next-id)]))
 
   (notify-function [this method params]
-    (e.p.rpc/notify! this ["call" method params]))
+    (e.p.h.rpc/notify! this ["call" method params]))
 
   (echo-text [this text]
     (e.p.rpc/echo-text this text "Normal"))
   (echo-text [this text highlight]
-    (e.p.rpc/notify! this ["call" "elin#internal#echo" [text highlight]]))
+    (e.p.h.rpc/notify! this ["call" "elin#internal#echo" [text highlight]]))
 
   (echo-message [this text]
     (e.p.rpc/echo-message this text "Normal"))
   (echo-message [this text highlight]
-    (e.p.rpc/notify! this ["call" "elin#internal#echom" [text highlight]])))
+    (e.p.h.rpc/notify! this ["call" "elin#internal#echom" [text highlight]])))
 
 (defn start-server
   [{:keys [host server-socket on-accept stop-signal]}]

@@ -1,6 +1,7 @@
 (ns elin.test-helper.host
   (:require
    [clojure.core.async :as async]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.server :as e.s.server]
    [elin.test-helper.message :as h.message]
@@ -9,7 +10,7 @@
 
 (defrecord TestHost ; {{{
   [host-store outputs option]
-  e.p.rpc/IHost
+  e.p.h.rpc/IRpc
   (request! [_ content]
     (let [id (e.u.id/next-id)
           {:keys [handler]} option
@@ -32,7 +33,7 @@
 
   e.p.rpc/IFunction
   (call-function [this method params]
-    (e.p.rpc/request! this ["test_call_function" [method params]]))
+    (e.p.h.rpc/request! this ["test_call_function" [method params]]))
 
   (echo-text [_ text]
     (swap! outputs conj text))
