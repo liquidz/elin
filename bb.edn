@@ -54,8 +54,9 @@
                             (mc/emit!))}
 
   generate-test-analysis {:doc "Generate test analysis file by clj-kondo"
-                          :task (shell {:out "dev/analysis.edn"}
-                                       "clj-kondo --lint src --config '{:output {:format :edn}, :analysis true}'")}
+                          :extra-paths ["dev"]
+                          :requires ([elin.task.test-analysis])
+                          :task (exec 'elin.task.test-analysis/-main)}
 
   generate-deps-edn {:doc "Generate deps.edn from bb.edn"
                      :requires ([clojure.java.io :as io])
