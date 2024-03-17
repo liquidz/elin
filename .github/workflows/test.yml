@@ -16,3 +16,9 @@ jobs:
           path: ~/.m2
           key: test-m2-${{ hashFiles('bb.edn') }}
       - run: bb check-all
+      - run: |
+          git diff
+          if [[ -n $(git diff) ]]; then
+            echo "Detected uncommitted changes"
+            exit 1
+          fi
