@@ -28,6 +28,8 @@
                       elin.handler.evaluate/evaluate-namespace-form
                       elin.handler.namespace/add-namespace
                       elin.handler.namespace/add-namespace*
+                      elin.handler.namespace/resolve-missing-namespace
+                      elin.handler.namespace/resolve-missing-namespace*
                       elin.handler.test/run-test-under-cursor
                       elin.handler.evaluate/load-current-file
                       elin.handler.internal/healthcheck
@@ -45,6 +47,7 @@
                                                       :label {:disconnected "🍏"
                                                               :connected "🍎"}}
                         elin.handler.namespace/add-namespace* {:favorites #include "favorite_aliases.edn"}
+                        elin.handler.namespace/resolve-missing-namespace {:favorites #include "favorite_aliases.edn"}
                         elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor]}}
                         elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
                         elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
