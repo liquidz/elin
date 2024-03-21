@@ -4,7 +4,7 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.virtual-text :as e.f.v.virtual-text]
-   [elin.protocol.rpc :as e.p.rpc]
+   [elin.message :as e.message]
    [exoscale.interceptor :as ix]
    [rewrite-clj.zip :as r.zip]))
 
@@ -16,7 +16,7 @@
                   (e.f.vim/notify host "elin#internal#shortening_echo" [(str/trim (str v))]))
 
                 (when-let [v (:err response)]
-                  (e.p.rpc/echo-message host (str/trim (str v)) "ErrorMsg")))
+                  (e.message/error host (str/trim (str v)))))
               (ix/discard))})
 
 (def set-eval-result-to-virtual-text-interceptor

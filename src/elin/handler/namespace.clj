@@ -7,7 +7,6 @@
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.message :as e.message]
-   [elin.protocol.rpc :as e.p.rpc]
    [elin.util.sexp :as e.u.sexp]))
 
 (defn- has-namespace?
@@ -33,16 +32,15 @@
                       (symbol alias-str))
           ns-form (e.f.v.sexp/get-namespace-form!! host)]
     (if (has-namespace? ns-form ns-sym)
-      (e.p.rpc/echo-text host (format "'%s' already exists." ns-sym) "WarningMsg")
+      (e.message/warning host (format "'%s' already exists." ns-sym))
       (e/let [ns-form' (e.u.sexp/add-require ns-form ns-sym alias-sym)]
         (e.f.v.sexp/replace-namespace-form!! host ns-form')
         (e.f.n.vim/evaluate-namespace-form!! {:host host :nrepl nrepl})
-        (e.p.rpc/echo-text host (if alias-sym
-                                  (format "'%s' added as '%s'."
-                                          ns-sym alias-sym)
-                                  (format "'%s' added."
-                                          ns-sym))
-                           "MoreMsg")))))
+        (e.message/info host (if alias-sym
+                               (format "'%s' added as '%s'."
+                                       ns-sym alias-sym)
+                               (format "'%s' added."
+                                       ns-sym)))))))
 
 (defn add-namespace
   [{:as elin :component/keys [host]}]
