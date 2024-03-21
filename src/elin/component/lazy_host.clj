@@ -5,6 +5,7 @@
    [elin.error :as e]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
+   [elin.protocol.lazy-host :as e.p.lazy-host]
    [elin.protocol.rpc :as e.p.rpc]
    [taoensso.timbre :as timbre]))
 
@@ -48,7 +49,7 @@
     (timbre/info "LazyHost component: Stopped")
     (dissoc this :host-channel))
 
-  e.p.host/ILazyHost
+  e.p.lazy-host/ILazyHost
   (set-host! [_ host]
     (reset! host-store host))
 

@@ -6,15 +6,15 @@
    [elin.component.server.vim :as e.c.s.vim]
    [elin.constant.host :as e.c.host]
    [elin.error :as e]
-   [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
+   [elin.protocol.lazy-host :as e.p.lazy-host]
    [taoensso.timbre :as timbre])
   (:import
    java.net.ServerSocket))
 
 (defn on-accept
   [handler lazy-host {:keys [message host]}]
-  (e.p.host/set-host! lazy-host host)
+  (e.p.lazy-host/set-host! lazy-host host)
 
   (if (e.p.h.rpc/response? message)
     ;; Receive response

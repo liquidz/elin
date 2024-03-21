@@ -5,6 +5,7 @@
    [elin.component.interceptor :as e.c.interceptor]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
+   [elin.protocol.lazy-host :as e.p.lazy-host]
    [elin.system :as e.system]
    [elin.test-helper :as h]))
 
@@ -67,7 +68,7 @@
           call-test-handler' (partial call-test-handler handler)
           host (h/test-host {:handler (constantly true)})]
       (try
-        (e.p.host/set-host! lazy-host host)
+        (e.p.lazy-host/set-host! lazy-host host)
 
         (t/testing "Normal handler"
           (let [res (call-test-handler' #'test-handler ["world"])]

@@ -3,8 +3,8 @@
    [clojure.core.async :as async]
    [clojure.test :as t]
    [com.stuartsierra.component :as component]
-   [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
+   [elin.protocol.lazy-host :as e.p.lazy-host]
    [elin.system :as e.system]
    [elin.test-helper :as h]))
 
@@ -19,7 +19,7 @@
                                          "OK")})]
     (try
       (e.p.h.rpc/notify! lazy-host ["before"])
-      (e.p.host/set-host! lazy-host host)
+      (e.p.lazy-host/set-host! lazy-host host)
       (e.p.h.rpc/notify! lazy-host ["after"])
 
       (t/is (= [[2 "after"]] @wrote))
@@ -29,6 +29,8 @@
       (t/is (= 2 (count @wrote)))
       (t/is (= #{[2 "before"] [2 "after"]}
                (set @wrote)))
+
+      ;; TODO 未実装の protocol を呼び出した時のテスト
 
       (finally
         (component/stop-system sys)))))
