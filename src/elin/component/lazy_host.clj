@@ -2,10 +2,18 @@
   (:require
    [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
+   [elin.error :as e]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [taoensso.timbre :as timbre]))
+
+(defmacro ^:private execute [{:keys [host protocol method args queue]}]
+  `(if-let [host# ~host]
+     (if (satisfies? ~protocol host#)
+       (apply ~method host# ~args)
+       (e/unsupported))
+     (async/put! ~queue [~method ~@args])))
 
 (defrecord LazyHost
   [;; PARAMS
@@ -16,23 +24,17 @@
     (let [ch (async/chan)]
       (async/go-loop []
         (if-let [host @host-store]
-          (let [[type & args] (async/<! ch)]
-            (case type
-              ::request! (let [[ch & args] args
-                               res (async/<! (apply e.p.h.rpc/request! host args))]
-                           (async/put! ch res))
-              ::notify! (apply e.p.h.rpc/notify! host args)
-              ::response! (apply e.p.h.rpc/response! host args)
-              ::flush! (e.p.h.rpc/flush! host)
+          (let [[type-or-fn & args] (async/<! ch)]
+            (cond
+              (= ::request! type-or-fn)
+              (let [[ch & args] args
+                    res (async/<! (apply e.p.h.rpc/request! host args))]
+                (async/put! ch res))
 
-              ::call-function (let [[ch & args] args
-                                    res (async/<! (apply e.p.rpc/call-function host args))]
-                                (async/put! ch res))
-              ::notify-function (apply e.p.rpc/notify-function host args)
-              ::echo-text (apply e.p.rpc/echo-text host args)
-              ::echo-message (apply e.p.rpc/echo-message host args)
-              nil)
-            (when type
+              (some? type-or-fn)
+              (apply type-or-fn this args))
+
+            (when type-or-fn
               (recur)))
           (do
             (async/<! (async/timeout 100))
@@ -58,17 +60,49 @@
         (async/put! host-channel [::request! ch content])
         ch)))
   (notify! [_ content]
-    (if-let [host @host-store]
-      (e.p.h.rpc/notify! host content)
-      (async/put! host-channel [::notify! content])))
+    (execute {:host @host-store
+              :protocol e.p.h.rpc/IRpc
+              :method e.p.h.rpc/notify!
+              :args [content]
+              :queue host-channel}))
   (response! [_ id error result]
-    (if-let [host @host-store]
-      (e.p.h.rpc/response! host id error result)
-      (async/put! host-channel [::response! id error result])))
+    (execute {:host @host-store
+              :protocol e.p.h.rpc/IRpc
+              :method e.p.h.rpc/response!
+              :args [id error result]
+              :queue host-channel}))
   (flush! [_]
-    (if-let [host @host-store]
-      (e.p.h.rpc/flush! host)
-      (async/put! host-channel [::flush!])))
+    (execute {:host @host-store
+              :protocol e.p.h.rpc/IRpc
+              :method e.p.h.rpc/flush!
+              :args []
+              :queue host-channel}))
+
+  e.p.host/IEcho
+  (echo-text [_ text]
+    (execute {:host @host-store
+              :protocol e.p.host/IEcho
+              :method e.p.host/echo-text
+              :args [text]
+              :queue host-channel}))
+  (echo-text [_ text highlight]
+    (execute {:host @host-store
+              :protocol e.p.host/IEcho
+              :method e.p.host/echo-text
+              :args [text highlight]
+              :queue host-channel}))
+  (echo-message [_ text]
+    (execute {:host @host-store
+              :protocol e.p.host/IEcho
+              :method e.p.host/echo-message
+              :args [text]
+              :queue host-channel}))
+  (echo-message [_ text highlight]
+    (execute {:host @host-store
+              :protocol e.p.host/IEcho
+              :method e.p.host/echo-message
+              :args [text highlight]
+              :queue host-channel}))
 
   e.p.rpc/IFunction
   (call-function [_ method params]
@@ -80,23 +114,7 @@
   (notify-function [_ method params]
     (if-let [host @host-store]
       (e.p.rpc/notify-function host method params)
-      (async/put! host-channel [::notify-function method params])))
-  (echo-text [_ text]
-    (if-let [host @host-store]
-      (e.p.rpc/echo-text host text)
-      (async/put! host-channel [::echo-text text])))
-  (echo-text [_ text highlight]
-    (if-let [host @host-store]
-      (e.p.rpc/echo-text host text highlight)
-      (async/put! host-channel [::echo-text text highlight])))
-  (echo-message [_ text]
-    (if-let [host @host-store]
-      (e.p.rpc/echo-message host text)
-      (async/put! host-channel [::echo-message text])))
-  (echo-message [_ text highlight]
-    (if-let [host @host-store]
-      (e.p.rpc/echo-message host text highlight)
-      (async/put! host-channel [::echo-message text highlight]))))
+      (async/put! host-channel [::notify-function method params]))))
 
 (defn new-lazy-host
   [_]
