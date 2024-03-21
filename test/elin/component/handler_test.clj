@@ -5,7 +5,6 @@
    [elin.component.interceptor :as e.c.interceptor]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
-   [elin.protocol.rpc :as e.p.rpc]
    [elin.system :as e.system]
    [elin.test-helper :as h]))
 
@@ -31,7 +30,7 @@
 
 (defn- test-handler
   [{:component/keys [host] :keys [message]}]
-  (e.p.rpc/echo-text host (str "Hello " (first (:params message))))
+  (e.p.host/echo-text host (str "Hello " (first (:params message))))
   "OK")
 
 (defn test-global-interceptor-handler

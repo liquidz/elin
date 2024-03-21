@@ -1,14 +1,14 @@
 (ns elin.message
   (:require
    [clojure.string :as str]
-   [elin.protocol.rpc :as e.p.rpc]))
+   [elin.protocol.host :as e.p.host]))
 
 (defn- log*
   [host texts highlight]
   (let [s (->> (map str texts)
                (str/join " "))]
     (try
-      (e.p.rpc/echo-message host s highlight)
+      (e.p.host/echo-message host s highlight)
       (catch Exception _ nil)))
   nil)
 

@@ -1,6 +1,7 @@
 (ns elin.test-helper.host
   (:require
    [clojure.core.async :as async]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.server :as e.s.server]
@@ -31,16 +32,17 @@
   (response! [_this _error _result]
     nil)
 
-  e.p.rpc/IFunction
-  (call-function [this method params]
-    (e.p.h.rpc/request! this ["test_call_function" [method params]]))
-
+  e.p.host/IEcho
   (echo-text [_ text]
     (swap! outputs conj text))
   (echo-message [_ text]
     (swap! outputs conj text))
   (echo-message [_ text _highlight]
-    (swap! outputs conj text)))
+    (swap! outputs conj text))
+
+  e.p.rpc/IFunction
+  (call-function [this method params]
+    (e.p.h.rpc/request! this ["test_call_function" [method params]])))
 
 (defn get-outputs [test-host]
   @(:outputs test-host))
