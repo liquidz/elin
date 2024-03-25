@@ -99,7 +99,7 @@
                                         elin.component.server.impl.io {input!* {:arities {3 {:args [:any
                                                                                                     :string
                                                                                                     :string],
-                                                                                             :ret :string}}}},
+                                                                                             :ret :any}}}},
                                         elin.test-helper.host {test-host {:arities {0 {:args [], :ret :any},
                                                                                     1 {:args [{:op :keys,
                                                                                                :req {:handler :fn}}],
