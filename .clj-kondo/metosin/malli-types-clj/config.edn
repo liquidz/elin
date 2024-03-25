@@ -96,10 +96,10 @@
                                                                                                        :supported-ops :set,
                                                                                                        :initial-namespace :nilable/string,
                                                                                                        :version :map}}}}}},
-                                        elin.component.server.impl.io {input!!* {:arities {3 {:args [:any
-                                                                                                     :string
-                                                                                                     :string],
-                                                                                              :ret :string}}}},
+                                        elin.component.server.impl.io {input!* {:arities {3 {:args [:any
+                                                                                                    :string
+                                                                                                    :string],
+                                                                                             :ret :string}}}},
                                         elin.test-helper.host {test-host {:arities {0 {:args [], :ret :any},
                                                                                     1 {:args [{:op :keys,
                                                                                                :req {:handler :fn}}],
@@ -292,26 +292,26 @@
                                                                                                       :ret :sequential}}}},
                                         elin.function.vim.info-buffer {append {:arities {2 {:args [:any :string],
                                                                                             :ret :nil}}}},
-                                        elin.component.server.impl.file {get-current-working-directory!!* {:arities {:varargs {:args [:any
-                                                                                                                                      {:op :rest,
-                                                                                                                                       :spec :any}],
-                                                                                                                               :ret :any,
-                                                                                                                               :min-arity 1}}},
-                                                                         get-current-file-path!!* {:arities {1 {:args [:any],
-                                                                                                                :ret :any}}},
-                                                                         get-cursor-position!!* {:arities {:varargs {:args [:any
-                                                                                                                            {:op :rest,
-                                                                                                                             :spec :any}],
-                                                                                                                     :ret :any,
-                                                                                                                     :min-arity 1}}},
-                                                                         jump!!* {:arities {:varargs {:args [:any
-                                                                                                             :string
-                                                                                                             :int
-                                                                                                             :int
-                                                                                                             {:op :rest,
-                                                                                                              :spec :any}],
-                                                                                                      :ret :any,
-                                                                                                      :min-arity 4}}}},
+                                        elin.component.server.impl.file {get-current-working-directory!* {:arities {:varargs {:args [:any
+                                                                                                                                     {:op :rest,
+                                                                                                                                      :spec :any}],
+                                                                                                                              :ret :any,
+                                                                                                                              :min-arity 1}}},
+                                                                         get-current-file-path!* {:arities {1 {:args [:any],
+                                                                                                               :ret :any}}},
+                                                                         get-cursor-position!* {:arities {:varargs {:args [:any
+                                                                                                                           {:op :rest,
+                                                                                                                            :spec :any}],
+                                                                                                                    :ret :any,
+                                                                                                                    :min-arity 1}}},
+                                                                         jump!* {:arities {:varargs {:args [:any
+                                                                                                            :string
+                                                                                                            :int
+                                                                                                            :int
+                                                                                                            {:op :rest,
+                                                                                                             :spec :any}],
+                                                                                                     :ret :any,
+                                                                                                     :min-arity 4}}}},
                                         elin.function.core.namespace {resolve-missing-namespace {:arities {3 {:args [{:op :keys,
                                                                                                                       :req {:message {:op :keys,
                                                                                                                                       :req {:host :string,
