@@ -23,7 +23,7 @@
   (e.c.s.function/request! host "expand" ["%:p"]))
 
 (m/=> get-cursor-position!* [:=> [:cat e.s.server/?Host [:* any?]] (e.schema/error-or e.s.host/?Position)])
-(defn get-cursor-position!*
+(defn- get-cursor-position!*
   [host & extra-params]
   (async/go
     (e/let [params (or extra-params [])
