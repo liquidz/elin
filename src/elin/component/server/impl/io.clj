@@ -7,14 +7,14 @@
    [elin.schema.server :as e.s.server]
    [malli.core :as m]))
 
-(m/=> input!!* [:=> [:cat e.s.server/?Host string? string?] string?])
-(defn- input!!*
+(m/=> input!* [:=> [:cat e.s.server/?Host string? string?] string?])
+(defn- input!*
   [host prompt default]
-  (e.c.s.function/request!! host "input" [prompt default]))
+  (e.c.s.function/request! host "input" [prompt default]))
 
 (extend-protocol e.p.host/IIo
   elin.component.server.vim.VimHost
-  (input!! [this prompt default] (input!!* this prompt default))
+  (input! [this prompt default] (input!* this prompt default))
 
   elin.component.server.nvim.NvimHost
-  (input!! [this prompt default] (input!!* this prompt default)))
+  (input! [this prompt default] (input!* this prompt default)))

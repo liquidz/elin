@@ -1,5 +1,6 @@
 (ns elin.handler.namespace
   (:require
+   [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.error :as e]
    [elin.function.core.namespace :as e.f.c.namespace]
@@ -26,9 +27,9 @@
                      (or (e/not-found)))
           default-alias-sym (or (get favorites ns-sym)
                                 (e.f.c.namespace/most-used-namespace-alias elin ns-sym))
-          alias-str (e.p.host/input!! host
-                                      (format "Alias for '%s': " ns-sym)
-                                      (str default-alias-sym))
+          alias-str (async/<!! (e.p.host/input! host
+                                                (format "Alias for '%s': " ns-sym)
+                                                (str default-alias-sym)))
           alias-sym (when (seq alias-str)
                       (symbol alias-str))
           ns-form (e.f.v.sexp/get-namespace-form!! host)]

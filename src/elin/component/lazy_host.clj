@@ -138,10 +138,10 @@
               :queue host-channel}))
 
   e.p.host/IIo
-  (input!! [_ prompt default]
+  (input! [_ prompt default]
     (execute {:host @host-store
               :protocol e.p.host/IIo
-              :method e.p.host/input!!
+              :method e.p.host/input!
               :args [prompt default]
               :queue host-channel}))
 

@@ -1,11 +1,13 @@
-(ns elin.protocol.host)
+(ns elin.protocol.host
+  "Request functions should be suffixed with `!` and return a core.async channel.
+  Notify functions should not be suffixed with `!`.")
 
 (defprotocol IEcho
   (echo-text [this text] [this text highlight])
   (echo-message [this text] [this text highlight]))
 
 (defprotocol IIo
-  (input!! [this prompt default]))
+  (input! [this prompt default]))
 
 (defprotocol IFile
   (get-current-working-directory!! [this])
