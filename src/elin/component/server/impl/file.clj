@@ -7,11 +7,10 @@
    [elin.error :as e]
    [elin.protocol.host :as e.p.host]
    [elin.schema :as e.schema]
-   [elin.schema.host :as e.s.host]
    [elin.schema.server :as e.s.server]
    [malli.core :as m]))
 
-(m/=> get-current-working-directory!* [:=> [:cat e.s.server/?Host [:* any?]] (e.schema/error-or string?)])
+(m/=> get-current-working-directory!* [:=> [:cat e.s.server/?Host [:* any?]] e.schema/?ManyToManyChannel])
 (defn- get-current-working-directory!*
   [host & extra-params]
   (let [params (or extra-params [])]
@@ -22,7 +21,7 @@
   [host]
   (e.c.s.function/request! host "expand" ["%:p"]))
 
-(m/=> get-cursor-position!* [:=> [:cat e.s.server/?Host [:* any?]] (e.schema/error-or e.s.host/?Position)])
+(m/=> get-cursor-position!* [:=> [:cat e.s.server/?Host [:* any?]] e.schema/?ManyToManyChannel])
 (defn- get-cursor-position!*
   [host & extra-params]
   (async/go
@@ -34,7 +33,7 @@
        :off off
        :curswant curswant})))
 
-(m/=> jump!* [:=> [:cat e.s.server/?Host string? int? int? [:* any?]] [:maybe e.schema/?Error]])
+(m/=> jump!* [:=> [:cat e.s.server/?Host string? int? int? [:* any?]] e.schema/?ManyToManyChannel])
 (defn- jump!*
   [host path lnum col & [jump-command]]
   (async/go

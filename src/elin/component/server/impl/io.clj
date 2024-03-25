@@ -4,10 +4,11 @@
    [elin.component.server.nvim]
    [elin.component.server.vim]
    [elin.protocol.host :as e.p.host]
+   [elin.schema :as e.schema]
    [elin.schema.server :as e.s.server]
    [malli.core :as m]))
 
-(m/=> input!* [:=> [:cat e.s.server/?Host string? string?] string?])
+(m/=> input!* [:=> [:cat e.s.server/?Host string? string?] e.schema/?ManyToManyChannel])
 (defn- input!*
   [host prompt default]
   (e.c.s.function/request! host "input" [prompt default]))
