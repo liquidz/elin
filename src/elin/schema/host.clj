@@ -1,4 +1,4 @@
-(ns elin.schema.vim)
+(ns elin.schema.host)
 
 (def ?Position
   [:map
