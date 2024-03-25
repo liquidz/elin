@@ -2,6 +2,7 @@
   (:require
    [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
+   [elin.component.server.impl.function]
    [elin.component.server.nvim :as e.c.s.nvim]
    [elin.component.server.vim :as e.c.s.vim]
    [elin.constant.host :as e.c.host]

@@ -1,0 +1,57 @@
+(ns elin.component.server.impl.function
+  (:require
+   [clojure.core.async :as async]
+   [elin.component.server.nvim]
+   [elin.component.server.vim]
+   [elin.error :as e]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
+   [elin.schema :as e.schema]
+   [elin.schema.server :as e.s.server]
+   [elin.util.id :as e.u.id]
+   [elin.util.server :as e.u.server]
+   [malli.core :as m]))
+
+(defprotocol IFunction
+  (request-function [this method params])
+  (notify-function [this method params]))
+
+(extend-protocol IFunction
+  elin.component.server.vim.VimHost
+  (request-function [this method params]
+    (e.p.h.rpc/request! this ["call" method params (e.u.id/next-id)]))
+
+  (notify-function [this method params]
+    (e.p.h.rpc/notify! this ["call" method params]))
+
+  elin.component.server.nvim.NvimHost
+  (request-function [this method params]
+    (e.p.h.rpc/request! this ["nvim_call_function" [method params]]))
+
+  (notify-function [this method params]
+    (e.p.h.rpc/notify! this ["nvim_call_function" [method params]])))
+
+(m/=> request! [:=>
+                [:cat e.s.server/?Host string? [:sequential any?]]
+                e.schema/?ManyToManyChannel])
+(defn request!
+  [host fn-name params]
+  (async/go
+    (let [{:keys [result error]} (->> (e.u.server/format params)
+                                      (request-function host fn-name)
+                                      (async/<!))]
+      (if error
+        (e/fault {:message (str "Failed to call function: " error)
+                  :function fn-name
+                  :params params})
+        result))))
+
+(m/=> notify [:=> [:cat e.s.server/?Host string? [:sequential any?]] :nil])
+(defn notify
+  [host fn-name params]
+  (->> (map e.u.server/format params)
+       (notify-function host fn-name))
+  nil)
+
+(m/=> request!! [:=> [:cat e.s.server/?Host string? [:sequential any?]] any?])
+(defn request!! [host function-name params]
+  (async/<!! (request! host function-name params)))
