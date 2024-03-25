@@ -5,7 +5,6 @@
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema :as e.schema]
    [elin.schema.server :as e.s.server]
-   [elin.schema.vim :as e.s.vim]
    [elin.util.server :as e.u.server]
    [malli.core :as m]))
 
@@ -39,17 +38,6 @@
 (m/=> call!! [:=> [:cat e.s.server/?Host string? [:sequential any?]] any?])
 (defn call!! [host function-name params]
   (async/<!! (call host function-name params)))
-
-(m/=> get-cursor-position!! [:=> [:cat e.s.server/?Host [:* any?]] (e.schema/error-or e.s.vim/?Position)])
-(defn get-cursor-position!!
-  [host & extra-params]
-  (e/let [params (or extra-params [])
-          [bufnum lnum col off curswant] (async/<!! (call host "getcurpos" params))]
-    {:bufname bufnum
-     :lnum lnum
-     :col col
-     :off off
-     :curswant curswant}))
 
 (m/=> eval!! [:=> [:cat e.s.server/?Host string?] any?])
 (defn eval!!

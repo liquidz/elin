@@ -158,6 +158,12 @@
               :method e.p.host/get-current-file-path!!
               :args []
               :queue host-channel}))
+  (get-cursor-position!! [_]
+    (execute {:host @host-store
+              :protocol e.p.host/IFile
+              :method e.p.host/get-cursor-position!!
+              :args []
+              :queue host-channel}))
   (jump!! [_ path lnum col]
     (execute {:host @host-store
               :protocol e.p.host/IFile

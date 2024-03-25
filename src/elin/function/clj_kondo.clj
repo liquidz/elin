@@ -189,7 +189,7 @@
     (first (namespace-usages (elin.dev/$ :clj-kondo))))
 
   (let [ns-str "elin.handler.lookup"
-        sym-str "e.f.vim/get-cursor-position!!"
+        sym-str "e.p.host/get-cursor-position!!"
         sym-str "generate-cljdocc"]
       (clojure.pprint/pprint
         (lookup clj-kondo ns-str sym-str))))

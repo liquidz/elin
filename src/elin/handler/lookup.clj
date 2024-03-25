@@ -4,9 +4,9 @@
    [elin.constant.lookup :as e.c.lookup]
    [elin.error :as e]
    [elin.function.core :as e.f.core]
-   [elin.function.vim :as e.f.vim]
    [elin.function.vim.popup :as e.f.v.popup]
    [elin.function.vim.sexp :as e.f.v.sexp]
+   [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
    [elin.util.sexp :as e.u.sexp]
    [malli.core :as m]))
@@ -103,7 +103,7 @@
 (m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
   [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+  (e/let [{:keys [lnum col]} (e.p.host/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
           resp (e.f.core/lookup!! elin ns-str code)]
@@ -117,7 +117,7 @@
 
 (defn show-source
   [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+  (e/let [{:keys [lnum col]} (e.p.host/get-cursor-position!! host)
           ns-str (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
           resp (e.f.core/lookup!! elin ns-str code)

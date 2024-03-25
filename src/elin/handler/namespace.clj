@@ -66,7 +66,7 @@
 (defn resolve-missing-namespace
   [{:as elin :component/keys [handler host]}]
   (e/let [favorites (get-in handler [:config-map (symbol #'resolve-missing-namespace) :favorites])
-          {:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+          {:keys [lnum col]} (e.p.host/get-cursor-position!! host)
           ;; ns-str (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
           [alias-str var-str] (str/split code #"/" 2)

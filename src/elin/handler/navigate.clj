@@ -13,7 +13,7 @@
 (m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
 (defn jump-to-definition
   [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (e.f.vim/get-cursor-position!! host)
+  (e/let [{:keys [lnum col]} (e.p.host/get-cursor-position!! host)
           ns (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
           {:keys [file line column]} (e.f.core/lookup!! elin ns code)]
