@@ -48,12 +48,14 @@
   (get-current-working-directory! [this] (get-current-working-directory!* this))
   (get-current-file-path! [this] (get-current-file-path!* this))
   (get-cursor-position! [this] (get-cursor-position!* this))
-  (jump! [this path lnum col] (jump!* this path lnum col))
-  (jump! [this path lnum col jump-command] (jump!* this path lnum col jump-command))
+  (jump!
+    ([this path lnum col] (jump!* this path lnum col))
+    ([this path lnum col jump-command] (jump!* this path lnum col jump-command)))
 
   elin.component.server.nvim.NvimHost
   (get-current-working-directory! [this] (get-current-working-directory!* this))
   (get-current-file-path! [this] (get-current-file-path!* this))
   (get-cursor-position! [this] (get-cursor-position!* this))
-  (jump! [this path lnum col] (jump!* this path lnum col))
-  (jump! [this path lnum col jump-command] (jump!* this path lnum col jump-command)))
+  (jump!
+    ([this path lnum col] (jump!* this path lnum col))
+    ([this path lnum col jump-command] (jump!* this path lnum col jump-command))))
