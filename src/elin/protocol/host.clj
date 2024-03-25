@@ -18,6 +18,6 @@
 (defprotocol ISign
   (place-sign [this m])
   (unplace-signs-by [this m])
-  (list-current-signs!! [this])
-  (list-all-signs!! [this])
+  (list-current-signs! [this])
+  (list-all-signs! [this])
   (refresh-signs [this]))

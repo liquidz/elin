@@ -118,16 +118,16 @@
               :method e.p.host/unplace-signs-by
               :args [m]
               :queue host-channel}))
-  (list-current-signs!! [_]
+  (list-current-signs! [_]
     (execute {:host @host-store
               :protocol e.p.host/ISign
-              :method e.p.host/list-current-signs!!
+              :method e.p.host/list-current-signs!
               :args []
               :queue host-channel}))
-  (list-all-signs!! [_]
+  (list-all-signs! [_]
     (execute {:host @host-store
               :protocol e.p.host/ISign
-              :method e.p.host/list-all-signs!!
+              :method e.p.host/list-all-signs!
               :args []
               :queue host-channel}))
   (refresh-signs [_]
