@@ -137,6 +137,14 @@
               :args []
               :queue host-channel}))
 
+  e.p.host/IIo
+  (input!! [_ prompt default]
+    (execute {:host @host-store
+              :protocol e.p.host/IIo
+              :method e.p.host/input!!
+              :args [prompt default]
+              :queue host-channel}))
+
   e.p.rpc/IFunction
   (call-function [_ method params]
     (if-let [host @host-store]

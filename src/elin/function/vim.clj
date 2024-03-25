@@ -105,8 +105,3 @@
   [host var-name value]
   (async/<!! (set-variable! host var-name value))
   nil)
-
-(m/=> input!! [:=> [:cat e.s.server/?Host string? string?] string?])
-(defn input!!
-  [host prompt default]
-  (call!! host "input" [prompt default]))

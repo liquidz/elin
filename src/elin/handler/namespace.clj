@@ -7,6 +7,7 @@
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.message :as e.message]
+   [elin.protocol.host :as e.p.host]
    [elin.util.sexp :as e.u.sexp]))
 
 (defn- has-namespace?
@@ -25,9 +26,9 @@
                      (or (e/not-found)))
           default-alias-sym (or (get favorites ns-sym)
                                 (e.f.c.namespace/most-used-namespace-alias elin ns-sym))
-          alias-str (e.f.vim/input!! host
-                                     (format "Alias for '%s': " ns-sym)
-                                     (str default-alias-sym))
+          alias-str (e.p.host/input!! host
+                                      (format "Alias for '%s': " ns-sym)
+                                      (str default-alias-sym))
           alias-sym (when (seq alias-str)
                       (symbol alias-str))
           ns-form (e.f.v.sexp/get-namespace-form!! host)]
