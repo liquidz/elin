@@ -8,6 +8,7 @@
    [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
    [exoscale.interceptor :as ix]))
 
@@ -62,7 +63,7 @@
   {:name ::skelton-interceptor
    :kind e.c.interceptor/autocmd
    :enter (-> (fn [{:component/keys [host]}]
-                (e/let [path (e.f.vim/get-current-file-path!! host)
+                (e/let [path (e.p.host/get-current-file-path!! host)
                         ns-str (or (e.f.n.namespace/guess-namespace-from-path path)
                                    ;; TODO fallback to another process
                                    (e/fault))

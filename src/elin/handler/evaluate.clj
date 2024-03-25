@@ -4,7 +4,7 @@
    [elin.error :as e]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.vim :as e.f.n.vim]
-   [elin.function.vim :as e.f.vim]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.handler :as e.s.handler]
    [elin.util.map :as e.u.map]
@@ -70,6 +70,6 @@
 (m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
 (defn load-current-file
   [{:component/keys [nrepl host]}]
-  (e/let [path (e.f.vim/get-current-file-path!! host)]
+  (e/let [path (e.p.host/get-current-file-path!! host)]
     (e.f.nrepl/load-file!! nrepl path)
     true))

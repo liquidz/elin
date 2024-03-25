@@ -145,6 +145,32 @@
               :args [prompt default]
               :queue host-channel}))
 
+  e.p.host/IFile
+  (get-current-working-directory!! [_]
+    (execute {:host @host-store
+              :protocol e.p.host/IFile
+              :method e.p.host/get-current-working-directory!!
+              :args []
+              :queue host-channel}))
+  (get-current-file-path!! [_]
+    (execute {:host @host-store
+              :protocol e.p.host/IFile
+              :method e.p.host/get-current-file-path!!
+              :args []
+              :queue host-channel}))
+  (jump!! [_ path lnum col]
+    (execute {:host @host-store
+              :protocol e.p.host/IFile
+              :method e.p.host/jump!!
+              :args [path lnum col]
+              :queue host-channel}))
+  (jump!! [_ path lnum col jump-command]
+    (execute {:host @host-store
+              :protocol e.p.host/IFile
+              :method e.p.host/jump!!
+              :args [path lnum col jump-command]
+              :queue host-channel}))
+
   e.p.rpc/IFunction
   (call-function [_ method params]
     (if-let [host @host-store]

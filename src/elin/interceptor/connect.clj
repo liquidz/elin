@@ -2,7 +2,7 @@
   (:require
    [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.function.vim :as e.f.vim]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.util.file :as e.u.file]
    [elin.util.map :as e.u.map]
@@ -15,7 +15,7 @@
             (if (and hostname port)
               ctx
               (let [;; TODO error handling
-                    cwd (e.f.vim/get-current-working-directory!! host)
+                    cwd (e.p.host/get-current-working-directory!! host)
                     nrepl-port-file (e.u.file/find-file-in-parent-directories cwd ".nrepl-port")
                     hostname' (or hostname "localhost")
                     port' (some-> nrepl-port-file

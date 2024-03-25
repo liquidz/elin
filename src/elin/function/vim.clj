@@ -40,17 +40,6 @@
 (defn call!! [host function-name params]
   (async/<!! (call host function-name params)))
 
-(m/=> get-current-working-directory!! [:=> [:cat e.s.server/?Host [:* any?]] (e.schema/error-or string?)])
-(defn get-current-working-directory!!
-  [host & extra-params]
-  (let [params (or extra-params [])]
-    (async/<!! (call host "getcwd" params))))
-
-(m/=> get-current-file-path!! [:=> [:cat e.s.server/?Host] (e.schema/error-or string?)])
-(defn get-current-file-path!!
-  [host]
-  (async/<!! (call host "expand" ["%:p"])))
-
 (m/=> get-cursor-position!! [:=> [:cat e.s.server/?Host [:* any?]] (e.schema/error-or e.s.vim/?Position)])
 (defn get-cursor-position!!
   [host & extra-params]
@@ -61,14 +50,6 @@
      :col col
      :off off
      :curswant curswant}))
-
-(m/=> jump!! [:=> [:cat e.s.server/?Host string? int? int? [:* any?]] [:maybe e.schema/?Error]])
-(defn jump!!
-  [host path lnum col & [jump-command]]
-  (let [jump-command (or jump-command "edit")
-        res (async/<!! (call host "elin#internal#jump" [path lnum col jump-command]))]
-    (when (e/error? res)
-      res)))
 
 (m/=> eval!! [:=> [:cat e.s.server/?Host string?] any?])
 (defn eval!!

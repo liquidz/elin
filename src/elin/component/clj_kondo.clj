@@ -7,14 +7,14 @@
    [clojure.string :as str]
    [com.stuartsierra.component :as component]
    [elin.error :as e]
-   [elin.function.vim :as e.f.vim]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
+   [elin.protocol.host :as e.p.host]
    [elin.util.file :as e.u.file]
    [taoensso.timbre :as timbre]))
 
 (defn- get-project-root-directory
   [host]
-  (e/let [cwd (e.f.vim/get-current-working-directory!! host)
+  (e/let [cwd (e.p.host/get-current-working-directory!! host)
           root (or (e.u.file/get-project-root-directory cwd)
                    (e/not-found))]
     (.getAbsolutePath root)))
