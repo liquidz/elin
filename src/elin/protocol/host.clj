@@ -7,6 +7,11 @@
 (defprotocol IIo
   (input!! [this prompt default]))
 
+(defprotocol IFile
+  (get-current-working-directory!! [this])
+  (get-current-file-path!! [this])
+  (jump!! [this path lnum col] [this path lnum col jump-command]))
+
 (defprotocol ISign
   (place-sign [this m])
   (unplace-signs-by [this m])
