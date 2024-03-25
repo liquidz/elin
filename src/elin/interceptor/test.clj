@@ -4,8 +4,8 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.nrepl.cider.test :as e.f.n.c.test]
    [elin.function.vim.info-buffer :as e.f.v.info-buffer]
-   [elin.function.vim.sign :as e.f.v.sign]
    [elin.message :as e.message]
+   [elin.protocol.host :as e.p.host]
    [elin.util.map :as e.u.map]
    [exoscale.interceptor :as ix]))
 
@@ -21,15 +21,15 @@
                   ;; unsign
                   (if (seq passed)
                     (doseq [var-str (distinct (map :var passed))]
-                      (e.f.v.sign/unplace-by host {:name sign-name :group var-str}))
-                    (e.f.v.sign/unplace-by host {:name sign-name :group "*"}))
+                      (e.p.host/unplace-signs-by host {:name sign-name :group var-str}))
+                    (e.p.host/unplace-signs-by host {:name sign-name :group "*"}))
                   ;; sign
                   (doseq [{:as result :keys [lnum]} failed
                           :when lnum]
-                    (e.f.v.sign/place host {:name sign-name
-                                            :lnum lnum
-                                            :file (:filename result)
-                                            :group (:var result)}))
+                    (e.p.host/place-sign host {:name sign-name
+                                               :lnum lnum
+                                               :file (:filename result)
+                                               :group (:var result)}))
                   ;; append results to info buffer
                   (->> failed
                        (mapcat (fn [{:as failed-result :keys [text lnum expected actual]}]

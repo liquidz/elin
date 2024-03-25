@@ -105,6 +105,38 @@
               :args [text highlight]
               :queue host-channel}))
 
+  e.p.host/ISign
+  (place-sign [_ m]
+    (execute {:host @host-store
+              :protocol e.p.host/ISign
+              :method e.p.host/place-sign
+              :args [m]
+              :queue host-channel}))
+  (unplace-signs-by [_ m]
+    (execute {:host @host-store
+              :protocol e.p.host/ISign
+              :method e.p.host/unplace-signs-by
+              :args [m]
+              :queue host-channel}))
+  (list-current-signs!! [_]
+    (execute {:host @host-store
+              :protocol e.p.host/ISign
+              :method e.p.host/list-current-signs!!
+              :args []
+              :queue host-channel}))
+  (list-all-signs!! [_]
+    (execute {:host @host-store
+              :protocol e.p.host/ISign
+              :method e.p.host/list-all-signs!!
+              :args []
+              :queue host-channel}))
+  (refresh-signs [_]
+    (execute {:host @host-store
+              :protocol e.p.host/ISign
+              :method e.p.host/refresh-signs
+              :args []
+              :queue host-channel}))
+
   e.p.rpc/IFunction
   (call-function [_ method params]
     (if-let [host @host-store]
