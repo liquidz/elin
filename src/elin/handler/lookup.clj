@@ -1,5 +1,6 @@
 (ns elin.handler.lookup
   (:require
+   [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.constant.lookup :as e.c.lookup]
    [elin.error :as e]
@@ -103,7 +104,7 @@
 (m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
   [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (e.p.host/get-cursor-position!! host)
+  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
           resp (e.f.core/lookup!! elin ns-str code)]
@@ -117,7 +118,7 @@
 
 (defn show-source
   [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (e.p.host/get-cursor-position!! host)
+  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
           resp (e.f.core/lookup!! elin ns-str code)

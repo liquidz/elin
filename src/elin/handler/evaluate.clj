@@ -1,5 +1,6 @@
 (ns elin.handler.evaluate
   (:require
+   [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
    [elin.function.nrepl :as e.f.nrepl]
@@ -70,6 +71,6 @@
 (m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
 (defn load-current-file
   [{:component/keys [nrepl host]}]
-  (e/let [path (e.p.host/get-current-file-path!! host)]
+  (e/let [path (async/<!! (e.p.host/get-current-file-path! host))]
     (e.f.nrepl/load-file!! nrepl path)
     true))

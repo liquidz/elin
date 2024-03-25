@@ -1,5 +1,6 @@
 (ns elin.handler.navigate
   (:require
+   [clojure.core.async :as async]
    [elin.error :as e]
    [elin.function.core :as e.f.core]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
@@ -13,18 +14,18 @@
 (m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
 (defn jump-to-definition
   [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (e.p.host/get-cursor-position!! host)
+  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns (e.f.v.sexp/get-namespace!! host)
           {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
           {:keys [file line column]} (e.f.core/lookup!! elin ns code)]
     (when (and file line)
-      (e.p.host/jump!! host file line (or column 1)))
+      (async/<!! (e.p.host/jump! host file line (or column 1))))
     true))
 
 (m/=> cycle-source-and-test [:=> [:cat e.s.handler/?Elin] any?])
 (defn cycle-source-and-test
   [{:component/keys [host]}]
-  (let [ns-path (e.p.host/get-current-file-path!! host)
+  (let [ns-path (async/<!! (e.p.host/get-current-file-path! host))
         ns-str (e.f.v.sexp/get-namespace!! host)
         file-sep (e.u.file/guess-file-separator ns-path)
         cycled-path (e.f.n.namespace/get-cycled-namespace-path

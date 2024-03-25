@@ -15,7 +15,7 @@
             (if (and hostname port)
               ctx
               (let [;; TODO error handling
-                    cwd (e.p.host/get-current-working-directory!! host)
+                    cwd (async/<!! (e.p.host/get-current-working-directory! host))
                     nrepl-port-file (e.u.file/find-file-in-parent-directories cwd ".nrepl-port")
                     hostname' (or hostname "localhost")
                     port' (some-> nrepl-port-file

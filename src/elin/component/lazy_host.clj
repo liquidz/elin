@@ -146,34 +146,34 @@
               :queue host-channel}))
 
   e.p.host/IFile
-  (get-current-working-directory!! [_]
+  (get-current-working-directory! [_]
     (execute {:host @host-store
               :protocol e.p.host/IFile
-              :method e.p.host/get-current-working-directory!!
+              :method e.p.host/get-current-working-directory!
               :args []
               :queue host-channel}))
-  (get-current-file-path!! [_]
+  (get-current-file-path! [_]
     (execute {:host @host-store
               :protocol e.p.host/IFile
-              :method e.p.host/get-current-file-path!!
+              :method e.p.host/get-current-file-path!
               :args []
               :queue host-channel}))
-  (get-cursor-position!! [_]
+  (get-cursor-position! [_]
     (execute {:host @host-store
               :protocol e.p.host/IFile
-              :method e.p.host/get-cursor-position!!
+              :method e.p.host/get-cursor-position!
               :args []
               :queue host-channel}))
-  (jump!! [_ path lnum col]
+  (jump! [_ path lnum col]
     (execute {:host @host-store
               :protocol e.p.host/IFile
-              :method e.p.host/jump!!
+              :method e.p.host/jump!
               :args [path lnum col]
               :queue host-channel}))
-  (jump!! [_ path lnum col jump-command]
+  (jump! [_ path lnum col jump-command]
     (execute {:host @host-store
               :protocol e.p.host/IFile
-              :method e.p.host/jump!!
+              :method e.p.host/jump!
               :args [path lnum col jump-command]
               :queue host-channel}))
 

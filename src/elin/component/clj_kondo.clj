@@ -14,7 +14,7 @@
 
 (defn- get-project-root-directory
   [host]
-  (e/let [cwd (e.p.host/get-current-working-directory!! host)
+  (e/let [cwd (async/<!! (e.p.host/get-current-working-directory! host))
           root (or (e.u.file/get-project-root-directory cwd)
                    (e/not-found))]
     (.getAbsolutePath root)))

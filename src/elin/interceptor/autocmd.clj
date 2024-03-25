@@ -1,5 +1,6 @@
 (ns elin.interceptor.autocmd
   (:require
+   [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
@@ -63,7 +64,7 @@
   {:name ::skelton-interceptor
    :kind e.c.interceptor/autocmd
    :enter (-> (fn [{:component/keys [host]}]
-                (e/let [path (e.p.host/get-current-file-path!! host)
+                (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
                         ns-str (or (e.f.n.namespace/guess-namespace-from-path path)
                                    ;; TODO fallback to another process
                                    (e/fault))
