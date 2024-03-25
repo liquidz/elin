@@ -5,7 +5,7 @@
         com.stuartsierra/component {:mvn/version "1.1.0"}
         dev.weavejester/medley {:mvn/version "1.7.0"}
         exoscale/interceptor {:mvn/version "0.1.16"}
-        metosin/malli {:mvn/version "0.14.0"}
+        metosin/malli {:mvn/version "0.15.0"}
         rewrite-clj/rewrite-clj {:mvn/version "1.1.47"}}
 
  :__elin_internal__
