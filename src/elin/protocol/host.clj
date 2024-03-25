@@ -10,6 +10,7 @@
 (defprotocol IFile
   (get-current-working-directory!! [this])
   (get-current-file-path!! [this])
+  (get-cursor-position!! [this])
   (jump!! [this path lnum col] [this path lnum col jump-command]))
 
 (defprotocol ISign
