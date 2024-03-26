@@ -47,3 +47,16 @@
 (def test-nrepl-client #'h.nrepl/test-nrepl-client)
 (def test-nrepl #'h.nrepl/test-nrepl)
 (def test-clj-kondo #'h.clj-kondo/test-clj-kondo)
+
+(defn test-elin
+  ([]
+   (test-elin {}))
+  ([option]
+   {:component/nrepl (when-let [opt (:nrepl option)]
+                       (test-nrepl opt))
+    :component/interceptor nil
+    :component/host (test-host (:host option))
+    :component/session-storage nil
+    :component/clj-kondo (when (:clj-kondo option)
+                           (test-clj-kondo))
+    :message {:host "test" :message []}}))
