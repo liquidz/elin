@@ -3,7 +3,6 @@
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.nrepl.cider.test :as e.f.n.c.test]
-   [elin.function.vim.info-buffer :as e.f.v.info-buffer]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
    [elin.util.map :as e.u.map]
@@ -41,13 +40,13 @@
                                       actual)
                                     ""])))
                        (str/join "\n")
-                       (e.f.v.info-buffer/append host))
+                       (e.p.host/append-to-info-buffer host))
                   ;; TODO quickfix
                   ;; call iced#qf#set(errors)
                   (comment nil)
 
                   ;; show summary
-                  (e.f.v.info-buffer/append host summary)
+                  (e.p.host/append-to-info-buffer host summary)
                   (if succeeded?
                     (e.message/info host summary)
                     (e.message/error host summary))))
