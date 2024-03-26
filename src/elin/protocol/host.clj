@@ -26,6 +26,13 @@
   (list-all-signs! [this])
   (refresh-signs [this]))
 
+(defprotocol ISexpr
+  (get-top-list-sexpr! [this lnum col])
+  (get-list-sexpr! [this lnum col])
+  (get-single-sexpr! [this lnum col])
+  (get-namespace-form! [this])
+  (replace-namespace-form! [this new-ns-form]))
+
 (defprotocol ISelector
   (select-from-candidates
     [this candidates callback-handler-symbol]

@@ -197,6 +197,39 @@
               :queue host-channel}))
   ;; }}}
 
+  e.p.host/ISexpr ; {{{
+  (get-top-list-sexpr! [_ lnum col]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/get-top-list-sexpr!
+              :args [lnum col]
+              :queue host-channel}))
+  (get-list-sexpr! [_ lnum col]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/get-list-sexpr!
+              :args [lnum col]
+              :queue host-channel}))
+  (get-single-sexpr! [_ lnum col]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/get-single-sexpr!
+              :args [lnum col]
+              :queue host-channel}))
+  (get-namespace-form! [_]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/get-namespace-form!
+              :args []
+              :queue host-channel}))
+  (replace-namespace-form! [_ new-ns-form]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/replace-namespace-form!
+              :args [new-ns-form]
+              :queue host-channel}))
+  ;; }}}
+
   e.p.host/ISelector
   (select-from-candidates [_ candidates callback-handler-symbol]
     (execute {:host @host-store
