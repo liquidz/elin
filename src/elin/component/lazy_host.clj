@@ -230,6 +230,39 @@
               :queue host-channel}))
   ;; }}}
 
+  e.p.host/IPopup ; {{{
+  (open-popup! [_ s]
+    (execute {:host @host-store
+              :protocol e.p.host/IPopup
+              :method e.p.host/open-popup!
+              :args [s]
+              :queue host-channel}))
+  (open-popup! [_ s options]
+    (execute {:host @host-store
+              :protocol e.p.host/IPopup
+              :method e.p.host/open-popup!
+              :args [s options]
+              :queue host-channel}))
+  (move-popup [_ popup-id lnum col]
+    (execute {:host @host-store
+              :protocol e.p.host/IPopup
+              :method e.p.host/move-popup
+              :args [popup-id lnum col]
+              :queue host-channel}))
+  (set-popup-text [_ popup-id s]
+    (execute {:host @host-store
+              :protocol e.p.host/IPopup
+              :method e.p.host/set-popup-text
+              :args [popup-id s]
+              :queue host-channel}))
+  (close-popup [_ popup-id]
+    (execute {:host @host-store
+              :protocol e.p.host/IPopup
+              :method e.p.host/close-popup
+              :args [popup-id]
+              :queue host-channel}))
+  ;; }}}
+
   e.p.host/ISelector
   (select-from-candidates [_ candidates callback-handler-symbol]
     (execute {:host @host-store

@@ -5,6 +5,7 @@
    [elin.component.server.impl.file]
    [elin.component.server.impl.function]
    [elin.component.server.impl.io]
+   [elin.component.server.impl.popup]
    [elin.component.server.impl.select]
    [elin.component.server.impl.sexpr]
    [elin.component.server.impl.sign]

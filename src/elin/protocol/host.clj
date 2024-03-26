@@ -33,6 +33,12 @@
   (get-namespace-form! [this])
   (replace-namespace-form! [this new-ns-form]))
 
+(defprotocol IPopup
+  (open-popup! [this s] [this s options])
+  (move-popup [this popup-id lnum col])
+  (set-popup-text [this popup-id s])
+  (close-popup [this popup-id]))
+
 (defprotocol ISelector
   (select-from-candidates
     [this candidates callback-handler-symbol]
