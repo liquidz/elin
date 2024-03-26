@@ -43,6 +43,9 @@
   (set-virtual-text [this text] [this text options])
   (clear-all-virtual-texts [this]))
 
+(defprotocol IInfoBuffer
+  (append-to-info-buffer [this text]))
+
 (defprotocol ISelector
   (select-from-candidates
     [this candidates callback-handler-symbol]

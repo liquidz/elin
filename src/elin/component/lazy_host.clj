@@ -284,6 +284,15 @@
               :queue host-channel}))
   ;; }}}
 
+  e.p.host/IInfoBuffer ; {{{
+  (append-to-info-buffer [_ text]
+    (execute {:host @host-store
+              :protocol e.p.host/IInfoBuffer
+              :method e.p.host/append-to-info-buffer
+              :args [text]
+              :queue host-channel}))
+  ;; }}}
+
   e.p.host/ISelector
   (select-from-candidates [_ candidates callback-handler-symbol]
     (execute {:host @host-store
