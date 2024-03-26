@@ -5,10 +5,6 @@
    [elin.util.server :as e.u.server]
    [malli.core :as m]))
 
-(def ?TestMessageOption
-  [:map
-   [:handler [:=> [:cat [:sequential any?]] any?]]])
-
 (defrecord TestMessage
   [host message]
   e.p.h.rpc/IRpcMessage

@@ -5,7 +5,6 @@
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.server :as e.s.server]
-   [elin.test-helper.message :as h.message]
    [elin.util.id :as e.u.id]
    [malli.core :as m]))
 
@@ -29,8 +28,8 @@
       (handler (concat [2] content))
       nil))
 
-  (response! [_this _error _result]
-    nil)
+  (response! [_this _error _result] nil)
+  (flush! [_] nil)
 
   e.p.host/IEcho
   (echo-text [_ text]
@@ -39,6 +38,17 @@
     (swap! outputs conj text))
   (echo-message [_ text _highlight]
     (swap! outputs conj text))
+
+  e.p.host/ISexpr
+  (get-top-list-sexpr! [_ _lnum _col]
+    (async/go (:get-top-list-sexpr! option)))
+  (get-list-sexpr! [_ _lnum _col]
+    (async/go (:get-list-sexpr! option)))
+  (get-single-sexpr! [_ _lnum _col]
+    (async/go (:get-single-sexpr! option)))
+  (get-namespace-form! [_]
+    (async/go (:get-namespace-form! option)))
+  (replace-namespace-form! [_ _new-ns-form] (async/go nil))
 
   e.p.rpc/IFunction
   (call-function [this method params]
@@ -50,7 +60,7 @@
 (m/=> test-host
       [:function
        [:=> :cat  e.s.server/?Host]
-       [:=> [:cat h.message/?TestMessageOption] e.s.server/?Host]])
+       [:=> [:cat map?] e.s.server/?Host]])
 (defn test-host
   ([]
    (test-host {:handler identity}))
