@@ -53,24 +53,3 @@
 (defn execute!!
   [host cmd]
   (async/<!! (execute! host cmd)))
-
-(m/=> get-variable!! [:=> [:cat e.s.server/?Host string?] any?])
-(defn get-variable!!
-  [host var-name]
-  (eval!! host (format "exists('%s') ? %s : v:null" var-name var-name)))
-
-(m/=> set-variable! [:=> [:cat e.s.server/?Host string? any?] e.schema/?ManyToManyChannel])
-(defn set-variable!
-  [host var-name value]
-  (let [value' (cond
-                 (string? value) (str "'" value "'")
-                 (true? value) "v:true"
-                 (false? value) "v:false"
-                 :else value)]
-    (execute! host (format "let %s = %s" var-name value'))))
-
-(m/=> set-variable!! [:=> [:cat e.s.server/?Host string? any?] :nil])
-(defn set-variable!!
-  [host var-name value]
-  (async/<!! (set-variable! host var-name value))
-  nil)

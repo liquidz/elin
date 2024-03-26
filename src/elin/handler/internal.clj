@@ -4,6 +4,7 @@
    [elin.function.vim :as e.f.vim]
    [elin.message :as e.message]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
@@ -20,7 +21,7 @@
   (e.p.clj-kondo/restore clj-kondo)
   (doseq [[export-name export-value] (or (get-in handler [:initialize :export]) {})]
     (timbre/debug (format "Exporting %s as %s" export-value export-name))
-    (e.f.vim/set-variable! host export-name export-value))
+    (e.p.host/set-variable! host export-name export-value))
   true)
 
 (m/=> intercept [:=> [:cat e.s.handler/?Elin] any?])

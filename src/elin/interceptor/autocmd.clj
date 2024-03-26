@@ -30,7 +30,7 @@
    :enter (-> (fn [{:component/keys [host nrepl] :keys [autocmd-type]}]
                 (when (and (contains? #{"BufRead" "BufEnter"} autocmd-type)
                            (not (e.p.nrepl/disconnected? nrepl))
-                           (nil? (e.f.vim/get-variable!! host ns-created-var-name)))
+                           (nil? (async/<!! (e.p.host/get-variable! host ns-created-var-name))))
                   (e/let [ns-str (e.f.v.sexp/get-namespace!! host)
                           ns-sym (or (symbol ns-str)
                                      (e/incorrect))]
@@ -40,7 +40,7 @@
                             (clojure.core/refer-clojure))
                          (str)
                          (e.f.nrepl/eval!! nrepl))
-                    (e.f.vim/set-variable!! host ns-created-var-name true))))
+                    (async/<!! (e.p.host/set-variable! host ns-created-var-name true)))))
               (ix/discard))})
 
 (defmulti generate-skeleton

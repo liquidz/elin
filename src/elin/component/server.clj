@@ -7,6 +7,7 @@
    [elin.component.server.impl.io]
    [elin.component.server.impl.select]
    [elin.component.server.impl.sign]
+   [elin.component.server.impl.variable]
    [elin.component.server.nvim :as e.c.s.nvim]
    [elin.component.server.vim :as e.c.s.vim]
    [elin.constant.host :as e.c.host]

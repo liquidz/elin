@@ -182,6 +182,21 @@
               :queue host-channel}))
   ;; }}}
 
+  e.p.host/IVariable ; {{{
+  (get-variable! [_ var-name]
+    (execute {:host @host-store
+              :protocol e.p.host/IVariable
+              :method e.p.host/get-variable!
+              :args [var-name]
+              :queue host-channel}))
+  (set-variable! [_ var-name value]
+    (execute {:host @host-store
+              :protocol e.p.host/IVariable
+              :method e.p.host/set-variable!
+              :args [var-name value]
+              :queue host-channel}))
+  ;; }}}
+
   e.p.host/ISelector
   (select-from-candidates [_ candidates callback-handler-symbol]
     (execute {:host @host-store

@@ -55,3 +55,13 @@
 (m/=> request!! [:=> [:cat e.s.server/?Host string? [:sequential any?]] any?])
 (defn request!! [host function-name params]
   (async/<!! (request! host function-name params)))
+
+(m/=> execute! [:=> [:cat e.s.server/?Host string?] e.schema/?ManyToManyChannel])
+(defn execute!
+  [host cmd]
+  (request! host "elin#internal#execute" [cmd]))
+
+(m/=> eval! [:=> [:cat e.s.server/?Host string?] e.schema/?ManyToManyChannel])
+(defn eval!
+  [host s]
+  (request! host "elin#internal#eval" [s]))
