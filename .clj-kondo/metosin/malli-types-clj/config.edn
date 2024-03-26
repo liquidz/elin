@@ -261,6 +261,9 @@
                                                                                                      :initial-namespace :nilable/string,
                                                                                                      :version :map}}],
                                                                                        :ret :string}}}},
+                                        elin.component.server.impl.info-buffer {append-to-info-buffer* {:arities {2 {:args [:any
+                                                                                                                            :string],
+                                                                                                                     :ret :nil}}}},
                                         elin.handler.test {run-test-under-cursor {:arities {1 {:args [{:op :keys,
                                                                                                        :req {:message {:op :keys,
                                                                                                                        :req {:host :string,
@@ -338,8 +341,6 @@
                                                                                                          :ret :sequential}}},
                                                                         collect-results {:arities {2 {:args [:any :map],
                                                                                                       :ret :sequential}}}},
-                                        elin.function.vim.info-buffer {append {:arities {2 {:args [:any :string],
-                                                                                            :ret :nil}}}},
                                         elin.component.server.impl.file {get-current-working-directory!* {:arities {:varargs {:args [:any
                                                                                                                                      {:op :rest,
                                                                                                                                       :spec :any}],
