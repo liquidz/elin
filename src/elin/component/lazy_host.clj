@@ -263,6 +263,27 @@
               :queue host-channel}))
   ;; }}}
 
+  e.p.host/IVirtualText ; {{{
+  (set-virtual-text [_ text]
+    (execute {:host @host-store
+              :protocol e.p.host/IVirtualText
+              :method e.p.host/set-virtual-text
+              :args [text]
+              :queue host-channel}))
+  (set-virtual-text [_ text options]
+    (execute {:host @host-store
+              :protocol e.p.host/IVirtualText
+              :method e.p.host/set-virtual-text
+              :args [text options]
+              :queue host-channel}))
+  (clear-all-virtual-texts [_]
+    (execute {:host @host-store
+              :protocol e.p.host/IVirtualText
+              :method e.p.host/clear-all-virtual-texts
+              :args []
+              :queue host-channel}))
+  ;; }}}
+
   e.p.host/ISelector
   (select-from-candidates [_ candidates callback-handler-symbol]
     (execute {:host @host-store

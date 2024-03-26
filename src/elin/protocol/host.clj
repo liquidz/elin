@@ -39,6 +39,10 @@
   (set-popup-text [this popup-id s])
   (close-popup [this popup-id]))
 
+(defprotocol IVirtualText
+  (set-virtual-text [this text] [this text options])
+  (clear-all-virtual-texts [this]))
+
 (defprotocol ISelector
   (select-from-candidates
     [this candidates callback-handler-symbol]

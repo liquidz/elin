@@ -10,6 +10,7 @@
    [elin.component.server.impl.sexpr]
    [elin.component.server.impl.sign]
    [elin.component.server.impl.variable]
+   [elin.component.server.impl.virtual-text]
    [elin.component.server.nvim :as e.c.s.nvim]
    [elin.component.server.vim :as e.c.s.vim]
    [elin.constant.host :as e.c.host]
