@@ -21,3 +21,8 @@
   (list-current-signs! [this])
   (list-all-signs! [this])
   (refresh-signs [this]))
+
+(defprotocol ISelector
+  (select-from-candidates
+    [this candidates callback-handler-symbol]
+    [this candidates callback-handler-symbol optional-params]))
