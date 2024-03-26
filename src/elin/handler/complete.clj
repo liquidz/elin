@@ -4,7 +4,7 @@
    [elin.error :as e]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.cider :as e.f.n.cider]
-   [elin.function.vim.sexp :as e.f.v.sexp]
+   [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
    [malli.core :as m]))
@@ -47,14 +47,14 @@
        (sort-by :word)))
 
 (defn- cider-nrepl-complete
-  [{:component/keys [nrepl host]} prefix]
-  (e/let [ns-str (e.f.v.sexp/get-namespace!! host)
+  [{:as elin :component/keys [nrepl]} prefix]
+  (e/let [ns-str (e.f.sexpr/get-namespace elin)
           candidates (e.f.n.cider/complete!! nrepl ns-str prefix)]
     (format-candidates candidates)))
 
 (defn- nrepl-completions
-  [{:component/keys [nrepl host]} prefix]
-  (e/let [ns-str (e.f.v.sexp/get-namespace!! host)
+  [{:as elin :component/keys [nrepl]} prefix]
+  (e/let [ns-str (e.f.sexpr/get-namespace elin)
           candidates (e.f.nrepl/completions!! nrepl ns-str prefix)]
     (format-candidates candidates)))
 

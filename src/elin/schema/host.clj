@@ -7,3 +7,9 @@
    [:col int?]
    [:off int?]
    [:curswant int?]])
+
+(def ?CodeAndPosition
+  [:map
+   [:code string?]
+   [:lnum int?]
+   [:col int?]])

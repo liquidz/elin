@@ -6,8 +6,8 @@
    [elin.error :as e]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
+   [elin.function.sexpr :as e.f.sexpr]
    [elin.function.vim :as e.f.vim]
-   [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
@@ -27,11 +27,11 @@
 (def ns-create-interceptor
   {:name ::ns-create-interceptor
    :kind e.c.interceptor/autocmd
-   :enter (-> (fn [{:component/keys [host nrepl] :keys [autocmd-type]}]
+   :enter (-> (fn [{:as ctx :component/keys [host nrepl] :keys [autocmd-type]}]
                 (when (and (contains? #{"BufRead" "BufEnter"} autocmd-type)
                            (not (e.p.nrepl/disconnected? nrepl))
                            (nil? (async/<!! (e.p.host/get-variable! host ns-created-var-name))))
-                  (e/let [ns-str (e.f.v.sexp/get-namespace!! host)
+                  (e/let [ns-str (e.f.sexpr/get-namespace ctx)
                           ns-sym (or (symbol ns-str)
                                      (e/incorrect))]
                     (->> `(when-not (clojure.core/find-ns '~ns-sym)

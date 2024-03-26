@@ -4,9 +4,9 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.error :as e]
+   [elin.function.evaluate :as e.f.evaluate]
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.nrepl.test :as e.f.n.test]
-   [elin.function.nrepl.vim :as e.f.n.vim]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
@@ -26,8 +26,8 @@
 
 (m/=> run-test-under-cursor [:=> [:cat e.s.handler/?Elin] any?])
 (defn run-test-under-cursor
-  [{:as elin :component/keys [host nrepl interceptor]}]
-  (e/let [{:keys [code response options]} (e.f.n.vim/evaluate-current-top-list!! {:host host :nrepl nrepl})
+  [{:as elin :component/keys [interceptor]}]
+  (e/let [{:keys [code response options]} (e.f.evaluate/evaluate-current-top-list elin)
           {ns-str :ns} options
           var-name (or (some->> (extract-multi-method-name code)
                                 (str ns-str "/"))

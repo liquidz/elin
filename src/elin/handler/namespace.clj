@@ -4,8 +4,8 @@
    [clojure.string :as str]
    [elin.error :as e]
    [elin.function.core.namespace :as e.f.c.namespace]
-   [elin.function.nrepl.vim :as e.f.n.vim]
-   [elin.function.vim.sexp :as e.f.v.sexp]
+   [elin.function.evaluate :as e.f.evaluate]
+   [elin.function.sexpr :as e.f.sexpr]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
    [elin.util.sexp :as e.u.sexp]))
@@ -18,7 +18,7 @@
       (some?)))
 
 (defn add-namespace*
-  [{:as elin :component/keys [handler host nrepl] :keys [message]}]
+  [{:as elin :component/keys [handler host] :keys [message]}]
   (e/let [favorites (get-in handler [:config-map (symbol #'add-namespace*) :favorites])
           ns-sym (-> (:params message)
                      (first)
@@ -31,12 +31,12 @@
                                                 (str default-alias-sym)))
           alias-sym (when (seq alias-str)
                       (symbol alias-str))
-          ns-form (e.f.v.sexp/get-namespace-form!! host)]
+          ns-form (e.f.sexpr/get-namespace-form elin)]
     (if (has-namespace? ns-form ns-sym)
       (e.message/warning host (format "'%s' already exists." ns-sym))
       (e/let [ns-form' (e.u.sexp/add-require ns-form ns-sym alias-sym)]
-        (e.f.v.sexp/replace-namespace-form!! host ns-form')
-        (e.f.n.vim/evaluate-namespace-form!! {:host host :nrepl nrepl})
+        (e.f.sexpr/replace-namespace-form elin ns-form')
+        (e.f.evaluate/evaluate-namespace-form elin)
         (e.message/info host (if alias-sym
                                (format "'%s' added as '%s'."
                                        ns-sym alias-sym)
@@ -49,7 +49,7 @@
     (e.p.host/select-from-candidates host coll (symbol #'add-namespace*))))
 
 (defn resolve-missing-namespace*
-  [{:component/keys [host nrepl] :keys [message]}]
+  [{:as elin :component/keys [host] :keys [message]}]
   (e/let [[alias-str ns-str] (:params message)
           alias-sym (some-> alias-str
                             (symbol))
@@ -57,18 +57,17 @@
                          (symbol))
           _ (when (or (not alias-sym) (not ns-sym))
               (e/not-found))
-          ns-form (e.f.v.sexp/get-namespace-form!! host)
+          ns-form (e.f.sexpr/get-namespace-form elin)
           ns-form' (e.u.sexp/add-require ns-form ns-sym alias-sym)]
-    (e.f.v.sexp/replace-namespace-form!! host ns-form')
-    (e.f.n.vim/evaluate-namespace-form!! {:host host :nrepl nrepl})
+    (e.f.sexpr/replace-namespace-form elin ns-form')
+    (e.f.evaluate/evaluate-namespace-form elin)
     (e.message/info host (format "'%s' added as '%s'." ns-sym alias-sym))))
 
 (defn resolve-missing-namespace
   [{:as elin :component/keys [handler host]}]
   (e/let [favorites (get-in handler [:config-map (symbol #'resolve-missing-namespace) :favorites])
           {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
-          ;; ns-str (e.f.v.sexp/get-namespace!! host)
-          {:keys [code]} (e.f.v.sexp/get-expr!! host lnum col)
+          {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           [alias-str var-str] (str/split code #"/" 2)
           _ (when-not var-str
               (e/incorrect {:message (format "Fully qualified symbol is required: %s" code)}))

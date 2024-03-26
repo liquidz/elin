@@ -3,8 +3,8 @@
    [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
+   [elin.function.evaluate :as e.f.evaluate]
    [elin.function.nrepl :as e.f.nrepl]
-   [elin.function.nrepl.vim :as e.f.n.vim]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.handler :as e.s.handler]
@@ -34,39 +34,31 @@
 
 (m/=> evaluate-current-top-list [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-top-list
-  [{:as elin :component/keys [host nrepl]}]
-  (e/-> {:host host
-         :nrepl nrepl
-         :options {:middleware (evaluate-interceptor-middleware elin)}}
-        (e.f.n.vim/evaluate-current-top-list!!)
-        (:response)))
+  [elin]
+  (e/->> {:middleware (evaluate-interceptor-middleware elin)}
+         (e.f.evaluate/evaluate-current-top-list elin)
+         (:response)))
 
 (m/=> evaluate-current-list [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-list
-  [{:as elin :component/keys [host nrepl]}]
-  (e/-> {:host host
-         :nrepl nrepl
-         :options {:middleware (evaluate-interceptor-middleware elin)}}
-        (e.f.n.vim/evaluate-current-list!!)
-        (:response)))
+  [elin]
+  (e/->> {:middleware (evaluate-interceptor-middleware elin)}
+         (e.f.evaluate/evaluate-current-list elin)
+         (:response)))
 
 (m/=> evaluate-current-expr [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-expr
-  [{:as elin :component/keys [host nrepl]}]
-  (e/-> {:host host
-         :nrepl nrepl
-         :options {:middleware (evaluate-interceptor-middleware elin)}}
-        (e.f.n.vim/evaluate-current-expr!!)
-        (:response)))
+  [elin]
+  (e/->> {:middleware (evaluate-interceptor-middleware elin)}
+         (e.f.evaluate/evaluate-current-expr elin)
+         (:response)))
 
 (m/=> evaluate-namespace-form [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-namespace-form
-  [{:as elin :component/keys [host nrepl]}]
-  (e/-> {:host host
-         :nrepl nrepl
-         :options {:middleware (evaluate-interceptor-middleware elin)}}
-        (e.f.n.vim/evaluate-namespace-form!!)
-        (:response)))
+  [elin]
+  (e/->> {:middleware (evaluate-interceptor-middleware elin)}
+         (e.f.evaluate/evaluate-namespace-form elin)
+         (:response)))
 
 (m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
 (defn load-current-file

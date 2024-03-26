@@ -7,7 +7,7 @@
    [elin.function.clj-kondo :as e.f.clj-kondo]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.refactor :as e.f.n.refactor]
-   [elin.function.vim.sexp :as e.f.v.sexp]
+   [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
    [malli.core :as m]))
@@ -36,7 +36,7 @@
 
 (m/=> resolve-missing-namespace [:=> [:cat e.s.handler/?Elin string? map?] [:sequential [:map [:name symbol?] [:type keyword?]]]])
 (defn resolve-missing-namespace
-  [{:component/keys [clj-kondo host nrepl]} sym-str favorites]
+  [{:as elin :component/keys [clj-kondo nrepl]} sym-str favorites]
   (if (and (not (e.p.nrepl/disconnected? nrepl))
            (e.p.nrepl/supported-op? nrepl e.c.nrepl/resolve-missing-op))
     ;; refactor-nrepl
@@ -44,7 +44,7 @@
     ;; clj-kondo
     (let [[alias-str _] (str/split sym-str #"/" 2)
           alias-sym (symbol alias-str)
-          ns-str (e.f.v.sexp/get-namespace!! host)
+          ns-str (e.f.sexpr/get-namespace elin)
           requires (set (e.f.clj-kondo/requiring-namespaces clj-kondo ns-str))
           favorites' (some->> favorites
                               (filter #(= alias-sym (val %)))
