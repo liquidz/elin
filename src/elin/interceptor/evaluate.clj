@@ -3,8 +3,8 @@
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.function.vim :as e.f.vim]
-   [elin.function.vim.virtual-text :as e.f.v.virtual-text]
    [elin.message :as e.message]
+   [elin.protocol.host :as e.p.host]
    [exoscale.interceptor :as ix]
    [rewrite-clj.zip :as r.zip]))
 
@@ -24,9 +24,9 @@
    :kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (when-let [v (:value response)]
-                  (e.f.v.virtual-text/set host
-                                          (str v)
-                                          {:highlight "DiffText"})))
+                  (e.p.host/set-virtual-text host
+                                             (str v)
+                                             {:highlight "DiffText"})))
               (ix/discard))})
 
 (defn- up-until-top [zloc]
