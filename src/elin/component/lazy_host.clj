@@ -53,7 +53,7 @@
   (set-host! [_ host]
     (reset! host-store host))
 
-  e.p.h.rpc/IRpc
+  e.p.h.rpc/IRpc ; {{{
   (request! [_ content]
     (if-let [host @host-store]
       (e.p.h.rpc/request! host content)
@@ -78,8 +78,9 @@
               :method e.p.h.rpc/flush!
               :args []
               :queue host-channel}))
+  ;; }}}
 
-  e.p.host/IEcho
+  e.p.host/IEcho ; {{{
   (echo-text [_ text]
     (execute {:host @host-store
               :protocol e.p.host/IEcho
@@ -104,8 +105,9 @@
               :method e.p.host/echo-message
               :args [text highlight]
               :queue host-channel}))
+  ;; }}}
 
-  e.p.host/ISign
+  e.p.host/ISign ; {{{
   (place-sign [_ m]
     (execute {:host @host-store
               :protocol e.p.host/ISign
@@ -136,16 +138,18 @@
               :method e.p.host/refresh-signs
               :args []
               :queue host-channel}))
+  ;; }}}
 
-  e.p.host/IIo
+  e.p.host/IIo ; {{{
   (input! [_ prompt default]
     (execute {:host @host-store
               :protocol e.p.host/IIo
               :method e.p.host/input!
               :args [prompt default]
               :queue host-channel}))
+  ;; }}}
 
-  e.p.host/IFile
+  e.p.host/IFile ; {{{
   (get-current-working-directory! [_]
     (execute {:host @host-store
               :protocol e.p.host/IFile
@@ -175,6 +179,21 @@
               :protocol e.p.host/IFile
               :method e.p.host/jump!
               :args [path lnum col jump-command]
+              :queue host-channel}))
+  ;; }}}
+
+  e.p.host/ISelector
+  (select-from-candidates [_ candidates callback-handler-symbol]
+    (execute {:host @host-store
+              :protocol e.p.host/ISelector
+              :method e.p.host/select-from-candidates
+              :args [candidates callback-handler-symbol]
+              :queue host-channel}))
+  (select-from-candidates [_ candidates callback-handler-symbol optional-params]
+    (execute {:host @host-store
+              :protocol e.p.host/ISelector
+              :method e.p.host/select-from-candidates
+              :args [candidates callback-handler-symbol optional-params]
               :queue host-channel}))
 
   e.p.rpc/IFunction

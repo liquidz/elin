@@ -5,7 +5,6 @@
    [elin.error :as e]
    [elin.function.core.namespace :as e.f.c.namespace]
    [elin.function.nrepl.vim :as e.f.n.vim]
-   [elin.function.vim :as e.f.vim]
    [elin.function.vim.sexp :as e.f.v.sexp]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
@@ -47,7 +46,7 @@
 (defn add-namespace
   [{:as elin :component/keys [host]}]
   (let [coll (e.f.c.namespace/get-namespaces elin)]
-    (e.f.vim/notify host "elin#internal#select" [coll (symbol #'add-namespace*)])))
+    (e.p.host/select-from-candidates host coll (symbol #'add-namespace*))))
 
 (defn resolve-missing-namespace*
   [{:component/keys [host nrepl] :keys [message]}]
@@ -84,6 +83,5 @@
        (assoc elin :message {:params [alias-sym (:name (first resp))]}))
 
       ;; else
-      (e.f.vim/notify host "elin#internal#select" [(map :name resp)
-                                                   (symbol #'resolve-missing-namespace*)
-                                                   [alias-str]]))))
+      (e.p.host/select-from-candidates
+       host (map :name resp) (symbol #'resolve-missing-namespace*) [alias-str]))))
