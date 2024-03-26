@@ -15,6 +15,10 @@
   (get-cursor-position! [this])
   (jump! [this path lnum col] [this path lnum col jump-command]))
 
+(defprotocol IVariable
+  (get-variable! [this var-name])
+  (set-variable! [this var-name value]))
+
 (defprotocol ISign
   (place-sign [this m])
   (unplace-signs-by [this m])
