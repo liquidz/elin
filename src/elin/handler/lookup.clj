@@ -6,7 +6,6 @@
    [elin.error :as e]
    [elin.function.core :as e.f.core]
    [elin.function.sexpr :as e.f.sexpr]
-   [elin.function.vim.popup :as e.f.v.popup]
    [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
    [elin.util.sexp :as e.u.sexp]
@@ -108,13 +107,14 @@
           ns-str (e.f.sexpr/get-namespace elin)
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           resp (e.f.core/lookup!! elin ns-str code)]
-    (e.f.v.popup/open!!
-     host
-     (generate-doc resp)
-     {:line "near-cursor"
-      :border []
-      :filetype "help"
-      :moved "current-line"})))
+    (async/<!!
+     (e.p.host/open-popup!
+      host
+      (generate-doc resp)
+      {:line "near-cursor"
+       :border []
+       :filetype "help"
+       :moved "current-line"}))))
 
 (defn show-source
   [{:as elin :component/keys [host]}]
@@ -126,10 +126,11 @@
                   (slurp (:file resp))
                   (:line resp)
                   (:column resp))]
-    (e.f.v.popup/open!!
-     host
-     source
-     {:line "near-cursor"
-      :border []
-      :filetype "clojure"
-      :moved "any"})))
+    (async/<!!
+     (e.p.host/open-popup!
+      host
+      source
+      {:line "near-cursor"
+       :border []
+       :filetype "clojure"
+       :moved "any"}))))
