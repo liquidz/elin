@@ -82,7 +82,7 @@
   (echo-text [this text]
     (e.p.host/echo-text this text "Normal"))
   (echo-text [this text highlight]
-    (e.p.h.rpc/notify! this ["nvim_echo" [[[text highlight]] false {}]]))
+    (e.p.h.rpc/notify! this ["nvim_call_function" ["elin#internal#echo" [text highlight]]]))
 
   (echo-message [this text]
     (e.p.host/echo-message this text "Normal"))
