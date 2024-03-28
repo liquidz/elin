@@ -43,7 +43,8 @@
   (set-virtual-text [this text] [this text options])
   (clear-all-virtual-texts [this]))
 
-(defprotocol IInfoBuffer
+(defprotocol IBuffer
+  (set-to-current-buffer [this text])
   (append-to-info-buffer [this text]))
 
 (defprotocol ISelector

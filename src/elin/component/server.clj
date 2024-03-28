@@ -2,9 +2,9 @@
   (:require
    [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
+   [elin.component.server.impl.buffer]
    [elin.component.server.impl.file]
    [elin.component.server.impl.function]
-   [elin.component.server.impl.info-buffer]
    [elin.component.server.impl.io]
    [elin.component.server.impl.popup]
    [elin.component.server.impl.select]

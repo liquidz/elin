@@ -1,4 +1,4 @@
-(ns elin.component.server.impl.info-buffer
+(ns elin.component.server.impl.buffer
   (:require
    [elin.component.server.impl.function :as e.c.s.function]
    [elin.component.server.nvim]
@@ -7,17 +7,26 @@
    [elin.schema.server :as e.s.server]
    [malli.core :as m]))
 
+(m/=> set-to-current-buffer* [:=> [:cat e.s.server/?Host string?] :nil])
+(defn- set-to-current-buffer*
+  [host s]
+  (e.c.s.function/notify host "elin#internal#buffer#set" ["%" s]))
+
 (m/=> append-to-info-buffer* [:=> [:cat e.s.server/?Host string?] :nil])
 (defn- append-to-info-buffer*
   [host s]
   (when (seq s)
     (e.c.s.function/notify host "elin#internal#buffer#info#append" [s])))
 
-(extend-protocol e.p.host/IInfoBuffer
+(extend-protocol e.p.host/IBuffer
   elin.component.server.vim.VimHost
+  (set-to-current-buffer [this text]
+    (set-to-current-buffer* this text))
   (append-to-info-buffer [this text]
     (append-to-info-buffer* this text))
 
   elin.component.server.nvim.NvimHost
+  (set-to-current-buffer [this text]
+    (set-to-current-buffer* this text))
   (append-to-info-buffer [this text]
     (append-to-info-buffer* this text)))

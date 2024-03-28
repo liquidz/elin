@@ -284,10 +284,16 @@
               :queue host-channel}))
   ;; }}}
 
-  e.p.host/IInfoBuffer ; {{{
+  e.p.host/IBuffer ; {{{
+  (set-to-current-buffer [_ text]
+    (execute {:host @host-store
+              :protocol e.p.host/IBuffer
+              :method e.p.host/set-to-current-buffer
+              :args [text]
+              :queue host-channel}))
   (append-to-info-buffer [_ text]
     (execute {:host @host-store
-              :protocol e.p.host/IInfoBuffer
+              :protocol e.p.host/IBuffer
               :method e.p.host/append-to-info-buffer
               :args [text]
               :queue host-channel}))
