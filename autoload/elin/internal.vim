@@ -1,7 +1,7 @@
 function! elin#internal#echo(text, highlight) abort
   execute 'echohl' a:highlight
   try
-    echo a:text
+    echo elin#util#shorten(a:text)
   finally
     echohl None
   endtry
@@ -16,10 +16,6 @@ function! elin#internal#echom(text, highlight) abort
 	finally
     echohl None
 	endtry
-endfunction
-
-function! elin#internal#shortening_echo(text) abort
-  echo elin#util#shorten(a:text)
 endfunction
 
 function! elin#internal#add_curpos_to_jumplist() abort
