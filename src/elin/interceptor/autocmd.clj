@@ -7,7 +7,6 @@
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.sexpr :as e.f.sexpr]
-   [elin.function.vim :as e.f.vim]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
@@ -75,7 +74,7 @@
                                :test? (str/ends-with? ns-str "-test")}
                         ns-form-lines (->> (generate-skeleton param)
                                            (str/split-lines))]
-                  (e.f.vim/notify host "elin#internal#buffer#set" ["%" ns-form-lines])))
+                  (e.p.host/set-to-current-buffer host ns-form-lines)))
               (ix/when #(= "BufNewFile" (:autocmd-type %)))
               (ix/discard))})
 
