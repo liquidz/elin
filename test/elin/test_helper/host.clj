@@ -31,13 +31,15 @@
   (response! [_this _error _result] nil)
   (flush! [_] nil)
 
-  e.p.host/IEcho
+  e.p.host/IIo
   (echo-text [_ text]
     (swap! outputs conj text))
   (echo-message [_ text]
     (swap! outputs conj text))
   (echo-message [_ text _highlight]
     (swap! outputs conj text))
+  (input! [_ _prompt _default]
+    nil)
 
   e.p.host/ISexpr
   (get-top-list-sexpr! [_ _lnum _col]

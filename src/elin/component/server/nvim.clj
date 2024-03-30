@@ -2,7 +2,6 @@
   "https://github.com/msgpack-rpc/msgpack-rpc/blob/master/spec.md"
   (:require
    [clojure.core.async :as async]
-   [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.id :as e.u.id]
@@ -77,17 +76,6 @@
 
   (flush! [_]
     (.flush output-stream))
-
-  e.p.host/IEcho
-  (echo-text [this text]
-    (e.p.host/echo-text this text "Normal"))
-  (echo-text [this text highlight]
-    (e.p.h.rpc/notify! this ["nvim_call_function" ["elin#internal#echo" [text highlight]]]))
-
-  (echo-message [this text]
-    (e.p.host/echo-message this text "Normal"))
-  (echo-message [this text highlight]
-    (e.p.h.rpc/notify! this ["nvim_echo" [[[text highlight]] true {}]]))
 
   e.p.rpc/IFunction
   (call-function [this method params]

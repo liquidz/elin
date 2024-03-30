@@ -80,33 +80,6 @@
               :queue host-channel}))
   ;; }}}
 
-  e.p.host/IEcho ; {{{
-  (echo-text [_ text]
-    (execute {:host @host-store
-              :protocol e.p.host/IEcho
-              :method e.p.host/echo-text
-              :args [text]
-              :queue host-channel}))
-  (echo-text [_ text highlight]
-    (execute {:host @host-store
-              :protocol e.p.host/IEcho
-              :method e.p.host/echo-text
-              :args [text highlight]
-              :queue host-channel}))
-  (echo-message [_ text]
-    (execute {:host @host-store
-              :protocol e.p.host/IEcho
-              :method e.p.host/echo-message
-              :args [text]
-              :queue host-channel}))
-  (echo-message [_ text highlight]
-    (execute {:host @host-store
-              :protocol e.p.host/IEcho
-              :method e.p.host/echo-message
-              :args [text highlight]
-              :queue host-channel}))
-  ;; }}}
-
   e.p.host/ISign ; {{{
   (place-sign [_ m]
     (execute {:host @host-store
@@ -141,6 +114,30 @@
   ;; }}}
 
   e.p.host/IIo ; {{{
+  (echo-text [_ text]
+    (execute {:host @host-store
+              :protocol e.p.host/IIo
+              :method e.p.host/echo-text
+              :args [text]
+              :queue host-channel}))
+  (echo-text [_ text highlight]
+    (execute {:host @host-store
+              :protocol e.p.host/IIo
+              :method e.p.host/echo-text
+              :args [text highlight]
+              :queue host-channel}))
+  (echo-message [_ text]
+    (execute {:host @host-store
+              :protocol e.p.host/IIo
+              :method e.p.host/echo-message
+              :args [text]
+              :queue host-channel}))
+  (echo-message [_ text highlight]
+    (execute {:host @host-store
+              :protocol e.p.host/IIo
+              :method e.p.host/echo-message
+              :args [text highlight]
+              :queue host-channel}))
   (input! [_ prompt default]
     (execute {:host @host-store
               :protocol e.p.host/IIo

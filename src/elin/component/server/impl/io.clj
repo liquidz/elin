@@ -4,6 +4,7 @@
    [elin.component.server.nvim]
    [elin.component.server.vim]
    [elin.protocol.host :as e.p.host]
+   [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.schema :as e.schema]
    [elin.schema.server :as e.s.server]
    [malli.core :as m]))
@@ -15,7 +16,29 @@
 
 (extend-protocol e.p.host/IIo
   elin.component.server.vim.VimHost
-  (input! [this prompt default] (input!* this prompt default))
+  (echo-text
+    ([this text]
+     (e.p.host/echo-text this text "Normal"))
+    ([this text highlight]
+     (e.p.h.rpc/notify! this ["call" "elin#internal#echo" [text highlight]])))
+  (echo-message
+    ([this text]
+     (e.p.host/echo-message this text "Normal"))
+    ([this text highlight]
+     (e.p.h.rpc/notify! this ["call" "elin#internal#echom" [text highlight]])))
+  (input! [this prompt default]
+    (input!* this prompt default))
 
   elin.component.server.nvim.NvimHost
-  (input! [this prompt default] (input!* this prompt default)))
+  (echo-text
+    ([this text]
+     (e.p.host/echo-text this text "Normal"))
+    ([this text highlight]
+     (e.p.h.rpc/notify! this ["nvim_call_function" ["elin#internal#echo" [text highlight]]])))
+  (echo-message
+    ([this text]
+     (e.p.host/echo-message this text "Normal"))
+    ([this text highlight]
+     (e.p.h.rpc/notify! this ["nvim_echo" [[[text highlight]] true {}]])))
+  (input! [this prompt default]
+    (input!* this prompt default)))

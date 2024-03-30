@@ -4,7 +4,6 @@
    [cheshire.core :as json]
    [clojure.core.async :as async]
    [clojure.java.io :as io]
-   [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.util.id :as e.u.id]
@@ -74,17 +73,6 @@
 
   (flush! [_]
     (.flush output-stream))
-
-  e.p.host/IEcho
-  (echo-text [this text]
-    (e.p.host/echo-text this text "Normal"))
-  (echo-text [this text highlight]
-    (e.p.h.rpc/notify! this ["call" "elin#internal#echo" [text highlight]]))
-
-  (echo-message [this text]
-    (e.p.host/echo-message this text "Normal"))
-  (echo-message [this text highlight]
-    (e.p.h.rpc/notify! this ["call" "elin#internal#echom" [text highlight]]))
 
   e.p.rpc/IFunction
   (call-function [this method params]

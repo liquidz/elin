@@ -2,11 +2,10 @@
   "Request functions should be suffixed with `!` and return a core.async channel.
   Notify functions should not be suffixed with `!`.")
 
-(defprotocol IEcho
-  (echo-text [this text] [this text highlight])
-  (echo-message [this text] [this text highlight]))
 
 (defprotocol IIo
+  (echo-text [this text] [this text highlight])
+  (echo-message [this text] [this text highlight])
   (input! [this prompt default]))
 
 (defprotocol IFile
