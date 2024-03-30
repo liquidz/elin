@@ -1,7 +1,6 @@
 (ns elin.handler.internal
   (:require
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.function.vim :as e.f.vim]
    [elin.message :as e.message]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.host :as e.p.host]
@@ -17,7 +16,7 @@
 (m/=> initialize [:=> [:cat e.s.handler/?Elin] any?])
 (defn initialize
   [{:component/keys [handler host clj-kondo]}]
-  (e.f.vim/notify host "elin#internal#buffer#info#ready" [])
+  (e.p.host/on-connect host)
   (e.p.clj-kondo/restore clj-kondo)
   (doseq [[export-name export-value] (or (get-in handler [:initialize :export]) {})]
     (timbre/debug (format "Exporting %s as %s" export-value export-name))
