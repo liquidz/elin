@@ -1,4 +1,4 @@
-(ns elin.function.core
+(ns elin.function.lookup
   (:require
    [elin.error :as e]
    [elin.function.clj-kondo :as e.f.clj-kondo]
@@ -11,8 +11,8 @@
 (def ?NreplAndCljKondo
   (m.util/select-keys e.s.handler/?Components [:component/nrepl :component/clj-kondo]))
 
-(m/=> lookup!! [:=> [:cat ?NreplAndCljKondo string? string?] e.s.nrepl/?Lookup])
-(defn lookup!!
+(m/=> lookup [:=> [:cat ?NreplAndCljKondo string? string?] e.s.nrepl/?Lookup])
+(defn lookup
   [{:component/keys [nrepl clj-kondo]} ns-str sym-str]
   (let [res (e.f.n.cider/info!! nrepl ns-str sym-str)]
     (if (e/error? res)

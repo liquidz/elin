@@ -2,8 +2,8 @@
   (:require
    [clojure.core.async :as async]
    [elin.error :as e]
-   [elin.function.core :as e.f.core]
    [elin.function.file :as e.f.file]
+   [elin.function.lookup :as e.f.lookup]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
@@ -17,7 +17,7 @@
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e.f.sexpr/get-namespace elin)
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          {:keys [file line column]} (e.f.core/lookup!! elin ns-str code)]
+          {:keys [file line column]} (e.f.lookup/lookup elin ns-str code)]
     (when (and file line)
       (async/<!! (e.p.host/jump! host file line (or column 1))))
     true))

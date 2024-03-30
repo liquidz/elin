@@ -4,7 +4,7 @@
    [clojure.string :as str]
    [elin.constant.lookup :as e.c.lookup]
    [elin.error :as e]
-   [elin.function.core :as e.f.core]
+   [elin.function.lookup :as e.f.lookup]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
@@ -106,7 +106,7 @@
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e.f.sexpr/get-namespace elin)
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          resp (e.f.core/lookup!! elin ns-str code)]
+          resp (e.f.lookup/lookup elin ns-str code)]
     (async/<!!
      (e.p.host/open-popup!
       host
@@ -121,7 +121,7 @@
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e.f.sexpr/get-namespace elin)
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          resp (e.f.core/lookup!! elin ns-str code)
+          resp (e.f.lookup/lookup elin ns-str code)
           source (e.u.sexp/extract-form-by-position
                   (slurp (:file resp))
                   (:line resp)
