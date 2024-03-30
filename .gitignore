@@ -1,6 +1,7 @@
 VIM_AUTO_RTP
 .DS_Store
 *.bk
+foo*
 cov
 .clj-kondo
 .cache
@@ -9,3 +10,4 @@ cov
 dev/elin/config.edn
 doc/graph/component.png
 doc/graph/sequence.png
+elin-debug.log
