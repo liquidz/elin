@@ -14,27 +14,42 @@ cloud {
 }
 
 component "Elin Server" #YellowGreen {
-  port "vim" as vimPort
-  port "http" as httpPort
+  portin " " as vimHostPort
+  portin " " as anotherHostPort
+  portin " " as httpPort
 
-  component "Vim/Neovim server" as vimServer
+  package "Hosts" {
+    component "Vim/Neovim host" as vimHost
+    component "Another host" as anotherHost
+  }
+
   component "HTTP server" as httpServer
   component Handler
   component "nREPL Client" as client
   interface Interceptor
 }
 
+
 [nREPL Server] as nrepl
 
-vimPort <--> vimServer
+
+' vim/neovim host
+vim <--> vimHostPort : JSON\nMessagePack
+vimHostPort <--> vimHost : JSON\nMessagePack
+vimHost <--> Handler : elin.protocol.host
+
+' http server
+clients <--> httpPort : JSON
 httpPort <--> httpServer
-vimServer <--> Handler
 httpServer <--> Handler
+
+' another host
+clients <--> anotherHostPort
+anotherHostPort <--> anotherHost
+anotherHost <--> Handler : elin.protocol.host
+
 Handler <--> client
 client <-- Interceptor
 Interceptor --> nrepl
-
-vim <--> vimPort : JSON\nMessagePack
-clients <--> httpPort : JSON
 
 @enduml

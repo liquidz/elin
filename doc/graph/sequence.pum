@@ -37,7 +37,7 @@ activate vim
     activate elin
     return Connected
 
-    === Connecting to nREPL Server ===
+    == Connecting to nREPL Server ==
 
     "user" -> "vim" : Request to connect nREPL server
     activate vim
@@ -49,7 +49,7 @@ activate vim
       return
     return Connected
 
-    === Evaluating s-expressions ===
+    == Evaluating s-expressions ==
 
     "user" -> "vim" : Request to evaluate current form
     activate vim
@@ -65,7 +65,7 @@ activate vim
       return Result
     return Result
 
-    === Leave vim ===
+    == Leave vim ==
 
     "user" -> "vim" : Exit
     activate vim
