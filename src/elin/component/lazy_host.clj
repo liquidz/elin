@@ -80,6 +80,15 @@
               :queue host-channel}))
   ;; }}}
 
+  e.p.host/IEvent ; {{{
+  (on-connect [_]
+    (execute {:host @host-store
+              :protocol e.p.host/IEvent
+              :method e.p.host/on-connect
+              :args []
+              :queue host-channel}))
+  ;; }}}
+
   e.p.host/ISign ; {{{
   (place-sign [_ m]
     (execute {:host @host-store

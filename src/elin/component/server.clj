@@ -3,6 +3,7 @@
    [clojure.core.async :as async]
    [com.stuartsierra.component :as component]
    [elin.component.server.impl.buffer]
+   [elin.component.server.impl.event]
    [elin.component.server.impl.file]
    [elin.component.server.impl.function]
    [elin.component.server.impl.io]

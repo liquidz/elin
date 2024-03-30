@@ -2,6 +2,8 @@
   "Request functions should be suffixed with `!` and return a core.async channel.
   Notify functions should not be suffixed with `!`.")
 
+(defprotocol IEvent
+  (on-connect [this]))
 
 (defprotocol IIo
   (echo-text [this text] [this text highlight])
