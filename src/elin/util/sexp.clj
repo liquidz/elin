@@ -87,12 +87,3 @@
         (r.zip/string))
     (catch Exception ex
       (e/not-found {:message (ex-message ex)}))))
-
-(comment
-  (def form-code
-    (let [host (elin.dev/$ :lazy-host)]
-      (elin.function.vim.sexp/get-namespace-form!! host)))
-
-  (println (add-require form-code "foo.core" nil))
-  (println (add-require "(ns bar.core)" "foo.core" nil))
-  (println (add-require "(ns bar.core\n  (:require [neko.core :as n]))" "foo.core" nil)))
