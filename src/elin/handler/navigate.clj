@@ -3,9 +3,9 @@
    [clojure.core.async :as async]
    [elin.error :as e]
    [elin.function.core :as e.f.core]
+   [elin.function.file :as e.f.file]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.sexpr :as e.f.sexpr]
-   [elin.function.vim :as e.f.vim]
    [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
    [elin.util.file :as e.u.file]
@@ -30,4 +30,4 @@
         file-sep (e.u.file/guess-file-separator ns-path)
         cycled-path (e.f.n.namespace/get-cycled-namespace-path
                      {:ns ns-str :path ns-path :file-separator file-sep})]
-    (e.f.vim/notify host "elin#internal#open_file" [cycled-path])))
+    (e.f.file/open-as elin cycled-path)))
