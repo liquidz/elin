@@ -3,8 +3,8 @@
    [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.error :as e]
-   [elin.function.core.namespace :as e.f.c.namespace]
    [elin.function.evaluate :as e.f.evaluate]
+   [elin.function.namespace :as e.f.namespace]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
@@ -25,7 +25,7 @@
                      (symbol)
                      (or (e/not-found)))
           default-alias-sym (or (get favorites ns-sym)
-                                (e.f.c.namespace/most-used-namespace-alias elin ns-sym))
+                                (e.f.namespace/most-used-namespace-alias elin ns-sym))
           alias-str (async/<!! (e.p.host/input! host
                                                 (format "Alias for '%s': " ns-sym)
                                                 (str default-alias-sym)))
@@ -45,7 +45,7 @@
 
 (defn add-namespace
   [{:as elin :component/keys [host]}]
-  (let [coll (e.f.c.namespace/get-namespaces elin)]
+  (let [coll (e.f.namespace/get-namespaces elin)]
     (e.p.host/select-from-candidates host coll (symbol #'add-namespace*))))
 
 (defn resolve-missing-namespace*
@@ -72,7 +72,7 @@
           _ (when-not var-str
               (e/incorrect {:message (format "Fully qualified symbol is required: %s" code)}))
           alias-sym (symbol alias-str)
-          resp (e.f.c.namespace/resolve-missing-namespace elin code favorites)]
+          resp (e.f.namespace/resolve-missing-namespace elin code favorites)]
     (condp = (count resp)
       0
       (e.message/warning host "There are no candidates.")

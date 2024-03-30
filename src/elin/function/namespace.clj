@@ -1,4 +1,4 @@
-(ns elin.function.core.namespace
+(ns elin.function.namespace
   (:require
    [clojure.edn :as edn]
    [clojure.string :as str]
