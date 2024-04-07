@@ -66,3 +66,8 @@
   (e/let [path (async/<!! (e.p.host/get-current-file-path! host))]
     (e.f.nrepl/load-file!! nrepl path)
     true))
+
+(defn print-last-result
+  [{:component/keys [host nrepl]}]
+  (let [resp (e.f.nrepl/eval!! nrepl "*1" {:use-printer? true})]
+    (e.p.host/append-to-info-buffer host (:value resp))))

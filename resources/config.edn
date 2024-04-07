@@ -26,6 +26,7 @@
                       elin.handler.evaluate/evaluate-current-list
                       elin.handler.evaluate/evaluate-current-top-list
                       elin.handler.evaluate/evaluate-namespace-form
+                      elin.handler.evaluate/print-last-result
                       elin.handler.namespace/add-namespace
                       elin.handler.namespace/add-namespace*
                       elin.handler.namespace/resolve-missing-namespace
