@@ -21,11 +21,12 @@
 (def set-eval-result-to-virtual-text-interceptor
   {:name ::set-eval-result-to-virtual-text-interceptor
    :kind e.c.interceptor/evaluate
-   :leave (-> (fn [{:component/keys [host] :keys [response]}]
+   :leave (-> (fn [{:component/keys [host] :keys [response options]}]
                 (when-let [v (:value response)]
                   (e.p.host/set-virtual-text host
                                              (str v)
-                                             {:highlight "DiffText"})))
+                                             {:lnum (:line options)
+                                              :highlight "DiffText"})))
               (ix/discard))})
 
 (defn- up-until-top [zloc]
