@@ -46,5 +46,7 @@ if has('vim_starting')
     au VimEnter *.clj,*.cljs,*.cljc,*.cljd call s:init()
   aug END
 else
-  call s:init()
+  if &ft ==# 'clojure'
+    call s:init()
+  endif
 endif
