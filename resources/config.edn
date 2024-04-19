@@ -32,6 +32,7 @@
                       elin.handler.namespace/resolve-missing-namespace
                       elin.handler.namespace/resolve-missing-namespace*
                       elin.handler.test/run-test-under-cursor
+                      elin.handler.test/run-tests-in-ns
                       elin.handler.evaluate/load-current-file
                       elin.handler.internal/healthcheck
                       elin.handler.internal/error

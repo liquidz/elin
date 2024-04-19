@@ -1,5 +1,6 @@
 (ns elin.handler.test
   (:require
+   [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
@@ -7,6 +8,9 @@
    [elin.function.evaluate :as e.f.evaluate]
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.nrepl.test :as e.f.n.test]
+   [elin.function.sexpr :as e.f.sexpr]
+   [elin.handler.evaluate :as e.h.evaluate]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
@@ -48,8 +52,38 @@
            (assoc ctx :response (e.f.n.cider/test-var-query!! nrepl query)))
 
          ;; plain
-         (let [query {:ns (:ns ctx)
-                      :vars (:vars ctx)
+         (let [vars' (->> (:vars ctx)
+                          (mapv #(symbol (str "#'" %))))
+               query {:ns (:ns ctx)
+                      :vars vars'
+                      :current-file (:file ctx)
+                      :base-line (:line ctx)}]
+           (assoc ctx :response (e.f.n.test/test-var-query!! nrepl query))))))))
+
+(defn run-tests-in-ns
+  [{:as elin :component/keys [host interceptor]}]
+  (e/let [ns-str (e.f.sexpr/get-namespace elin)
+          path (async/<!! (e.p.host/get-current-file-path! host))
+          context (-> (e.u.map/select-keys-by-namespace elin :component)
+                      (assoc :ns ns-str
+                             :line 0
+                             :column 0
+                             :file path
+                             :vars []))]
+    ;; NOTE: Reload ns to match run-test-under-cursor's behavior
+    (e.h.evaluate/load-current-file elin)
+
+    (e.p.interceptor/execute
+     interceptor e.c.interceptor/test context
+     (fn [{:as ctx :component/keys [nrepl]}]
+       (if (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
+         ;; cider-nrepl
+         (let [query {:ns-query {:exactly [(:ns ctx)]}}]
+           (assoc ctx :response (e.f.n.cider/test-var-query!! nrepl query)))
+         ;; plain
+         (let [vars' `(vals (ns-interns '~(symbol (:ns ctx))))
+               query {:ns (:ns ctx)
+                      :vars vars'
                       :current-file (:file ctx)
                       :base-line (:line ctx)}]
            (assoc ctx :response (e.f.n.test/test-var-query!! nrepl query))))))))
