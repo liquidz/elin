@@ -63,7 +63,7 @@
                       nil)))]
      (binding [clojure.test/report report]
        ;; Use `test-vars` instead of `test-var` to support fixtures
-       (clojure.test/test-vars [~@test-vars]))
+       (clojure.test/test-vars ~test-vars))
      (cond-> {:summary @summary
               :results @results}
        @testing-ns (assoc :testing-ns @testing-ns))))
@@ -76,15 +76,14 @@
 (def ^:private ?TestQuery
   [:map
    [:ns string?]
-   [:vars [:sequential string?]]
+   [:vars any?]
    [:base-line int?]
    [:current-file string?]])
 
 (m/=> test-var-query!! [:=> [:cat e.s.component/?Nrepl ?TestQuery] map?])
 (defn test-var-query!!
   [nrepl {ns-str :ns vars :vars base-line :base-line current-file :current-file}]
-  (e/let [vars' (map #(symbol (str "#'" %)) vars)
-          code (str (test-clj-code {:test-vars vars'
+  (e/let [code (str (test-clj-code {:test-vars vars
                                     :current-file current-file
                                     :base-line (if (babashka? nrepl)
                                                  base-line
