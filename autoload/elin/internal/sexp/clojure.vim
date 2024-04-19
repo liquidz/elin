@@ -12,7 +12,6 @@ function! s:search_ns_form_pos() abort
       if l1 == 0 && l2 == 0
         return [-1, -1]
       elseif l1 != 0 && l2 == 0
-        return elin#internal#sexp#get_list(l1, c1)['code']
         return [l1, c1]
       elseif l1 == 0 && l2 != 0
         return [l2, c2]
