@@ -10,6 +10,7 @@
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 (t/use-fixtures :each h/test-nrepl-server-port-fixture)
+(t/use-fixtures :once h/warn-log-level-fixture)
 
 (t/deftest test-var-query!!-test
   (let [{:as sys :keys [nrepl]} (-> (e.system/new-system)
@@ -35,13 +36,15 @@
                                                   :file "dummy.clj"
                                                   :line nil}]}}}
                  (sut/test-var-query!! nrepl {:ns "user"
-                                              :vars ["user/pass-test"]
+                                              :vars (->> ['user/pass-test]
+                                                         (mapv resolve))
                                               :base-line 0
                                               :current-file "dummy.clj"}))))
 
       (t/testing "fail-test"
         (let [resp (-> (sut/test-var-query!! nrepl {:ns "user"
-                                                    :vars ["user/fail-test"]
+                                                    :vars (->> ['user/fail-test]
+                                                               (mapv resolve))
                                                     :base-line 0
                                                     :current-file "dummy.clj"})
                        (update-in [:results "user" "fail-test"] vec))]
@@ -62,7 +65,8 @@
 
       (t/testing "error-test"
         (let [resp (-> (sut/test-var-query!! nrepl {:ns "user"
-                                                    :vars ["user/error-test"]
+                                                    :vars (->> ['user/error-test]
+                                                               (mapv resolve))
                                                     :base-line 0
                                                     :current-file "dummy.clj"})
                        (update-in [:results "user" "error-test"] vec))]
@@ -83,9 +87,10 @@
 
       (t/testing "all tests"
         (let [resp (-> (sut/test-var-query!! nrepl {:ns "user"
-                                                    :vars ["user/pass-test"
-                                                           "user/fail-test"
-                                                           "user/error-test"]
+                                                    :vars (->> ['user/pass-test
+                                                                'user/fail-test
+                                                                'user/error-test]
+                                                               (mapv resolve))
                                                     :base-line 0
                                                     :current-file "dummy.clj"})
                        (update-in [:results "user" "fail-test"] vec)
