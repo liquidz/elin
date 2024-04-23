@@ -1,4 +1,4 @@
-function! elin#internal#select#fzf#start(candidates, callback_handler, optional_params abort
+function! elin#internal#select#fzf#start(candidates, callback_handler, optional_params) abort
   silent call fzf#run(fzf#wrap('elin', {
         \ 'source': a:candidates,
         \ 'options': '--expect=ctrl-t,ctrl-v',
@@ -11,4 +11,3 @@ function! s:sink(result, callback_handler, optional_params) abort
   let text = trim(a:result[1])
   call elin#notify(a:callback_handler, a:optional_params + [text])
 endfunction
-
