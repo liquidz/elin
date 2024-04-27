@@ -14,7 +14,7 @@
 (defn- get-top-list-sexpr!*
   [host lnum col]
   (async/go
-    (e/-> (e.c.s.function/request! host "elin#internal#sexp#get_top_list" [lnum col])
+    (e/-> (e.c.s.function/request! host "elin#internal#sexpr#get_top_list" [lnum col])
           (async/<!)
           (update-keys keyword))))
 
@@ -22,7 +22,7 @@
 (defn- get-list-sexpr!*
   [host lnum col]
   (async/go
-    (e/-> (e.c.s.function/request! host "elin#internal#sexp#get_list" [lnum col])
+    (e/-> (e.c.s.function/request! host "elin#internal#sexpr#get_list" [lnum col])
           (async/<!)
           (update-keys keyword))))
 
@@ -30,7 +30,7 @@
 (defn- get-single-sexpr!*
   [host lnum col]
   (async/go
-    (e/-> (e.c.s.function/request! host "elin#internal#sexp#get_expr" [lnum col])
+    (e/-> (e.c.s.function/request! host "elin#internal#sexpr#get_expr" [lnum col])
           (async/<!)
           (update-keys keyword))))
 
@@ -38,14 +38,14 @@
 (defn- get-namespace-sexpr!*
   [host]
   (async/go
-    (e/-> (e.c.s.function/request! host "elin#internal#sexp#clojure#get_ns_sexpr" [])
+    (e/-> (e.c.s.function/request! host "elin#internal#sexpr#clojure#get_ns_sexpr" [])
           (async/<!)
           (update-keys keyword))))
 
 (m/=> replace-namespace-form!* [:=> [:cat e.s.server/?Host string?] e.schema/?ManyToManyChannel])
 (defn- replace-namespace-form!*
   [host new-ns-form]
-  (e.c.s.function/request! host "elin#internal#sexp#clojure#replace_ns_form" [new-ns-form]))
+  (e.c.s.function/request! host "elin#internal#sexpr#clojure#replace_ns_form" [new-ns-form]))
 
 (extend-protocol e.p.host/ISexpr
   elin.component.server.vim.VimHost
