@@ -31,7 +31,7 @@ function! elin#internal#sexp#clojure#get_ns_form() abort
   if lnum == -1 && col == -1
     return ''
   endif
-  return elin#internal#sexp#get_list(lnum, col)['code']
+  return elin#internal#sexp#get_list(lnum, col)
 endfunction
 
 function! elin#internal#sexp#clojure#replace_ns_form(new_ns) abort

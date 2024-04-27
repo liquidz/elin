@@ -37,7 +37,10 @@
 (m/=> get-namespace-form!* [:=> [:cat e.s.server/?Host] e.schema/?ManyToManyChannel])
 (defn- get-namespace-form!*
   [host]
-  (e.c.s.function/request! host "elin#internal#sexp#clojure#get_ns_form" []))
+  (async/go
+    (e/-> (e.c.s.function/request! host "elin#internal#sexp#clojure#get_ns_form" [])
+          (async/<!)
+          (update-keys keyword))))
 
 (m/=> replace-namespace-form!* [:=> [:cat e.s.server/?Host string?] e.schema/?ManyToManyChannel])
 (defn- replace-namespace-form!*

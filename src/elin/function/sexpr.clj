@@ -24,7 +24,7 @@
   [{:component/keys [host]} lnum col]
   (async/<!! (e.p.host/get-single-sexpr! host lnum col)))
 
-(m/=> get-namespace-form [:=> [:cat e.s.handler/?Elin] (e.schema/error-or [:maybe string?])])
+(m/=> get-namespace-form [:=> [:cat e.s.handler/?Elin] (e.schema/error-or e.s.host/?CodeAndPosition)])
 (defn get-namespace-form
   [{:component/keys [host]}]
   (async/<!! (e.p.host/get-namespace-form! host)))
@@ -38,4 +38,5 @@
 (defn get-namespace
   [elin]
   (e/-> (get-namespace-form elin)
+        (:code)
         (e.u.sexp/extract-namespace)))
