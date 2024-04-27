@@ -234,6 +234,12 @@
               :method e.p.host/replace-namespace-form!
               :args [new-ns-form]
               :queue host-channel}))
+  (replace-list-sexpr! [_ lnum col new-sexpr]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/replace-list-sexpr!
+              :args [lnum col new-sexpr]
+              :queue host-channel}))
   ;; }}}
 
   e.p.host/IPopup ; {{{

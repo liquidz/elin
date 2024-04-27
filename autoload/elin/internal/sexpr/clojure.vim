@@ -71,3 +71,28 @@ function! elin#internal#sexp#clojure#replace_ns_form(new_ns) abort
     call winrestview(view)
   endtry
 endfunction
+
+function! elin#internal#sexp#clojure#replace_list_sexpr(lnum, col, new_sexpr) abort
+  let view = winsaveview()
+  let new_sexpr = trim(a:new_sexpr)
+  let before_line_count = 0
+  let after_line_count = 0
+  let reg_save = @@
+
+  try
+    call cursor(a:lnum, a:col)
+    keepjumps silent normal! dab
+
+    let before_line_count = len(split(@@, '\r\?\n'))
+    let lnum = line('.') - 1
+    call append(lnum, split(new_ns, '\r\?\n'))
+  finally
+    let @@ = reg_save
+
+    " NOTE: need to calculate lnum after calling `iced#format#current`
+    let after_line_count = len(split(elin#internal#sexp#clojure#get_ns_form(), '\r\?\n'))
+
+    let view['lnum'] = view['lnum'] + (after_line_count - before_line_count)
+    call winrestview(view)
+  endtry
+endfunction

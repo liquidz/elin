@@ -51,6 +51,7 @@
   (get-namespace-sexpr! [_]
     (async/go (:get-namespace-sexpr! option)))
   (replace-namespace-form! [_ _new-ns-form] (async/go nil))
+  (replace-list-sexpr! [_ _lnum _col _new-sexpr] (async/go nil))
 
   e.p.rpc/IFunction
   (call-function [this method params]
