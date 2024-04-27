@@ -180,16 +180,16 @@
                                                                                            :int
                                                                                            :int],
                                                                                     :ret :any}}},
-                                                             get-namespace-form {:arities {1 {:args [{:op :keys,
-                                                                                                      :req {:message {:op :keys,
-                                                                                                                      :req {:host :string,
-                                                                                                                            :message :sequential}},
-                                                                                                            :component/nrepl :any,
-                                                                                                            :component/interceptor :any,
-                                                                                                            :component/host :any,
-                                                                                                            :component/session-storage :any,
-                                                                                                            :component/clj-kondo :any}}],
-                                                                                              :ret :any}}},
+                                                             get-namespace-sexpr {:arities {1 {:args [{:op :keys,
+                                                                                                       :req {:message {:op :keys,
+                                                                                                                       :req {:host :string,
+                                                                                                                             :message :sequential}},
+                                                                                                             :component/nrepl :any,
+                                                                                                             :component/interceptor :any,
+                                                                                                             :component/host :any,
+                                                                                                             :component/session-storage :any,
+                                                                                                             :component/clj-kondo :any}}],
+                                                                                               :ret :any}}},
                                                              replace-namespace-form {:arities {2 {:args [{:op :keys,
                                                                                                           :req {:message {:op :keys,
                                                                                                                           :req {:host :string,
@@ -225,6 +225,16 @@
                                                                                                :arglists-str :string,
                                                                                                :column :int,
                                                                                                :line :int}}}}}},
+                                        elin.util.sexpr {extract-ns-form {:arities {1 {:args [:string], :ret :any}}},
+                                                         extract-namespace {:arities {1 {:args [:string], :ret :any}}},
+                                                         add-require {:arities {3 {:args [:string
+                                                                                          :symbol
+                                                                                          :nilable/symbol],
+                                                                                   :ret :any}}},
+                                                         extract-form-by-position {:arities {3 {:args [:string
+                                                                                                       :int
+                                                                                                       :int],
+                                                                                                :ret :any}}}},
                                         elin.util.map {select-keys-by-namespace {:arities {2 {:args [:map :keyword],
                                                                                               :ret :map}}},
                                                        map->str {:arities {2 {:args [:map :sequential], :ret :string}}}},
@@ -322,14 +332,6 @@
                                                                                                      :ret :any}}},
                                                                     get-project-name {:arities {1 {:args [:any],
                                                                                                    :ret :any}}}},
-                                        elin.util.sexp {extract-ns-form {:arities {1 {:args [:string], :ret :any}}},
-                                                        extract-namespace {:arities {1 {:args [:string], :ret :any}}},
-                                                        add-require {:arities {3 {:args [:string
-                                                                                         :symbol
-                                                                                         :nilable/symbol],
-                                                                                  :ret :any}}},
-                                                        extract-form-by-position {:arities {3 {:args [:string :int :int],
-                                                                                               :ret :any}}}},
                                         elin.function.nrepl.namespace {get-cycled-namespace-path {:arities {1 {:args [{:op :keys,
                                                                                                                        :req {:ns :string,
                                                                                                                              :path :string,
@@ -476,11 +478,16 @@
                                                                                                                   :int
                                                                                                                   :int],
                                                                                                            :ret :any}}},
-                                                                          get-namespace-form!* {:arities {1 {:args [:any],
-                                                                                                             :ret :any}}},
+                                                                          get-namespace-sexpr!* {:arities {1 {:args [:any],
+                                                                                                              :ret :any}}},
                                                                           replace-namespace-form!* {:arities {2 {:args [:any
                                                                                                                         :string],
-                                                                                                                 :ret :any}}}},
+                                                                                                                 :ret :any}}},
+                                                                          replace-list-sexpr!* {:arities {4 {:args [:any
+                                                                                                                    :int
+                                                                                                                    :int
+                                                                                                                    :string],
+                                                                                                             :ret :any}}}},
                                         elin.function.clj-kondo {namespace-symbols {:arities {1 {:args [{:op :keys,
                                                                                                          :req {:lazy-host {:op :keys,
                                                                                                                            :req {:host-store :any}},
