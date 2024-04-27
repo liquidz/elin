@@ -33,10 +33,14 @@ function! elin#intercept_request(...) abort
 endfunction
 
 function! elin#status() abort
-  if elin#server#connection() is# v:null
+  try
+    if elin#server#connection() is# v:null
+      return ''
+    endif
+    return elin#request('elin.handler.internal/status', [])
+  catch
     return ''
-  endif
-  return elin#request('elin.handler.internal/status', [])
+  endtry
 endfunction
 
 function! s:callback(...) abort
