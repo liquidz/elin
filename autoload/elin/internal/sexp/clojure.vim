@@ -26,7 +26,7 @@ function! s:search_ns_form_pos() abort
   endif
 endfunction
 
-function! elin#internal#sexp#clojure#get_ns_form() abort
+function! elin#internal#sexp#clojure#get_ns_sexpr() abort
   let [lnum, col] = s:search_ns_form_pos()
   if lnum == -1 && col == -1
     return ''

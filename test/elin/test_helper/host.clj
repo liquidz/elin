@@ -48,8 +48,8 @@
     (async/go (:get-list-sexpr! option)))
   (get-single-sexpr! [_ _lnum _col]
     (async/go (:get-single-sexpr! option)))
-  (get-namespace-form! [_]
-    (async/go (:get-namespace-form! option)))
+  (get-namespace-sexpr! [_]
+    (async/go (:get-namespace-sexpr! option)))
   (replace-namespace-form! [_ _new-ns-form] (async/go nil))
 
   e.p.rpc/IFunction

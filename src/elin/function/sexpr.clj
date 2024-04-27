@@ -24,10 +24,10 @@
   [{:component/keys [host]} lnum col]
   (async/<!! (e.p.host/get-single-sexpr! host lnum col)))
 
-(m/=> get-namespace-form [:=> [:cat e.s.handler/?Elin] (e.schema/error-or e.s.host/?CodeAndPosition)])
-(defn get-namespace-form
+(m/=> get-namespace-sexpr [:=> [:cat e.s.handler/?Elin] (e.schema/error-or e.s.host/?CodeAndPosition)])
+(defn get-namespace-sexpr
   [{:component/keys [host]}]
-  (async/<!! (e.p.host/get-namespace-form! host)))
+  (async/<!! (e.p.host/get-namespace-sexpr! host)))
 
 (m/=> replace-namespace-form [:=> [:cat e.s.handler/?Elin string?] (e.schema/error-or [:maybe string?])])
 (defn replace-namespace-form
@@ -37,6 +37,6 @@
 (m/=> get-namespace [:=> [:cat e.s.handler/?Elin] (e.schema/error-or [:maybe string?])])
 (defn get-namespace
   [elin]
-  (e/-> (get-namespace-form elin)
+  (e/-> (get-namespace-sexpr elin)
         (:code)
         (e.u.sexp/extract-namespace)))

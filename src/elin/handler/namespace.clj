@@ -31,7 +31,7 @@
                                                 (str default-alias-sym)))
           alias-sym (when (seq alias-str)
                       (symbol alias-str))
-          {ns-form :code} (e.f.sexpr/get-namespace-form elin)]
+          {ns-form :code} (e.f.sexpr/get-namespace-sexpr elin)]
     (if (has-namespace? ns-form ns-sym)
       (e.message/warning host (format "'%s' already exists." ns-sym))
       (e/let [ns-form' (e.u.sexp/add-require ns-form ns-sym alias-sym)]
@@ -57,7 +57,7 @@
                          (symbol))
           _ (when (or (not alias-sym) (not ns-sym))
               (e/not-found))
-          {ns-form :code} (e.f.sexpr/get-namespace-form elin)
+          {ns-form :code} (e.f.sexpr/get-namespace-sexpr elin)
           ns-form' (e.u.sexp/add-require ns-form ns-sym alias-sym)]
     (e.f.sexpr/replace-namespace-form elin ns-form')
     (e.f.evaluate/evaluate-namespace-form elin)

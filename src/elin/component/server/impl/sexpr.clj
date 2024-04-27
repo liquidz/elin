@@ -34,11 +34,11 @@
           (async/<!)
           (update-keys keyword))))
 
-(m/=> get-namespace-form!* [:=> [:cat e.s.server/?Host] e.schema/?ManyToManyChannel])
-(defn- get-namespace-form!*
+(m/=> get-namespace-sexpr!* [:=> [:cat e.s.server/?Host] e.schema/?ManyToManyChannel])
+(defn- get-namespace-sexpr!*
   [host]
   (async/go
-    (e/-> (e.c.s.function/request! host "elin#internal#sexp#clojure#get_ns_form" [])
+    (e/-> (e.c.s.function/request! host "elin#internal#sexp#clojure#get_ns_sexpr" [])
           (async/<!)
           (update-keys keyword))))
 
@@ -52,12 +52,12 @@
   (get-top-list-sexpr! [this lnum col] (get-top-list-sexpr!* this lnum col))
   (get-list-sexpr! [this lnum col] (get-list-sexpr!* this lnum col))
   (get-single-sexpr! [this lnum col] (get-single-sexpr!* this lnum col))
-  (get-namespace-form! [this] (get-namespace-form!* this))
+  (get-namespace-sexpr! [this] (get-namespace-sexpr!* this))
   (replace-namespace-form! [this new-ns-form] (replace-namespace-form!* this new-ns-form))
 
   elin.component.server.nvim.NvimHost
   (get-top-list-sexpr! [this lnum col] (get-top-list-sexpr!* this lnum col))
   (get-list-sexpr! [this lnum col] (get-list-sexpr!* this lnum col))
   (get-single-sexpr! [this lnum col] (get-single-sexpr!* this lnum col))
-  (get-namespace-form! [this] (get-namespace-form!* this))
+  (get-namespace-sexpr! [this] (get-namespace-sexpr!* this))
   (replace-namespace-form! [this new-ns-form] (replace-namespace-form!* this new-ns-form)))

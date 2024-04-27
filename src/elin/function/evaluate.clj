@@ -75,7 +75,7 @@
   ([elin]
    (evaluate-namespace-form elin {}))
   ([{:as elin :component/keys [nrepl host]} options]
-   (e/let [{ns-form :code} (e.f.sexpr/get-namespace-form elin)
+   (e/let [{ns-form :code} (e.f.sexpr/get-namespace-sexpr elin)
            path (async/<!! (e.p.host/get-current-file-path! host))]
      (eval!! nrepl ns-form (merge options
                                   {:file path})))))

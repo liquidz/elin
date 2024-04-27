@@ -222,10 +222,10 @@
               :method e.p.host/get-single-sexpr!
               :args [lnum col]
               :queue host-channel}))
-  (get-namespace-form! [_]
+  (get-namespace-sexpr! [_]
     (execute {:host @host-store
               :protocol e.p.host/ISexpr
-              :method e.p.host/get-namespace-form!
+              :method e.p.host/get-namespace-sexpr!
               :args []
               :queue host-channel}))
   (replace-namespace-form! [_ new-ns-form]

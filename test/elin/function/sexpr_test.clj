@@ -10,7 +10,7 @@
 
 (defn- get-namespace-elin
   [ns-form]
-  (h/test-elin {:host {:get-namespace-form! ns-form}}))
+  (h/test-elin {:host {:get-namespace-sexpr! {:code ns-form :lnum 0 :col 0}}}))
 
 (t/deftest get-namespace-test
   (t/testing "no metadata"
