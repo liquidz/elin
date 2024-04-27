@@ -6,7 +6,7 @@
    [elin.schema :as e.schema]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.host :as e.s.host]
-   [elin.util.sexp :as e.u.sexp]
+   [elin.util.sexpr :as e.u.sexpr]
    [malli.core :as m]))
 
 (m/=> get-top-list [:=> [:cat e.s.handler/?Elin int? int?] (e.schema/error-or e.s.host/?CodeAndPosition)])
@@ -39,4 +39,4 @@
   [elin]
   (e/-> (get-namespace-sexpr elin)
         (:code)
-        (e.u.sexp/extract-namespace)))
+        (e.u.sexpr/extract-namespace)))

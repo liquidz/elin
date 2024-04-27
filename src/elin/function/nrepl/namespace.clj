@@ -3,7 +3,7 @@
    [clojure.java.io :as io]
    [clojure.string :as str]
    [elin.util.file :as e.u.file]
-   [elin.util.sexp :as e.u.sexp]
+   [elin.util.sexpr :as e.u.sexpr]
    [malli.core :as m]))
 
 (m/=> get-cycled-namespace-path [:=> [:cat [:map
@@ -42,8 +42,8 @@
         recent-file-path (.getAbsolutePath recent-file)
         ext (e.u.file/get-file-extension recent-file-path)
         recent-namespace (-> (slurp recent-file)
-                             (e.u.sexp/extract-ns-form)
-                             (e.u.sexp/extract-namespace))
+                             (e.u.sexpr/extract-ns-form)
+                             (e.u.sexpr/extract-namespace))
         recent-relative-name (-> recent-namespace
                                  (str/replace "." sep)
                                  (str/replace "-" "_"))

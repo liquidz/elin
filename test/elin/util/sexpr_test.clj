@@ -1,8 +1,8 @@
-(ns elin.util.sexp-test
+(ns elin.util.sexpr-test
   (:require
    [clojure.test :as t]
    [elin.error :as e]
-   [elin.util.sexp :as sut]))
+   [elin.util.sexpr :as sut]))
 
 (t/deftest extract-ns-form-test
   (t/is (= "(ns bar)"

@@ -8,7 +8,7 @@
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
-   [elin.util.sexp :as e.u.sexp]
+   [elin.util.sexpr :as e.u.sexpr]
    [malli.core :as m]))
 
 ;; (def ^:private spec-fn-set
@@ -122,7 +122,7 @@
           ns-str (e.f.sexpr/get-namespace elin)
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           resp (e.f.lookup/lookup elin ns-str code)
-          source (e.u.sexp/extract-form-by-position
+          source (e.u.sexpr/extract-form-by-position
                   (slurp (:file resp))
                   (:line resp)
                   (:column resp))]

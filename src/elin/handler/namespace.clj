@@ -8,7 +8,7 @@
    [elin.function.sexpr :as e.f.sexpr]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
-   [elin.util.sexp :as e.u.sexp]))
+   [elin.util.sexpr :as e.u.sexpr]))
 
 (defn- has-namespace?
   [form ns-sym]
@@ -34,7 +34,7 @@
           {ns-form :code} (e.f.sexpr/get-namespace-sexpr elin)]
     (if (has-namespace? ns-form ns-sym)
       (e.message/warning host (format "'%s' already exists." ns-sym))
-      (e/let [ns-form' (e.u.sexp/add-require ns-form ns-sym alias-sym)]
+      (e/let [ns-form' (e.u.sexpr/add-require ns-form ns-sym alias-sym)]
         (e.f.sexpr/replace-namespace-form elin ns-form')
         (e.f.evaluate/evaluate-namespace-form elin)
         (e.message/info host (if alias-sym
@@ -58,7 +58,7 @@
           _ (when (or (not alias-sym) (not ns-sym))
               (e/not-found))
           {ns-form :code} (e.f.sexpr/get-namespace-sexpr elin)
-          ns-form' (e.u.sexp/add-require ns-form ns-sym alias-sym)]
+          ns-form' (e.u.sexpr/add-require ns-form ns-sym alias-sym)]
     (e.f.sexpr/replace-namespace-form elin ns-form')
     (e.f.evaluate/evaluate-namespace-form elin)
     (e.message/info host (format "'%s' added as '%s'." ns-sym alias-sym))))

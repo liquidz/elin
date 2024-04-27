@@ -1,4 +1,4 @@
-(ns elin.util.sexp
+(ns elin.util.sexpr
   (:require
    [clojure.string :as str]
    [elin.error :as e]
