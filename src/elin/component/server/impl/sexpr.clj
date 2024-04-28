@@ -42,11 +42,6 @@
           (async/<!)
           (update-keys keyword))))
 
-(m/=> replace-namespace-form!* [:=> [:cat e.s.server/?Host string?] e.schema/?ManyToManyChannel])
-(defn- replace-namespace-form!*
-  [host new-ns-form]
-  (e.c.s.function/request! host "elin#internal#sexpr#clojure#replace_ns_form" [new-ns-form]))
-
 (m/=> replace-list-sexpr!* [:=> [:cat e.s.server/?Host int? int? string?] e.schema/?ManyToManyChannel])
 (defn- replace-list-sexpr!*
   [host lnum col new-sexpr]
@@ -58,7 +53,6 @@
   (get-list-sexpr! [this lnum col] (get-list-sexpr!* this lnum col))
   (get-single-sexpr! [this lnum col] (get-single-sexpr!* this lnum col))
   (get-namespace-sexpr! [this] (get-namespace-sexpr!* this))
-  (replace-namespace-form! [this new-ns-form] (replace-namespace-form!* this new-ns-form))
   (replace-list-sexpr! [this lnum col new-sexpr] (replace-list-sexpr!* this lnum col new-sexpr))
 
   elin.component.server.nvim.NvimHost
@@ -66,5 +60,4 @@
   (get-list-sexpr! [this lnum col] (get-list-sexpr!* this lnum col))
   (get-single-sexpr! [this lnum col] (get-single-sexpr!* this lnum col))
   (get-namespace-sexpr! [this] (get-namespace-sexpr!* this))
-  (replace-namespace-form! [this new-ns-form] (replace-namespace-form!* this new-ns-form))
   (replace-list-sexpr! [this lnum col new-sexpr] (replace-list-sexpr!* this lnum col new-sexpr)))

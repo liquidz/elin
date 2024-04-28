@@ -29,11 +29,6 @@
   [{:component/keys [host]}]
   (async/<!! (e.p.host/get-namespace-sexpr! host)))
 
-(m/=> replace-namespace-form [:=> [:cat e.s.handler/?Elin string?] (e.schema/error-or [:maybe string?])])
-(defn replace-namespace-form
-  [{:component/keys [host]} new-ns-form]
-  (async/<!! (e.p.host/replace-namespace-form! host new-ns-form)))
-
 (m/=> replace-list-sexpr [:=> [:cat e.s.handler/?Elin int? int? string?] (e.schema/error-or [:maybe string?])])
 (defn replace-list-sexpr
   [{:component/keys [host]} lnum col new-sexpr]

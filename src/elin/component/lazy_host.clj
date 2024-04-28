@@ -228,12 +228,6 @@
               :method e.p.host/get-namespace-sexpr!
               :args []
               :queue host-channel}))
-  (replace-namespace-form! [_ new-ns-form]
-    (execute {:host @host-store
-              :protocol e.p.host/ISexpr
-              :method e.p.host/replace-namespace-form!
-              :args [new-ns-form]
-              :queue host-channel}))
   (replace-list-sexpr! [_ lnum col new-sexpr]
     (execute {:host @host-store
               :protocol e.p.host/ISexpr

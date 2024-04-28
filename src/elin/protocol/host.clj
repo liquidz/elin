@@ -32,7 +32,6 @@
   (get-list-sexpr! [this lnum col])
   (get-single-sexpr! [this lnum col])
   (get-namespace-sexpr! [this])
-  (replace-namespace-form! [this new-ns-form])
   (replace-list-sexpr! [this lnum col new-sexpr]))
 
 (defprotocol IPopup
