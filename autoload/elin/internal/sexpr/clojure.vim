@@ -26,15 +26,15 @@ function! s:search_ns_form_pos() abort
   endif
 endfunction
 
-function! elin#internal#sexp#clojure#get_ns_sexpr() abort
+function! elin#internal#sexpr#clojure#get_ns_sexpr() abort
   let [lnum, col] = s:search_ns_form_pos()
   if lnum == -1 && col == -1
     return ''
   endif
-  return elin#internal#sexp#get_list(lnum, col)
+  return elin#internal#sexpr#get_list(lnum, col)
 endfunction
 
-function! elin#internal#sexp#clojure#replace_ns_form(new_ns) abort
+function! elin#internal#sexpr#clojure#replace_ns_form(new_ns) abort
   let view = winsaveview()
   let new_ns = trim(a:new_ns)
   let before_line_count = 0
@@ -65,14 +65,14 @@ function! elin#internal#sexp#clojure#replace_ns_form(new_ns) abort
     " endif
 
     " NOTE: need to calculate lnum after calling `iced#format#current`
-    let after_line_count = len(split(elin#internal#sexp#clojure#get_ns_form(), '\r\?\n'))
+    let after_line_count = len(split(elin#internal#sexpr#clojure#get_ns_form(), '\r\?\n'))
 
     let view['lnum'] = view['lnum'] + (after_line_count - before_line_count)
     call winrestview(view)
   endtry
 endfunction
 
-function! elin#internal#sexp#clojure#replace_list_sexpr(lnum, col, new_sexpr) abort
+function! elin#internal#sexpr#clojure#replace_list_sexpr(lnum, col, new_sexpr) abort
   let view = winsaveview()
   let new_sexpr = trim(a:new_sexpr)
   let before_line_count = 0
@@ -90,7 +90,7 @@ function! elin#internal#sexp#clojure#replace_list_sexpr(lnum, col, new_sexpr) ab
     let @@ = reg_save
 
     " NOTE: need to calculate lnum after calling `iced#format#current`
-    let after_line_count = len(split(elin#internal#sexp#clojure#get_ns_form(), '\r\?\n'))
+    let after_line_count = len(split(elin#internal#sexpr#clojure#get_ns_form(), '\r\?\n'))
 
     let view['lnum'] = view['lnum'] + (after_line_count - before_line_count)
     call winrestview(view)
