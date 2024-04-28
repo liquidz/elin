@@ -190,17 +190,19 @@
                                                                                                              :component/session-storage :any,
                                                                                                              :component/clj-kondo :any}}],
                                                                                                :ret :any}}},
-                                                             replace-namespace-form {:arities {2 {:args [{:op :keys,
-                                                                                                          :req {:message {:op :keys,
-                                                                                                                          :req {:host :string,
-                                                                                                                                :message :sequential}},
-                                                                                                                :component/nrepl :any,
-                                                                                                                :component/interceptor :any,
-                                                                                                                :component/host :any,
-                                                                                                                :component/session-storage :any,
-                                                                                                                :component/clj-kondo :any}}
-                                                                                                         :string],
-                                                                                                  :ret :any}}},
+                                                             replace-list-sexpr {:arities {4 {:args [{:op :keys,
+                                                                                                      :req {:message {:op :keys,
+                                                                                                                      :req {:host :string,
+                                                                                                                            :message :sequential}},
+                                                                                                            :component/nrepl :any,
+                                                                                                            :component/interceptor :any,
+                                                                                                            :component/host :any,
+                                                                                                            :component/session-storage :any,
+                                                                                                            :component/clj-kondo :any}}
+                                                                                                     :int
+                                                                                                     :int
+                                                                                                     :string],
+                                                                                              :ret :any}}},
                                                              get-namespace {:arities {1 {:args [{:op :keys,
                                                                                                  :req {:message {:op :keys,
                                                                                                                  :req {:host :string,
@@ -480,9 +482,6 @@
                                                                                                            :ret :any}}},
                                                                           get-namespace-sexpr!* {:arities {1 {:args [:any],
                                                                                                               :ret :any}}},
-                                                                          replace-namespace-form!* {:arities {2 {:args [:any
-                                                                                                                        :string],
-                                                                                                                 :ret :any}}},
                                                                           replace-list-sexpr!* {:arities {4 {:args [:any
                                                                                                                     :int
                                                                                                                     :int
