@@ -85,3 +85,30 @@ else
   endfunction
 
 endif
+
+function! elin#internal#sexpr#replace_list_sexpr(lnum, col, new_sexpr) abort
+  let view = winsaveview()
+  let before_line_count = 0
+  let after_line_count = 0
+  let reg_save = @@
+
+  try
+    call cursor(a:lnum, a:col)
+
+    keepjumps silent normal! vaby
+    let before_sexpr = @@
+    if before_sexpr ==# ''
+      return
+    endif
+    let before_line_count = len(split(before_sexpr, '\r\?\n'))
+
+    let @@ = trim(a:new_sexpr)
+    keepjumps silent normal! gv"0p
+  finally
+    let @@ = reg_save
+
+    let new_line_count = len(split(trim(a:new_sexpr), '\r\?\n'))
+    let view['lnum'] = view['lnum'] + (new_line_count - before_line_count)
+    call winrestview(view)
+  endtry
+endfunction

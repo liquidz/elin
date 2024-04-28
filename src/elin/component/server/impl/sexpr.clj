@@ -50,7 +50,7 @@
 (m/=> replace-list-sexpr!* [:=> [:cat e.s.server/?Host int? int? string?] e.schema/?ManyToManyChannel])
 (defn- replace-list-sexpr!*
   [host lnum col new-sexpr]
-  (e.c.s.function/request! host "elin#internal#sexpr#clojure#replace_list_sexpr(lnum," [lnum col new-sexpr]))
+  (e.c.s.function/request! host "elin#internal#sexpr#replace_list_sexpr" [lnum col new-sexpr]))
 
 (extend-protocol e.p.host/ISexpr
   elin.component.server.vim.VimHost
