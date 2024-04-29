@@ -41,9 +41,15 @@
                                     ""])))
                        (str/join "\n")
                        (e.p.host/append-to-info-buffer host))
-                  ;; TODO quickfix
-                  ;; call iced#qf#set(errors)
-                  (comment nil)
+                  ;; set errors to quickfix list
+                  (->> failed
+                       (map #(hash-map :filename (:filename %)
+                                       :lnum (:lnum %)
+                                       :text (cond-> (format "%s/%s" (:ns %) (:var %))
+                                               (seq (:text %))
+                                               (str ": " (:text %)))
+                                       :type "Error"))
+                       (e.p.host/set-quickfix-list host))
 
                   ;; show summary
                   (e.p.host/append-to-info-buffer host summary)
