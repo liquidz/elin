@@ -52,3 +52,9 @@
   (select-from-candidates
     [this candidates callback-handler-symbol]
     [this candidates callback-handler-symbol optional-params]))
+
+(defprotocol IQuickfix
+  (set-quickfix-list
+    [this quickfix-list])
+  (set-location-list
+    [this window-id location-list]))
