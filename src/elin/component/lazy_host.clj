@@ -305,6 +305,21 @@
               :queue host-channel}))
   ;; }}}
 
+  e.p.host/IQuickfix ; {{{
+  (set-quickfix-list [_ qf-list]
+    (execute {:host @host-store
+              :protocol e.p.host/IQuickfix
+              :method e.p.host/set-quickfix-list
+              :args [qf-list]
+              :queue host-channel}))
+  (set-location-list [_ window-id qf-list]
+    (execute {:host @host-store
+              :protocol e.p.host/IQuickfix
+              :method e.p.host/set-location-list
+              :args [window-id qf-list]
+              :queue host-channel}))
+  ;; }}}
+
   e.p.host/ISelector
   (select-from-candidates [_ candidates callback-handler-symbol]
     (execute {:host @host-store

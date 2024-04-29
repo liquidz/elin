@@ -13,3 +13,11 @@
    [:code string?]
    [:lnum int?]
    [:col int?]])
+
+(def ?QuickfixListItem
+  [:map
+   [:filename string?]
+   [:lnum int?]
+   [:col {:optional true} int?]
+   [:text string?]
+   [:type {:optional true} [:enum "Error" "Warning" "Info"]]])
