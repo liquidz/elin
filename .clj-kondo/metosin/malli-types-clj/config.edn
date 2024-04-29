@@ -55,6 +55,13 @@
                                                                                                     :ret :any}}},
                                                                              eval! {:arities {2 {:args [:any :string],
                                                                                                  :ret :any}}}},
+                                        elin.component.server.impl.quickfix {set-quickfix-list* {:arities {2 {:args [:any
+                                                                                                                     :sequential],
+                                                                                                              :ret :nil}}},
+                                                                             set-location-list* {:arities {3 {:args [:any
+                                                                                                                     :int
+                                                                                                                     :sequential],
+                                                                                                              :ret :nil}}}},
                                         elin.util.id {next-id {:arities {0 {:args [], :ret :int}}}},
                                         elin.handler.lookup {lookup {:arities {1 {:args [{:op :keys,
                                                                                           :req {:message {:op :keys,
