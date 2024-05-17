@@ -1,6 +1,7 @@
 (ns elin.function.evaluate
   (:require
    [clojure.core.async :as async]
+   [clojure.string :as str]
    [elin.error :as e]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.sexpr :as e.f.sexpr]
@@ -17,11 +18,13 @@
                              options)
           resp (e.f.nrepl/eval!! nrepl code options)]
     (if (e.u.nrepl/has-status? resp "eval-error")
-      (e/fault {:message (:err resp)})
+      (e/fault {:message (-> (:err resp)
+                             (str)
+                             (str/trim)
+                             (str/replace #"\r?\n" " "))})
       {:code code
        :options options
        :response resp})))
-
 
 (defn evaluate-current-top-list
   ([elin]
