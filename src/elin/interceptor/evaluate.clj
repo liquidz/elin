@@ -2,7 +2,6 @@
   (:require
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
    [exoscale.interceptor :as ix]
    [rewrite-clj.zip :as r.zip]))
@@ -12,10 +11,7 @@
    :kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (when-let [v (:value response)]
-                  (e.p.host/echo-text host (str/trim (str v))))
-
-                (when-let [v (:err response)]
-                  (e.message/error host (str/trim (str v)))))
+                  (e.p.host/echo-text host (str/trim (str v)))))
               (ix/discard))})
 
 (def set-eval-result-to-virtual-text-interceptor
