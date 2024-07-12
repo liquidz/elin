@@ -302,7 +302,8 @@
                                         elin.util.file {find-file-in-parent-directories {:arities {2 {:args [:string
                                                                                                              :any],
                                                                                                       :ret :any}}},
-                                                        normalize-path {:arities {1 {:args [:string], :ret :string}}},
+                                                        normalize-path {:arities {1 {:args [:nilable/string],
+                                                                                     :ret :nilable/string}}},
                                                         get-cache-directory {:arities {0 {:args [], :ret :string}}},
                                                         get-file-extension {:arities {1 {:args [:string],
                                                                                          :ret :nilable/string}}},
