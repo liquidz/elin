@@ -36,4 +36,5 @@
   (t/is (= "/foo/bar.txt"
            (sut/normalize-path "file:/foo/bar.txt")))
   (t/is (= "zipfile:///path/to/jarfile.jar::path/to/file.clj"
-           (sut/normalize-path "jar:file:/path/to/jarfile.jar!/path/to/file.clj"))))
+           (sut/normalize-path "jar:file:/path/to/jarfile.jar!/path/to/file.clj")))
+  (t/is (nil? (sut/normalize-path nil))))

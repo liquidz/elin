@@ -36,10 +36,12 @@
     (find-file-in-parent-directories-by-string cwd file-name)
     (find-file-in-parent-directories-by-pattern cwd file-name)))
 
-(m/=> normalize-path [:=> [:cat string?] string?])
+(m/=> normalize-path [:=> [:cat [:maybe string?]] [:maybe string?]])
 (defn normalize-path [path]
-  (let [path (str/replace-first path #"^file:" "")]
-    (if (str/starts-with? path "jar:")
+  (let [path (some-> path
+                     (str/replace-first #"^file:" ""))]
+    (if (some-> path
+                (str/starts-with? "jar:"))
       (-> path
           (str/replace-first #"^jar:file:" "zipfile://")
           (str/replace #"!/" "::"))
