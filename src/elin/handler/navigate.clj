@@ -11,13 +11,25 @@
    [elin.util.file :as e.u.file]
    [malli.core :as m]))
 
+(defn- select-ns-and-sym-str [ns-str sym-str]
+  (let [sym (symbol sym-str)]
+    (cond
+      (or (seq ns-str)
+          (not (qualified-symbol? sym)))
+      {:ns-str ns-str :sym-str sym-str}
+
+      :else
+      {:ns-str (namespace sym) :sym-str (name sym)})))
+
 (m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
 (defn jump-to-definition
   [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
-          ns-str (e.f.sexpr/get-namespace elin)
+          ns-str (e/error-or (e.f.sexpr/get-namespace elin)
+                             "")
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          {:keys [file line column]} (e.f.lookup/lookup elin ns-str code)]
+          {:keys [ns-str sym-str]} (select-ns-and-sym-str ns-str code)
+          {:keys [file line column]} (e.f.lookup/lookup elin ns-str sym-str)]
     (when (and file line)
       (async/<!! (e.p.host/jump! host file line (or column 1))))
     true))
