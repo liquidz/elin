@@ -47,3 +47,11 @@
                                   err)))
                 ctx)
               (throw (ex-info "Unknown kind" {:kind kind :context ctx}))))})
+
+(def tap-interceptor
+  "TODO remove-tap"
+  {:name ::tap-interceptor
+   :kind e.c.interceptor/connect
+   :leave (-> (fn [_]
+                (add-tap #(timbre/error "Debug tap:" %)))
+              (ix/discard))})
