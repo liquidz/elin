@@ -92,7 +92,14 @@
                                                                           (str/join ", "))))
         (interceptor/execute context' (concat interceptors [terminator']))
         (catch Exception ex
-          (timbre/debug (format "Failed to intercept for %s" kind) ex)
+          (timbre/debug (format "Failed to intercept for %s" kind)
+                        (reduce-kv
+                         (fn [accm k v]
+                           (if (= "component" (namespace k))
+                             accm
+                             (assoc accm k v)))
+                         {} context)
+                        ex)
           (e.message/error lazy-host (format "Failed to intercept for %s: %s"
                                              kind
                                              (ex-message ex)))))))
