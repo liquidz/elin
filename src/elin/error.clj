@@ -140,3 +140,10 @@
                      bindings (cons x bindings)]
     `(let [~@(interleave (repeat sym) bindings)]
        ~sym)))
+
+(defn error-or [& vs]
+  (some
+   #(when (and %
+               (not (error? %)))
+      %)
+   vs))
