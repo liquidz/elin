@@ -25,12 +25,14 @@
 
 (m/=> evaluate [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate
-  [{:as elin :component/keys [nrepl] :keys [message]}]
-  (e/let [code (->> message
-                    (:params)
-                    (first))
-          res (e.f.nrepl/eval!! nrepl code {:middleware (evaluate-interceptor-middleware elin)})]
-    (:value res)))
+  [{:as elin :keys [message]}]
+  (let [code (->> message
+                  (:params)
+                  (first))]
+    (e/->> {:middleware (evaluate-interceptor-middleware elin)}
+           (e.f.evaluate/evaluate-code elin code)
+           (:response)
+           (:value))))
 
 (m/=> evaluate-current-top-list [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-top-list

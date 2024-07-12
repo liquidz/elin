@@ -26,6 +26,19 @@
        :options options
        :response resp})))
 
+(defn evaluate-code
+  ([elin code]
+   (evaluate-code elin code {}))
+  ([{:component/keys [nrepl]} code options]
+   (eval!! nrepl code options)
+   #_(eval!! nrepl code (merge options
+                               {:line 0
+                                :column 0
+                                :cursor-line 0
+                                :cursor-column 0
+                                :ns nil
+                                :file nil}))))
+
 (defn evaluate-current-top-list
   ([elin]
    (evaluate-current-top-list elin {}))
