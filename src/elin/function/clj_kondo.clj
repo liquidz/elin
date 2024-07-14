@@ -9,6 +9,10 @@
    [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m]))
 
+(defn- find-first
+  [pred coll]
+  (some #(when (pred %) %) coll))
+
 (defn namespace-usages
   [clj-kondo]
   (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
@@ -133,6 +137,17 @@
            (last)
            (key)))))
 
+(defn- var-lookup
+  [clj-kondo ns-sym var-sym]
+  (->> (var-definitions clj-kondo)
+       (find-first #(and (= ns-sym (:ns %))
+                         (= var-sym (:name %))))))
+
+(defn- namespace-lookup
+  [clj-kondo ns-sym]
+  (->> (namespace-definitions clj-kondo)
+       (find-first #(= ns-sym (:name %)))))
+
 (m/=> lookup [:=> [:cat e.s.component/?CljKondo string? string?] (e.schema/error-or e.s.nrepl/?Lookup)])
 (defn lookup
   [clj-kondo ns-str sym-str]
@@ -142,16 +157,15 @@
                                 [(symbol sym-ns) (symbol sym-name)]
                                 [nil (symbol sym-ns)])
           to-ns-sym (if alias-sym
-                      (some->> (namespace-usages clj-kondo)
-                               (filter #(and (= from-ns-sym (:from %))
-                                             (= alias-sym (:alias %))))
-                               (first)
-                               (:to))
+                      (or (some->> (namespace-usages clj-kondo)
+                                   (filter #(and (= from-ns-sym (:from %))
+                                                 (= alias-sym (:alias %))))
+                                   (first)
+                                   (:to))
+                          alias-sym)
                       from-ns-sym)
-          var-def (or (->> (var-definitions clj-kondo)
-                           (filter #(and (= to-ns-sym (:ns %))
-                                         (= var-sym (:name %))))
-                           (first))
+          var-def (or (var-lookup clj-kondo to-ns-sym var-sym)
+                      (namespace-lookup clj-kondo var-sym)
                       (e/not-found {:message (format "Var '%s' is not found in %s" sym-str ns-str)}))]
     (-> var-def
         (select-keys [:ns :name :filename :row :col :doc :arglist-strs])
