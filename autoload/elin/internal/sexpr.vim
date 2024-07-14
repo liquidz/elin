@@ -60,11 +60,11 @@ else
       call cursor(a:lnum, a:col)
       let start_pos = searchpairpos('(', '', ')', 'cbW', funcref('s:skip_in_string_or_comment'))
       if start_pos == [0, 0]
-        return ''
+        return {'code': '', 'lnum': 0, 'col': 0}
       endif
       let end_pos = searchpairpos('(', '', ')', 'W', funcref('s:skip_in_string_or_comment'))
       if end_pos == [0, 0]
-        return ''
+        return {'code': '', 'lnum': 0, 'col': 0}
       endif
 
       " TODO use getregion

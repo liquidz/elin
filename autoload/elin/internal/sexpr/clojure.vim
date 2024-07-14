@@ -29,7 +29,7 @@ endfunction
 function! elin#internal#sexpr#clojure#get_ns_sexpr() abort
   let [lnum, col] = s:search_ns_form_pos()
   if lnum == -1 && col == -1
-    return ''
+    return {'code': '', 'lnum': 0, 'col': 0}
   endif
   return elin#internal#sexpr#get_list(lnum, col)
 endfunction
