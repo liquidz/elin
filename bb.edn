@@ -3,7 +3,7 @@
         clojure-msgpack/clojure-msgpack {:mvn/version "1.2.1"}
         com.stuartsierra/component {:mvn/version "1.1.0"}
         exoscale/interceptor {:mvn/version "0.1.17"}
-        metosin/malli {:mvn/version "0.16.0"}
+        metosin/malli {:mvn/version "0.16.2"}
         rewrite-clj/rewrite-clj {:mvn/version "1.1.47"}}
 
  :__elin_internal__
