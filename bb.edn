@@ -2,7 +2,7 @@
  :deps {aero/aero {:mvn/version "1.1.6"}
         clojure-msgpack/clojure-msgpack {:mvn/version "1.2.1"}
         com.stuartsierra/component {:mvn/version "1.1.0"}
-        exoscale/interceptor {:mvn/version "0.1.16"}
+        exoscale/interceptor {:mvn/version "0.1.17"}
         metosin/malli {:mvn/version "0.16.0"}
         rewrite-clj/rewrite-clj {:mvn/version "1.1.47"}}
 
