@@ -79,7 +79,8 @@
         (component/stop-system sys)))))
 
 (t/deftest new-interceptor-includes-excludes-test
-  (with-redefs [m/validate (constantly true)]
+  (with-redefs [m/validate (constantly true)
+                sut/wrap-interceptor-for-logging identity]
     (t/testing "only includes"
       (t/is (= {::test [test-interceptor]}
                (-> {:includes [(symbol #'test-interceptor)]}
@@ -103,7 +104,8 @@
             "includes should be prioritized over excludes"))))
 
 (t/deftest new-interceptor-configure-includes-excludes-test
-  (with-redefs [m/validate (constantly true)]
+  (with-redefs [m/validate (constantly true)
+                sut/wrap-interceptor-for-logging identity]
     (let [interceptor (-> {:includes [(symbol #'test-interceptor)]}
                           (sut/map->Interceptor)
                           (component/start))]
