@@ -35,6 +35,26 @@
       (e.message/warning lazy-host "Failed to resolve interceptor" {:symbol sym :ex ex})
       nil)))
 
+(defn- wrap-interceptor-for-logging
+  [{:as interceptor :keys [enter leave]}]
+  (let [wrap (fn [timing f]
+               (fn [context]
+                 (try
+                   (f context)
+                   (catch Exception ex
+                     (throw (ex-info (format "error occured on %s %s because of '%s'"
+                                             timing
+                                             (:name interceptor)
+                                             (ex-message ex))
+                                     {}
+                                     ex))))))]
+    (cond-> interceptor
+      (fn? enter)
+      (assoc :enter (wrap "entering" enter) #_(wrap-interceptor-for-logging* name "entering" enter))
+
+      (fn? leave)
+      (assoc :leave (wrap "leaving" leave) #_(wrap-interceptor-for-logging* name "leaving" leave)))))
+
 (defn- interceptor-group
   [x]
   (cond
@@ -65,6 +85,7 @@
                                     (concat (or includes []))
                                     (distinct)
                                     (keep #(resolve-interceptor lazy-host %))
+                                    (map wrap-interceptor-for-logging)
                                     (group-by interceptor-group))
           interceptor-map (group-by :kind (get grouped-interceptors valid-group))]
       (when-let [invalid-interceptors (seq (get grouped-interceptors invalid-group))]
@@ -92,14 +113,6 @@
                                                                           (str/join ", "))))
         (interceptor/execute context' (concat interceptors [terminator']))
         (catch Exception ex
-          (timbre/debug (format "Failed to intercept for %s" kind)
-                        (reduce-kv
-                         (fn [accm k v]
-                           (if (= "component" (namespace k))
-                             accm
-                             (assoc accm k v)))
-                         {} context)
-                        ex)
           (e.message/error lazy-host (format "Failed to intercept for %s: %s"
                                              kind
                                              (ex-message ex)))))))
@@ -112,6 +125,7 @@
                            (set))
           grouped (->> (or includes [])
                        (keep #(resolve-interceptor lazy-host %))
+                       (map wrap-interceptor-for-logging)
                        (group-by interceptor-group))
           include-map (group-by :kind (concat (get grouped valid-group)
                                               (get grouped optional-group)))
