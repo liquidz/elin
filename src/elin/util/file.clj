@@ -38,10 +38,9 @@
 
 (m/=> normalize-path [:=> [:cat [:maybe string?]] [:maybe string?]])
 (defn normalize-path [path]
-  (let [path (some-> path
-                     (str/replace-first #"^file:" ""))]
-    (if (some-> path
-                (str/starts-with? "jar:"))
+  (when-let [path (some-> path
+                          (str/replace-first #"^file:" ""))]
+    (if (str/starts-with? path "jar:")
       (-> path
           (str/replace-first #"^jar:file:" "zipfile://")
           (str/replace #"!/" "::"))
