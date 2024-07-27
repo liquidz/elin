@@ -9,17 +9,15 @@
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.nrepl.test :as e.f.n.test]
    [elin.function.sexpr :as e.f.sexpr]
+   [elin.function.storage.test :as e.f.s.test]
    [elin.handler.evaluate :as e.h.evaluate]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
-   [elin.protocol.storage :as e.p.storage]
    [elin.schema.handler :as e.s.handler]
    [elin.util.map :as e.u.map]
    [malli.core :as m]
    [rewrite-clj.zip :as r.zip]))
-
-(def ^:private last-test-query-key ::last-test-query)
 
 (defn- extract-multi-method-name
   [code]
@@ -33,7 +31,7 @@
 
 (m/=> run-test-under-cursor [:=> [:cat e.s.handler/?Elin] any?])
 (defn run-test-under-cursor
-  [{:as elin :component/keys [interceptor session-storage]}]
+  [{:as elin :component/keys [interceptor]}]
   (e/let [{:keys [code response options]} (e.f.evaluate/evaluate-current-top-list elin)
           {ns-str :ns} options
           var-name (or (some->> (extract-multi-method-name code)
@@ -52,7 +50,7 @@
          ;; cider-nrepl
          (let [query {:ns-query {:exactly [(:ns ctx)]}
                       :exactly (:vars ctx)}]
-           (e.p.storage/set session-storage last-test-query-key query)
+           (e.f.s.test/set-last-test-query elin query)
            (assoc ctx :response (e.f.n.cider/test-var-query!! nrepl query)))
 
          ;; plain
@@ -62,11 +60,11 @@
                       :vars vars'
                       :current-file (:file ctx)
                       :base-line (:line ctx)}]
-           (e.p.storage/set session-storage last-test-query-key query)
+           (e.f.s.test/set-last-test-query elin query)
            (assoc ctx :response (e.f.n.test/test-var-query!! nrepl query))))))))
 
 (defn run-tests-in-ns
-  [{:as elin :component/keys [host interceptor session-storage]}]
+  [{:as elin :component/keys [host interceptor]}]
   (e/let [ns-str (e.f.sexpr/get-namespace elin)
           path (async/<!! (e.p.host/get-current-file-path! host))
           context (-> (e.u.map/select-keys-by-namespace elin :component)
@@ -84,7 +82,7 @@
        (if (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
          ;; cider-nrepl
          (let [query {:ns-query {:exactly [(:ns ctx)]}}]
-           (e.p.storage/set session-storage last-test-query-key query)
+           (e.f.s.test/set-last-test-query elin query)
            (assoc ctx :response (e.f.n.cider/test-var-query!! nrepl query)))
          ;; plain
          (let [vars' `(vals (ns-interns '~(symbol (:ns ctx))))
@@ -92,12 +90,12 @@
                       :vars vars'
                       :current-file (:file ctx)
                       :base-line (:line ctx)}]
-           (e.p.storage/set session-storage last-test-query-key query)
+           (e.f.s.test/set-last-test-query elin query)
            (assoc ctx :response (e.f.n.test/test-var-query!! nrepl query))))))))
 
 (defn rerun-last-tests
-  [{:as elin :component/keys [interceptor session-storage]}]
-  (let [query (e.p.storage/get session-storage last-test-query-key)
+  [{:as elin :component/keys [interceptor]}]
+  (let [query (e.f.s.test/get-last-test-query elin)
         context (-> (e.u.map/select-keys-by-namespace elin :component)
                     (assoc :ns (or (:ns query) "")
                            :line (or (:base-line query) 0)
