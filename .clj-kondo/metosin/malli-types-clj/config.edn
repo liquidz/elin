@@ -7,9 +7,13 @@
                                                                                              :ret {:op :keys,
                                                                                                    :req {:host :string,
                                                                                                          :message :sequential}}}}}},
-                                        elin.component.handler {resolve-handler {:arities {2 {:args [:any :symbol],
+                                        elin.component.handler {resolve-handler {:arities {2 {:args [{:op :keys,
+                                                                                                      :req {:host-store :any}}
+                                                                                                     :symbol],
                                                                                               :ret :any}}},
-                                                                build-handler-map {:arities {2 {:args [:any :sequential],
+                                                                build-handler-map {:arities {2 {:args [{:op :keys,
+                                                                                                        :req {:host-store :any}}
+                                                                                                       :sequential],
                                                                                                 :ret :map}}},
                                                                 construct-handler-parameter {:arities {1 {:args [:map],
                                                                                                           :ret {:op :keys,
@@ -18,13 +22,15 @@
                                                                                                                                       :message :sequential}},
                                                                                                                       :component/nrepl :any,
                                                                                                                       :component/interceptor :any,
-                                                                                                                      :component/host :any,
+                                                                                                                      :component/host {:op :keys,
+                                                                                                                                       :req {:host-store :any}},
                                                                                                                       :component/session-storage :any,
                                                                                                                       :component/clj-kondo :any}}}}},
                                                                 handler {:arities {4 {:args [{:op :keys,
                                                                                               :req {:component/nrepl :any,
                                                                                                     :component/interceptor :any,
-                                                                                                    :component/host :any,
+                                                                                                    :component/host {:op :keys,
+                                                                                                                     :req {:host-store :any}},
                                                                                                     :component/session-storage :any,
                                                                                                     :component/clj-kondo :any}}
                                                                                              :map
@@ -39,26 +45,35 @@
                                                                                                                     :message :sequential}},
                                                                                                     :component/nrepl :any,
                                                                                                     :component/interceptor :any,
-                                                                                                    :component/host :any,
+                                                                                                    :component/host {:op :keys,
+                                                                                                                     :req {:host-store :any}},
                                                                                                     :component/session-storage :any,
                                                                                                     :component/clj-kondo :any}}],
                                                                                       :ret :any}}}},
-                                        elin.component.server.impl.function {request! {:arities {3 {:args [:any
+                                        elin.component.server.impl.function {request! {:arities {3 {:args [{:op :keys,
+                                                                                                            :req {:host-store :any}}
                                                                                                            :string
                                                                                                            :sequential],
                                                                                                     :ret :any}}},
-                                                                             notify {:arities {3 {:args [:any
+                                                                             notify {:arities {3 {:args [{:op :keys,
+                                                                                                          :req {:host-store :any}}
                                                                                                          :string
                                                                                                          :sequential],
                                                                                                   :ret :nil}}},
-                                                                             execute! {:arities {2 {:args [:any :string],
+                                                                             execute! {:arities {2 {:args [{:op :keys,
+                                                                                                            :req {:host-store :any}}
+                                                                                                           :string],
                                                                                                     :ret :any}}},
-                                                                             eval! {:arities {2 {:args [:any :string],
+                                                                             eval! {:arities {2 {:args [{:op :keys,
+                                                                                                         :req {:host-store :any}}
+                                                                                                        :string],
                                                                                                  :ret :any}}}},
-                                        elin.component.server.impl.quickfix {set-quickfix-list* {:arities {2 {:args [:any
+                                        elin.component.server.impl.quickfix {set-quickfix-list* {:arities {2 {:args [{:op :keys,
+                                                                                                                      :req {:host-store :any}}
                                                                                                                      :sequential],
                                                                                                               :ret :nil}}},
-                                                                             set-location-list* {:arities {3 {:args [:any
+                                                                             set-location-list* {:arities {3 {:args [{:op :keys,
+                                                                                                                      :req {:host-store :any}}
                                                                                                                      :int
                                                                                                                      :sequential],
                                                                                                               :ret :nil}}}},
@@ -69,7 +84,8 @@
                                                                                                                 :message :sequential}},
                                                                                                 :component/nrepl :any,
                                                                                                 :component/interceptor :any,
-                                                                                                :component/host :any,
+                                                                                                :component/host {:op :keys,
+                                                                                                                 :req {:host-store :any}},
                                                                                                 :component/session-storage :any,
                                                                                                 :component/clj-kondo :any}}],
                                                                                   :ret :any}}}},
@@ -87,12 +103,17 @@
                                                                                                        :supported-ops :set,
                                                                                                        :initial-namespace :nilable/string,
                                                                                                        :version :map}}}}}},
-                                        elin.component.server.impl.io {input!* {:arities {3 {:args [:any
+                                        elin.component.server.impl.io {input!* {:arities {3 {:args [{:op :keys,
+                                                                                                     :req {:host-store :any}}
                                                                                                     :string
                                                                                                     :string],
                                                                                              :ret :any}}}},
-                                        elin.test-helper.host {test-host {:arities {0 {:args [], :ret :any},
-                                                                                    1 {:args [:map], :ret :any}}}},
+                                        elin.test-helper.host {test-host {:arities {0 {:args [],
+                                                                                       :ret {:op :keys,
+                                                                                             :req {:host-store :any}}},
+                                                                                    1 {:args [:map],
+                                                                                       :ret {:op :keys,
+                                                                                             :req {:host-store :any}}}}}},
                                         elin.component.nrepl.connection {bytes->str {:arities {1 {:args [:any],
                                                                                                   :ret :any}}},
                                                                          add-message {:arities {2 {:args [:map :map],
@@ -157,7 +178,8 @@
                                                                                                                       :message :sequential}},
                                                                                                       :component/nrepl :any,
                                                                                                       :component/interceptor :any,
-                                                                                                      :component/host :any,
+                                                                                                      :component/host {:op :keys,
+                                                                                                                       :req {:host-store :any}},
                                                                                                       :component/session-storage :any,
                                                                                                       :component/clj-kondo :any}}
                                                                                                :int
@@ -169,7 +191,8 @@
                                                                                                                   :message :sequential}},
                                                                                                   :component/nrepl :any,
                                                                                                   :component/interceptor :any,
-                                                                                                  :component/host :any,
+                                                                                                  :component/host {:op :keys,
+                                                                                                                   :req {:host-store :any}},
                                                                                                   :component/session-storage :any,
                                                                                                   :component/clj-kondo :any}}
                                                                                            :int
@@ -181,7 +204,8 @@
                                                                                                                   :message :sequential}},
                                                                                                   :component/nrepl :any,
                                                                                                   :component/interceptor :any,
-                                                                                                  :component/host :any,
+                                                                                                  :component/host {:op :keys,
+                                                                                                                   :req {:host-store :any}},
                                                                                                   :component/session-storage :any,
                                                                                                   :component/clj-kondo :any}}
                                                                                            :int
@@ -193,7 +217,8 @@
                                                                                                                              :message :sequential}},
                                                                                                              :component/nrepl :any,
                                                                                                              :component/interceptor :any,
-                                                                                                             :component/host :any,
+                                                                                                             :component/host {:op :keys,
+                                                                                                                              :req {:host-store :any}},
                                                                                                              :component/session-storage :any,
                                                                                                              :component/clj-kondo :any}}],
                                                                                                :ret :any}}},
@@ -203,7 +228,8 @@
                                                                                                                             :message :sequential}},
                                                                                                             :component/nrepl :any,
                                                                                                             :component/interceptor :any,
-                                                                                                            :component/host :any,
+                                                                                                            :component/host {:op :keys,
+                                                                                                                             :req {:host-store :any}},
                                                                                                             :component/session-storage :any,
                                                                                                             :component/clj-kondo :any}}
                                                                                                      :int
@@ -216,7 +242,8 @@
                                                                                                                        :message :sequential}},
                                                                                                        :component/nrepl :any,
                                                                                                        :component/interceptor :any,
-                                                                                                       :component/host :any,
+                                                                                                       :component/host {:op :keys,
+                                                                                                                        :req {:host-store :any}},
                                                                                                        :component/session-storage :any,
                                                                                                        :component/clj-kondo :any}}],
                                                                                          :ret :any}}}},
@@ -253,7 +280,8 @@
                                                                                                                       :message :sequential}},
                                                                                                       :component/nrepl :any,
                                                                                                       :component/interceptor :any,
-                                                                                                      :component/host :any,
+                                                                                                      :component/host {:op :keys,
+                                                                                                                       :req {:host-store :any}},
                                                                                                       :component/session-storage :any,
                                                                                                       :component/clj-kondo :any}}],
                                                                                         :ret :any}}},
@@ -263,7 +291,8 @@
                                                                                                                      :message :sequential}},
                                                                                                      :component/nrepl :any,
                                                                                                      :component/interceptor :any,
-                                                                                                     :component/host :any,
+                                                                                                     :component/host {:op :keys,
+                                                                                                                      :req {:host-store :any}},
                                                                                                      :component/session-storage :any,
                                                                                                      :component/clj-kondo :any}}],
                                                                                        :ret :any}}}},
@@ -289,14 +318,17 @@
                                                                                                                              :message :sequential}},
                                                                                                              :component/nrepl :any,
                                                                                                              :component/interceptor :any,
-                                                                                                             :component/host :any,
+                                                                                                             :component/host {:op :keys,
+                                                                                                                              :req {:host-store :any}},
                                                                                                              :component/session-storage :any,
                                                                                                              :component/clj-kondo :any}}],
                                                                                                :ret :any}}}},
-                                        elin.component.server.impl.buffer {set-to-current-buffer* {:arities {2 {:args [:any
+                                        elin.component.server.impl.buffer {set-to-current-buffer* {:arities {2 {:args [{:op :keys,
+                                                                                                                        :req {:host-store :any}}
                                                                                                                        :string],
                                                                                                                 :ret :nil}}},
-                                                                           append-to-info-buffer* {:arities {2 {:args [:any
+                                                                           append-to-info-buffer* {:arities {2 {:args [{:op :keys,
+                                                                                                                        :req {:host-store :any}}
                                                                                                                        :string],
                                                                                                                 :ret :nil}}}},
                                         elin.util.file {find-file-in-parent-directories {:arities {2 {:args [:string
@@ -329,7 +361,8 @@
                                                                                                                                        :message :sequential}},
                                                                                                                        :component/nrepl :any,
                                                                                                                        :component/interceptor :any,
-                                                                                                                       :component/host :any,
+                                                                                                                       :component/host {:op :keys,
+                                                                                                                                        :req {:host-store :any}},
                                                                                                                        :component/session-storage :any,
                                                                                                                        :component/clj-kondo :any}}
                                                                                                                 :string
@@ -357,19 +390,23 @@
                                                                                                          :ret :sequential}}},
                                                                         collect-results {:arities {2 {:args [:any :map],
                                                                                                       :ret :sequential}}}},
-                                        elin.component.server.impl.file {get-current-working-directory!* {:arities {:varargs {:args [:any
+                                        elin.component.server.impl.file {get-current-working-directory!* {:arities {:varargs {:args [{:op :keys,
+                                                                                                                                      :req {:host-store :any}}
                                                                                                                                      {:op :rest,
                                                                                                                                       :spec :any}],
                                                                                                                               :ret :any,
                                                                                                                               :min-arity 1}}},
-                                                                         get-current-file-path!* {:arities {1 {:args [:any],
+                                                                         get-current-file-path!* {:arities {1 {:args [{:op :keys,
+                                                                                                                       :req {:host-store :any}}],
                                                                                                                :ret :any}}},
-                                                                         get-cursor-position!* {:arities {:varargs {:args [:any
+                                                                         get-cursor-position!* {:arities {:varargs {:args [{:op :keys,
+                                                                                                                            :req {:host-store :any}}
                                                                                                                            {:op :rest,
                                                                                                                             :spec :any}],
                                                                                                                     :ret :any,
                                                                                                                     :min-arity 1}}},
-                                                                         jump!* {:arities {:varargs {:args [:any
+                                                                         jump!* {:arities {:varargs {:args [{:op :keys,
+                                                                                                             :req {:host-store :any}}
                                                                                                             :string
                                                                                                             :int
                                                                                                             :int
@@ -377,10 +414,12 @@
                                                                                                              :spec :any}],
                                                                                                      :ret :any,
                                                                                                      :min-arity 4}}}},
-                                        elin.component.server.impl.variable {get-variable!* {:arities {2 {:args [:any
+                                        elin.component.server.impl.variable {get-variable!* {:arities {2 {:args [{:op :keys,
+                                                                                                                  :req {:host-store :any}}
                                                                                                                  :string],
                                                                                                           :ret :any}}},
-                                                                             set-variable!* {:arities {3 {:args [:any
+                                                                             set-variable!* {:arities {3 {:args [{:op :keys,
+                                                                                                                  :req {:host-store :any}}
                                                                                                                  :string
                                                                                                                  :any],
                                                                                                           :ret :any}}}},
@@ -390,7 +429,8 @@
                                                                                                                     :message :sequential}},
                                                                                                     :component/nrepl :any,
                                                                                                     :component/interceptor :any,
-                                                                                                    :component/host :any,
+                                                                                                    :component/host {:op :keys,
+                                                                                                                     :req {:host-store :any}},
                                                                                                     :component/session-storage :any,
                                                                                                     :component/clj-kondo :any}}],
                                                                                       :ret :any}}},
@@ -400,7 +440,8 @@
                                                                                                                                      :message :sequential}},
                                                                                                                      :component/nrepl :any,
                                                                                                                      :component/interceptor :any,
-                                                                                                                     :component/host :any,
+                                                                                                                     :component/host {:op :keys,
+                                                                                                                                      :req {:host-store :any}},
                                                                                                                      :component/session-storage :any,
                                                                                                                      :component/clj-kondo :any}}],
                                                                                                        :ret :any}}},
@@ -410,7 +451,8 @@
                                                                                                                                  :message :sequential}},
                                                                                                                  :component/nrepl :any,
                                                                                                                  :component/interceptor :any,
-                                                                                                                 :component/host :any,
+                                                                                                                 :component/host {:op :keys,
+                                                                                                                                  :req {:host-store :any}},
                                                                                                                  :component/session-storage :any,
                                                                                                                  :component/clj-kondo :any}}],
                                                                                                    :ret :any}}},
@@ -420,7 +462,8 @@
                                                                                                                                  :message :sequential}},
                                                                                                                  :component/nrepl :any,
                                                                                                                  :component/interceptor :any,
-                                                                                                                 :component/host :any,
+                                                                                                                 :component/host {:op :keys,
+                                                                                                                                  :req {:host-store :any}},
                                                                                                                  :component/session-storage :any,
                                                                                                                  :component/clj-kondo :any}}],
                                                                                                    :ret :any}}},
@@ -430,7 +473,8 @@
                                                                                                                                    :message :sequential}},
                                                                                                                    :component/nrepl :any,
                                                                                                                    :component/interceptor :any,
-                                                                                                                   :component/host :any,
+                                                                                                                   :component/host {:op :keys,
+                                                                                                                                    :req {:host-store :any}},
                                                                                                                    :component/session-storage :any,
                                                                                                                    :component/clj-kondo :any}}],
                                                                                                      :ret :any}}},
@@ -440,7 +484,8 @@
                                                                                                                              :message :sequential}},
                                                                                                              :component/nrepl :any,
                                                                                                              :component/interceptor :any,
-                                                                                                             :component/host :any,
+                                                                                                             :component/host {:op :keys,
+                                                                                                                              :req {:host-store :any}},
                                                                                                              :component/session-storage :any,
                                                                                                              :component/clj-kondo :any}}],
                                                                                                :ret :any}}}},
@@ -450,7 +495,8 @@
                                                                                                                   :message :sequential}},
                                                                                                   :component/nrepl :any,
                                                                                                   :component/interceptor :any,
-                                                                                                  :component/host :any,
+                                                                                                  :component/host {:op :keys,
+                                                                                                                   :req {:host-store :any}},
                                                                                                   :component/session-storage :any,
                                                                                                   :component/clj-kondo :any}}],
                                                                                     :ret :any}}}},
@@ -465,32 +511,41 @@
                                                          update-messages {:arities {3 {:args [:keyword :fn :sequential],
                                                                                        :ret :sequential}}},
                                                          has-status? {:arities {2 {:args [:map :string], :ret :boolean}}}},
-                                        elin.component.plugin {load-plugin {:arities {2 {:args [:any :string],
+                                        elin.component.plugin {load-plugin {:arities {2 {:args [{:op :keys,
+                                                                                                 :req {:host-store :any}}
+                                                                                                :string],
                                                                                          :ret {:op :keys,
                                                                                                :opt {:handlers :sequential,
                                                                                                      :interceptors :sequential},
                                                                                                :req {:name :string},
                                                                                                :nilable true}}}},
-                                                               load-plugins {:arities {2 {:args [:any :sequential],
+                                                               load-plugins {:arities {2 {:args [{:op :keys,
+                                                                                                  :req {:host-store :any}}
+                                                                                                 :sequential],
                                                                                           :ret {:op :keys,
                                                                                                 :opt {:handlers :sequential,
                                                                                                       :interceptors :sequential},
                                                                                                 :req {:name :string}}}}}},
-                                        elin.component.server.impl.sexpr {get-top-list-sexpr!* {:arities {3 {:args [:any
+                                        elin.component.server.impl.sexpr {get-top-list-sexpr!* {:arities {3 {:args [{:op :keys,
+                                                                                                                     :req {:host-store :any}}
                                                                                                                     :int
                                                                                                                     :int],
                                                                                                              :ret :any}}},
-                                                                          get-list-sexpr!* {:arities {3 {:args [:any
+                                                                          get-list-sexpr!* {:arities {3 {:args [{:op :keys,
+                                                                                                                 :req {:host-store :any}}
                                                                                                                 :int
                                                                                                                 :int],
                                                                                                          :ret :any}}},
-                                                                          get-single-sexpr!* {:arities {3 {:args [:any
+                                                                          get-single-sexpr!* {:arities {3 {:args [{:op :keys,
+                                                                                                                   :req {:host-store :any}}
                                                                                                                   :int
                                                                                                                   :int],
                                                                                                            :ret :any}}},
-                                                                          get-namespace-sexpr!* {:arities {1 {:args [:any],
+                                                                          get-namespace-sexpr!* {:arities {1 {:args [{:op :keys,
+                                                                                                                      :req {:host-store :any}}],
                                                                                                               :ret :any}}},
-                                                                          replace-list-sexpr!* {:arities {4 {:args [:any
+                                                                          replace-list-sexpr!* {:arities {4 {:args [{:op :keys,
+                                                                                                                     :req {:host-store :any}}
                                                                                                                     :int
                                                                                                                     :int
                                                                                                                     :string],
@@ -530,7 +585,8 @@
                                                                                              :string
                                                                                              :string],
                                                                                       :ret :any}}}},
-                                        elin.component.server.impl.event {on-connect* {:arities {1 {:args [:any],
+                                        elin.component.server.impl.event {on-connect* {:arities {1 {:args [{:op :keys,
+                                                                                                            :req {:host-store :any}}],
                                                                                                     :ret :nil}}}},
                                         elin.handler.navigate {jump-to-definition {:arities {1 {:args [{:op :keys,
                                                                                                         :req {:message {:op :keys,
@@ -538,7 +594,8 @@
                                                                                                                               :message :sequential}},
                                                                                                               :component/nrepl :any,
                                                                                                               :component/interceptor :any,
-                                                                                                              :component/host :any,
+                                                                                                              :component/host {:op :keys,
+                                                                                                                               :req {:host-store :any}},
                                                                                                               :component/session-storage :any,
                                                                                                               :component/clj-kondo :any}}],
                                                                                                 :ret :any}}},
@@ -548,7 +605,8 @@
                                                                                                                                  :message :sequential}},
                                                                                                                  :component/nrepl :any,
                                                                                                                  :component/interceptor :any,
-                                                                                                                 :component/host :any,
+                                                                                                                 :component/host {:op :keys,
+                                                                                                                                  :req {:host-store :any}},
                                                                                                                  :component/session-storage :any,
                                                                                                                  :component/clj-kondo :any}}],
                                                                                                    :ret :any}}}},
