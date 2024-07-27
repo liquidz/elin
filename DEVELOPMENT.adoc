@@ -1,0 +1,18 @@
+= Development
+
+== Server
+
+* `bb repl` command starts development server and nREPL server.
+** By default, it starts development server for Neovim.
+** You can specify other editor by `:host` option.
+*** e.g. `bb repl :host vim` for Vim.
+
+* To connect the nREPL server, execute `call elin#notify('elin.handler.connect/connect', [])`.
+
+* Evaluating `(elin.dev/go)` will restart the development server.
+** When the server is restarted, the connection to the nREPL server is disconnected, so you need to reconnect.
+
+
+== Type checking
+
+* Type checking with https://github.com/metosin/malli[malli] is enabled by default.

@@ -37,7 +37,7 @@ image:http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.c
 | Various schemas
 
 | function
-| Provides concrete functionality using various components. The first argument always receives elin passed to the handler. Essentially, everything is synchronous.
+| Provides concrete functionality using various components. The first argument always receives `elin` passed to the handler. Essentially, everything is synchronous.
 
 |===
 
