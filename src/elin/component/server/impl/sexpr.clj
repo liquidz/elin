@@ -7,10 +7,10 @@
    [elin.error :as e]
    [elin.protocol.host :as e.p.host]
    [elin.schema :as e.schema]
-   [elin.schema.server :as e.s.server]
+   [elin.schema.component :as e.s.component]
    [malli.core :as m]))
 
-(m/=> get-top-list-sexpr!* [:=> [:cat e.s.server/?Host int? int?] e.schema/?ManyToManyChannel])
+(m/=> get-top-list-sexpr!* [:=> [:cat e.s.component/?LazyHost int? int?] e.schema/?ManyToManyChannel])
 (defn- get-top-list-sexpr!*
   [host lnum col]
   (async/go
@@ -18,7 +18,7 @@
           (async/<!)
           (update-keys keyword))))
 
-(m/=> get-list-sexpr!* [:=> [:cat e.s.server/?Host int? int?] e.schema/?ManyToManyChannel])
+(m/=> get-list-sexpr!* [:=> [:cat e.s.component/?LazyHost int? int?] e.schema/?ManyToManyChannel])
 (defn- get-list-sexpr!*
   [host lnum col]
   (async/go
@@ -26,7 +26,7 @@
           (async/<!)
           (update-keys keyword))))
 
-(m/=> get-single-sexpr!* [:=> [:cat e.s.server/?Host int? int?] e.schema/?ManyToManyChannel])
+(m/=> get-single-sexpr!* [:=> [:cat e.s.component/?LazyHost int? int?] e.schema/?ManyToManyChannel])
 (defn- get-single-sexpr!*
   [host lnum col]
   (async/go
@@ -34,7 +34,7 @@
           (async/<!)
           (update-keys keyword))))
 
-(m/=> get-namespace-sexpr!* [:=> [:cat e.s.server/?Host] e.schema/?ManyToManyChannel])
+(m/=> get-namespace-sexpr!* [:=> [:cat e.s.component/?LazyHost] e.schema/?ManyToManyChannel])
 (defn- get-namespace-sexpr!*
   [host]
   (async/go
@@ -42,7 +42,7 @@
           (async/<!)
           (update-keys keyword))))
 
-(m/=> replace-list-sexpr!* [:=> [:cat e.s.server/?Host int? int? string?] e.schema/?ManyToManyChannel])
+(m/=> replace-list-sexpr!* [:=> [:cat e.s.component/?LazyHost int? int? string?] e.schema/?ManyToManyChannel])
 (defn- replace-list-sexpr!*
   [host lnum col new-sexpr]
   (e.c.s.function/request! host "elin#internal#sexpr#replace_list_sexpr" [lnum col new-sexpr]))

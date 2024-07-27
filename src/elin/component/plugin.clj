@@ -6,8 +6,8 @@
    [clojure.string :as str]
    [com.stuartsierra.component :as component]
    [elin.message :as e.message]
+   [elin.schema.component :as e.s.component]
    [elin.schema.plugin :as e.s.plugin]
-   [elin.schema.server :as e.s.server]
    [malli.core :as m]
    [malli.error :as m.error]
    [taoensso.timbre :as timbre]))
@@ -25,7 +25,7 @@
        (str/join ":")
        (b.classpath/add-classpath)))
 
-(m/=> load-plugin [:=> [:cat e.s.server/?Host string?] [:maybe e.s.plugin/?Plugin]])
+(m/=> load-plugin [:=> [:cat e.s.component/?LazyHost string?] [:maybe e.s.plugin/?Plugin]])
 (defn- load-plugin
   [lazy-host edn-file]
   (let [content (edn/read-string (slurp edn-file))
@@ -34,7 +34,7 @@
       (e.message/warning lazy-host "Invalid plugin.edn: " (pr-str err))
       content)))
 
-(m/=> load-plugins [:=> [:cat e.s.server/?Host [:sequential string?]] e.s.plugin/?Plugin])
+(m/=> load-plugins [:=> [:cat e.s.component/?LazyHost [:sequential string?]] e.s.plugin/?Plugin])
 (defn- load-plugins
   [lazy-host edn-files]
   (loop [[edn-file & rest-edn-files] edn-files

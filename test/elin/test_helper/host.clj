@@ -4,7 +4,7 @@
    [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.rpc :as e.p.rpc]
-   [elin.schema.server :as e.s.server]
+   [elin.schema.component :as e.s.component]
    [elin.util.id :as e.u.id]
    [malli.core :as m]))
 
@@ -67,8 +67,8 @@
 
 (m/=> test-host
       [:function
-       [:=> :cat  e.s.server/?Host]
-       [:=> [:cat map?] e.s.server/?Host]])
+       [:=> :cat  e.s.component/?LazyHost]
+       [:=> [:cat map?] e.s.component/?LazyHost]])
 (defn test-host
   ([]
    (test-host {:handler identity}))

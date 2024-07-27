@@ -15,13 +15,14 @@
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.rpc :as e.p.rpc]
+   [elin.schema.component :as e.s.component]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.server :as e.s.server]
    [elin.util.server :as e.u.server]
    [malli.core :as m]
    [taoensso.timbre :as timbre]))
 
-(m/=> resolve-handler [:=> [:cat e.s.server/?Host qualified-symbol?]
+(m/=> resolve-handler [:=> [:cat e.s.component/?LazyHost qualified-symbol?]
                        [:or :nil [:cat qualified-keyword? fn?]]])
 (defn- resolve-handler [lazy-host sym]
   (when-let [f (try
@@ -31,7 +32,7 @@
                    nil))]
     [(keyword sym) f]))
 
-(m/=> build-handler-map [:=> [:cat e.s.server/?Host [:sequential qualified-symbol?]]
+(m/=> build-handler-map [:=> [:cat e.s.component/?LazyHost [:sequential qualified-symbol?]]
                          e.s.handler/?HandlerMap])
 (defn- build-handler-map
   [lazy-host handler-symbols]

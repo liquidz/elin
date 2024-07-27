@@ -4,10 +4,10 @@
    [elin.component.server.nvim]
    [elin.component.server.vim]
    [elin.protocol.host :as e.p.host]
-   [elin.schema.server :as e.s.server]
+   [elin.schema.component :as e.s.component]
    [malli.core :as m]))
 
-(m/=> on-connect* [:=> [:cat e.s.server/?Host] :nil])
+(m/=> on-connect* [:=> [:cat e.s.component/?LazyHost] :nil])
 (defn- on-connect*
   [host]
   (e.c.s.function/notify host "elin#internal#buffer#info#ready" []))

@@ -1,5 +1,6 @@
 (ns elin.schema.handler
   (:require
+   [elin.schema.component :as e.s.component]
    [elin.schema.server :as e.s.server]
    [malli.util :as m.util]))
 
@@ -7,7 +8,7 @@
   [:map
    [:component/nrepl any?]
    [:component/interceptor any?]
-   [:component/host e.s.server/?Host]
+   [:component/host e.s.component/?LazyHost]
    [:component/session-storage any?]
    [:component/clj-kondo any?]])
 

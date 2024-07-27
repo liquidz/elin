@@ -46,10 +46,10 @@
                         (catch Exception ex
                           [nil (ex-message ex)]))]
         (when (e.p.h.rpc/request? message)
-          (e.p.h.rpc/response! host
+          (e.p.h.rpc/response! lazy-host
                                (:id (e.p.h.rpc/parse-message message))
                                err res)
-          (e.p.h.rpc/flush! host))))))
+          (e.p.h.rpc/flush! lazy-host))))))
 
 (defrecord Server
   [;; COMPONENTS

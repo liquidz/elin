@@ -4,12 +4,12 @@
    [elin.component.server.nvim]
    [elin.component.server.vim]
    [elin.protocol.host :as e.p.host]
+   [elin.schema.component :as e.s.component]
    [elin.schema.host :as e.s.host]
-   [elin.schema.server :as e.s.server]
    [malli.core :as m]))
 
 (m/=> set-quickfix-list* [:=> [:cat
-                               e.s.server/?Host
+                               e.s.component/?LazyHost
                                [:sequential e.s.host/?QuickfixListItem]]
                           :nil])
 (defn set-quickfix-list*
@@ -19,7 +19,7 @@
     (e.c.s.function/notify host "setqflist" [qf-list' " "])))
 
 (m/=> set-location-list* [:=> [:cat
-                               e.s.server/?Host
+                               e.s.component/?LazyHost
                                int?
                                [:sequential e.s.host/?QuickfixListItem]]
                           :nil])
