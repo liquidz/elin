@@ -14,6 +14,13 @@
    {:type klass
     :pred #(instance? klass %)}))
 
+(defn ?protocol
+  [& protocols]
+  (m/-simple-schema
+   {:type ::protocol
+    :pred (fn [v]
+            (every? #(satisfies? % v) protocols))}))
+
 (def ?File
   (?instance java.io.File))
 
