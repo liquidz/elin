@@ -2,18 +2,45 @@
   (:require
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.constant.nrepl :as e.c.nrepl]
    [elin.function.nrepl.cider.test :as e.f.n.c.test]
+   [elin.function.storage.test :as e.f.s.test]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
+   [elin.protocol.nrepl :as e.p.nrepl]
    [elin.util.map :as e.u.map]
    [exoscale.interceptor :as ix]))
 
 (def ^:private sign-name "error")
 
+(defn- get-failed-tests-cider-nrepl-query
+  [failed-results]
+  {:ns-query {:exactly (map :ns failed-results)}
+   :exactly (->> failed-results
+                 (map #(format "%s/%s" (:ns %) (:var %))))})
+
+(defn- get-failed-tests-plain-repl-query
+  [failed-results]
+  (let [failed-result (->> failed-results
+                           (some #(and (:ns %) %)))
+        vars (->> failed-results
+                  (filter #(= (:ns failed-result) (:ns %)))
+                  (map #(symbol (format "#'%s/%s" (:ns %) (:var %)))))]
+    {:ns (:ns failed-result)
+     :vars vars
+     :current-file (:filename failed-result)
+     :base-line 0}))
+
+(defn- get-failed-tests-query
+  [nrepl failed-results]
+  (if (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
+    (get-failed-tests-cider-nrepl-query failed-results)
+    (get-failed-tests-plain-repl-query failed-results)))
+
 (def done-test-interceptor
   {:name ::done-test-interceptor
    :kind e.c.interceptor/test
-   :leave (-> (fn [{:component/keys [host nrepl] :keys [response]}]
+   :leave (-> (fn [{:component/keys [host nrepl session-storage] :keys [response]}]
                 (let [{:keys [passed failed]} (->> (e.f.n.c.test/collect-results nrepl response)
                                                    (group-by :result))
                       {:keys [succeeded? summary]} (e.f.n.c.test/summary response)]
@@ -50,6 +77,10 @@
                                                (str ": " (:text %)))
                                        :type "Error"))
                        (e.p.host/set-quickfix-list host))
+
+                  ;; store last failed tests as test query
+                  (some->> (get-failed-tests-query nrepl failed)
+                           (e.f.s.test/set-last-failed-tests-query session-storage))
 
                   ;; show summary
                   (e.p.host/append-to-info-buffer host summary)
