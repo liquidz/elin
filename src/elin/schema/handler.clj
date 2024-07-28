@@ -6,11 +6,11 @@
 
 (def ?Components
   [:map
-   [:component/nrepl any?]
-   [:component/interceptor any?]
+   [:component/nrepl e.s.component/?Nrepl]
+   [:component/interceptor e.s.component/?Interceptor]
    [:component/host e.s.component/?LazyHost]
-   [:component/session-storage any?]
-   [:component/clj-kondo any?]])
+   [:component/session-storage e.s.component/?Storage]
+   [:component/clj-kondo e.s.component/?CljKondo]])
 
 (def ?Elin
   (m.util/merge

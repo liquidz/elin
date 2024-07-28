@@ -1,31 +1,25 @@
 (ns elin.schema.component
   (:require
-   [elin.schema :as e.schema]
-   [elin.schema.nrepl :as e.s.nrepl]))
+   [elin.protocol.clj-kondo :as e.p.clj-kondo]
+   [elin.protocol.interceptor :as e.p.interceptor]
+   [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.protocol.storage :as e.p.storage]
+   [elin.schema :as e.schema]))
 
 (def ?LazyHost
   [:map
    [:host-store e.schema/?Atom]])
 
 (def ?Interceptor
-  [:map
-   [:lazy-host ?LazyHost]
-   [:interceptor-map [:map-of keyword? any?]]])
-
-(def ^:private NreplComponent
-  [:map
-   [:interceptor ?Interceptor]
-   [:lazy-host ?LazyHost]
-   [:clients-store e.schema/?Atom]
-   [:current-client-key-store e.schema/?Atom]])
+  (e.schema/?protocol e.p.interceptor/IInterceptor))
 
 (def ?Nrepl
-  [:or
-   NreplComponent
-   e.s.nrepl/?Client])
+  (e.schema/?protocol e.p.nrepl/IClientManager
+                      e.p.nrepl/IClient
+                      e.p.nrepl/IConnection))
 
 (def ?CljKondo
-  [:map
-   [:lazy-host ?LazyHost]
-   [:analyzing?-atom e.schema/?Atom]
-   [:analyzed-atom e.schema/?Atom]])
+  (e.schema/?protocol e.p.clj-kondo/ICljKondo))
+
+(def ?Storage
+  (e.schema/?protocol e.p.storage/IStorage))
