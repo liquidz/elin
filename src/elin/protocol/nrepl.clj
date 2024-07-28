@@ -9,7 +9,7 @@
 (defprotocol IClient
   (supported-op? [this op])
   (current-session [this])
-  (version this))
+  (version [this]))
 
 (defprotocol IClientManager
   (add-client! [this host port] [this client])
