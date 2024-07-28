@@ -11,6 +11,7 @@
    [elin.function.sexpr :as e.f.sexpr]
    [elin.function.storage.test :as e.f.s.test]
    [elin.handler.evaluate :as e.h.evaluate]
+   [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
@@ -93,10 +94,9 @@
            (e.f.s.test/set-last-test-query session-storage query)
            (assoc ctx :response (e.f.n.test/test-var-query!! nrepl query))))))))
 
-(defn rerun-last-tests
-  [{:as elin :component/keys [interceptor session-storage]}]
-  (let [query (e.f.s.test/get-last-test-query session-storage)
-        context (-> (e.u.map/select-keys-by-namespace elin :component)
+(defn- run-tests-by-query
+  [{:as elin :component/keys [interceptor]} query]
+  (let [context (-> (e.u.map/select-keys-by-namespace elin :component)
                     (assoc :ns (or (:ns query) "")
                            :line (or (:base-line query) 0)
                            :column 0
@@ -113,3 +113,17 @@
                     (e.f.n.cider/test-var-query!! nrepl query)
                     (e.f.n.test/test-var-query!! nrepl query))]
          (assoc ctx :response resp))))))
+
+(defn rerun-last-tests
+  [{:as elin :component/keys [session-storage]}]
+  (->> (e.f.s.test/get-last-test-query session-storage)
+       (run-tests-by-query elin)))
+
+(m/=> rerun-last-failed-tests [:=> [:cat e.s.handler/?Elin] any?])
+(defn rerun-last-failed-tests
+  [{:as elin :component/keys [host session-storage]}]
+  (let [query (e.f.s.test/get-last-failed-tests-query session-storage)]
+    (if (and query
+             (seq (:vars query)))
+      (run-tests-by-query elin query)
+      (e.message/warning host "There are no failed tests to rerun."))))
