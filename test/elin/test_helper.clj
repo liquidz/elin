@@ -1,9 +1,11 @@
 (ns elin.test-helper
   (:require
    [babashka.nrepl.server :as b.n.server]
+   [elin.component.session-storage :as e.c.session-storage]
    [elin.config :as e.config]
    [elin.test-helper.clj-kondo :as h.clj-kondo]
    [elin.test-helper.host :as h.host]
+   [elin.test-helper.interceptor :as h.interceptor]
    [elin.test-helper.message :as h.message]
    [elin.test-helper.nrepl :as h.nrepl]
    [malli.dev.pretty :as m.d.pretty]
@@ -47,16 +49,15 @@
 (def test-nrepl-client #'h.nrepl/test-nrepl-client)
 (def test-nrepl #'h.nrepl/test-nrepl)
 (def test-clj-kondo #'h.clj-kondo/test-clj-kondo)
+(def test-interceptor #'h.interceptor/test-interceptor)
 
 (defn test-elin
   ([]
    (test-elin {}))
   ([option]
-   {:component/nrepl (when-let [opt (:nrepl option)]
-                       (test-nrepl opt))
-    :component/interceptor nil
+   {:component/nrepl (test-nrepl (or (:nrepl option) {}))
+    :component/interceptor (test-interceptor (or (:interceptor option) {}))
     :component/host (test-host (:host option))
-    :component/session-storage nil
-    :component/clj-kondo (when (:clj-kondo option)
-                           (test-clj-kondo))
+    :component/session-storage (e.c.session-storage/new-session-storage {})
+    :component/clj-kondo (test-clj-kondo)
     :message {:host "test" :message []}}))

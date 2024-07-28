@@ -1,11 +1,11 @@
 (ns elin.test-helper.nrepl
   (:require
    [clojure.core.async :as async]
-   [elin.component.interceptor :as e.c.interceptor]
    [elin.component.nrepl :as e.c.nrepl]
    [elin.component.nrepl.client :as e.c.n.client]
    [elin.protocol.nrepl :as e.p.nrepl]
-   [elin.test-helper.host :as h.host]))
+   [elin.test-helper.host :as h.host]
+   [elin.test-helper.interceptor :as h.interceptor]))
 
 (defn- nrepl-connectin-default-handler
   [msg]
@@ -68,10 +68,7 @@
   [option]
   (let [host (h.host/test-host (merge {:handler identity}
                                       (or (:lazy-host option) {})))
-        interceptor (e.c.interceptor/new-interceptor
-                     {:interceptor (merge {:lazy-host host
-                                           :interceptor-map {}}
-                                          (or (:interceptor option) {}))})
+        interceptor (h.interceptor/test-interceptor option)
         client (test-nrepl-client (or (:client option) {}))
         nrepl (e.c.nrepl/new-nrepl
                {:nrepl {:interceptor interceptor
@@ -79,16 +76,3 @@
     (e.p.nrepl/add-client! nrepl client)
     (e.p.nrepl/switch-client! nrepl client)
     nrepl))
-
-(comment
-  (let [
-        option {}
-        host (h.host/test-host (merge {:handler identity}
-                                      (or (:lazy-host option) {})))
-        interceptor (e.c.interceptor/new-interceptor
-                      {:interceptor (merge {:lazy-host host
-                                            :interceptor-map {}}
-                                           (or (:interceptor option) {}))})]
-
-
-    interceptor))
