@@ -8,7 +8,7 @@
 (defn open-as
   [{:component/keys [host]} path]
   (if (.exists (io/file path))
-    (async/<!! (e.p.host/jump! host path 1 1))
+    (async/<!! (e.p.host/jump! host path -1 -1))
     (let [path' (async/<!! (e.p.host/input! host "Open this file?: " path))]
       (when (and (not (e/fault? path'))
                  (seq path'))

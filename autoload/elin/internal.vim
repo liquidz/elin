@@ -29,8 +29,10 @@ function! elin#internal#jump(path, lnum, col, jump_cmd) abort
   if expand('%:p') !=# a:path
     execute printf(':keepjumps %s %s', a:jump_cmd, a:path)
   endif
-  call cursor(a:lnum, a:col)
-  normal! zz
+  if a:lnum > 0 && a:col > 0
+    call cursor(a:lnum, a:col)
+    normal! zz
+  endif
   return v:true
 endfunction
 
