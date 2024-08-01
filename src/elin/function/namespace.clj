@@ -34,8 +34,8 @@
   [{:component/keys [clj-kondo]} alias-sym]
   (e.f.clj-kondo/namespace-by-alias clj-kondo alias-sym))
 
-(m/=> resolve-missing-namespace [:=> [:cat e.s.handler/?Elin string? map?] [:sequential [:map [:name symbol?] [:type keyword?]]]])
-(defn resolve-missing-namespace
+(m/=> add-missing-libspec [:=> [:cat e.s.handler/?Elin string? map?] [:sequential [:map [:name symbol?] [:type keyword?]]]])
+(defn add-missing-libspec
   [{:as elin :component/keys [clj-kondo nrepl]} sym-str favorites]
   (if (and (not (e.p.nrepl/disconnected? nrepl))
            (e.p.nrepl/supported-op? nrepl e.c.nrepl/resolve-missing-op))

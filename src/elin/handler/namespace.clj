@@ -48,7 +48,7 @@
   (let [coll (e.f.namespace/get-namespaces elin)]
     (e.p.host/select-from-candidates host coll (symbol #'add-libspec*))))
 
-(defn resolve-missing-namespace*
+(defn add-missing-libspec*
   [{:as elin :component/keys [host] :keys [message]}]
   (e/let [[alias-str ns-str] (:params message)
           alias-sym (some-> alias-str
@@ -63,24 +63,24 @@
     (e.f.evaluate/evaluate-namespace-form elin)
     (e.message/info host (format "'%s' added as '%s'." ns-sym alias-sym))))
 
-(defn resolve-missing-namespace
+(defn add-missing-libspec
   [{:as elin :component/keys [handler host]}]
-  (e/let [favorites (get-in handler [:config-map (symbol #'resolve-missing-namespace) :favorites])
+  (e/let [favorites (get-in handler [:config-map (symbol #'add-missing-libspec) :favorites])
           {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           [alias-str var-str] (str/split code #"/" 2)
           _ (when-not var-str
               (e/incorrect {:message (format "Fully qualified symbol is required: %s" code)}))
           alias-sym (symbol alias-str)
-          resp (e.f.namespace/resolve-missing-namespace elin code favorites)]
+          resp (e.f.namespace/add-missing-libspec elin code favorites)]
     (condp = (count resp)
       0
       (e.message/warning host "There are no candidates.")
 
       1
-      (resolve-missing-namespace*
+      (add-missing-libspec*
        (assoc elin :message {:params [alias-sym (:name (first resp))]}))
 
       ;; else
       (e.p.host/select-from-candidates
-       host (map :name resp) (symbol #'resolve-missing-namespace*) [alias-str]))))
+       host (map :name resp) (symbol #'add-missing-libspec*) [alias-str]))))
