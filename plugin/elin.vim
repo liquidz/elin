@@ -8,6 +8,11 @@ let g:elin_auto_connect = get(g:, 'elin_auto_connect', v:true)
 let g:elin_server_port = get(g:, 'elin_server_port', v:null)
 
 function! s:init() abort
+  if &ft !=# 'clojure' || exists('g:initialized_vim_elin')
+    return
+  endif
+  let g:initialized_vim_elin = 1
+
   if g:elin_server_port is v:null
     echom 'vim-elin: start server'
     call elin#server#start()
@@ -43,7 +48,7 @@ endfunction
 if has('vim_starting')
   aug elin_starting_group
     au!
-    au VimEnter *.clj,*.cljs,*.cljc,*.cljd call s:init()
+    au VimEnter * call s:init()
   aug END
 else
   if &ft ==# 'clojure'
