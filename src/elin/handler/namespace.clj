@@ -17,9 +17,9 @@
       (re-seq form)
       (some?)))
 
-(defn add-namespace*
+(defn add-libspec*
   [{:as elin :component/keys [handler host] :keys [message]}]
-  (e/let [favorites (get-in handler [:config-map (symbol #'add-namespace*) :favorites])
+  (e/let [favorites (get-in handler [:config-map (symbol #'add-libspec*) :favorites])
           ns-sym (-> (:params message)
                      (first)
                      (symbol)
@@ -43,10 +43,10 @@
                                (format "'%s' added."
                                        ns-sym)))))))
 
-(defn add-namespace
+(defn add-libspec
   [{:as elin :component/keys [host]}]
   (let [coll (e.f.namespace/get-namespaces elin)]
-    (e.p.host/select-from-candidates host coll (symbol #'add-namespace*))))
+    (e.p.host/select-from-candidates host coll (symbol #'add-libspec*))))
 
 (defn resolve-missing-namespace*
   [{:as elin :component/keys [host] :keys [message]}]
