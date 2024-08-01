@@ -10,6 +10,9 @@
     [clojure.string :as str]))
 
 (def ^:private cwd (System/getProperty "user.dir"))
+(def ^:private clojure-command
+  (or (System/getenv "ELIN_REPL_CLOJURE_CLI_CMD")
+      "clj"))
 
 (def ^:private project-root
   (-> (io/file *file*)
@@ -61,52 +64,63 @@
       :else
       (first (select-keys res [:clojure-cli])))))
 
-(def ^:private cli-options
-  {:force-leiningen {:coerce :boolean}
-   :force-shadow-cljs {:coerce :boolean}
-   :dry-run {:coerce :boolean}
-   :instant {:coerce :boolean}
-   :help {:default false :coerce :boolean}})
+(def ^:private cli-options-map
+  {"repl" {:force-leiningen {:coerce :boolean}
+           :force-shadow-cljs {:coerce :boolean}
+           :dry-run {:coerce :boolean}
+           :instant {:coerce :boolean}
+           :help {:default false :coerce :boolean}}})
 
-(def ^:private cli-subcommands
-  [{:cmds ["repl"]
-    :fn #(assoc % :fn :repl)}
-   {:cmds ["version"]
-    :fn #(assoc % :fn :version)}
-   {:cmds []
-    :fn #(assoc % :fn :help)}])
+(def ^:private elin-option-map
+  (update-vals cli-options-map #(->> (keys %)
+                                     (map (comp (partial str "--") name))
+                                     (set))))
 
-(defmulti dispatch :fn)
+(defn- parse-opts
+  [[sub-command & args]]
+  (let [option-set (or (get elin-option-map sub-command)
+                       #{})
+        cli-options (or (get cli-options-map sub-command)
+                        {})
+        {elin-args true rest-args false} (group-by #(contains? option-set %) args)]
+    {:options (cli/parse-opts elin-args cli-options)
+     :rest-args rest-args}))
+
+(defmulti dispatch first)
 (defmethod dispatch :default
   [_]
   (throw (ex-info "Unknown command" {})))
 
-(defmethod dispatch :repl
-  [{:keys [opts]}]
-  (let [{:keys [dry-run]} opts
-        [project _] (select-project opts cwd)
+(defmethod dispatch "repl"
+  [args]
+  (let [{:keys [options rest-args]} (parse-opts args)
+        [project _] (select-project options cwd)
         commands (case project
                     :clojure-cli
-                    ["clj" "-Sdeps" (pr-str {:deps (:deps command-config)})
-                     "-M" "-m" "nrepl.cmdline"
-                     "-m" (pr-str (:middlewares command-config))
-                     "--interactive"]
+                    (concat [clojure-command]
+                            rest-args
+                            ["-Sdeps" (pr-str {:deps (:deps command-config)})
+                             "-M" "-m" "nrepl.cmdline"
+                             "-m" (pr-str (:middlewares command-config))
+                             "--interactive"])
 
                    (throw (ex-info "No project found" {:cwd cwd})))]
-    (if dry-run
+    (if (:dry-run options)
       (println (str/join " " commands))
       (apply proc/shell {:out :inherit :in :inherit} commands))))
 
 (defn -main [& args]
   (try
-    (dispatch
-     (cli/dispatch cli-subcommands args {:spec cli-options}))
+    (dispatch args)
     (catch Exception ex
       (binding [*out* *err*]
         (println (ex-message ex))))))
 
 (when (= *file* (System/getProperty "babashka.file"))
   (apply -main *command-line-args*))
-  ;(do (require '[malli.dev :as m.dev])))
+
+(comment
+  (let [sample-args ["repl" "-A:dev" "--dry-run"]]
+    (apply -main sample-args)))
 
 ;; vim:ft=clojure
