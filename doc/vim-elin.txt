@@ -17,8 +17,8 @@ Example configuration
   
   nnoremap <buffer> <Leader>epe   <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-list', [], {'config': '{:interceptor {:includes [[elin.interceptor.optional.evaluate/wrap-eval-code-interceptor "println"]]}}'})<CR>
   
-  nnoremap <buffer> <Leader>ran   <Cmd>call elin#notify('elin.handler.namespace/add-namespace', [])<CR>
-  nnoremap <buffer> <Leader>ram   <Cmd>call elin#notify('elin.handler.namespace/resolve-missing-namespace', [])<CR>
+  nnoremap <buffer> <Leader>ran   <Cmd>call elin#notify('elin.handler.namespace/add-libspec', [])<CR>
+  nnoremap <buffer> <Leader>ram   <Cmd>call elin#notify('elin.handler.namespace/add-missing-libspec', [])<CR>
   
   nnoremap <buffer> <C-]>         <Cmd>call elin#notify('elin.handler.navigate/jump-to-definition', [])<CR>
   nnoremap <buffer> K             <Cmd>call elin#notify('elin.handler.lookup/lookup', [])<CR>
