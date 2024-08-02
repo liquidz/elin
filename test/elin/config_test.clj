@@ -36,6 +36,11 @@
              (sut/merge-configs {:a {:excludes [1]}}
                                 {:a {:excludes [2]}}))))
 
+  (t/testing "set"
+    (t/is (= {:a {:set #{1 2}}}
+             (sut/merge-configs {:a {:set #{1}}}
+                                {:a {:set #{2}}}))))
+
   (t/testing "three or more"
     (t/is (= {:a {:b 1 :c 2 :d 3}}
              (sut/merge-configs {:a {:b 1}}

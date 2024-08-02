@@ -2,6 +2,7 @@
   (:require
    [aero.core :as aero]
    [clojure.java.io :as io]
+   [clojure.set :as set]
    [elin.constant.project :as e.c.project]
    [elin.schema.config :as e.s.config]
    [elin.util.file :as e.u.file]
@@ -32,17 +33,24 @@
   ([c1 c2]
    (when (or c1 c2)
      (reduce-kv (fn [accm k v2]
-                  (if-let [v1 (get accm k)]
-                    (case k
-                      (:includes :excludes)
-                      (assoc accm k (if (and (sequential? v1) (sequential? v2))
-                                      (vec (concat v1 v2))
-                                      v2))
+                  (let [v1 (get accm k)]
+                    (assoc accm k
+                           (cond
+                             (not v1)
+                             v2
 
-                      (assoc accm k (if (and (map? v1) (map? v2))
-                                      (merge-configs v1 v2)
-                                      v2)))
-                    (assoc accm k v2)))
+                             (and (contains? #{:includes :excludes} k)
+                                  (sequential? v1) (sequential? v2))
+                             (vec (concat v1 v2))
+
+                             (and (set? v1) (set? v2))
+                             (set/union v1 v2)
+
+                             (and (map? v1) (map? v2))
+                             (merge-configs v1 v2)
+
+                             :else
+                             v2))))
                 (or c1 {})
                 c2)))
   ([c1 c2 & more-configs]
