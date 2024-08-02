@@ -10,6 +10,8 @@
    [elin.protocol.host :as e.p.host]
    [elin.util.sexpr :as e.u.sexpr]))
 
+(declare add-libspec)
+
 (defn- has-namespace?
   [form ns-sym]
   (-> (re-pattern (str (str/replace (str ns-sym) "." "\\.")
@@ -19,7 +21,7 @@
 
 (defn add-libspec*
   [{:as elin :component/keys [handler host] :keys [message]}]
-  (e/let [favorites (get-in handler [:config-map (symbol #'add-libspec*) :favorites])
+  (e/let [favorites (get-in handler [:config-map (symbol #'add-libspec) :favorites])
           ns-sym (-> (:params message)
                      (first)
                      (symbol)

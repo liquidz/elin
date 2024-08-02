@@ -51,8 +51,8 @@
                                                       :label {:disconnected "🍏"
                                                               :connected "🍎"}}
                         elin.handler.complete/complete {:log {:min-level :error}}
-                        elin.handler.namespace/add-libspec* {:favorites #include "favorite_aliases.edn"
-                                                             :java-classes #include "java_classes.edn"}
+                        elin.handler.namespace/add-libspec {:favorites #include "favorite_aliases.edn"
+                                                            :java-classes #include "java_classes.edn"}
                         elin.handler.namespace/add-missing-libspec {:favorites #include "favorite_aliases.edn"
                                                                     :java-classes #include "java_classes.edn"}
                         elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor]}}
