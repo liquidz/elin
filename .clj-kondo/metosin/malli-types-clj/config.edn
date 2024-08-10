@@ -50,30 +50,22 @@
                                                                                                     :component/session-storage :any,
                                                                                                     :component/clj-kondo :any}}],
                                                                                       :ret :any}}}},
-                                        elin.component.server.impl.function {request! {:arities {3 {:args [{:op :keys,
-                                                                                                            :req {:host-store :any}}
+                                        elin.component.server.impl.function {request! {:arities {3 {:args [:any
                                                                                                            :string
                                                                                                            :sequential],
                                                                                                     :ret :any}}},
-                                                                             notify {:arities {3 {:args [{:op :keys,
-                                                                                                          :req {:host-store :any}}
+                                                                             notify {:arities {3 {:args [:any
                                                                                                          :string
                                                                                                          :sequential],
                                                                                                   :ret :nil}}},
-                                                                             execute! {:arities {2 {:args [{:op :keys,
-                                                                                                            :req {:host-store :any}}
-                                                                                                           :string],
+                                                                             execute! {:arities {2 {:args [:any :string],
                                                                                                     :ret :any}}},
-                                                                             eval! {:arities {2 {:args [{:op :keys,
-                                                                                                         :req {:host-store :any}}
-                                                                                                        :string],
+                                                                             eval! {:arities {2 {:args [:any :string],
                                                                                                  :ret :any}}}},
-                                        elin.component.server.impl.quickfix {set-quickfix-list* {:arities {2 {:args [{:op :keys,
-                                                                                                                      :req {:host-store :any}}
+                                        elin.component.server.impl.quickfix {set-quickfix-list* {:arities {2 {:args [:any
                                                                                                                      :sequential],
                                                                                                               :ret :nil}}},
-                                                                             set-location-list* {:arities {3 {:args [{:op :keys,
-                                                                                                                      :req {:host-store :any}}
+                                                                             set-location-list* {:arities {3 {:args [:any
                                                                                                                      :int
                                                                                                                      :sequential],
                                                                                                               :ret :nil}}}},
@@ -103,8 +95,7 @@
                                                                                                        :supported-ops :set,
                                                                                                        :initial-namespace :nilable/string,
                                                                                                        :version :map}}}}}},
-                                        elin.component.server.impl.io {input!* {:arities {3 {:args [{:op :keys,
-                                                                                                     :req {:host-store :any}}
+                                        elin.component.server.impl.io {input!* {:arities {3 {:args [:any
                                                                                                     :string
                                                                                                     :string],
                                                                                              :ret :any}}}},
@@ -267,6 +258,7 @@
                                                                                           :symbol
                                                                                           :nilable/symbol],
                                                                                    :ret :any}}},
+                                                         add-import {:arities {2 {:args [:string :symbol], :ret :any}}},
                                                          extract-form-by-position {:arities {3 {:args [:string
                                                                                                        :int
                                                                                                        :int],
@@ -334,12 +326,10 @@
                                                                                                                :component/session-storage :any,
                                                                                                                :component/clj-kondo :any}}],
                                                                                                  :ret :any}}}},
-                                        elin.component.server.impl.buffer {set-to-current-buffer* {:arities {2 {:args [{:op :keys,
-                                                                                                                        :req {:host-store :any}}
+                                        elin.component.server.impl.buffer {set-to-current-buffer* {:arities {2 {:args [:any
                                                                                                                        :string],
                                                                                                                 :ret :nil}}},
-                                                                           append-to-info-buffer* {:arities {2 {:args [{:op :keys,
-                                                                                                                        :req {:host-store :any}}
+                                                                           append-to-info-buffer* {:arities {2 {:args [:any
                                                                                                                        :string],
                                                                                                                 :ret :nil}}}},
                                         elin.util.file {find-file-in-parent-directories {:arities {2 {:args [:string
@@ -405,23 +395,19 @@
                                                                                                          :ret :sequential}}},
                                                                         collect-results {:arities {2 {:args [:any :map],
                                                                                                       :ret :sequential}}}},
-                                        elin.component.server.impl.file {get-current-working-directory!* {:arities {:varargs {:args [{:op :keys,
-                                                                                                                                      :req {:host-store :any}}
+                                        elin.component.server.impl.file {get-current-working-directory!* {:arities {:varargs {:args [:any
                                                                                                                                      {:op :rest,
                                                                                                                                       :spec :any}],
                                                                                                                               :ret :any,
                                                                                                                               :min-arity 1}}},
-                                                                         get-current-file-path!* {:arities {1 {:args [{:op :keys,
-                                                                                                                       :req {:host-store :any}}],
+                                                                         get-current-file-path!* {:arities {1 {:args [:any],
                                                                                                                :ret :any}}},
-                                                                         get-cursor-position!* {:arities {:varargs {:args [{:op :keys,
-                                                                                                                            :req {:host-store :any}}
+                                                                         get-cursor-position!* {:arities {:varargs {:args [:any
                                                                                                                            {:op :rest,
                                                                                                                             :spec :any}],
                                                                                                                     :ret :any,
                                                                                                                     :min-arity 1}}},
-                                                                         jump!* {:arities {:varargs {:args [{:op :keys,
-                                                                                                             :req {:host-store :any}}
+                                                                         jump!* {:arities {:varargs {:args [:any
                                                                                                             :string
                                                                                                             :int
                                                                                                             :int
@@ -429,12 +415,10 @@
                                                                                                              :spec :any}],
                                                                                                      :ret :any,
                                                                                                      :min-arity 4}}}},
-                                        elin.component.server.impl.variable {get-variable!* {:arities {2 {:args [{:op :keys,
-                                                                                                                  :req {:host-store :any}}
+                                        elin.component.server.impl.variable {get-variable!* {:arities {2 {:args [:any
                                                                                                                  :string],
                                                                                                           :ret :any}}},
-                                                                             set-variable!* {:arities {3 {:args [{:op :keys,
-                                                                                                                  :req {:host-store :any}}
+                                                                             set-variable!* {:arities {3 {:args [:any
                                                                                                                  :string
                                                                                                                  :any],
                                                                                                           :ret :any}}}},
@@ -541,26 +525,21 @@
                                                                                                 :opt {:handlers :sequential,
                                                                                                       :interceptors :sequential},
                                                                                                 :req {:name :string}}}}}},
-                                        elin.component.server.impl.sexpr {get-top-list-sexpr!* {:arities {3 {:args [{:op :keys,
-                                                                                                                     :req {:host-store :any}}
+                                        elin.component.server.impl.sexpr {get-top-list-sexpr!* {:arities {3 {:args [:any
                                                                                                                     :int
                                                                                                                     :int],
                                                                                                              :ret :any}}},
-                                                                          get-list-sexpr!* {:arities {3 {:args [{:op :keys,
-                                                                                                                 :req {:host-store :any}}
+                                                                          get-list-sexpr!* {:arities {3 {:args [:any
                                                                                                                 :int
                                                                                                                 :int],
                                                                                                          :ret :any}}},
-                                                                          get-single-sexpr!* {:arities {3 {:args [{:op :keys,
-                                                                                                                   :req {:host-store :any}}
+                                                                          get-single-sexpr!* {:arities {3 {:args [:any
                                                                                                                   :int
                                                                                                                   :int],
                                                                                                            :ret :any}}},
-                                                                          get-namespace-sexpr!* {:arities {1 {:args [{:op :keys,
-                                                                                                                      :req {:host-store :any}}],
+                                                                          get-namespace-sexpr!* {:arities {1 {:args [:any],
                                                                                                               :ret :any}}},
-                                                                          replace-list-sexpr!* {:arities {4 {:args [{:op :keys,
-                                                                                                                     :req {:host-store :any}}
+                                                                          replace-list-sexpr!* {:arities {4 {:args [:any
                                                                                                                     :int
                                                                                                                     :int
                                                                                                                     :string],
@@ -576,8 +555,7 @@
                                                                                                   :ret :nilable/symbol}}},
                                                                  lookup {:arities {3 {:args [:any :string :string],
                                                                                       :ret :any}}}},
-                                        elin.component.server.impl.event {on-connect* {:arities {1 {:args [{:op :keys,
-                                                                                                            :req {:host-store :any}}],
+                                        elin.component.server.impl.event {on-connect* {:arities {1 {:args [:any],
                                                                                                     :ret :nil}}}},
                                         elin.handler.navigate {jump-to-definition {:arities {1 {:args [{:op :keys,
                                                                                                         :req {:message {:op :keys,
