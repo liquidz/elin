@@ -6,10 +6,9 @@
    [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.schema :as e.schema]
-   [elin.schema.component :as e.s.component]
    [malli.core :as m]))
 
-(m/=> input!* [:=> [:cat e.s.component/?LazyHost string? string?] e.schema/?ManyToManyChannel])
+(m/=> input!* [:=> [:cat e.c.s.function/?IFunction string? string?] e.schema/?ManyToManyChannel])
 (defn- input!*
   [host prompt default]
   (e.c.s.function/request! host "input" [prompt default]))

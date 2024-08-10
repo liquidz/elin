@@ -6,7 +6,6 @@
    [elin.error :as e]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.schema :as e.schema]
-   [elin.schema.component :as e.s.component]
    [elin.util.id :as e.u.id]
    [elin.util.server :as e.u.server]
    [malli.core :as m]))
@@ -14,6 +13,9 @@
 (defprotocol IFunction
   (request-function [this method params])
   (notify-function [this method params]))
+
+(def ?IFunction
+  (e.schema/?protocol IFunction))
 
 (extend-protocol IFunction
   elin.component.server.vim.VimHost
@@ -31,7 +33,7 @@
     (e.p.h.rpc/notify! this ["nvim_call_function" [method params]])))
 
 (m/=> request! [:=>
-                [:cat e.s.component/?LazyHost string? [:sequential any?]]
+                [:cat ?IFunction string? [:sequential any?]]
                 e.schema/?ManyToManyChannel])
 (defn request!
   [host fn-name params]
@@ -45,19 +47,19 @@
                   :params params})
         result))))
 
-(m/=> notify [:=> [:cat e.s.component/?LazyHost string? [:sequential any?]] :nil])
+(m/=> notify [:=> [:cat ?IFunction string? [:sequential any?]] :nil])
 (defn notify
   [host fn-name params]
   (->> (map e.u.server/format params)
        (notify-function host fn-name))
   nil)
 
-(m/=> execute! [:=> [:cat e.s.component/?LazyHost string?] e.schema/?ManyToManyChannel])
+(m/=> execute! [:=> [:cat ?IFunction string?] e.schema/?ManyToManyChannel])
 (defn execute!
   [host cmd]
   (request! host "elin#internal#execute" [cmd]))
 
-(m/=> eval! [:=> [:cat e.s.component/?LazyHost string?] e.schema/?ManyToManyChannel])
+(m/=> eval! [:=> [:cat ?IFunction string?] e.schema/?ManyToManyChannel])
 (defn eval!
   [host s]
   (request! host "elin#internal#eval" [s]))

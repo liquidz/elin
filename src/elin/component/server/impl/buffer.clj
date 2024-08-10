@@ -4,15 +4,14 @@
    [elin.component.server.nvim]
    [elin.component.server.vim]
    [elin.protocol.host :as e.p.host]
-   [elin.schema.component :as e.s.component]
    [malli.core :as m]))
 
-(m/=> set-to-current-buffer* [:=> [:cat e.s.component/?LazyHost string?] :nil])
+(m/=> set-to-current-buffer* [:=> [:cat e.c.s.function/?IFunction string?] :nil])
 (defn- set-to-current-buffer*
   [host s]
   (e.c.s.function/notify host "elin#internal#buffer#set" ["%" s]))
 
-(m/=> append-to-info-buffer* [:=> [:cat e.s.component/?LazyHost string?] :nil])
+(m/=> append-to-info-buffer* [:=> [:cat e.c.s.function/?IFunction string?] :nil])
 (defn- append-to-info-buffer*
   [host s]
   (when (seq s)

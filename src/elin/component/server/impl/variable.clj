@@ -6,15 +6,14 @@
    [elin.component.server.vim]
    [elin.protocol.host :as e.p.host]
    [elin.schema :as e.schema]
-   [elin.schema.component :as e.s.component]
    [malli.core :as m]))
 
-(m/=> get-variable!* [:=> [:cat e.s.component/?LazyHost string?] e.schema/?ManyToManyChannel])
+(m/=> get-variable!* [:=> [:cat e.c.s.function/?IFunction string?] e.schema/?ManyToManyChannel])
 (defn- get-variable!*
   [host var-name]
   (e.c.s.function/eval! host (format "exists('%s') ? %s : v:null" var-name var-name)))
 
-(m/=> set-variable!* [:=> [:cat e.s.component/?LazyHost string? any?] e.schema/?ManyToManyChannel])
+(m/=> set-variable!* [:=> [:cat e.c.s.function/?IFunction string? any?] e.schema/?ManyToManyChannel])
 (defn- set-variable!*
   [host var-name value]
   (async/go
