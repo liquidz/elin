@@ -9,6 +9,7 @@
    [elin.handler.evaluate]
    [elin.handler.internal]
    [elin.handler.lookup]
+   [elin.handler.namespace]
    [elin.handler.navigate]
    [elin.message :as e.message]
    [elin.protocol.config :as e.p.config]
