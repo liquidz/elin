@@ -78,6 +78,40 @@
        :else
        zloc))))
 
+(m/=> add-import [:=> [:cat string? symbol?] (e.schema/error-or string?)])
+(defn add-import
+  [form-code class-name-sym]
+  (e/let [import-node (r.parser/parse-string (str class-name-sym))
+          zloc (r.zip/of-string form-code)
+          zloc (if-let [zloc' (r.zip/find-value zloc r.zip/next :import)]
+                 zloc'
+                 (or (some-> zloc
+                             (r.zip/down)
+                             (r.zip/rightmost)
+                             (r.zip/insert-right (r.parser/parse-string "(:import)"))
+                             (r.zip/insert-space-right)
+                             (r.zip/insert-newline-right)
+                             (r.zip/find-value r.zip/next :import))
+                     (e/not-found)))
+          right-zloc (some-> zloc r.zip/right*)
+          linebreaked? (some-> right-zloc r.zip/node r.node/linebreak?)
+          zloc (r.zip/insert-right zloc import-node)]
+    (r.zip/root-string
+     (cond
+       linebreaked?
+       (-> zloc
+           (r.zip/insert-space-right 2)
+           (r.zip/insert-newline-right))
+
+       (some? right-zloc)
+       (-> zloc
+           (r.zip/right)
+           (r.zip/insert-space-right 11)
+           (r.zip/insert-newline-right))
+
+       :else
+       zloc))))
+
 (m/=> extract-form-by-position [:=> [:cat string? int? int?] (e.schema/error-or string?)])
 (defn extract-form-by-position
   [code line col]

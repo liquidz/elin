@@ -52,3 +52,23 @@
     (t/is (e/not-found? (sut/add-require ""
                                          'baz.core
                                          'baz)))))
+
+(t/deftest add-import-test
+  (t/testing "import exists"
+    (t/testing "has linebreak after :import"
+      (t/is (= "(ns foo.core\n  (:import\n   java.lang.Number\n   java.lang.String))"
+               (sut/add-import "(ns foo.core\n  (:import\n   java.lang.String))"
+                               'java.lang.Number))))
+
+    (t/testing "no linebreak after :import"
+      (t/is (= "(ns foo.core\n  (:import java.lang.Number\n            java.lang.String))"
+               (sut/add-import "(ns foo.core\n  (:import java.lang.String))"
+                               'java.lang.Number)))))
+
+  (t/testing "no import"
+    (t/is (= "(ns foo.core\n  (:import java.lang.String))"
+             (sut/add-import "(ns foo.core)"
+                             'java.lang.String))))
+
+  (t/testing "no namespace form"
+    (t/is (e/not-found? (sut/add-import "" 'java.lang.String)))))
