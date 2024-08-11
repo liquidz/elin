@@ -2,7 +2,9 @@
   (:require
    [com.stuartsierra.component :as component]
    [elin.config :as e.config]
+   [elin.schema.handler :as e.s.handler]
    [elin.system :as e.system]
+   [malli.core :as m]
    [malli.dev :as m.dev]
    [taoensso.timbre :as timbre]))
 
@@ -49,3 +51,18 @@
 
 (defn $ [& kws]
   (get-in @sys kws))
+
+(m/=> elin [:function
+            [:=> :cat e.s.handler/?Elin]
+            [:=> [:cat map?] e.s.handler/?Elin]])
+(defn elin
+  ([]
+   (elin {}))
+  ([m]
+   (let [kws [:nrepl :host :interceptor :session-storage :clj-kondo]]
+     (merge
+      {:message {:host "repl"
+                 :message []}}
+      (zipmap (map #(keyword "component" (name %)) kws)
+              (map #($ (if (= :host %) :lazy-host %)) kws))
+      m))))
