@@ -26,12 +26,26 @@ function! s:search_ns_form_pos() abort
   endif
 endfunction
 
-function! elin#internal#sexpr#clojure#get_ns_sexpr() abort
-  let [lnum, col] = s:search_ns_form_pos()
-  if lnum == -1 && col == -1
-    return {'code': '', 'lnum': 0, 'col': 0}
-  endif
-  return elin#internal#sexpr#get_list(lnum, col)
+function! elin#internal#sexpr#clojure#get_ns_sexpr(...) abort
+  let path = get(a:, 1, '')
+  let context = v:null
+
+  try
+    if path !=# ''
+      let context = elin#internal#context#save()
+      call elin#internal#jump(path, 0, 0, 'edit')
+    endif
+
+    let [lnum, col] = s:search_ns_form_pos()
+    if lnum == -1 && col == -1
+      return {'code': '', 'lnum': 0, 'col': 0}
+    endif
+    return elin#internal#sexpr#get_list(lnum, col)
+  finally
+    if path !=# ''
+      call elin#internal#context#restore(context)
+    endif
+  endtry
 endfunction
 
 function! elin#internal#sexpr#clojure#replace_ns_form(new_ns) abort

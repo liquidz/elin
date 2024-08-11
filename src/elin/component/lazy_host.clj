@@ -228,6 +228,12 @@
               :method e.p.host/get-namespace-sexpr!
               :args []
               :queue host-channel}))
+  (get-namespace-sexpr! [_ path]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/get-namespace-sexpr!
+              :args [path]
+              :queue host-channel}))
   (replace-list-sexpr! [_ lnum col new-sexpr]
     (execute {:host @host-store
               :protocol e.p.host/ISexpr

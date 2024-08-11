@@ -33,13 +33,20 @@
           (async/<!)
           (update-keys keyword))))
 
-(m/=> get-namespace-sexpr!* [:=> [:cat e.c.s.function/?IFunction] e.schema/?ManyToManyChannel])
+(m/=> get-namespace-sexpr!* [:function
+                             [:=> [:cat e.c.s.function/?IFunction] e.schema/?ManyToManyChannel]
+                             [:=> [:cat e.c.s.function/?IFunction string?] e.schema/?ManyToManyChannel]])
 (defn- get-namespace-sexpr!*
-  [host]
-  (async/go
-    (e/-> (e.c.s.function/request! host "elin#internal#sexpr#clojure#get_ns_sexpr" [])
-          (async/<!)
-          (update-keys keyword))))
+  ([host]
+   (async/go
+     (e/-> (e.c.s.function/request! host "elin#internal#sexpr#clojure#get_ns_sexpr" [])
+           (async/<!)
+           (update-keys keyword))))
+  ([host path]
+   (async/go
+     (e/-> (e.c.s.function/request! host "elin#internal#sexpr#clojure#get_ns_sexpr" [path])
+           (async/<!)
+           (update-keys keyword)))))
 
 (m/=> replace-list-sexpr!* [:=> [:cat e.c.s.function/?IFunction int? int? string?] e.schema/?ManyToManyChannel])
 (defn- replace-list-sexpr!*
@@ -51,12 +58,16 @@
   (get-top-list-sexpr! [this lnum col] (get-top-list-sexpr!* this lnum col))
   (get-list-sexpr! [this lnum col] (get-list-sexpr!* this lnum col))
   (get-single-sexpr! [this lnum col] (get-single-sexpr!* this lnum col))
-  (get-namespace-sexpr! [this] (get-namespace-sexpr!* this))
+  (get-namespace-sexpr!
+    ([this] (get-namespace-sexpr!* this))
+    ([this path] (get-namespace-sexpr!* this path)))
   (replace-list-sexpr! [this lnum col new-sexpr] (replace-list-sexpr!* this lnum col new-sexpr))
 
   elin.component.server.nvim.NvimHost
   (get-top-list-sexpr! [this lnum col] (get-top-list-sexpr!* this lnum col))
   (get-list-sexpr! [this lnum col] (get-list-sexpr!* this lnum col))
   (get-single-sexpr! [this lnum col] (get-single-sexpr!* this lnum col))
-  (get-namespace-sexpr! [this] (get-namespace-sexpr!* this))
+  (get-namespace-sexpr!
+    ([this] (get-namespace-sexpr!* this))
+    ([this path] (get-namespace-sexpr!* this path)))
   (replace-list-sexpr! [this lnum col new-sexpr] (replace-list-sexpr!* this lnum col new-sexpr)))
