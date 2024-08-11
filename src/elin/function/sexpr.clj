@@ -24,19 +24,29 @@
   [{:component/keys [host]} lnum col]
   (async/<!! (e.p.host/get-single-sexpr! host lnum col)))
 
-(m/=> get-namespace-sexpr [:=> [:cat e.s.handler/?Elin] (e.schema/error-or e.s.host/?CodeAndPosition)])
+(m/=> get-namespace-sexpr [:function
+                           [:=> [:cat e.s.handler/?Elin] (e.schema/error-or e.s.host/?CodeAndPosition)]
+                           [:=> [:cat e.s.handler/?Elin string?] (e.schema/error-or e.s.host/?CodeAndPosition)]])
 (defn get-namespace-sexpr
-  [{:component/keys [host]}]
-  (async/<!! (e.p.host/get-namespace-sexpr! host)))
+  ([{:component/keys [host]}]
+   (async/<!! (e.p.host/get-namespace-sexpr! host)))
+  ([{:component/keys [host]} path]
+   (async/<!! (e.p.host/get-namespace-sexpr! host path))))
 
 (m/=> replace-list-sexpr [:=> [:cat e.s.handler/?Elin int? int? string?] (e.schema/error-or [:maybe string?])])
 (defn replace-list-sexpr
   [{:component/keys [host]} lnum col new-sexpr]
   (async/<!! (e.p.host/replace-list-sexpr! host lnum col new-sexpr)))
 
-(m/=> get-namespace [:=> [:cat e.s.handler/?Elin] (e.schema/error-or [:maybe string?])])
+(m/=> get-namespace [:function
+                     [:=> [:cat e.s.handler/?Elin] (e.schema/error-or [:maybe string?])]
+                     [:=> [:cat e.s.handler/?Elin string?] (e.schema/error-or [:maybe string?])]])
 (defn get-namespace
-  [elin]
-  (e/-> (get-namespace-sexpr elin)
-        (:code)
-        (e.u.sexpr/extract-namespace)))
+  ([elin]
+   (e/-> (get-namespace-sexpr elin)
+         (:code)
+         (e.u.sexpr/extract-namespace)))
+  ([elin path]
+   (e/-> (get-namespace-sexpr elin path)
+         (:code)
+         (e.u.sexpr/extract-namespace))))
