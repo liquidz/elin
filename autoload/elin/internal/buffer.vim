@@ -24,6 +24,9 @@ function! elin#internal#buffer#open(buf_name, option) abort
   try
     let &eventignore = 'WinEnter,WinLeave,BufEnter,BufLeave'
     execute printf('%s %s %s', mods, opener, a:buf_name)
+    if has_key(opt, 'height')
+      silent exec printf(':resize %d', opt['height'])
+    endif
   finally
     let &eventignore = ''
     call elin#internal#buffer#focus_by_win_nr(current_window)
