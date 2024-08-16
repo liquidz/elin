@@ -57,7 +57,20 @@
   ([option]
    {:component/nrepl (test-nrepl (or (:nrepl option) {}))
     :component/interceptor (test-interceptor (or (:interceptor option) {}))
-    :component/host (test-host (:host option))
+    :component/host (test-host (or (:host option) {}))
     :component/session-storage (e.c.session-storage/new-session-storage {})
     :component/clj-kondo (test-clj-kondo (or (:clj-kondo option) {}))
     :message {:host "test" :message []}}))
+
+(defn nrepl-eval-config
+  ([f]
+   (nrepl-eval-config {} f))
+  ([config f]
+   (assoc-in config [:nrepl :client :handler] #(when (= "eval" (:op %))
+                                                 [{:value (f %)}]))))
+
+(defn host-get-namespace-sexpr!-config
+  ([code]
+   (host-get-namespace-sexpr!-config {} code))
+  ([config code]
+   (assoc-in config [:host :get-namespace-sexpr!] {:code code :lnum 0 :col 0})))
