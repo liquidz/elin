@@ -2,8 +2,12 @@ let s:buf_name = 'elin_info_buffer'
 let s:title = ';; Elin Info Buffer'
 let s:delimiter = ';; ----------'
 
+function! elin#internal#buffer#info#is_visible() abort
+  return elin#internal#buffer#is_visible(s:buf_name)
+endfunction
+
 function! elin#internal#buffer#info#open(...) abort
-  if elin#internal#buffer#is_visible(s:buf_name)
+  if elin#internal#buffer#info#is_visible()
     return
   endif
 
@@ -16,7 +20,7 @@ function! elin#internal#buffer#info#close() abort
 endfunction
 
 function! elin#internal#buffer#info#toggle(...) abort
-  if elin#internal#buffer#is_visible(s:buf_name)
+  if elin#internal#buffer#info#is_visible()
     return elin#internal#buffer#info#close()
   endif
   return elin#internal#buffer#info#open(get(a:, 1, {}))
