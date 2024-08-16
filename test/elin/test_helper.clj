@@ -59,5 +59,5 @@
     :component/interceptor (test-interceptor (or (:interceptor option) {}))
     :component/host (test-host (:host option))
     :component/session-storage (e.c.session-storage/new-session-storage {})
-    :component/clj-kondo (test-clj-kondo)
+    :component/clj-kondo (test-clj-kondo (or (:clj-kondo option) {}))
     :message {:host "test" :message []}}))
