@@ -46,7 +46,7 @@
 
 (defprotocol IBuffer
   (set-to-current-buffer [this text])
-  (append-to-info-buffer [this text]))
+  (append-to-info-buffer [this text] [this text options]))
 
 (defprotocol ISelector
   (select-from-candidates

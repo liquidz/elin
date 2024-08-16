@@ -309,6 +309,12 @@
               :method e.p.host/append-to-info-buffer
               :args [text]
               :queue host-channel}))
+  (append-to-info-buffer [_ text options]
+    (execute {:host @host-store
+              :protocol e.p.host/IBuffer
+              :method e.p.host/append-to-info-buffer
+              :args [text options]
+              :queue host-channel}))
   ;; }}}
 
   e.p.host/IQuickfix ; {{{
