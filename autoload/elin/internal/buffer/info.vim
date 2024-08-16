@@ -10,6 +10,9 @@ function! elin#internal#buffer#info#open(...) abort
   if elin#internal#buffer#info#is_visible()
     return
   endif
+  if elin#internal#buffer#temp#is_visible()
+    call elin#internal#buffer#temp#close()
+  endif
 
   let option = get(a:, 1, {})
   call elin#internal#buffer#open(s:buf_name, option)
