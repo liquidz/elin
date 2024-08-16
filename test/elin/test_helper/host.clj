@@ -50,6 +50,8 @@
     (async/go (:get-single-sexpr! option)))
   (get-namespace-sexpr! [_]
     (async/go (:get-namespace-sexpr! option)))
+  (get-namespace-sexpr! [_ _path]
+    (async/go (:get-namespace-sexpr! option)))
   (replace-list-sexpr! [_ _lnum _col _new-sexpr] (async/go nil))
 
   e.p.host/IQuickfix
