@@ -4,8 +4,10 @@
    [elin.component.nrepl :as e.c.nrepl]
    [elin.component.nrepl.client :as e.c.n.client]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.schema.component :as e.s.component]
    [elin.test-helper.host :as h.host]
-   [elin.test-helper.interceptor :as h.interceptor]))
+   [elin.test-helper.interceptor :as h.interceptor]
+   [malli.core :as m]))
 
 (defn- nrepl-connectin-default-handler
   [msg]
@@ -35,7 +37,8 @@
 
   (notify [this msg]
     (when-not (e.p.nrepl/disconnected? this)
-      (let [option-handler (or (:handler option) (constantly nil))
+      (let [option-handler (or (:handler option)
+                               (constantly nil))
             res (option-handler msg)]
         (if res
           res
@@ -64,6 +67,7 @@
   (-> (test-nrepl-connection option)
       (e.c.n.client/new-client)))
 
+(m/=> test-nrepl [:-> map? e.s.component/?Nrepl])
 (defn test-nrepl
   [option]
   (let [host (h.host/test-host (merge {:handler identity}
