@@ -57,17 +57,17 @@
                                                :file (:filename result)
                                                :group (:var result)}))
                   ;; append results to info buffer
-                  (->> failed
-                       (mapcat (fn [{:as failed-result :keys [text lnum expected actual]}]
-                                 (if (empty? actual)
-                                   []
-                                   [(format ";; %s%s" text lnum)
-                                    (if (seq expected)
-                                      (e.u.map/map->str failed-result [:expected :actual :diffs])
-                                      actual)
-                                    ""])))
-                       (str/join "\n")
-                       (e.p.host/append-to-info-buffer host))
+                  (let [s (->> failed
+                               (mapcat (fn [{:as failed-result :keys [text lnum expected actual]}]
+                                         (if (empty? actual)
+                                           []
+                                           [(format ";; %s%s" text lnum)
+                                            (if (seq expected)
+                                              (e.u.map/map->str failed-result [:expected :actual :diffs])
+                                              actual)
+                                            ""])))
+                               (str/join "\n"))]
+                    (e.p.host/append-to-info-buffer host s {:show-temporarily? true}))
                   ;; set errors to quickfix list
                   (->> failed
                        (map #(hash-map :filename (:filename %)
