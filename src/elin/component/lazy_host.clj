@@ -332,7 +332,7 @@
               :queue host-channel}))
   ;; }}}
 
-  e.p.host/ISelector
+  e.p.host/ISelector ; {{{
   (select-from-candidates [_ candidates callback-handler-symbol]
     (execute {:host @host-store
               :protocol e.p.host/ISelector
@@ -345,8 +345,18 @@
               :method e.p.host/select-from-candidates
               :args [candidates callback-handler-symbol optional-params]
               :queue host-channel}))
+  ;; }}}
 
-  e.p.rpc/IFunction
+  e.p.host/IMark ; {{{
+  (get-mark [_ mark-id]
+    (execute {:host @host-store
+              :protocol e.p.host/IMark
+              :method e.p.host/get-mark
+              :args [mark-id]
+              :queue host-channel}))
+  ;; }}}
+
+  e.p.rpc/IFunction ; {{{
   (call-function [_ method params]
     (if-let [host @host-store]
       (e.p.rpc/call-function host method params)
@@ -357,6 +367,7 @@
     (if-let [host @host-store]
       (e.p.rpc/notify-function host method params)
       (async/put! host-channel [::notify-function method params]))))
+;; }}}
 
 (defn new-lazy-host
   [_]

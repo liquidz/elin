@@ -58,3 +58,6 @@
     [this quickfix-list])
   (set-location-list
     [this window-id location-list]))
+
+(defprotocol IMark
+  (get-mark [this mark-id]))

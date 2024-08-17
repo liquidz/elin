@@ -2,7 +2,7 @@
 
 (def ?Position
   [:map
-   [:bufname int?]
+   [:path string?]
    [:lnum int?]
    [:col int?]
    [:off int?]
