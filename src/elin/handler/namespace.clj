@@ -76,72 +76,34 @@
         ns-sym (some-> ns-str
                        (symbol))]
     (cond
-      (and (empty? alias-str)
-           (e.u.string/java-class-name? ns-str))
-      (add-missing-import* elin ns-sym)
-
       (or (not alias-sym)
           (not ns-sym))
       (e/not-found)
 
+      (and (e.u.string/java-class-name? alias-str)
+           (e.u.string/java-class-name? ns-str))
+      (add-missing-import* elin ns-sym)
+
       :else
       (add-missing-require* elin alias-sym ns-sym))))
 
-(defn- add-missing-import
-  [{:as elin :component/keys [handler host]} code]
-  (e/let [{:keys [java-classes]} (get-in handler [:config-map (symbol #'add-missing-libspec)])
-          class-name-sym (symbol code)
-          candidates (reduce-kv
-                      (fn [res pkg class-set]
-                        (if (contains? class-set class-name-sym)
-                          (conj res (str (name pkg) "." class-name-sym))
-                          res))
-                      [] java-classes)]
+(defn add-missing-libspec
+  [{:as elin :component/keys [handler host]}]
+  (e/let [{:keys [favorites java-classes]} (get-in handler [:config-map (symbol #'add-missing-libspec)])
+          {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
+          {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
+          [alias-str _] (str/split code #"/" 2)
+          candidates (e.f.namespace/missing-candidates elin {:code code
+                                                             :requiring-favorites favorites
+                                                             :java-classes java-classes})]
     (condp = (count candidates)
       0
       (e.message/warning host "There are no candidates.")
 
       1
       (add-missing-libspec*
-       (assoc elin :message {:params ["" (first candidates)]}))
+       (assoc elin :message {:params [alias-str (:name (first candidates))]}))
 
       ;; else
       (e.p.host/select-from-candidates
-       host candidates (symbol #'add-missing-libspec*) [""]))))
-
-(defn- add-missing-require
-  [{:as elin :component/keys [handler host]} code]
-  (e/let [{:keys [favorites]} (get-in handler [:config-map (symbol #'add-missing-libspec)])
-          [alias-str var-str] (str/split code #"/" 2)
-          _ (when-not var-str
-              (e/incorrect {:message (format "Fully qualified symbol is required: %s" code)}))
-          resp (e.f.namespace/add-missing-libspec elin code favorites)]
-    (condp = (count resp)
-      0
-      (e.message/warning host "There are no candidates.")
-
-      1
-      (add-missing-libspec*
-       (assoc elin :message {:params [alias-str (:name (first resp))]}))
-
-      ;; else
-      (e.p.host/select-from-candidates
-       host (map :name resp) (symbol #'add-missing-libspec*) [alias-str]))))
-
-(defn add-missing-libspec
-  [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
-          {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          [alias-str var-str] (str/split code #"/" 2)]
-    (cond
-      (and (not var-str)
-           (e.u.string/java-class-name? alias-str))
-      ;; import
-      (add-missing-import elin code)
-
-      (not var-str)
-      (e/incorrect {:message (format "Fully qualified symbol is required: %s" code)})
-
-      :else
-      ;; require
-      (add-missing-require elin code))))
+       host (map :name candidates) (symbol #'add-missing-libspec*) [alias-str]))))
