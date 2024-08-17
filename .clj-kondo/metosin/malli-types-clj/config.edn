@@ -328,6 +328,7 @@
                                                                                                      :initial-namespace :nilable/string,
                                                                                                      :version :map}}],
                                                                                        :ret :string}}}},
+                                        elin.test-helper.nrepl {test-nrepl {:arities {1 {:args [:map], :ret :any}}}},
                                         elin.handler.test {run-test-under-cursor {:arities {1 {:args [{:op :keys,
                                                                                                        :req {:message {:op :keys,
                                                                                                                        :req {:host :string,
@@ -353,8 +354,9 @@
                                         elin.component.server.impl.buffer {set-to-current-buffer* {:arities {2 {:args [:any
                                                                                                                        :string],
                                                                                                                 :ret :nil}}},
-                                                                           append-to-info-buffer* {:arities {2 {:args [:any
-                                                                                                                       :string],
+                                                                           append-to-info-buffer* {:arities {3 {:args [:any
+                                                                                                                       :string
+                                                                                                                       :map],
                                                                                                                 :ret :nil}}}},
                                         elin.util.file {find-file-in-parent-directories {:arities {2 {:args [:string
                                                                                                              :any],
@@ -392,7 +394,22 @@
                                                                                                                  :component/clj-kondo :any}}
                                                                                                           :string
                                                                                                           :map],
-                                                                                                   :ret :sequential}}}},
+                                                                                                   :ret :sequential}}},
+                                                                 missing-candidates {:arities {2 {:args [{:op :keys,
+                                                                                                          :req {:message {:op :keys,
+                                                                                                                          :req {:host :string,
+                                                                                                                                :message :sequential}},
+                                                                                                                :component/nrepl :any,
+                                                                                                                :component/interceptor :any,
+                                                                                                                :component/host {:op :keys,
+                                                                                                                                 :req {:host-store :any}},
+                                                                                                                :component/session-storage :any,
+                                                                                                                :component/clj-kondo :any}}
+                                                                                                         {:op :keys,
+                                                                                                          :req {:code :string,
+                                                                                                                :requiring-favorites :map,
+                                                                                                                :java-classes :map}}],
+                                                                                                  :ret :sequential}}}},
                                         elin.function.storage.test {set* {:arities {3 {:args [:keyword :any :string],
                                                                                        :ret :nil}}},
                                                                     get* {:arities {2 {:args [:keyword :any],
