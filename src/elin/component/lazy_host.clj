@@ -210,17 +210,35 @@
               :method e.p.host/get-top-list-sexpr!
               :args [lnum col]
               :queue host-channel}))
+  (get-top-list-sexpr! [_ path lnum col]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/get-top-list-sexpr!
+              :args [path lnum col]
+              :queue host-channel}))
   (get-list-sexpr! [_ lnum col]
     (execute {:host @host-store
               :protocol e.p.host/ISexpr
               :method e.p.host/get-list-sexpr!
               :args [lnum col]
               :queue host-channel}))
+  (get-list-sexpr! [_ path lnum col]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/get-list-sexpr!
+              :args [path lnum col]
+              :queue host-channel}))
   (get-single-sexpr! [_ lnum col]
     (execute {:host @host-store
               :protocol e.p.host/ISexpr
               :method e.p.host/get-single-sexpr!
               :args [lnum col]
+              :queue host-channel}))
+  (get-single-sexpr! [_ path lnum col]
+    (execute {:host @host-store
+              :protocol e.p.host/ISexpr
+              :method e.p.host/get-single-sexpr!
+              :args [path lnum col]
               :queue host-channel}))
   (get-namespace-sexpr! [_]
     (execute {:host @host-store

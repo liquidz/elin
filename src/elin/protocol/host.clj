@@ -28,9 +28,9 @@
   (refresh-signs [this]))
 
 (defprotocol ISexpr
-  (get-top-list-sexpr! [this lnum col])
-  (get-list-sexpr! [this lnum col])
-  (get-single-sexpr! [this lnum col])
+  (get-top-list-sexpr! [this lnum col] [this path lnum col])
+  (get-list-sexpr! [this lnum col] [this path lnum col])
+  (get-single-sexpr! [this lnum col] [this path lnum col])
   (get-namespace-sexpr! [this] [this path])
   (replace-list-sexpr! [this lnum col new-sexpr]))
 

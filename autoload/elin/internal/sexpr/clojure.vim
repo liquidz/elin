@@ -40,7 +40,7 @@ function! elin#internal#sexpr#clojure#get_ns_sexpr(...) abort
     if lnum == -1 && col == -1
       return {'code': '', 'lnum': 0, 'col': 0}
     endif
-    return elin#internal#sexpr#get_list(lnum, col)
+    return elin#internal#sexpr#get_list('', lnum, col)
   finally
     if path !=# ''
       call elin#internal#context#restore(context)
