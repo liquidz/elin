@@ -436,6 +436,18 @@
                                                                                                          :ret :sequential}}},
                                                                         collect-results {:arities {2 {:args [:any :map],
                                                                                                       :ret :sequential}}}},
+                                        elin.function.mark {get-by-id {:arities {2 {:args [{:op :keys,
+                                                                                            :req {:message {:op :keys,
+                                                                                                            :req {:host :string,
+                                                                                                                  :message :sequential}},
+                                                                                                  :component/nrepl :any,
+                                                                                                  :component/interceptor :any,
+                                                                                                  :component/host {:op :keys,
+                                                                                                                   :req {:host-store :any}},
+                                                                                                  :component/session-storage :any,
+                                                                                                  :component/clj-kondo :any}}
+                                                                                           :string],
+                                                                                    :ret :any}}}},
                                         elin.component.server.impl.file {get-current-working-directory!* {:arities {:varargs {:args [:any
                                                                                                                                      {:op :rest,
                                                                                                                                       :spec :any}],
@@ -569,12 +581,27 @@
                                         elin.component.server.impl.sexpr {get-top-list-sexpr!* {:arities {3 {:args [:any
                                                                                                                     :int
                                                                                                                     :int],
+                                                                                                             :ret :any},
+                                                                                                          4 {:args [:any
+                                                                                                                    :string
+                                                                                                                    :int
+                                                                                                                    :int],
                                                                                                              :ret :any}}},
                                                                           get-list-sexpr!* {:arities {3 {:args [:any
                                                                                                                 :int
                                                                                                                 :int],
+                                                                                                         :ret :any},
+                                                                                                      4 {:args [:any
+                                                                                                                :string
+                                                                                                                :int
+                                                                                                                :int],
                                                                                                          :ret :any}}},
                                                                           get-single-sexpr!* {:arities {3 {:args [:any
+                                                                                                                  :int
+                                                                                                                  :int],
+                                                                                                           :ret :any},
+                                                                                                        4 {:args [:any
+                                                                                                                  :string
                                                                                                                   :int
                                                                                                                   :int],
                                                                                                            :ret :any}}},
@@ -588,6 +615,8 @@
                                                                                                                     :int
                                                                                                                     :string],
                                                                                                              :ret :any}}}},
+                                        elin.component.server.impl.mark {get-mark* {:arities {2 {:args [:any :string],
+                                                                                                 :ret :any}}}},
                                         elin.function.clj-kondo {namespace-symbols {:arities {1 {:args [:any],
                                                                                                  :ret :sequential}}},
                                                                  most-used-namespace-alias {:arities {2 {:args [:any
