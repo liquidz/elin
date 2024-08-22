@@ -9,20 +9,32 @@
    [elin.util.sexpr :as e.u.sexpr]
    [malli.core :as m]))
 
-(m/=> get-top-list [:=> [:cat e.s.handler/?Elin int? int?] (e.schema/error-or e.s.host/?CodeAndPosition)])
+(m/=> get-top-list [:function
+                    [:-> e.s.handler/?Elin int? int? (e.schema/error-or e.s.host/?CodeAndPosition)]
+                    [:-> e.s.handler/?Elin string? int? int? (e.schema/error-or e.s.host/?CodeAndPosition)]])
 (defn get-top-list
-  [{:component/keys [host]} lnum col]
-  (async/<!! (e.p.host/get-top-list-sexpr! host lnum col)))
+  ([{:component/keys [host]} lnum col]
+   (async/<!! (e.p.host/get-top-list-sexpr! host lnum col)))
+  ([{:component/keys [host]} path lnum col]
+   (async/<!! (e.p.host/get-top-list-sexpr! host path lnum col))))
 
-(m/=> get-list [:=> [:cat e.s.handler/?Elin int? int?] (e.schema/error-or e.s.host/?CodeAndPosition)])
+(m/=> get-list [:function
+                [:-> e.s.handler/?Elin int? int? (e.schema/error-or e.s.host/?CodeAndPosition)]
+                [:-> e.s.handler/?Elin string? int? int? (e.schema/error-or e.s.host/?CodeAndPosition)]])
 (defn get-list
-  [{:component/keys [host]} lnum col]
-  (async/<!! (e.p.host/get-list-sexpr! host lnum col)))
+  ([{:component/keys [host]} lnum col]
+   (async/<!! (e.p.host/get-list-sexpr! host lnum col)))
+  ([{:component/keys [host]} path lnum col]
+   (async/<!! (e.p.host/get-list-sexpr! host path lnum col))))
 
-(m/=> get-expr [:=> [:cat e.s.handler/?Elin int? int?] (e.schema/error-or e.s.host/?CodeAndPosition)])
+(m/=> get-expr [:function
+                [:-> e.s.handler/?Elin int? int? (e.schema/error-or e.s.host/?CodeAndPosition)]
+                [:-> e.s.handler/?Elin string? int? int? (e.schema/error-or e.s.host/?CodeAndPosition)]])
 (defn get-expr
-  [{:component/keys [host]} lnum col]
-  (async/<!! (e.p.host/get-single-sexpr! host lnum col)))
+  ([{:component/keys [host]} lnum col]
+   (async/<!! (e.p.host/get-single-sexpr! host lnum col)))
+  ([{:component/keys [host]} path lnum col]
+   (async/<!! (e.p.host/get-single-sexpr! host path lnum col))))
 
 (m/=> get-namespace-sexpr [:function
                            [:=> [:cat e.s.handler/?Elin] (e.schema/error-or e.s.host/?CodeAndPosition)]
