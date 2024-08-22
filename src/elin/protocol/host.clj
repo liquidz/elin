@@ -6,47 +6,84 @@
   (on-connect [this]))
 
 (defprotocol IIo
-  (echo-text [this text] [this text highlight])
-  (echo-message [this text] [this text highlight])
-  (input! [this prompt default]))
+  (echo-text
+    [this text]
+    [this text highlight])
+  (echo-message
+    [this text]
+    [this text highlight])
+  (input!
+    [this prompt default]))
 
 (defprotocol IFile
-  (get-current-working-directory! [this])
-  (get-current-file-path! [this])
-  (get-cursor-position! [this])
-  (jump! [this path lnum col] [this path lnum col jump-command]))
+  (get-current-working-directory!
+    [this])
+  (get-current-file-path!
+    [this])
+  (get-cursor-position!
+    [this])
+  (jump!
+    [this path lnum col]
+    [this path lnum col jump-command]))
 
 (defprotocol IVariable
-  (get-variable! [this var-name])
-  (set-variable! [this var-name value]))
+  (get-variable!
+    [this var-name])
+  (set-variable!
+    [this var-name value]))
 
 (defprotocol ISign
-  (place-sign [this m])
-  (unplace-signs-by [this m])
-  (list-current-signs! [this])
-  (list-all-signs! [this])
-  (refresh-signs [this]))
+  (place-sign
+    [this m])
+  (unplace-signs-by
+    [this m])
+  (list-current-signs!
+    [this])
+  (list-all-signs!
+    [this])
+  (refresh-signs
+    [this]))
 
 (defprotocol ISexpr
-  (get-top-list-sexpr! [this lnum col] [this path lnum col])
-  (get-list-sexpr! [this lnum col] [this path lnum col])
-  (get-single-sexpr! [this lnum col] [this path lnum col])
-  (get-namespace-sexpr! [this] [this path])
-  (replace-list-sexpr! [this lnum col new-sexpr]))
+  (get-top-list-sexpr!
+    [this lnum col]
+    [this path lnum col])
+  (get-list-sexpr!
+    [this lnum col]
+    [this path lnum col])
+  (get-single-sexpr!
+    [this lnum col]
+    [this path lnum col])
+  (get-namespace-sexpr!
+    [this]
+    [this path])
+  (replace-list-sexpr!
+    [this lnum col new-sexpr]))
 
 (defprotocol IPopup
-  (open-popup! [this s] [this s options])
-  (move-popup [this popup-id lnum col])
-  (set-popup-text [this popup-id s])
-  (close-popup [this popup-id]))
+  (open-popup!
+    [this s]
+    [this s options])
+  (move-popup
+    [this popup-id lnum col])
+  (set-popup-text
+    [this popup-id s])
+  (close-popup
+    [this popup-id]))
 
 (defprotocol IVirtualText
-  (set-virtual-text [this text] [this text options])
-  (clear-all-virtual-texts [this]))
+  (set-virtual-text
+    [this text]
+    [this text options])
+  (clear-all-virtual-texts
+    [this]))
 
 (defprotocol IBuffer
-  (set-to-current-buffer [this text])
-  (append-to-info-buffer [this text] [this text options]))
+  (set-to-current-buffer
+    [this text])
+  (append-to-info-buffer
+    [this text]
+    [this text options]))
 
 (defprotocol ISelector
   (select-from-candidates
@@ -60,4 +97,5 @@
     [this window-id location-list]))
 
 (defprotocol IMark
-  (get-mark [this mark-id]))
+  (get-mark
+    [this mark-id]))
