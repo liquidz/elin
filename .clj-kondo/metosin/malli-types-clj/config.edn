@@ -175,6 +175,20 @@
                                                                                                       :component/clj-kondo :any}}
                                                                                                :int
                                                                                                :int],
+                                                                                        :ret :any},
+                                                                                     4 {:args [{:op :keys,
+                                                                                                :req {:message {:op :keys,
+                                                                                                                :req {:host :string,
+                                                                                                                      :message :sequential}},
+                                                                                                      :component/nrepl :any,
+                                                                                                      :component/interceptor :any,
+                                                                                                      :component/host {:op :keys,
+                                                                                                                       :req {:host-store :any}},
+                                                                                                      :component/session-storage :any,
+                                                                                                      :component/clj-kondo :any}}
+                                                                                               :string
+                                                                                               :int
+                                                                                               :int],
                                                                                         :ret :any}}},
                                                              get-list {:arities {3 {:args [{:op :keys,
                                                                                             :req {:message {:op :keys,
@@ -188,6 +202,20 @@
                                                                                                   :component/clj-kondo :any}}
                                                                                            :int
                                                                                            :int],
+                                                                                    :ret :any},
+                                                                                 4 {:args [{:op :keys,
+                                                                                            :req {:message {:op :keys,
+                                                                                                            :req {:host :string,
+                                                                                                                  :message :sequential}},
+                                                                                                  :component/nrepl :any,
+                                                                                                  :component/interceptor :any,
+                                                                                                  :component/host {:op :keys,
+                                                                                                                   :req {:host-store :any}},
+                                                                                                  :component/session-storage :any,
+                                                                                                  :component/clj-kondo :any}}
+                                                                                           :string
+                                                                                           :int
+                                                                                           :int],
                                                                                     :ret :any}}},
                                                              get-expr {:arities {3 {:args [{:op :keys,
                                                                                             :req {:message {:op :keys,
@@ -199,6 +227,20 @@
                                                                                                                    :req {:host-store :any}},
                                                                                                   :component/session-storage :any,
                                                                                                   :component/clj-kondo :any}}
+                                                                                           :int
+                                                                                           :int],
+                                                                                    :ret :any},
+                                                                                 4 {:args [{:op :keys,
+                                                                                            :req {:message {:op :keys,
+                                                                                                            :req {:host :string,
+                                                                                                                  :message :sequential}},
+                                                                                                  :component/nrepl :any,
+                                                                                                  :component/interceptor :any,
+                                                                                                  :component/host {:op :keys,
+                                                                                                                   :req {:host-store :any}},
+                                                                                                  :component/session-storage :any,
+                                                                                                  :component/clj-kondo :any}}
+                                                                                           :string
                                                                                            :int
                                                                                            :int],
                                                                                     :ret :any}}},
