@@ -79,7 +79,7 @@ endfunction
 function! s:calculate(texts, opts) abort
   let wininfo = getwininfo(win_getid())[0]
   let max_width = float2nr(wininfo['width'] * 0.95)
-  let max_height = float2nr((&lines - &cmdheight) * 0.3)
+  let max_height = float2nr((&lines - &cmdheight) * 0.5)
 
   let width = max(map(copy(a:texts), {_, v -> len(v)})) + 2
   let width = min([width, max_width])
