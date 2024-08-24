@@ -106,7 +106,9 @@
 
 (defn- document-str
   [converted]
-  (str "Inputs: "
+  (str e.c.lookup/subsection-separator
+       "\n*Malli*\n"
+       "Inputs: "
        (->> (map (comp pp-str :input) converted)
             (str/join "\n")
             (add-indent 8)
@@ -134,11 +136,9 @@
                         doc (some-> (e.f.nrepl/eval!! nrepl code)
                                     (:value)
                                     (edn/read-string))
-                        doc' (str e.c.lookup/subsection-separator
-                                  "\n*Malli*\n"
-                                  (-> (m/parse ?FunctionSchema doc)
-                                      (convert-parsed-function-schema-to-sexpr)
-                                      (document-str)))
+                        doc' (-> (m/parse ?FunctionSchema doc)
+                                 (convert-parsed-function-schema-to-sexpr)
+                                 (document-str))
                         response' (->> response
                                        (e.u.nrepl/update-messages :doc #(str % (when % "\n") "\n" doc')))]
                     (assoc ctx :response response'))
