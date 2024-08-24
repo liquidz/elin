@@ -11,40 +11,6 @@
    [elin.util.sexpr :as e.u.sexpr]
    [malli.core :as m]))
 
-;; (def ^:private spec-fn-set
-;;   #{"clojure.spec.alpha/fspec"
-;;     "clojure.spec.alpha/cat"
-;;     "clojure.spec.alpha/keys"
-;;     "clojure.spec.alpha/or"})
-;;
-;; (defn- add-indent [n s]
-;;   (if (zero? n)
-;;     s
-;;     (let [spc (apply str (repeat n " "))]
-;;       (str/replace s #"\r?\n" (str "\n" spc)))))
-;;
-;; (defn- format-spec
-;;   [spec]
-;;   (let [p #(if (empty? %) "nil" (str %))
-;;         fn-name (first spec)]
-;;     (cond
-;;       (not (sequential? spec))
-;;       (p spec)
-;;
-;;       (contains? spec-fn-set fn-name)
-;;       (let [res (map (fn [[k v]]
-;;                        (let [v' (if (sequential? v)
-;;                                   (format-spec v)
-;;                                   (p v))]
-;;                          (format "  %s %s" k (add-indent (count k) v'))))
-;;                      (partition 2 (rest spec)))]
-;;         (if (= 1 (count res))
-;;           (format "(%s %s)" fn-name (str/trim (first res)))
-;;           (format "(%s\n%s)" fn-name (str/join "\n" res))))
-;;
-;;       (= \: (ffirst spec))
-;;       (format "[%s]" (str/join " " spec)))))
-
 (defn- generate-javadoc
   [lookup-resp]
   (e/let [title [(format "*%s*" (if-let [member-str (:member lookup-resp)]
