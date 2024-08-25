@@ -100,14 +100,15 @@
 (defn evaluate-at-mark
   ([elin mark-id]
    (evaluate-at-mark elin mark-id {}))
-  ([{:as elin :component/keys [nrepl]} mark-id options]
-   (e/let [{:as mark-pos :keys [path]} (e.f.mark/get-by-id elin mark-id)
+  ([{:as elin :component/keys [host nrepl]} mark-id options]
+   (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
+           {:as mark-pos :keys [path]} (e.f.mark/get-by-id elin mark-id)
            {:keys [code lnum col]} (e.f.sexpr/get-list elin path (:lnum mark-pos) (:col mark-pos))
            ns-str (e.f.sexpr/get-namespace elin path)]
      (eval!! nrepl code (merge options
                                {:line lnum
                                 :column col
-                                :cursor-line lnum
-                                :cursor-column col
+                                :cursor-line cur-lnum
+                                :cursor-column cur-col
                                 :ns ns-str
                                 :file path})))))
