@@ -5,12 +5,11 @@
    [elin.component.server.vim]
    [elin.protocol.host :as e.p.host]))
 
-(defn set-virtual-text*
+(defn ^:private set-virtual-text*
   ([host text]
    (set-virtual-text* host text {}))
   ([host text options]
-   (let [text (str "=> " text)]
-     (e.c.s.function/notify host "elin#internal#virtual_text#set" [text options]))))
+   (e.c.s.function/notify host "elin#internal#virtual_text#set" [text options])))
 
 (defn clear-all-virtual-texts*
   [host]

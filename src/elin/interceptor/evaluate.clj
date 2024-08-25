@@ -20,9 +20,10 @@
    :leave (-> (fn [{:component/keys [host] :keys [response options]}]
                 (when-let [v (:value response)]
                   (e.p.host/set-virtual-text host
-                                             (str v)
-                                             {:lnum (:line options)
-                                              :highlight "DiffText"})))
+                                             (str "=> " v)
+                                             {:lnum (:cursor-line options)
+                                              :highlight "DiffText"
+                                              :close-after 3000})))
               (ix/discard))})
 
 (defn- up-until-top [zloc]
