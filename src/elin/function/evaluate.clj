@@ -3,6 +3,7 @@
    [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.error :as e]
+   [elin.function.mark :as e.f.mark]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
@@ -95,3 +96,18 @@
            path (async/<!! (e.p.host/get-current-file-path! host))]
      (eval!! nrepl ns-form (merge options
                                   {:file path})))))
+
+(defn evaluate-at-mark
+  ([elin mark-id]
+   (evaluate-at-mark elin mark-id {}))
+  ([{:as elin :component/keys [nrepl]} mark-id options]
+   (e/let [{:as mark-pos :keys [path]} (e.f.mark/get-by-id elin mark-id)
+           {:keys [code lnum col]} (e.f.sexpr/get-list elin path (:lnum mark-pos) (:col mark-pos))
+           ns-str (e.f.sexpr/get-namespace elin path)]
+     (eval!! nrepl code (merge options
+                               {:line lnum
+                                :column col
+                                :cursor-line lnum
+                                :cursor-column col
+                                :ns ns-str
+                                :file path})))))

@@ -62,6 +62,13 @@
          (e.f.evaluate/evaluate-namespace-form elin)
          (:response)))
 
+(defn evaluate-at-mark
+  [{:as elin :keys [message]}]
+  (let [[mark-id] (:params message)]
+    (e/->> {:middleware (evaluate-interceptor-middleware elin)}
+           (e.f.evaluate/evaluate-at-mark elin mark-id)
+           (:response))))
+
 (m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
 (defn load-current-file
   [{:component/keys [nrepl host]}]
