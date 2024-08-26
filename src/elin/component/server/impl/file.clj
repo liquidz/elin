@@ -9,11 +9,10 @@
    [elin.schema :as e.schema]
    [malli.core :as m]))
 
-(m/=> get-current-working-directory!* [:=> [:cat e.c.s.function/?IFunction [:* any?]] e.schema/?ManyToManyChannel])
+(m/=> get-current-working-directory!* [:-> e.c.s.function/?IFunction e.schema/?ManyToManyChannel])
 (defn- get-current-working-directory!*
-  [host & extra-params]
-  (let [params (or extra-params [])]
-    (e.c.s.function/request! host "getcwd" params)))
+  [host]
+  (e.c.s.function/request! host "expand" ["%:p:h"]))
 
 (m/=> get-current-file-path!* [:=> [:cat e.c.s.function/?IFunction] (e.schema/error-or string?)])
 (defn- get-current-file-path!*

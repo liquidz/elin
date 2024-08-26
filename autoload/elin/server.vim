@@ -14,7 +14,7 @@ endfunction
 function! s:start(port) abort
   let s:port = a:port
   let config = json_encode({
-        \ 'env': {'cwd': getcwd()},
+        \ 'env': {'cwd': expand('%:p:h')},
         \ 'plugin': {'edn-files': elin#internal#plugin#search()},
         \ 'server': {'host': s:host, 'port': str2nr(a:port)},
         \ })
