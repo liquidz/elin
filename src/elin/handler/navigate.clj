@@ -29,7 +29,7 @@
           ns-str (e/error-or (e.f.sexpr/get-namespace elin)
                              "")
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          code (str/replace-first code #"^#'" "")
+          code (str/replace-first code #"^#?'" "")
           {:keys [ns-str sym-str]} (select-ns-and-sym-str ns-str code)
           {:keys [file line column]} (e.f.lookup/lookup elin ns-str sym-str)]
     (when (and file line)
