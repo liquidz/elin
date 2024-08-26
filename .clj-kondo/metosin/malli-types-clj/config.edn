@@ -490,11 +490,8 @@
                                                                                                   :component/clj-kondo :any}}
                                                                                            :string],
                                                                                     :ret :any}}}},
-                                        elin.component.server.impl.file {get-current-working-directory!* {:arities {:varargs {:args [:any
-                                                                                                                                     {:op :rest,
-                                                                                                                                      :spec :any}],
-                                                                                                                              :ret :any,
-                                                                                                                              :min-arity 1}}},
+                                        elin.component.server.impl.file {get-current-working-directory!* {:arities {1 {:args [:any],
+                                                                                                                       :ret :any}}},
                                                                          get-current-file-path!* {:arities {1 {:args [:any],
                                                                                                                :ret :any}}},
                                                                          get-cursor-position!* {:arities {:varargs {:args [:any
