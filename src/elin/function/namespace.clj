@@ -58,23 +58,28 @@
 
 (defn- missing-require-candidates
   [{:as elin :component/keys [clj-kondo nrepl]} sym-str favorites]
-  (if (and (not (e.p.nrepl/disconnected? nrepl))
+  (let [[alias-str _] (str/split sym-str #"/" 2)
+        alias-sym (symbol alias-str)
+        ns-str (e.f.sexpr/get-namespace elin)
+        requires (set (e.f.clj-kondo/requiring-namespaces clj-kondo ns-str))
+        favorites' (some->> favorites
+                            (filter #(= alias-sym (val %)))
+                            (map key))
+        candidates (some->> (concat (e.f.clj-kondo/namespaces-by-alias clj-kondo alias-sym)
+                                    favorites')
+                            (distinct)
+                            (remove requires)
+                            (map #(hash-map :name % :type :ns)))]
+    (cond
+      (seq candidates)
+      candidates
+
+      (and (not (e.p.nrepl/disconnected? nrepl))
            (e.p.nrepl/supported-op? nrepl e.c.nrepl/resolve-missing-op))
-    ;; refactor-nrepl
-    (e.f.n.refactor/resolve-missing!! nrepl sym-str)
-    ;; clj-kondo
-    (let [[alias-str _] (str/split sym-str #"/" 2)
-          alias-sym (symbol alias-str)
-          ns-str (e.f.sexpr/get-namespace elin)
-          requires (set (e.f.clj-kondo/requiring-namespaces clj-kondo ns-str))
-          favorites' (some->> favorites
-                              (filter #(= alias-sym (val %)))
-                              (map key))]
-      (some->> (concat (e.f.clj-kondo/namespaces-by-alias clj-kondo alias-sym)
-                       favorites')
-               (distinct)
-               (remove requires)
-               (map #(hash-map :name % :type :ns))))))
+      (e.f.n.refactor/resolve-missing!! nrepl sym-str)
+
+      :else
+      [])))
 
 (defn- missing-import-candidates
   [sym-str java-classes]
