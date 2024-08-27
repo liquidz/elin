@@ -117,7 +117,7 @@ function! elin#internal#sexpr#replace_list_sexpr(lnum, col, new_sexpr) abort
     let @@ = reg_save
 
     let new_line_count = len(split(trim(a:new_sexpr), '\r\?\n'))
-    let view['lnum'] = view['lnum'] + (new_line_count - before_line_count)
+    let context['view']['lnum'] = context['view']['lnum'] + (new_line_count - before_line_count)
     call elin#internal#context#restore(context)
   endtry
 endfunction
