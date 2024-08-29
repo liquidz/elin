@@ -39,6 +39,19 @@
                                                          {:context "Redundant path" :index 3 :message "" :ns "antq.util.file-test" :type "pass" :var "normalize-path-test"}
                                                          {:context "HOME and Redundant path" :index 4 :message "" :ns "antq.util.file-test" :type "pass" :var "normalize-path-test"}]}}})
 
+(def dummy-error-resp-without-expected-values
+  {:elapsed-time {:humanized "Completed in 123 ms" :ms 123}
+   :gen-input []
+   :id 142
+   :ns-elapsed-time {:foo.bar-test {:humanized "Completed in 122 ms" :ms 122}}
+   :results {:foo.bar-test {:baz-test [{:index 0 :ns "foo.bar-test" :file "AFn.java" :type "error" :fault "true" :line 69 :var "baz-test" :context []
+                                        :var-elapsed-time {:humanized "Completed in 1 ms" :ms 1}
+                                        :error "clojure.lang.ArityException: Wrong number of args (3) passed to: foo.bar-test/fn--128207/fn--128210"
+                                        :message "Uncaught exception not in assertion"}]}}
+   :session "9115daa1-91ca-4ebb-ab4c-b9184910b357"
+   :summary {:error 1 :fail 0 :ns 1 :pass 0 :test 1 :var 1}
+   :testing-ns "foo.bar-test"})
+
 (t/deftest collect-results-test
   (t/is (= [{:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}
             {:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}
@@ -51,4 +64,8 @@
             {:ns "antq.util.file-test" :diffs "- {:a 1}\n+ {:a 2}" :lnum 15 :filename "NO_SOURCE_FILE" :var "normalize-path-test" :result :failed :expected "{:a 1}" :actual "{:a 2}" :text "normalize-path-test: Redundant path"}
             {:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}
             {:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}]
-           (sut/collect-results (h/test-nrepl {}) dummy-error-resp))))
+           (sut/collect-results (h/test-nrepl {}) dummy-error-resp)))
+
+  (t/is (= [{:filename "AFn.java" :text "baz-test: Uncaught exception not in assertion" :expected "" :ns "foo.bar-test" :var "baz-test" :lnum 69 :result :failed
+             :actual "clojure.lang.ArityException: Wrong number of args (3) passed to: foo.bar-test/fn--128207/fn--128210"}]
+           (sut/collect-results (h/test-nrepl {}) dummy-error-resp-without-expected-values))))

@@ -110,7 +110,9 @@
                                 (:file test-result))
                    error (cond-> {:filename filename
                                   :text (test-error-message test-result)
-                                  :expected (str/trim (:expected test-result))
+                                  :expected (or (some-> (:expected test-result)
+                                                        (str/trim))
+                                                "")
                                   :ns ns-str
                                   :var var-str}
                            lnum (assoc :lnum lnum))]
