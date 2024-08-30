@@ -21,6 +21,8 @@
 (def info-op "info")
 (def ns-path-op "ns-path")
 (def test-var-query-op "test-var-query")
+(def reload-op "cider.clj-reload/reload")
+(def reload-all-op "cider.clj-reload/reload-all")
 
 ;; refactor-nrepl ops
 

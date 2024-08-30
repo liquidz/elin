@@ -5,6 +5,7 @@
    [elin.error :as e]
    [elin.function.evaluate :as e.f.evaluate]
    [elin.function.nrepl :as e.f.nrepl]
+   [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.handler :as e.s.handler]
@@ -80,3 +81,11 @@
   [{:component/keys [host nrepl]}]
   (let [resp (e.f.nrepl/eval!! nrepl "*1" {:use-printer? true})]
     (e.p.host/append-to-info-buffer host (:value resp))))
+
+(defn reload
+  [{:component/keys [nrepl]}]
+  (e.f.n.cider/reload!! nrepl))
+
+(defn reload-all
+  [{:component/keys [nrepl]}]
+  (e.f.n.cider/reload-all!! nrepl))

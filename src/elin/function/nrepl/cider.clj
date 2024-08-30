@@ -56,3 +56,17 @@
                                   :var-query var-query})
         (async/<!!)
         (e.u.nrepl/merge-messages)))
+
+(m/=> reload!! [:=> [:cat e.s.component/?Nrepl] (e.schema/error-or e.s.nrepl/?Message)])
+(defn reload!!
+  [nrepl]
+  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/reload-op})
+        (async/<!!)
+        (e.u.nrepl/merge-messages)))
+
+(m/=> reload-all!! [:=> [:cat e.s.component/?Nrepl] (e.schema/error-or e.s.nrepl/?Message)])
+(defn reload-all!!
+  [nrepl]
+  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/reload-all-op})
+        (async/<!!)
+        (e.u.nrepl/merge-messages)))
