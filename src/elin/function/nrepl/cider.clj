@@ -40,7 +40,7 @@
         (merge {:column 1 :line 1}
                res)))))
 
-(m/=> ns-path!! [:=> [:cat e.s.component/?Nrepl string?] [:maybe string?]])
+(m/=> ns-path!! [:=> [:cat e.s.component/?Nrepl string?] (e.schema/error-or [:maybe string?])])
 (defn ns-path!!
   [nrepl ns-str]
   (e/let [resp (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/ns-path-op
