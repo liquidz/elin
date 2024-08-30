@@ -333,6 +333,24 @@
               :method e.p.host/append-to-info-buffer
               :args [text options]
               :queue host-channel}))
+  (get-lines [_]
+    (execute {:host @host-store
+              :protocol e.p.host/IBuffer
+              :method e.p.host/get-lines
+              :args []
+              :queue host-channel}))
+  (get-lines [_ start-lnum]
+    (execute {:host @host-store
+              :protocol e.p.host/IBuffer
+              :method e.p.host/get-lines
+              :args [start-lnum]
+              :queue host-channel}))
+  (get-lines [_ start-lnum end-lnum]
+    (execute {:host @host-store
+              :protocol e.p.host/IBuffer
+              :method e.p.host/get-lines
+              :args [start-lnum end-lnum]
+              :queue host-channel}))
   ;; }}}
 
   e.p.host/IQuickfix ; {{{

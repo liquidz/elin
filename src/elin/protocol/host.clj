@@ -83,7 +83,11 @@
     [this text])
   (append-to-info-buffer
     [this text]
-    [this text options]))
+    [this text options])
+  (get-lines
+    [this]
+    [this start-lnum]
+    [this start-lnum end-lnum]))
 
 (defprotocol ISelector
   (select-from-candidates
