@@ -37,14 +37,18 @@
               :else
               ctx))})
 
-(def output-load-file-result-to-cmdline-interceptor
-  {:name ::output-load-file-result-to-cmdline-interceptor
+(def output-result-to-cmdline-interceptor
+  {:name ::output-result-to-cmdline-interceptor
    :kind e.c.interceptor/nrepl
-   :leave (-> (fn [{:component/keys [host] :keys [response]}]
-                (let [msg (e.u.nrepl/merge-messages response)]
+   :leave (-> (fn [{:component/keys [host] :keys [request response]}]
+                (let [msg (e.u.nrepl/merge-messages response)
+                      text (condp = (:op request)
+                             e.c.nrepl/load-file-op "Required."
+                             e.c.nrepl/reload-op "Reloaded."
+                             e.c.nrepl/reload-all-op "Reloaded all."
+                             "Processed.")]
                   (if (e.u.nrepl/has-status? msg "eval-error")
                     (when-let [v (:err msg)]
                       (e.message/error host (str/trim (str v))))
-                    (e.message/info host "Required."))))
-              (ix/when #(= e.c.nrepl/load-file-op (get-in % [:request :op])))
+                    (e.message/info host text))))
               (ix/discard))})
