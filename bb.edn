@@ -3,13 +3,13 @@
         clojure-msgpack/clojure-msgpack {:mvn/version "1.2.1"}
         com.stuartsierra/component {:mvn/version "1.1.0"}
         exoscale/interceptor {:mvn/version "0.1.17"}
-        metosin/malli {:mvn/version "0.16.3"}
+        metosin/malli {:mvn/version "0.16.4"}
         rewrite-clj/rewrite-clj {:mvn/version "1.1.48"}}
 
  :__elin_internal__
  {:command {:deps {nrepl/nrepl {:mvn/version "1.3.0"}
                    refactor-nrepl/refactor-nrepl {:mvn/version "3.10.0"}
-                   cider/cider-nrepl {:mvn/version "0.49.3"}}
+                   cider/cider-nrepl {:mvn/version "0.50.1"}}
             :middlewares [cider.nrepl/cider-middleware
                           refactor-nrepl.middleware/wrap-refactor]}}
 
