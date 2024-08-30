@@ -694,4 +694,6 @@
                                         elin.function.nrepl.cider {info!! {:arities {3 {:args [:any :string :string],
                                                                                         :ret :any}}},
                                                                    ns-path!! {:arities {2 {:args [:any :string],
-                                                                                           :ret :nilable/string}}}}}}}}
+                                                                                           :ret :any}}},
+                                                                   reload!! {:arities {1 {:args [:any], :ret :any}}},
+                                                                   reload-all!! {:arities {1 {:args [:any], :ret :any}}}}}}}}
