@@ -73,8 +73,9 @@
 (m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
 (defn load-current-file
   [{:component/keys [nrepl host]}]
-  (e/let [path (async/<!! (e.p.host/get-current-file-path! host))]
-    (e.f.nrepl/load-file!! nrepl path)
+  (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
+          contents (async/<!! (e.p.host/get-lines host))]
+    (e.f.nrepl/load-file!! nrepl path contents)
     true))
 
 (defn print-last-result

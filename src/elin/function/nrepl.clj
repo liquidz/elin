@@ -4,6 +4,7 @@
    [clojure.core.async :as async]
    [clojure.java.io :as io]
    [clojure.set :as set]
+   [clojure.string :as str]
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.error :as e]
    [elin.protocol.nrepl :as e.p.nrepl]
@@ -84,12 +85,12 @@
      (e/unavailable {:message "Not connected"}))))
 
 (m/=> load-file!! [:function
-                   [:=> [:cat e.s.component/?Nrepl string?] any?]
-                   [:=> [:cat e.s.component/?Nrepl string? map?] any?]])
+                   [:=> [:cat e.s.component/?Nrepl string? [:sequential string?]] any?]
+                   [:=> [:cat e.s.component/?Nrepl string? [:sequential string?] map?] any?]])
 (defn load-file!!
-  ([nrepl file-path]
-   (load-file!! nrepl file-path {}))
-  ([nrepl file-path options]
+  ([nrepl file-path contents]
+   (load-file!! nrepl file-path contents {}))
+  ([nrepl file-path contents options]
    (let [session (e.p.nrepl/current-session nrepl)
          file (io/file file-path)]
      (cond
@@ -103,7 +104,7 @@
        (->> (merge (select-keys options load-file-option-keys)
                    {:op e.c.nrepl/load-file-op
                     :session session
-                    :file (slurp file)
+                    :file (str/join "\n" contents)
                     :file-name (.getName file)
                     :file-path file-path})
             (e.p.nrepl/request nrepl)
