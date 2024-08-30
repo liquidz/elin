@@ -13,6 +13,7 @@
                           elin.interceptor.handler/handling-error-interceptor
                           elin.interceptor.nrepl/eval-ns-interceptor
                           elin.interceptor.nrepl/normalize-path-interceptor
+                          elin.interceptor.nrepl/progress-interceptor
                           elin.interceptor.output/print-output-interceptor
                           elin.interceptor.test/done-test-interceptor]
                :preset {:evaluation {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor
