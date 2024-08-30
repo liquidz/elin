@@ -21,8 +21,8 @@ endfunction
 
 function! s:normalize_opts(opts) abort
   let opts = copy(a:opts)
-  if opts['moved'] ==# 'current-line'
-      let opts['moved'] = [0, &columns]
+  if get(opts, 'moved', '') ==# 'current-line'
+    let opts['moved'] = [0, &columns]
   endif
   return opts
 endfunction
@@ -96,7 +96,8 @@ function! s:calculate(texts, opts) abort
     if line ==# 'near-cursor'
       " NOTE: `+ 5` make the popup window not too low
       if winline() + height + 5 > &lines
-        let line = winline() - height
+        let border_height = has_key(a:opts, 'border') ? 2 : 0
+        let line = winline() - height - border_height
       else
         let line = winline() + wininfo['winrow'] - 1
       endif
