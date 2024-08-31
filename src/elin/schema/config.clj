@@ -9,10 +9,15 @@
    [:includes {:default []} [:sequential qualified-symbol?]]
    [:excludes {:default []} [:sequential qualified-symbol?]]])
 
+(def ?InterceptorItem
+  [:or
+   qualified-symbol?
+   [:cat qualified-symbol? [:* any?]]])
+
 (def ^:private ?Interceptor
   [:map
-   [:includes {:default []} [:sequential qualified-symbol?]]
-   [:excludes {:default []} [:sequential qualified-symbol?]]])
+   [:includes {:default []} [:sequential ?InterceptorItem]]
+   [:excludes {:default []} [:sequential ?InterceptorItem]]])
 
 (def ^:private ?LogLevel
   [:enum :debug :info :warning :error])
