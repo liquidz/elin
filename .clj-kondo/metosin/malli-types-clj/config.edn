@@ -418,8 +418,12 @@
                                                                                3 {:args [:any :string :map], :ret :any}}},
                                                              interrupt!! {:arities {1 {:args [:any], :ret :any},
                                                                                     2 {:args [:any :map], :ret :any}}},
-                                                             load-file!! {:arities {2 {:args [:any :string], :ret :any},
-                                                                                    3 {:args [:any :string :map],
+                                                             load-file!! {:arities {3 {:args [:any :string :sequential],
+                                                                                       :ret :any},
+                                                                                    4 {:args [:any
+                                                                                              :string
+                                                                                              :sequential
+                                                                                              :map],
                                                                                        :ret :any}}},
                                                              lookup!! {:arities {3 {:args [:any :string :string],
                                                                                     :ret :any}}},
