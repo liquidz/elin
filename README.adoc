@@ -26,6 +26,7 @@ See link:./doc/vim-elin.txt[help] for example configurations.
 == 🍃 Related works
 
 * https://github.com/liquidz/vim-elin-coc-source[vim-elin-coc-source] - Completion source for coc.nvim
+* https://github.com/liquidz/vim-elin-format[vim-elin-format] - Formatting plugin for vim-elin
 
 == 💚 Support
 
