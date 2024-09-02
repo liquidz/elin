@@ -79,5 +79,5 @@
 (m/=> get-project-root-directory [:=> [:cat string?] [:maybe e.schema/?File]])
 (defn get-project-root-directory
   [cwd]
-  (some-> (find-file-in-parent-directories cwd #"^\.git$")
+  (some-> (find-file-in-parent-directories cwd ".git")
           (.getParentFile)))
