@@ -90,6 +90,7 @@
                                     (group-by interceptor-group))
           interceptor-map (group-by :kind (get grouped-interceptors valid-group))]
       (when-let [invalid-interceptors (seq (get grouped-interceptors invalid-group))]
+        (timbre/warn "Invalid interceptors:" invalid-interceptors)
         (e.message/warning "Invalid interceptors:" invalid-interceptors))
       (timbre/debug "Interceptor component: Started")
       (assoc this :interceptor-map interceptor-map)))
