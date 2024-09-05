@@ -28,6 +28,16 @@
   [code]
   (str/replace-first code #"^#?'" ""))
 
+(m/=> jump [:=> [:cat e.s.handler/?Elin] any?])
+(defn jump
+  [{:component/keys [host] :keys [message]}]
+  (let [{:keys [path lnum col]} (->> message
+                                     (:params)
+                                     (first)
+                                     (e.u.file/decode-path))]
+    (when path
+      (async/<!! (e.p.host/jump! host path lnum col)))))
+
 (m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
 (defn jump-to-definition
   [{:as elin :component/keys [host]}]
