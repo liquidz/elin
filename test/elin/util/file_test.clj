@@ -38,3 +38,20 @@
   (t/is (= "zipfile:///path/to/jarfile.jar::path/to/file.clj"
            (sut/normalize-path "jar:file:/path/to/jarfile.jar!/path/to/file.clj")))
   (t/is (nil? (sut/normalize-path nil))))
+
+(t/deftest encode-path-test
+  (t/is (= "foo" (sut/encode-path "foo")))
+  (t/is (= "foo:1" (sut/encode-path "foo" 1)))
+  (t/is (= "foo:1:2" (sut/encode-path "foo" 1 2))))
+
+(t/deftest decode-path-test
+  (t/is (= {:path "foo" :lnum 1 :col 1}
+           (sut/decode-path "foo")))
+  (t/is (= {:path "foo" :lnum 2 :col 1}
+           (sut/decode-path "foo:2")))
+  (t/is (= {:path "foo" :lnum 2 :col 4}
+           (sut/decode-path "foo:2:4")))
+  (t/is (= {:path "foo::" :lnum 1 :col 1}
+           (sut/decode-path "foo::")))
+  (t/is (= {:path "foo:" :lnum 2 :col 1}
+           (sut/decode-path "foo::2"))))

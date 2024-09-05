@@ -81,3 +81,31 @@
   [cwd]
   (some-> (find-file-in-parent-directories cwd ".git")
           (.getParentFile)))
+
+(m/=> encode-path [:function
+                   [:-> string? string?]
+                   [:-> string? [:maybe int?] string?]
+                   [:-> string? [:maybe int?] [:maybe int?] string?]])
+(defn encode-path
+  ([path]
+   (encode-path path nil nil))
+  ([path lnum]
+   (encode-path path lnum nil))
+  ([path lnum col]
+   (str path
+        (when lnum (str ":" lnum))
+        (when col (str ":" col)))))
+
+(m/=> decode-path [:-> string? [:map
+                                [:path string?]
+                                [:lnum int?]
+                                [:col int?]]])
+(defn decode-path
+  [path]
+  (if-let [[_ path' lnum col] (re-find #"^(.+?)(?::(\d+))(?::(\d+))?$" path)]
+    {:path path'
+     :lnum (or (some-> lnum parse-long)
+               1)
+     :col (or (some-> col parse-long)
+              1)}
+    {:path path :lnum 1 :col 1}))
