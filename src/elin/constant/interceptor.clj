@@ -10,3 +10,4 @@
 (def nrepl ::nrepl)
 (def output ::output)
 (def test ::test)
+(def quickfix ::quickfix)

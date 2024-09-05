@@ -14,7 +14,8 @@
    e.c.interceptor/handler
    e.c.interceptor/nrepl
    e.c.interceptor/output
-   e.c.interceptor/test])
+   e.c.interceptor/test
+   e.c.interceptor/quickfix])
 
 (def ?Interceptor
   [:map
@@ -77,4 +78,11 @@
        [:options map?]
        ;; LEAVE
        [:response {:optional true} map?]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?QuickfixContext
+  (-> [:map
+       ;; ENTER
+       [:type keyword?]
+       [:list sequential?]]
       (m.util/merge e.s.handler/?Components)))
