@@ -89,6 +89,7 @@ function! s:default_key_mappings() abort
 
   call s:define_mapping('nmap', "<Leader>'",     '<Cmd>call elin#notify("elin.handler.connect/connect", [])<CR>')
 
+  " Evaluation
   call s:define_mapping('nmap', "<Leader>ei",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-expr", [])<CR>')
   call s:define_mapping('nmap', "<Leader>ee",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-list", [])<CR>')
   call s:define_mapping('nmap', "<Leader>et",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-top-list", [])<CR>')
@@ -103,17 +104,26 @@ function! s:default_key_mappings() abort
   call s:define_mapping('nmap', "<Leader>enr",   '<Cmd>call elin#notify("elin.handler.evaluate/reload", [])<CR>')
   call s:define_mapping('nmap', "<Leader>enR",   '<Cmd>call elin#notify("elin.handler.evaluate/reload-all", [])<CR>')
 
+  " Refactoring
   call s:define_mapping('nmap', "<Leader>ran",   '<Cmd>call elin#notify("elin.handler.namespace/add-libspec", [])<CR>')
   call s:define_mapping('nmap', "<Leader>ram",   '<Cmd>call elin#notify("elin.handler.namespace/add-missing-libspec", [])<CR>')
 
+  " Navigation
   call s:define_mapping('nmap', "<C-]>",         '<Cmd>call elin#notify("elin.handler.navigate/jump-to-definition", [])<CR>')
+  call s:define_mapping('nmap', '<Leader>br',    '<Cmd>call elin#notify("elin.handler.navigate/references", [])<CR>')
+
+  " Documentation
   call s:define_mapping('nmap', "K",             '<Cmd>call elin#notify("elin.handler.lookup/lookup", [])<CR>')
   call s:define_mapping('nmap', "<Leader>hs",    '<Cmd>call elin#notify("elin.handler.lookup/show-source", [])<CR>')
+
+  " Testing
   call s:define_mapping('nmap', "<Leader>tt",    '<Cmd>call elin#notify("elin.handler.test/run-test-under-cursor", [])<CR>')
   call s:define_mapping('nmap', "<Leader>tn",    '<Cmd>call elin#notify("elin.handler.test/run-tests-in-ns", [])<CR>')
   call s:define_mapping('nmap', "<Leader>tl",    '<Cmd>call elin#notify("elin.handler.test/rerun-last-tests", [])<CR>')
   call s:define_mapping('nmap', "<Leader>tr",    '<Cmd>call elin#notify("elin.handler.test/rerun-last-tests", [])<CR>')
   call s:define_mapping('nmap', "tt",            '<Cmd>call elin#notify("elin.handler.navigate/cycle-source-and-test", [])<CR>')
+
+  " Misc
   call s:define_mapping('nmap', "<Leader>ss",    '<Cmd>call elin#internal#buffer#info#toggle()<CR>')
   call s:define_mapping('nmap', "<Leader>sl",    '<Cmd>call elin#internal#buffer#info#clear()<CR>')
   call s:define_mapping('nmap', "<Leader><Esc>", '<Cmd>call elin#internal#virtual_text#clear()<CR>')

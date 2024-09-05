@@ -3,9 +3,11 @@
    [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.error :as e]
+   [elin.function.clj-kondo :as e.f.clj-kondo]
    [elin.function.file :as e.f.file]
    [elin.function.lookup :as e.f.lookup]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
+   [elin.function.quickfix :as e.f.quickfix]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
@@ -22,6 +24,10 @@
       :else
       {:ns-str (namespace sym) :sym-str (name sym)})))
 
+(defn- normalize-var-code
+  [code]
+  (str/replace-first code #"^#?'" ""))
+
 (m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
 (defn jump-to-definition
   [{:as elin :component/keys [host]}]
@@ -29,7 +35,7 @@
           ns-str (e/error-or (e.f.sexpr/get-namespace elin)
                              "")
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          code (str/replace-first code #"^#?'" "")
+          code (normalize-var-code code)
           {:keys [ns-str sym-str]} (select-ns-and-sym-str ns-str code)
           {:keys [file line column]} (e.f.lookup/lookup elin ns-str sym-str)]
     (when (and file line)
@@ -45,3 +51,29 @@
         cycled-path (e.f.n.namespace/get-cycled-namespace-path
                      {:ns ns-str :path ns-path :file-separator file-sep})]
     (e.f.file/open-as elin cycled-path)))
+
+(defn references
+  [{:as elin :component/keys [host clj-kondo]}]
+  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
+          ns-str (e/error-or (e.f.sexpr/get-namespace elin)
+                             "")
+          {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
+          code (normalize-var-code code)
+          {:keys [ns-str sym-str]} (select-ns-and-sym-str ns-str code)
+          refs (e.f.clj-kondo/references clj-kondo ns-str sym-str)]
+    (cond
+      (empty? refs)
+      (e/not-found)
+
+      (= 1 (count refs))
+      (let [{:keys [filename lnum col]} (first refs)]
+        (async/<!! (e.p.host/jump! host filename lnum col)))
+
+      :else
+      (->> refs
+           (map #(hash-map :filename (:filename %)
+                           :lnum (:lnum %)
+                           :col (:col %)
+                           :text (str (:ns %))
+                           :type "Reference"))
+           (e.f.quickfix/set-location-list elin)))))
