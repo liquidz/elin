@@ -4,6 +4,7 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.function.nrepl.cider.test :as e.f.n.c.test]
+   [elin.function.quickfix :as e.f.quickfix]
    [elin.function.storage.test :as e.f.s.test]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
@@ -40,7 +41,7 @@
 (def done-test-interceptor
   {:name ::done-test-interceptor
    :kind e.c.interceptor/test
-   :leave (-> (fn [{:component/keys [host nrepl session-storage] :keys [response]}]
+   :leave (-> (fn [{:as ctx :component/keys [host nrepl session-storage] :keys [response]}]
                 (let [{:keys [passed failed]} (->> (e.f.n.c.test/collect-results nrepl response)
                                                    (group-by :result))
                       {:keys [succeeded? summary]} (e.f.n.c.test/summary response)]
@@ -76,7 +77,7 @@
                                                (seq (:text %))
                                                (str ": " (:text %)))
                                        :type "Error"))
-                       (e.p.host/set-quickfix-list host))
+                       (e.f.quickfix/set-quickfix-list ctx))
 
                   ;; store last failed tests as test query
                   (some->> (get-failed-tests-query nrepl failed)

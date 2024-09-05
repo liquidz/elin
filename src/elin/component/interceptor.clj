@@ -7,6 +7,7 @@
    [elin.interceptor.connect]
    [elin.interceptor.nrepl]
    [elin.interceptor.output]
+   [elin.interceptor.quickfix]
    [elin.message :as e.message]
    [elin.protocol.config :as e.p.config]
    [elin.protocol.interceptor :as e.p.interceptor]
