@@ -19,6 +19,16 @@
              (sut/requiring-namespaces c "elin.util.id")))
     (t/is (empty? (sut/requiring-namespaces c "non-existing-ns")))))
 
+(t/deftest references-test
+  (let [c (h/test-clj-kondo)
+        references (sut/references c "elin.util.id" "next-id")
+        reference (first (filter #(= 'elin.component.nrepl.connection (:ns %)) references))]
+    (t/is (> (count references) 1))
+    (t/is (= "src/elin/component/nrepl/connection.clj"
+             (:filename reference)))
+    (t/is (pos? (:lnum reference)))
+    (t/is (pos? (:col reference)))))
+
 (t/deftest lookup-test
   (let [c (h/test-clj-kondo)]
     (t/testing "not qualified symbol"

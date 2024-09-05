@@ -13,6 +13,8 @@
   [pred coll]
   (some #(when (pred %) %) coll))
 
+(declare namespace-by-alias)
+
 (defn namespace-usages
   [clj-kondo]
   (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
@@ -20,6 +22,23 @@
         [])))
 
 (defn var-usages
+  "e.g.
+   [{:fixed-arities #{0}
+     :end-row 23
+     :name-end-col 67
+     :name-end-row 23
+     :name-row 23
+     :name next-id
+     :filename \"src/elin/component/server/impl/function.clj\"
+     :alias e.u.id
+     :from elin.component.server.impl.function
+     :col 52
+     :name-col 53
+     :end-col 68
+     :arity 0
+     :row 23
+     :to elin.util.id}
+    ...]"
   [clj-kondo]
   (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
     (or (:var-usages ana)
@@ -88,12 +107,31 @@
                            (not= "" (:reg %))))
              (first))))))
 
+(def ^:private ?Usage
+  [:map
+   [:filename string?]
+   [:ns symbol?]
+   [:col int?]
+   [:lnum int?]])
+
+(m/=> references [:=> [:cat e.s.component/?CljKondo string? string?] [:sequential ?Usage]])
 (defn references
   [clj-kondo ns-str var-name]
-  (let [var-name (str/replace-first var-name #"^'+" "")]
+  (let [var-name (str/replace-first var-name #"^'+" "")
+        [alias-name var-name'] (str/split var-name #"/" 2)
+        ns-sym (symbol (if (seq alias-name)
+                         (or (namespace-by-alias clj-kondo (symbol alias-name))
+                             ns-str)
+                         ns-str))
+        var-sym (symbol (if (and alias-name var-name')
+                          var-name'
+                          var-name))]
     (some->> (var-usages clj-kondo)
-             (filter #(and (= ns-str (:to %))
-                           (= var-name (:name %))))
+             (filter #(and (= ns-sym (:to %))
+                           (= var-sym (:name %))))
+             (map #(-> %
+                       (select-keys [:filename :from :row :col])
+                       (set/rename-keys {:from :ns :row :lnum})))
              (sort-by :filename))))
 
 (m/=> namespace-symbols [:=> [:cat e.s.component/?CljKondo] [:sequential symbol?]])
