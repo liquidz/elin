@@ -23,6 +23,8 @@
 (def reload-all-op "cider.clj-reload/reload-all")
 (def reload-op "cider.clj-reload/reload")
 (def test-var-query-op "test-var-query")
+(def undef-all-op "undef-all")
+(def undef-op "undef")
 
 ;; refactor-nrepl ops
 

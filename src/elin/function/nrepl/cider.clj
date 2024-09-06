@@ -70,3 +70,18 @@
   (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/reload-all-op})
         (async/<!!)
         (e.u.nrepl/merge-messages)))
+
+(defn undef!!
+  [nrepl ns-str sym-str]
+  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/undef-op
+                                  :ns ns-str
+                                  :sym sym-str})
+        (async/<!!)
+        (e.u.nrepl/merge-messages)))
+
+(defn undef-all!!
+  [nrepl ns-str]
+  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/undef-all-op
+                                  :ns ns-str})
+        (async/<!!)
+        (e.u.nrepl/merge-messages)))

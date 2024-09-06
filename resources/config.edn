@@ -32,6 +32,8 @@
                       elin.handler.evaluate/print-last-result
                       elin.handler.evaluate/reload
                       elin.handler.evaluate/reload-all
+                      elin.handler.evaluate/undef
+                      elin.handler.evaluate/undef-all
                       elin.handler.namespace/add-libspec
                       elin.handler.namespace/add-libspec*
                       elin.handler.namespace/add-missing-libspec
@@ -70,7 +72,9 @@
                         elin.handler.evaluate/evaluate-at-mark {:interceptor #ref [:interceptor :preset :evaluation]}
                         elin.handler.evaluate/evaluate-current-buffer {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
                         elin.handler.evaluate/reload {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
-                        elin.handler.evaluate/reload-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}}
+                        elin.handler.evaluate/reload-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
+                        elin.handler.evaluate/undef {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
+                        elin.handler.evaluate/undef-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}}
 
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 

@@ -49,6 +49,10 @@
                              e.c.nrepl/load-file-op "Required."
                              e.c.nrepl/reload-op "Reloaded."
                              e.c.nrepl/reload-all-op "Reloaded all."
+                             e.c.nrepl/undef-op (if-let [sym (:undef msg)]
+                                                  (str "Undefined '" sym "'.")
+                                                  "Undefined.")
+                             e.c.nrepl/undef-all-op "Undefined all."
                              "Processed.")]
                   (if (e.u.nrepl/has-status? msg "eval-error")
                     (when-let [v (:err msg)]

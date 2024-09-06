@@ -101,6 +101,8 @@ function! s:default_key_mappings() abort
   call s:define_mapping('nmap', "<Leader>ece",   '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-list", [], {"config": "{:interceptor {:includes [elin.interceptor.optional.evaluate/eval-with-context-interceptor]}}"})<CR>')
   call s:define_mapping('nmap', "<Leader>epe",   '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-list", [], {"config": "{:interceptor {:includes [[elin.interceptor.optional.evaluate/wrap-eval-code-interceptor \"println\"]]}}"})<CR>')
   call s:define_mapping('nmap', "<Leader>eq",    '<Cmd>call elin#notify("elin.handler.evaluate/interrupt", [])<CR>')
+  call s:define_mapping('nmap', "<Leader>eu",    '<Cmd>call elin#notify("elin.handler.evaluate/undef", [])<CR>')
+  call s:define_mapping('nmap', "<Leader>eU",    '<Cmd>call elin#notify("elin.handler.evaluate/undef-all", [])<CR>')
 
   call s:define_mapping('nmap', "<Leader>enr",   '<Cmd>call elin#notify("elin.handler.evaluate/reload", [])<CR>')
   call s:define_mapping('nmap', "<Leader>enR",   '<Cmd>call elin#notify("elin.handler.evaluate/reload-all", [])<CR>')

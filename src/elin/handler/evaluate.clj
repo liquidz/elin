@@ -6,6 +6,7 @@
    [elin.function.evaluate :as e.f.evaluate]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.cider :as e.f.n.cider]
+   [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.handler :as e.s.handler]
@@ -94,3 +95,15 @@
 (defn interrupt
   [{:component/keys [nrepl]}]
   (e.f.nrepl/interrupt!! nrepl))
+
+(defn undef
+  [{:as elin :component/keys [host nrepl]}]
+  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
+          ns-str (e.f.sexpr/get-namespace elin)
+          {:keys [code]} (e.f.sexpr/get-expr elin lnum col)]
+    (e.f.n.cider/undef!! nrepl ns-str code)))
+
+(defn undef-all
+  [{:as elin :component/keys [nrepl]}]
+  (e/let [ns-str (e.f.sexpr/get-namespace elin)]
+    (e.f.n.cider/undef-all!! nrepl ns-str)))
