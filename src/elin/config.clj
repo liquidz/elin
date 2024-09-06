@@ -56,15 +56,31 @@
   ([c1 c2 & more-configs]
    (reduce merge-configs (or c1 {}) (cons c2 more-configs))))
 
-(m/=> load-config [:=> [:cat string? map?] e.s.config/?Config])
+(m/=> load-user-config [:-> map?])
+(defn- load-user-config
+  []
+  (let [file (io/file (e.u.file/get-config-directory) "config.edn")]
+    (or (when (.exists file)
+          (aero/read-config file))
+        {})))
+
+(m/=> load-project-local-config [:-> string? map?])
+(defn- load-project-local-config
+  [dir]
+  (or (some-> (e.u.file/find-file-in-parent-directories dir e.c.project/config-file-name)
+              (aero/read-config))
+      {}))
+
+(m/=> load-config [:-> string? map? e.s.config/?Config])
 (defn load-config
   [dir server-config]
-  (let [default (aero/read-config (io/resource "config.edn"))
-        config (some-> (e.u.file/find-file-in-parent-directories dir e.c.project/config-file-name)
-                       (aero/read-config))
+  (let [default-config (aero/read-config (io/resource "config.edn"))
+        user-config (load-user-config)
+        project-local-config (load-project-local-config dir)
         config (merge-configs server-config
-                              default
-                              (or config {}))]
+                              default-config
+                              user-config
+                              project-local-config)]
     (m/coerce e.s.config/?Config
               config
               config-transformer)))
