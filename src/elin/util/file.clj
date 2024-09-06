@@ -50,7 +50,7 @@
 (defn get-cache-directory
   []
   (let [home (System/getenv "HOME")
-        xdg-cache-home (System/getenv "$XDG_CACHE_HOME")
+        xdg-cache-home (System/getenv "XDG_CACHE_HOME")
         file (cond
                e.u.os/mac?
                (io/file home "Library" "Caches" e.c.project/name)
@@ -60,6 +60,20 @@
 
                :else
                (io/file home ".cache" e.c.project/name))]
+    (.mkdirs file)
+    (.getAbsolutePath file)))
+
+(m/=> get-config-directory [:-> string?])
+(defn get-config-directory
+  []
+  (let [home (System/getenv "HOME")
+        xdg-config-home (System/getenv "XDG_CONFIG_HOME")
+        file (cond
+               (seq xdg-config-home)
+               (io/file xdg-config-home e.c.project/name)
+
+               :else
+               (io/file home ".config" e.c.project/name))]
     (.mkdirs file)
     (.getAbsolutePath file)))
 
