@@ -51,7 +51,10 @@
          ;; cider-nrepl
          (let [query {:ns-query {:exactly [(:ns ctx)]}
                       :exactly (:vars ctx)}]
-           (e.f.s.test/set-last-test-query session-storage query)
+           (e.f.s.test/set-last-test-query session-storage {:ns (:ns ctx)
+                                                            :vars (:vars ctx)
+                                                            :current-file (:file ctx)
+                                                            :base-line (:line ctx)})
            (assoc ctx :response (e.f.n.cider/test-var-query!! nrepl query)))
 
          ;; plain
@@ -83,7 +86,10 @@
        (if (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
          ;; cider-nrepl
          (let [query {:ns-query {:exactly [(:ns ctx)]}}]
-           (e.f.s.test/set-last-test-query session-storage query)
+           (e.f.s.test/set-last-test-query session-storage {:ns (:ns ctx)
+                                                            :vars []
+                                                            :current-file (:file ctx)
+                                                            :base-line (:line ctx)})
            (assoc ctx :response (e.f.n.cider/test-var-query!! nrepl query)))
          ;; plain
          (let [vars' `(vals (ns-interns '~(symbol (:ns ctx))))
@@ -105,11 +111,19 @@
     (e.p.interceptor/execute
      interceptor e.c.interceptor/test context
      (fn [{:as ctx :component/keys [nrepl]}]
-       (let [query {:ns (:ns ctx)
-                    :vars (map symbol (:vars ctx))
-                    :current-file (:file ctx)
-                    :base-line (:line ctx)}
-             resp (if (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
+       (let [test-var-query-supported? (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
+             query (if test-var-query-supported?
+                     (cond-> {}
+                       (:ns ctx)
+                       (assoc :ns-query {:exactly [(:ns ctx)]})
+
+                       (:vars ctx)
+                       (assoc :exactly (:vars ctx)))
+                     {:ns (:ns ctx)
+                      :vars (map symbol (:vars ctx))
+                      :current-file (:file ctx)
+                      :base-line (:line ctx)})
+             resp (if test-var-query-supported?
                     (e.f.n.cider/test-var-query!! nrepl query)
                     (e.f.n.test/test-var-query!! nrepl query))]
          (assoc ctx :response resp))))))
