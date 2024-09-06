@@ -23,11 +23,12 @@
  :handler {:includes [elin.handler.complete/complete
                       elin.handler.connect/connect
                       elin.handler.evaluate/evaluate
+                      elin.handler.evaluate/evaluate-at-mark
                       elin.handler.evaluate/evaluate-current-expr
                       elin.handler.evaluate/evaluate-current-list
                       elin.handler.evaluate/evaluate-current-top-list
                       elin.handler.evaluate/evaluate-namespace-form
-                      elin.handler.evaluate/evaluate-at-mark
+                      elin.handler.evaluate/interrupt
                       elin.handler.evaluate/print-last-result
                       elin.handler.evaluate/reload
                       elin.handler.evaluate/reload-all

@@ -90,3 +90,7 @@
 (defn reload-all
   [{:component/keys [nrepl]}]
   (e.f.n.cider/reload-all!! nrepl))
+
+(defn interrupt
+  [{:component/keys [nrepl]}]
+  (e.f.nrepl/interrupt!! nrepl))
