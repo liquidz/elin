@@ -67,9 +67,12 @@
 (m/=> load-project-local-config [:-> string? map?])
 (defn- load-project-local-config
   [dir]
-  (or (some-> (e.u.file/find-file-in-parent-directories dir e.c.project/config-file-name)
-              (aero/read-config))
-      {}))
+  (let [config-dir-name (str "." e.c.project/name)
+        file (some-> (e.u.file/find-file-in-parent-directories dir config-dir-name)
+                     (io/file "config.edn"))]
+    (or (when (and file (.exists file))
+          (aero/read-config file))
+        {})))
 
 (m/=> load-config [:-> string? map? e.s.config/?Config])
 (defn load-config
