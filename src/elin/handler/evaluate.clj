@@ -70,8 +70,8 @@
            (e.f.evaluate/evaluate-at-mark elin mark-id)
            (:response))))
 
-(m/=> load-current-file [:=> [:cat e.s.handler/?Elin] any?])
-(defn load-current-file
+(m/=> evaluate-current-buffer [:=> [:cat e.s.handler/?Elin] any?])
+(defn evaluate-current-buffer
   [{:component/keys [nrepl host]}]
   (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
           contents (async/<!! (e.p.host/get-lines host))]

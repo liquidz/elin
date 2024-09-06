@@ -93,7 +93,7 @@ function! s:default_key_mappings() abort
   call s:define_mapping('nmap', "<Leader>ei",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-expr", [])<CR>')
   call s:define_mapping('nmap', "<Leader>ee",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-list", [])<CR>')
   call s:define_mapping('nmap', "<Leader>et",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-top-list", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>eb",    '<Cmd>call elin#notify("elin.handler.evaluate/load-current-file", [])<CR>')
+  call s:define_mapping('nmap', "<Leader>eb",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-buffer", [])<CR>')
 
   call s:define_mapping('nmap', "<Leader>en",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-namespace-form", [])<CR>')
   call s:define_mapping('nmap', "<Leader>ep",    '<Cmd>call elin#notify("elin.handler.evaluate/print-last-result", [])<CR>')

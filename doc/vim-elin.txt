@@ -13,7 +13,7 @@ Example configuration
   nnoremap <buffer> <Leader>ee    <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-list', [])<CR>
   nnoremap <buffer> <Leader>ei    <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-expr', [])<CR>
   nnoremap <buffer> <Leader>en    <Cmd>call elin#notify('elin.handler.evaluate/evaluate-namespace-form', [])<CR>
-  nnoremap <buffer> <Leader>eb    <Cmd>call elin#notify('elin.handler.evaluate/load-current-file', [])<CR>
+  nnoremap <buffer> <Leader>eb    <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-buffer', [])<CR>
   
   nnoremap <buffer> <Leader>epe   <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-list', [], {'config': '{:interceptor {:includes [[elin.interceptor.optional.evaluate/wrap-eval-code-interceptor "println"]]}}'})<CR>
   

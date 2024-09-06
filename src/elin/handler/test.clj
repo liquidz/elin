@@ -78,7 +78,7 @@
                              :file path
                              :vars []))]
     ;; NOTE: Reload ns to match run-test-under-cursor's behavior
-    (e.h.evaluate/load-current-file elin)
+    (e.h.evaluate/evaluate-current-buffer elin)
 
     (e.p.interceptor/execute
      interceptor e.c.interceptor/test context
