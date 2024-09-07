@@ -26,7 +26,7 @@
     nil))
 
 (defrecord TestNreplConnection
-  [host port socket read-stream write-stream output-channel response-manager
+  [host port socket read-stream write-stream raw-message-channel response-manager
    connected-atom option]
   e.p.nrepl/IConnection
   (disconnect [_]
@@ -57,7 +57,7 @@
     :read-stream (java.io.PushbackInputStream.
                   (java.io.ByteArrayInputStream. (.getBytes "")))
     :write-stream (java.io.ByteArrayOutputStream.)
-    :output-channel (async/chan)
+    :raw-message-channel (async/chan)
     :response-manager (atom {})
     :connected-atom (atom true)
     :option option}))

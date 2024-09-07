@@ -87,7 +87,7 @@
    socket
    read-stream
    write-stream
-   output-channel
+   raw-message-channel
    response-manager]
 
   e.p.nrepl/IConnection
@@ -95,7 +95,7 @@
     (if (.isClosed socket)
       false
       (do (.close socket)
-          (async/close! output-channel)
+          (async/close! raw-message-channel)
           (reset! response-manager {})
           true)))
 
@@ -121,7 +121,7 @@
 (defn connect
   [host port]
   (let [sock (Socket. host port)
-        output-ch (async/chan)
+        raw-message-channel (async/chan)
         read-stream (PushbackInputStream. (.getInputStream sock))
         write-stream (.getOutputStream sock)
         response-manager (atom {})]
@@ -131,13 +131,7 @@
         (let [v (b/read-bencode read-stream)
               msg (format-message v)]
           (swap! response-manager process-message msg)
-
-          (when (string? (:out msg))
-            (async/>! output-ch {:type "out" :text (:out msg)}))
-          (when (string? (:pprint-out msg))
-            (async/>! output-ch {:type "pprint-out" :text (:pprint-out msg)}))
-          (when (string? (:err msg))
-            (async/>! output-ch {:type "err" :text (:err msg)})))
+          (async/put! raw-message-channel msg))
         (catch SocketException _ nil))
       (when-not (.isClosed sock)
         (recur)))
@@ -148,5 +142,5 @@
       :socket sock
       :read-stream read-stream
       :write-stream write-stream
-      :output-channel output-ch
+      :raw-message-channel raw-message-channel
       :response-manager response-manager})))

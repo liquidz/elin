@@ -23,7 +23,7 @@
    [:socket (e.schema/?instance Socket)]
    [:read-stream (e.schema/?instance PushbackInputStream)]
    [:write-stream (e.schema/?instance OutputStream)]
-   [:output-channel e.schema/?ManyToManyChannel]
+   [:raw-message-channel e.schema/?ManyToManyChannel]
    [:response-manager (e.schema/?instance Atom)]])
 
 (def ?Client
