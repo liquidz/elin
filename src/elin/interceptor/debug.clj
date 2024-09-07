@@ -32,6 +32,7 @@
    e.c.interceptor/evaluate e.s.interceptor/?EvaluateContext
    e.c.interceptor/handler e.s.interceptor/?HandlerContext
    e.c.interceptor/nrepl e.s.interceptor/?NreplContext
+   e.c.interceptor/raw-nrepl e.s.interceptor/?RawNreplContext
    e.c.interceptor/output e.s.interceptor/?OutputContext
    e.c.interceptor/test e.s.interceptor/?TestContext
    e.c.interceptor/quickfix e.s.interceptor/?QuickfixContext})

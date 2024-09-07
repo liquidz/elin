@@ -33,6 +33,21 @@
                                     (Long/parseLong))]
                   (assoc ctx :hostname hostname' :port port')))))})
 
+(def raw-message-channel-interceptor
+  {:name ::raw-message-channel-interceptor
+   :kind e.c.interceptor/connect
+   :leave (-> (fn [{:as ctx :component/keys [interceptor] :keys [client]}]
+                (let [ch (get-in client [:connection :raw-message-channel])]
+                  (async/go-loop []
+                    (when-let [msg (async/<! ch)]
+                      (-> ctx
+                          (e.u.map/select-keys-by-namespace :component)
+                          (assoc :message msg)
+                          (->> (e.p.interceptor/execute interceptor e.c.interceptor/raw-nrepl)))
+                      (recur)))))
+              (ix/when #(:client %))
+              (ix/discard))})
+
 (def output-channel-interceptor
   {:name ::output-channel-interceptor
    :kind e.c.interceptor/connect

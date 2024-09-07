@@ -9,5 +9,6 @@
 (def handler ::handler)
 (def nrepl ::nrepl)
 (def output ::output)
+(def raw-nrepl ::raw-nrepl)
 (def test ::test)
 (def quickfix ::quickfix)

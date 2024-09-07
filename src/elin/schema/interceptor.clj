@@ -13,6 +13,7 @@
    e.c.interceptor/evaluate
    e.c.interceptor/handler
    e.c.interceptor/nrepl
+   e.c.interceptor/raw-nrepl
    e.c.interceptor/output
    e.c.interceptor/test
    e.c.interceptor/quickfix])
@@ -49,6 +50,11 @@
        [:request e.s.nrepl/?Message]
        ;; LEAVE
        [:response {:optional true} any?]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?RawNreplContext
+  (-> [:map
+       [:message e.s.nrepl/?Message]]
       (m.util/merge e.s.handler/?Components)))
 
 (def ?AutocmdContext

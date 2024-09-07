@@ -9,6 +9,7 @@
                           elin.interceptor.autocmd/clj-kondo-analyzing-interceptor
                           elin.interceptor.connect/connected-interceptor
                           elin.interceptor.connect/output-channel-interceptor
+                          elin.interceptor.connect/raw-message-channel-interceptor
                           elin.interceptor.connect/port-auto-detecting-interceptor
                           elin.interceptor.debug/initialize-debugger-interceptor
                           elin.interceptor.handler/handling-error-interceptor
