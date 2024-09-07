@@ -6,8 +6,10 @@
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
+   [elin.protocol.interceptor :as e.p.interceptor]
    [elin.util.file :as e.u.file]
    [elin.util.id :as e.u.id]
+   [elin.util.map :as e.u.map]
    [elin.util.nrepl :as e.u.nrepl]
    [exoscale.interceptor :as ix]))
 
@@ -115,3 +117,26 @@
                     (swap! channel-store dissoc id)))
                 (ix/when #(contains? target-ops (get-in % [:request :op])))
                 (ix/discard))}))
+
+(def nrepl-output-interceptor
+  {:name ::output-channel-interceptor
+   :kind e.c.interceptor/raw-nrepl
+   :leave (-> (fn [{:as ctx :component/keys [interceptor] :keys [message]}]
+                (let [output (cond
+                               (string? (:out message))
+                               {:type "out" :text (:out message)}
+
+                               (string? (:pprint-out message))
+                               {:type "pprint-out" :text (:pprint-out message)}
+
+                               (string? (:err message))
+                               {:type "err" :text (:err message)}
+
+                               :else nil)]
+                  (when output
+                    (-> ctx
+                        (e.u.map/select-keys-by-namespace :component)
+                        (assoc :output output)
+                        (->> (e.p.interceptor/execute interceptor e.c.interceptor/output))))))
+              (ix/when #(:message %))
+              (ix/discard))})

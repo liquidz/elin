@@ -48,33 +48,6 @@
               (ix/when #(:client %))
               (ix/discard))})
 
-(def output-channel-interceptor
-  {:name ::output-channel-interceptor
-   :kind e.c.interceptor/connect
-   :leave (-> (fn [{:as ctx :component/keys [interceptor] :keys [client]}]
-                (let [ch (get-in client [:connection :raw-message-channel])]
-                  (async/go-loop []
-                    (let [msg (async/<! ch)
-                          output (cond
-                                   (string? (:out msg))
-                                   {:type "out" :text (:out msg)}
-
-                                   (string? (:pprint-out msg))
-                                   {:type "pprint-out" :text (:pprint-out msg)}
-
-                                   (string? (:err msg))
-                                   {:type "err" :text (:err msg)}
-
-                                   :else nil)]
-                      (when output
-                        (-> ctx
-                            (e.u.map/select-keys-by-namespace :component)
-                            (assoc :output output)
-                            (->> (e.p.interceptor/execute interceptor e.c.interceptor/output))))
-                      (recur)))))
-              (ix/when #(:client %))
-              (ix/discard))})
-
 (def connected-interceptor
   {:name ::connected-interceptor
    :kind e.c.interceptor/connect
