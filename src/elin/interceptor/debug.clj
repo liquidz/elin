@@ -1,6 +1,9 @@
 (ns elin.interceptor.debug
   (:require
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.constant.nrepl :as e.c.nrepl]
+   [elin.function.nrepl.cider :as e.f.n.cider]
+   [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.interceptor :as e.s.interceptor]
    [exoscale.interceptor :as ix]
    [malli.core :as m]
@@ -55,4 +58,12 @@
    :kind e.c.interceptor/connect
    :leave (-> (fn [_]
                 (add-tap #(timbre/error "Debug tap:" %)))
+              (ix/discard))})
+
+(def initialize-debugger-interceptor
+  {:name ::initialize-debugger-interceptor
+   :kind e.c.interceptor/connect
+   :leave (-> (fn [{:component/keys [nrepl]}]
+                (when (e.p.nrepl/supported-op? nrepl e.c.nrepl/init-debugger-op)
+                  (e.f.n.cider/init-debugger nrepl)))
               (ix/discard))})
