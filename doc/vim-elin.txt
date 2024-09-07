@@ -6,6 +6,19 @@ License: MIT LICENSE
 
 ==============================================================================
 
+
+Configuration file
+
+User configuration
+
+- $XDG_CONFIG_HOME/elin/config.edn
+- $HOME/.config/elin/config.edn
+  
+Project local configuration
+
+- .elin/config.edn
+
+
 Example configuration
 >
   nnoremap <buffer> <Leader>'     <Cmd>call elin#notify('elin.handler.connect/connect', [])<CR>
