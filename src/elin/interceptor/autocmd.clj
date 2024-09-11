@@ -10,7 +10,8 @@
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
-   [exoscale.interceptor :as ix]))
+   [exoscale.interceptor :as ix]
+   [taoensso.timbre :as timbre]))
 
 (def ^:priavte ns-created-var-name
   "b:elin_ns_created")
@@ -59,6 +60,19 @@
             ns-str
             src-ns)))
 
+(defn- empty-buffer?
+  [{:component/keys [host] :keys [autocmd-type]}]
+  (or (= "BufNewFile" autocmd-type)
+      (and (= "BufRead" autocmd-type)
+           (try
+             (->> (async/<!! (e.p.host/get-lines host))
+                  (str/join "")
+                  (str/trim)
+                  (empty?))
+             (catch Exception ex
+               (timbre/debug "Failed to fetch buffer lines" ex)
+               false)))))
+
 (def skeleton-interceptor
   {:name ::skelton-interceptor
    :kind e.c.interceptor/autocmd
@@ -75,7 +89,7 @@
                         ns-form-lines (->> (generate-skeleton param)
                                            (str/split-lines))]
                   (e.p.host/set-to-current-buffer host ns-form-lines)))
-              (ix/when #(= "BufNewFile" (:autocmd-type %)))
+              (ix/when empty-buffer?)
               (ix/discard))})
 
 (def clj-kondo-analyzing-interceptor
