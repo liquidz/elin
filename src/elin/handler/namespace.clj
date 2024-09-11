@@ -102,7 +102,7 @@
 
       1
       (add-missing-libspec*
-       (assoc elin :message {:params [alias-str (:name (first candidates))]}))
+       (assoc elin :message {:params [alias-str (str (:name (first candidates)))]}))
 
       ;; else
       (e.p.host/select-from-candidates
