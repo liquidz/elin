@@ -100,13 +100,20 @@ function! elin#internal#sexpr#replace_list_sexpr(lnum, col, new_sexpr) abort
   let before_line_count = 0
   let after_line_count = 0
   let reg_save = @@
+  let is_cancelled = v:false
 
   try
+    if getline(a:lnum)[0] !=# '('
+      let is_cancelled = v:true
+      return
+    endif
+
     call cursor(a:lnum, a:col)
 
     keepjumps silent normal! vaby
     let before_sexpr = @@
     if before_sexpr ==# ''
+      let is_cancelled = v:true
       return
     endif
     let before_line_count = len(split(before_sexpr, '\r\?\n'))
@@ -116,8 +123,10 @@ function! elin#internal#sexpr#replace_list_sexpr(lnum, col, new_sexpr) abort
   finally
     let @@ = reg_save
 
-    let new_line_count = len(split(trim(a:new_sexpr), '\r\?\n'))
-    let context['view']['lnum'] = context['view']['lnum'] + (new_line_count - before_line_count)
+    if ! is_cancelled
+      let new_line_count = len(split(trim(a:new_sexpr), '\r\?\n'))
+      let context['view']['lnum'] = context['view']['lnum'] + (new_line_count - before_line_count)
+    endif
     call elin#internal#context#restore(context)
   endtry
 endfunction
