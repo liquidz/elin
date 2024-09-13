@@ -6,6 +6,7 @@
    [elin.constant.project :as e.c.project]
    [elin.schema.config :as e.s.config]
    [elin.util.file :as e.u.file]
+   [elin.util.interceptor :as e.u.interceptor]
    [malli.core :as m]
    [malli.transform :as mt]
    [taoensso.timbre :as timbre])
@@ -74,16 +75,50 @@
           (aero/read-config file))
         {})))
 
+(defn- configure-handler
+  [base-handler-config target-handler-config]
+  (let [{:keys [includes excludes]} target-handler-config
+        exclude-set (set/union (set (or excludes []))
+                               (set (or includes [])))]
+    (-> base-handler-config
+        (merge-configs (dissoc target-handler-config :includes :excludes))
+        (update :includes #(->> (remove exclude-set %)
+                                (concat includes))))))
+
+(defn- configure-interceptor
+  [base-interceptor-config target-interceptor-config]
+  (let [{:keys [includes excludes]} target-interceptor-config
+        exclude-set (set/union (->> (or excludes [])
+                                    (map (comp :symbol e.u.interceptor/parse))
+                                    (set))
+                               (->> (or includes [])
+                                    (map (comp :symbol e.u.interceptor/parse))
+                                    (set)))]
+    (-> base-interceptor-config
+        (merge-configs (dissoc target-interceptor-config :includes :excludes))
+        (update :includes (fn [interceptors]
+                            (->> interceptors
+                                 (remove #(contains? exclude-set
+                                                     (:symbol (e.u.interceptor/parse %))))
+                                 (concat includes)))))))
+
+(defn- configure
+  [base-config target-config]
+  (-> base-config
+      (merge-configs (dissoc target-config :handler :interceptor))
+      (update :handler #(configure-handler % (:handler target-config)))
+      (update :interceptor #(configure-interceptor % (:interceptor target-config)))))
+
 (m/=> load-config [:-> string? map? e.s.config/?Config])
 (defn load-config
   [dir server-config]
   (let [default-config (aero/read-config (io/resource "config.edn"))
         user-config (load-user-config)
         project-local-config (load-project-local-config dir)
-        config (merge-configs server-config
-                              default-config
-                              user-config
-                              project-local-config)]
+        config (-> server-config
+                   (merge-configs default-config)
+                   (configure user-config)
+                   (configure project-local-config))]
     (m/coerce e.s.config/?Config
               config
               config-transformer)))
