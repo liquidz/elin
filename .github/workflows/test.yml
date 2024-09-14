@@ -15,7 +15,7 @@ jobs:
         with:
           path: ~/.m2
           key: test-m2-${{ hashFiles('bb.edn') }}
-      - run: bb check-all
+      - run: bb check
       - run: |
           git diff -- . ':(exclude)dev/analysis.edn'
           if [[ -n $(git diff -- . ':(exclude)dev/analysis.edn') ]]; then
