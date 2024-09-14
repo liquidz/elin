@@ -115,3 +115,25 @@ function! elin#internal#buffer#close(buf_name) abort
     call elin#internal#buffer#focus_by_win_nr(current_window)
   endif
 endfunction
+
+function! elin#internal#buffer#set_highlight(hl_group, line, ...) abort
+  let start_column = get(a:, 1, -1)
+  let end_column = get(a:, 2, -1)
+
+  let start_line = max([a:line-1, 0])
+  let end_line = a:line+1
+
+  if start_column == -1 && end_column == -1
+    silent exec printf('match %s /\%%>%dl\%%<%dl./', a:hl_group, start_line, end_line)
+  else
+    let start_column = max([a:start_column-1, 0])
+    let end_column = a:end_column+2
+    silent exec printf('2match %s /\%%>%dl\%%<%dl\%%>%dv.\+\%%<%dv/',
+          \ a:hl_group, start_line, end_line, start_column, end_column)
+  endif
+endfunction
+
+function! elin#internal#buffer#clear_highlight() abort
+  match none
+  2match none
+endfunction

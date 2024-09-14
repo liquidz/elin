@@ -87,7 +87,12 @@
   (get-lines
     [this]
     [this start-lnum]
-    [this start-lnum end-lnum]))
+    [this start-lnum end-lnum])
+  (set-highlight
+    [this highlight-group lnum]
+    [this highlight-group lnum start-col end-col])
+  (clear-highlight
+    [this]))
 
 (defprotocol ISelector
   (select-from-candidates

@@ -351,6 +351,24 @@
               :method e.p.host/get-lines
               :args [start-lnum end-lnum]
               :queue host-channel}))
+  (set-highlight [_ highlight-group lnum]
+    (execute {:host @host-store
+              :protocol e.p.host/IBuffer
+              :method e.p.host/set-highlight
+              :args [highlight-group lnum]
+              :queue host-channel}))
+  (set-highlight [_ highlight-group lnum start-col end-col]
+    (execute {:host @host-store
+              :protocol e.p.host/IBuffer
+              :method e.p.host/set-highlight
+              :args [highlight-group lnum start-col end-col]
+              :queue host-channel}))
+  (clear-highlight [_]
+    (execute {:host @host-store
+              :protocol e.p.host/IBuffer
+              :method e.p.host/clear-highlight
+              :args []
+              :queue host-channel}))
   ;; }}}
 
   e.p.host/IQuickfix ; {{{

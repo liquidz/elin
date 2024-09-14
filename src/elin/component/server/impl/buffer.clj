@@ -24,6 +24,16 @@
   [host start-lnum end-lnum]
   (e.c.s.function/request! host "getline" [start-lnum end-lnum]))
 
+(defn- set-highlight*
+  ([host highlight-group lnum]
+   (e.c.s.function/notify host "elin#internal#buffer#set_highlight" [highlight-group lnum]))
+  ([host highlight-group lnum start-col end-col]
+   (e.c.s.function/notify host "elin#internal#buffer#set_highlight" [highlight-group lnum start-col end-col])))
+
+(defn- clear-highlight*
+  [host]
+  (e.c.s.function/notify host "elin#internal#buffer#clear_highlight" []))
+
 (extend-protocol e.p.host/IBuffer
   elin.component.server.vim.VimHost
   (set-to-current-buffer [this text]
@@ -40,6 +50,13 @@
      (get-lines* this start-lnum "$"))
     ([this start-lnum end-lnum]
      (get-lines* this start-lnum end-lnum)))
+  (set-highlight
+    ([this highlight-group lnum]
+     (set-highlight* this highlight-group lnum))
+    ([this highlight-group lnum start-col end-col]
+     (set-highlight* this highlight-group lnum start-col end-col)))
+  (clear-highlight [this]
+    (clear-highlight* this))
 
   elin.component.server.nvim.NvimHost
   (set-to-current-buffer [this text]
@@ -55,4 +72,11 @@
     ([this start-lnum]
      (get-lines* this start-lnum "$"))
     ([this start-lnum end-lnum]
-     (get-lines* this start-lnum end-lnum))))
+     (get-lines* this start-lnum end-lnum)))
+  (set-highlight
+    ([this highlight-group lnum]
+     (set-highlight* this highlight-group lnum))
+    ([this highlight-group lnum start-col end-col]
+     (set-highlight* this highlight-group lnum start-col end-col)))
+  (clear-highlight [this]
+    (clear-highlight* this)))
