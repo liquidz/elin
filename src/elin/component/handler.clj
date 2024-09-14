@@ -121,11 +121,8 @@
                       :component/handler this
                       :component/session-storage session-storage
                       :component/clj-kondo clj-kondo}
-          exclude-set (set excludes)
-          handlers (concat (or includes [])
-                           (or (get-in plugin [:loaded-plugin :handlers]) []))
-          handlers (remove #(contains? exclude-set %) handlers)
-          handler-map (build-handler-map lazy-host handlers)
+          handler-map (->> (or includes [])
+                           (build-handler-map lazy-host))
           handler (partial handler components config-map handler-map)]
       (timbre/info "Handler component: Started")
       (assoc this

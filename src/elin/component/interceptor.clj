@@ -1,5 +1,6 @@
 (ns elin.component.interceptor
   (:require
+   [clojure.set :as set]
    [clojure.string :as str]
    [com.stuartsierra.component :as component]
    [elin.constant.interceptor :as e.c.interceptor]
@@ -12,6 +13,7 @@
    [elin.protocol.config :as e.p.config]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.interceptor :as e.s.interceptor]
+   [elin.util.interceptor :as e.u.interceptor]
    [exoscale.interceptor :as interceptor]
    [malli.core :as m]
    [msgpack.clojure-extensions]
@@ -24,14 +26,12 @@
 
 (defn- resolve-interceptor [lazy-host sym]
   (try
-    (if (and (sequential? sym)
-             (symbol? (first sym)))
-      (-> (first sym)
+    (when-let [parsed (e.u.interceptor/parse sym)]
+      (-> (:symbol parsed)
           (requiring-resolve)
           (deref)
-          (assoc :params (rest sym)))
-      (-> (requiring-resolve sym)
-          (deref)))
+          (assoc :symbol (:symbol parsed)
+                 :params (:params parsed))))
     (catch Exception ex
       (e.message/warning lazy-host "Failed to resolve interceptor" {:symbol sym :ex ex})
       nil)))
@@ -79,11 +79,7 @@
    interceptor-map]
   component/Lifecycle
   (start [this]
-    (let [exclude-set (set excludes)
-          grouped-interceptors (->> (or (get-in plugin [:loaded-plugin :interceptors]) [])
-                                    (remove #(contains? exclude-set %))
-                                    ;; NOTE includes should be prioritized over excludes
-                                    (concat (or includes []))
+    (let [grouped-interceptors (->> (or includes [])
                                     (distinct)
                                     (keep #(resolve-interceptor lazy-host %))
                                     (map wrap-interceptor-for-logging)
@@ -122,9 +118,12 @@
   e.p.config/IConfigure
   (configure [this config]
     (let [{:keys [includes excludes]} (get config config-key)
-          exclude-set (->> (or excludes [])
-                           (map keyword)
-                           (set))
+          exclude-set (set/union (->> (or excludes [])
+                                      (map (comp :symbol e.u.interceptor/parse))
+                                      (set))
+                                 (->> (or includes [])
+                                      (map (comp :symbol e.u.interceptor/parse))
+                                      (set)))
           grouped (->> (or includes [])
                        (keep #(resolve-interceptor lazy-host %))
                        (map wrap-interceptor-for-logging)
@@ -133,7 +132,7 @@
                                               (get grouped optional-group)))
           interceptor-map' (update-vals interceptor-map
                                         (fn [interceptors]
-                                          (remove #(contains? exclude-set (:name %)) interceptors)))
+                                          (remove #(contains? exclude-set (:symbol %)) interceptors)))
           ;; NOTE includes should be prioritized over excludes
           interceptor-map' (reduce-kv
                             (fn [accm kind interceptors]
