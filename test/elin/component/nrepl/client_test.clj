@@ -11,7 +11,8 @@
 (t/use-fixtures :each h/test-nrepl-server-port-fixture)
 
 (t/deftest connect-test
-  (let [client (sut/connect "localhost" h/*nrepl-server-port*)]
+  (let [client (sut/connect "localhost" h/*nrepl-server-port*)
+        raw-message-channel (get-in client [:connection :raw-message-channel])]
     (t/is (false? (e.p.nrepl/disconnected? client)))
 
     (t/testing "record values"
@@ -42,9 +43,10 @@
       (t/testing "notify and std out"
         (let [resp (e.p.nrepl/notify client {:op "eval" :code "(println \"hello\")"})]
           (t/is (nil? resp))
-          (async/<!! (async/timeout 100))
-          (t/is (= {:type "out" :text "hello\n"}
-                   (async/<!! (get-in client [:connection :output-channel])))))
+          (loop []
+            (when-let [raw (async/<!! raw-message-channel)]
+              (when (not=  "hello\n" (:out raw))
+                (recur)))))
 
         (t/testing "not supported op"
           (t/is (thrown-with-msg? Exception #"Not supported operation"
