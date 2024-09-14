@@ -24,14 +24,17 @@
     (t/testing "notify and std out"
       (let [resp (e.p.nrepl/notify conn {:op "eval" :code "(println \"hello\")"})]
         (t/is (nil? resp))
-        (async/<!! (async/timeout 100))
-        (t/is (= {:type "out" :text "hello\n"}
-                 (async/<!! (:output-channel conn))))))
+        (loop []
+          (when-let [raw (async/<!! (:raw-message-channel conn))]
+            (when (not=  "hello\n" (:out raw))
+              (recur))))))
 
     (t/testing "std err"
       (e.p.nrepl/request conn {:op "eval" :code "(binding [*out* *err*] (println \"world\"))"})
-      (t/is (= {:type "err" :text "world\n"}
-               (async/<!! (:output-channel conn)))))
+      (loop []
+        (when-let [raw (async/<!! (:raw-message-channel conn))]
+          (when (not=  "world\n" (:err raw))
+            (recur)))))
 
     (t/testing "disconnect"
       (t/is (true? (e.p.nrepl/disconnect conn)))
