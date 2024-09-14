@@ -26,12 +26,12 @@
 
 (defn- resolve-interceptor [lazy-host sym]
   (try
-    (when-let [parsed (e.u.interceptor/parse sym)]
+    (when-let [{:as parsed :keys [params]} (e.u.interceptor/parse sym)]
       (-> (:symbol parsed)
           (requiring-resolve)
           (deref)
-          (assoc :symbol (:symbol parsed)
-                 :params (:params parsed))))
+          (cond->
+           (seq params) (assoc :params params))))
     (catch Exception ex
       (e.message/warning lazy-host "Failed to resolve interceptor" {:symbol sym :ex ex})
       nil)))
@@ -76,23 +76,33 @@
    includes
    excludes
    ;; PARAMS
+   name-to-symbol-dict
    interceptor-map]
   component/Lifecycle
   (start [this]
-    (let [grouped-interceptors (->> (or includes [])
-                                    (distinct)
-                                    (keep #(resolve-interceptor lazy-host %))
-                                    (map wrap-interceptor-for-logging)
+    (let [resolved-interceptors (->> (or includes [])
+                                     (distinct)
+                                     (keep #(when-let [i (resolve-interceptor lazy-host %)]
+                                              [% i])))
+          name-to-symbol-dict (->> resolved-interceptors
+                                   (map (fn [[sym i]] [(:name i) sym]))
+                                   (into {}))
+          grouped-interceptors (->> resolved-interceptors
+                                    (map (comp wrap-interceptor-for-logging second))
                                     (group-by interceptor-group))
           interceptor-map (group-by :kind (get grouped-interceptors valid-group))]
       (when-let [invalid-interceptors (seq (get grouped-interceptors invalid-group))]
         (timbre/warn "Invalid interceptors:" invalid-interceptors)
         (e.message/warning "Invalid interceptors:" invalid-interceptors))
       (timbre/debug "Interceptor component: Started")
-      (assoc this :interceptor-map interceptor-map)))
+      (assoc this
+             :name-to-symbol-dict name-to-symbol-dict
+             :interceptor-map interceptor-map)))
   (stop [this]
     (timbre/debug "Interceptor component: Stopped")
-    (dissoc this :interceptor-map))
+    (dissoc this
+            :name-to-symbol-dict
+            :interceptor-map))
 
   e.p.interceptor/IInterceptor
   (execute [this kind context]
@@ -132,7 +142,8 @@
                                               (get grouped optional-group)))
           interceptor-map' (update-vals interceptor-map
                                         (fn [interceptors]
-                                          (remove #(contains? exclude-set (:symbol %)) interceptors)))
+                                          (remove #(contains? exclude-set (get name-to-symbol-dict (:name %)))
+                                                  interceptors)))
           ;; NOTE includes should be prioritized over excludes
           interceptor-map' (reduce-kv
                             (fn [accm kind interceptors]
