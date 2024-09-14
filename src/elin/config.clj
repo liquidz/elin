@@ -75,17 +75,19 @@
           (aero/read-config file))
         {})))
 
-(defn- configure-handler
+(defn configure-handler
   [base-handler-config target-handler-config]
   (let [{:keys [includes excludes]} target-handler-config
         exclude-set (set/union (set (or excludes []))
                                (set (or includes [])))]
     (-> base-handler-config
-        (merge-configs (dissoc target-handler-config :includes :excludes))
+        (merge-configs (assoc target-handler-config
+                              :includes []
+                              :excludes []))
         (update :includes #(->> (remove exclude-set %)
                                 (concat includes))))))
 
-(defn- configure-interceptor
+(defn configure-interceptor
   [base-interceptor-config target-interceptor-config]
   (let [{:keys [includes excludes]} target-interceptor-config
         exclude-set (set/union (->> (or excludes [])
@@ -95,14 +97,16 @@
                                     (map (comp :symbol e.u.interceptor/parse))
                                     (set)))]
     (-> base-interceptor-config
-        (merge-configs (dissoc target-interceptor-config :includes :excludes))
+        (merge-configs (assoc target-interceptor-config
+                              :includes []
+                              :excludes []))
         (update :includes (fn [interceptors]
                             (->> interceptors
                                  (remove #(contains? exclude-set
                                                      (:symbol (e.u.interceptor/parse %))))
                                  (concat includes)))))))
 
-(defn- configure
+(defn configure
   [base-config target-config]
   (-> base-config
       (merge-configs (dissoc target-config :handler :interceptor))

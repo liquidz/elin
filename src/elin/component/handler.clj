@@ -53,8 +53,8 @@
                            {})
         message-config (some-> (get-in message' [:options :config])
                                (edn/read-string))
-        this-config (e.config/merge-configs handler-config
-                                            message-config)
+        this-config (e.config/configure-handler handler-config
+                                                message-config)
         interceptor' (when this-config
                        (e.p.config/configure interceptor this-config))
         context' (cond-> context
