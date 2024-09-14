@@ -16,12 +16,12 @@
  :tasks
  {start-server {:task (shell "bb -m elin.core '{\"server\": {\"host\": \"localhost\", \"port\": 12233}, \"env\": {\"cwd\": \".\"}}'")}
 
-  repl {:doc "Start a REPL for development"
-        :override-builtin true
-        :extra-paths ["dev" "test"]
-        :requires ([elin.dev]
-                   [elin.test-helper])
-        :task (exec 'elin.task.nrepl/-main)}
+  nrepl-server {:doc "Start a REPL for development"
+                :override-builtin true
+                :extra-paths ["dev" "test"]
+                :requires ([elin.dev]
+                           [elin.test-helper])
+                :task (exec 'elin.task.nrepl/-main)}
 
   lint {:doc "Clj-kondo linting"
         :task (shell "clj-kondo --lint src:test")}
