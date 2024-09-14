@@ -1,6 +1,7 @@
-let s:last_winid = v:null
+let s:opened_winids = {}
 let s:context_name = 'elin_context'
 let s:default_filetype = 'clojure'
+let s:default_group = 'default'
 
 function! elin#internal#popup#open(texts, ...) abort
   let opts = get(a:, 1, {})
@@ -130,7 +131,10 @@ endfunction
 if has('nvim')
 
   function! s:open(texts, opts) abort
-    call s:close(s:last_winid)
+    let group = get(a:opts, 'group', s:default_group)
+    let last_winid = get(s:opened_winids, group, v:null)
+    call s:close(last_winid)
+
     let opts = s:normalize_opts(a:opts)
     let bufnr = nvim_create_buf(0, 1)
     if bufnr < 0 || type(a:texts) != v:t_list || empty(a:texts)
@@ -161,31 +165,43 @@ if has('nvim')
     let winid = nvim_open_win(bufnr, v:false, win_opts)
     call s:init_win(winid, opts)
 
-    let s:last_winid = winid
+    let s:opened_winids[group] = winid
     return winid
   endfunction
 
   function! s:__moved() abort
-    let context = getwinvar(s:last_winid, s:context_name, {})
-    let moved = get(context, '__moved', '')
-    let base_line = get(context, '__lnum', 0)
-    let line = line('.')
-    let col = col('.')
-    let elapsed = reltimefloat(reltime(get(context, '__reltime', reltime())))
+    let closed = v:false
 
-    " WARN: only supports 'any' and column list
-    if empty(moved)
-      return
-    elseif type(moved) == v:t_string && moved ==# 'any' && elapsed > 0.1
+    for group in keys(s:opened_winids)
+      let last_winid = get(s:opened_winids, group, v:null)
+      if last_winid == v:null
+        unlet s:opened_winids[group]
+        continue
+      endif
+
+      let context = getwinvar(last_winid, s:context_name, {})
+      let moved = get(context, '__moved', '')
+      let base_line = get(context, '__lnum', 0)
+      let line = line('.')
+      let col = col('.')
+      let elapsed = reltimefloat(reltime(get(context, '__reltime', reltime())))
+
+      " WARN: only supports 'any' and column list
+      if empty(moved)
+        continue
+      elseif type(moved) == v:t_string && moved ==# 'any' && elapsed > 0.1
+        unlet s:opened_winids[group]
+        s:close(last_winid)
+      elseif type(moved) == v:t_list && (line != base_line || col < moved[0] || col > moved[1]) && elapsed > 0.1
+        unlet s:opened_winids[group]
+        s:close(last_winid)
+      endif
+    endfor
+
+    if empty(s:opened_winids)
       aug elin_nvim_popup_moved
         au!
       aug END
-      return s:close(s:last_winid)
-    elseif type(moved) == v:t_list && (line != base_line || col < moved[0] || col > moved[1]) && elapsed > 0.1
-      aug elin_nvim_popup_moved
-        au!
-      aug END
-      return s:close(s:last_winid)
     endif
   endfunction
 
@@ -214,6 +230,10 @@ if has('nvim')
   endfunction
 
   function! s:close(winid) abort
+    if a:winid == v:null
+      return
+    endif
+
     try
       call nvim_win_close(a:winid, 0)
     catch
@@ -223,7 +243,10 @@ if has('nvim')
 else
 
   function! s:open(texts, opts) abort
-    call s:close(s:last_winid)
+    let group = get(a:opts, 'group', s:default_group)
+    let last_winid = get(s:opened_winids, group, v:null)
+    call s:close(last_winid)
+
     let opts = s:normalize_opts(a:opts)
     let calculated = s:calculate(a:texts, opts)
     let org_line = get(opts, 'line')
@@ -255,7 +278,7 @@ else
     redraw
     call s:init_win(winid, opts)
 
-    let s:last_winid = winid
+    let s:opened_winids[group] = winid
     return winid
   endfunction
 
