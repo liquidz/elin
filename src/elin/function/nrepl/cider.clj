@@ -87,9 +87,16 @@
         (e.u.nrepl/merge-messages)))
 
 (defn init-debugger
-  "Request for initializing debugger does not return response immediately."
+  "This operation does not return response immediately."
   [nrepl]
   (e.p.nrepl/notify nrepl {:op e.c.nrepl/init-debugger-op
                            ;; FIXME configuarable
                            :print-length 10
                            :print-level 10}))
+
+(defn debug-input
+  "This operation does not return response immediately."
+  [nrepl key-str input-str]
+  (e.p.nrepl/notify nrepl {:op e.c.nrepl/debug-input-op
+                           :key key-str
+                           :input input-str}))

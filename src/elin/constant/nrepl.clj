@@ -18,6 +18,7 @@
 ;; cider-nrepl ops
 
 (def complete-op "complete")
+(def debug-input-op "debug-input")
 (def info-op "info")
 (def init-debugger-op "init-debugger")
 (def ns-path-op "ns-path")
