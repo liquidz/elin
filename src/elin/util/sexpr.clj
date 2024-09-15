@@ -122,18 +122,22 @@
     (catch Exception ex
       (e/not-found {:message (ex-message ex)}))))
 
-(defn reader-macro?
+(defn skip-reader-macro
   [zloc]
-  (= :reader-macro (r.zip/tag zloc)))
-
-(defn down
-  [zloc]
-  (if (reader-macro? zloc)
+  (if (= :reader-macro (r.zip/tag zloc))
     (-> zloc
         (r.zip/down)
         (r.zip/right)
-        (down))
-    (r.zip/down zloc)))
+        (skip-reader-macro))
+    zloc))
+
+(defn skip-meta
+  [zloc]
+  (if (= :meta (r.zip/tag zloc))
+    (-> zloc
+        (r.zip/down)
+        (r.zip/right))
+    zloc))
 
 (defn- apply-cider-coordination*
   [code coordination]
@@ -141,7 +145,10 @@
          [n & rest-coor] coordination]
     (if-not n
       zloc
-      (recur (nth (->> (down zloc)
+      (recur (nth (->> zloc
+                       (skip-reader-macro)
+                       (skip-meta)
+                       (r.zip/down)
                        (iterate r.zip/right))
                   n)
              rest-coor))))

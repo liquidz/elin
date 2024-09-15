@@ -82,4 +82,9 @@
              (sut/apply-cider-coordination code [3 2 1])))
 
     (t/is (= {:code "(+ a 1)" :position [0 27]}
-             (sut/apply-cider-coordination code [3 2])))))
+             (sut/apply-cider-coordination code [3 2]))))
+
+  (t/testing "Conditional Breakpoints"
+    (let [code "(dotimes [i 10] #dbg ^{:break/when (= i 7)} (prn i))"]
+      (t/is (= {:code "i" :position [0 49]}
+               (sut/apply-cider-coordination code [2 1]))))))
