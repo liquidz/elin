@@ -1,7 +1,6 @@
 (ns elin.interceptor.debug
   (:require
    [clojure.core.async :as async]
-   [clojure.pprint :as pp]
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
@@ -91,21 +90,32 @@
    ;; "i" "inspect-prompt"
    "q" "quit"})
 
-(def ^:private input-prompt
-  (->> supported-input-types
-       (map (fn [[k v]]
-              (format "(%s)%s" k v)))
-       (str/join ", ")))
+(defn- generate-input-prompt
+  [input-type]
+  (let [reversed-supported-input-types (->> supported-input-types
+                                            (map (fn [[k v]] [v k]))
+                                            (into {}))
+        supported (set (keys reversed-supported-input-types))]
+    (->> input-type
+         (filter supported)
+         (map #(format "(%s)%s" (reversed-supported-input-types %) %))
+         (str/join ", "))))
+(comment (println (generate-debug-text sample)))
 
 (defn- generate-debug-text
   [{:keys [debug-value locals]}]
-  (let [locals-str (with-out-str
-                     (->> locals
-                          (map (fn [[k v]] (hash-map :key k :value v)))
-                          (pp/print-table)))]
-    (->> ["::value"
-          debug-value
-          "::locals"
+  (let [max-key-len (->> locals
+                         (map (comp count first))
+                         (apply max))
+        space #(->> (repeat (- max-key-len (count %)) " ")
+                    (apply str))
+        locals-str (->> locals
+                        (map (fn [[k v]]
+                               (str ":" k (space k) " " v)))
+                        (str/join "\n"))]
+    (->> [";; value "
+          (str debug-value)
+          ";; locals"
           locals-str]
          (str/join "\n"))))
 
@@ -129,7 +139,7 @@
    :kind e.c.interceptor/raw-nrepl
    :enter (-> (fn [{:as ctx :component/keys [nrepl host] :keys [message]}]
                 (when (e.u.nrepl/has-status? message "need-debug-input")
-                  (let [{:keys [line column coor]} message
+                  (let [{:keys [line column coor input-type]} message
                         {base-code :code} (e.f.sexpr/get-list ctx (:line message) (:column message))
                         {:keys [code position]} (e.u.sexpr/apply-cider-coordination base-code coor)
                         highlight-line (+ line (first position))
@@ -138,12 +148,16 @@
                         popup-id (e.f.popup/open ctx (generate-debug-text message)
                                                  {:group "debugger"
                                                   :line (inc highlight-line)
-                                                  :col highlight-start-col})]
+                                                  :col highlight-start-col
+                                                  :filetype "clojure"})
+                        input-prompt  (generate-input-prompt input-type)]
                     (e.p.host/set-highlight host
                                             "Search"
                                             highlight-line
                                             highlight-start-col
                                             highlight-end-col)
+                    ;; Wait for the highlight to be reflected
+                    (async/<!! (async/timeout 1))
                     (loop []
                       (let [input (async/<!! (e.p.host/input! host
                                                               (str input-prompt ":\n")
