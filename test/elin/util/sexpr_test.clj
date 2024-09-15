@@ -72,3 +72,14 @@
 
   (t/testing "no namespace form"
     (t/is (e/not-found? (sut/add-import "" 'java.lang.String)))))
+
+(t/deftest apply-cider-coordination-test
+  (let [code "(defn- foo [a b] #dbg (+ b (+ a 1)))"]
+    (t/is (= {:code "b" :position [0 25]}
+             (sut/apply-cider-coordination code [3 1])))
+
+    (t/is (= {:code "a" :position [0 30]}
+             (sut/apply-cider-coordination code [3 2 1])))
+
+    (t/is (= {:code "(+ a 1)" :position [0 27]}
+             (sut/apply-cider-coordination code [3 2])))))

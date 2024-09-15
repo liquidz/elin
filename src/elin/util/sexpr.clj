@@ -121,3 +121,42 @@
         (r.zip/string))
     (catch Exception ex
       (e/not-found {:message (ex-message ex)}))))
+
+(defn reader-macro?
+  [zloc]
+  (= :reader-macro (r.zip/tag zloc)))
+
+(defn down
+  [zloc]
+  (if (reader-macro? zloc)
+    (-> zloc
+        (r.zip/down)
+        (r.zip/right)
+        (down))
+    (r.zip/down zloc)))
+
+(defn- apply-cider-coordination*
+  [code coordination]
+  (loop [zloc (r.zip/of-string code {:track-position? true})
+         [n & rest-coor] coordination]
+    (if-not n
+      zloc
+      (recur (nth (->> (down zloc)
+                       (iterate r.zip/right))
+                  n)
+             rest-coor))))
+
+(m/=> apply-cider-coordination [:=> [:cat string? [:sequential int?]]
+                                [:map
+                                 [:code string?]
+                                 [:position [:cat int? int?]]]])
+(defn apply-cider-coordination
+  "a COORDINATES list of '(1 0 2) means:
+   - enter next sexp then `forward-sexp' once,
+   - enter next sexp,
+   - enter next sexp then `forward-sexp' twice."
+  [code coordination]
+  (let [zloc (apply-cider-coordination* code coordination)
+        [lnum col] (r.zip/position zloc)]
+    {:code (r.zip/string zloc)
+     :position [(dec lnum) (dec col)]}))
