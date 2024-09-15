@@ -1,10 +1,18 @@
 (ns elin.interceptor.debug
   (:require
+   [clojure.core.async :as async]
+   [clojure.pprint :as pp]
+   [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.function.nrepl.cider :as e.f.n.cider]
+   [elin.function.popup :as e.f.popup]
+   [elin.function.sexpr :as e.f.sexpr]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.interceptor :as e.s.interceptor]
+   [elin.util.nrepl :as e.u.nrepl]
+   [elin.util.sexpr :as e.u.sexpr]
    [exoscale.interceptor :as ix]
    [malli.core :as m]
    [malli.error :as m.error]
@@ -67,4 +75,84 @@
    :leave (-> (fn [{:component/keys [nrepl]}]
                 (when (e.p.nrepl/supported-op? nrepl e.c.nrepl/init-debugger-op)
                   (e.f.n.cider/init-debugger nrepl)))
+              (ix/discard))})
+
+(def ^:private supported-input-types
+  {"c" "continue"
+   "l" "locals"
+   ;; "i" "inspect"
+   "t" "trace"
+   "h" "here"
+   "C" "continue-all"
+   "n" "next"
+   ;; "o" "out"
+   ;; "i" "inject"
+   "s" "stacktrace"
+   ;; "i" "inspect-prompt"
+   "q" "quit"})
+
+(def ^:private input-prompt
+  (->> supported-input-types
+       (map (fn [[k v]]
+              (format "(%s)%s" k v)))
+       (str/join ", ")))
+
+(defn- generate-debug-text
+  [{:keys [debug-value locals]}]
+  (let [locals-str (with-out-str
+                     (->> locals
+                          (map (fn [[k v]] (hash-map :key k :value v)))
+                          (pp/print-table)))]
+    (->> ["::value"
+          debug-value
+          "::locals"
+          locals-str]
+         (str/join "\n"))))
+
+;; Sample message
+;; {:debug-value "2",
+;;  :original-ns "core",
+;;  :key "2f20d369-391a-410e-9482-e7bd8bb5c45a",
+;;  :locals [["a" "2"]],
+;;  :file "/Users/iizukamasashi/opt/foo/bar/src/core.clj",
+;;  :column 1,
+;;  :input-type ["continue" "locals" "inspect" "trace" "here" "continue-all" "next" "out" "inject" "stacktrace" "inspect-prompt" "quit" "in" "eval"],
+;;  :prompt [],
+;;  :coor [3 1],
+;;  :line 10,
+;;  :status ["need-debug-input"],
+;;  :code "(defn- foo [a]\n  #dbg (+ a 1))",
+;;  :original-id 15,
+;;  :session "c64e3734-5813-47da-af8b-a1af053db19d"))
+(def process-debugger-interceptor
+  {:name ::process-debugger-interceptor
+   :kind e.c.interceptor/raw-nrepl
+   :enter (-> (fn [{:as ctx :component/keys [nrepl host] :keys [message]}]
+                (when (e.u.nrepl/has-status? message "need-debug-input")
+                  (let [{:keys [line column coor]} message
+                        {base-code :code} (e.f.sexpr/get-list ctx (:line message) (:column message))
+                        {:keys [code position]} (e.u.sexpr/apply-cider-coordination base-code coor)
+                        highlight-line (+ line (first position))
+                        highlight-start-col (+ column (second position))
+                        highlight-end-col (+ highlight-start-col (dec (count code)))
+                        popup-id (e.f.popup/open ctx (generate-debug-text message)
+                                                 {:group "debugger"
+                                                  :line (inc highlight-line)
+                                                  :col highlight-start-col})]
+                    (e.p.host/set-highlight host
+                                            "Search"
+                                            highlight-line
+                                            highlight-start-col
+                                            highlight-end-col)
+                    (loop []
+                      (let [input (async/<!! (e.p.host/input! host
+                                                              (str input-prompt ":\n")
+                                                              ""))
+                            input' (or (get supported-input-types input)
+                                       input)]
+                        (if (contains? (set (vals supported-input-types)) input')
+                          (do (e.f.n.cider/debug-input nrepl (:key message) (str ":" input'))
+                              (e.f.popup/close ctx popup-id)
+                              (e.p.host/clear-highlight host))
+                          (recur)))))))
               (ix/discard))})

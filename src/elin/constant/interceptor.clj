@@ -12,3 +12,4 @@
 (def raw-nrepl ::raw-nrepl)
 (def test ::test)
 (def quickfix ::quickfix)
+(def debug ::debug)
