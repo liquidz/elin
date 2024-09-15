@@ -170,6 +170,43 @@
                                         elin.function.nrepl.refactor {resolve-missing!! {:arities {2 {:args [:any
                                                                                                              :string],
                                                                                                       :ret :sequential}}}},
+                                        elin.function.popup {open {:arities {2 {:args [{:op :keys,
+                                                                                        :req {:message {:op :keys,
+                                                                                                        :req {:host :string,
+                                                                                                              :message :sequential}},
+                                                                                              :component/nrepl :any,
+                                                                                              :component/interceptor :any,
+                                                                                              :component/host {:op :keys,
+                                                                                                               :req {:host-store :any}},
+                                                                                              :component/session-storage :any,
+                                                                                              :component/clj-kondo :any}}
+                                                                                       :string],
+                                                                                :ret :int},
+                                                                             3 {:args [{:op :keys,
+                                                                                        :req {:message {:op :keys,
+                                                                                                        :req {:host :string,
+                                                                                                              :message :sequential}},
+                                                                                              :component/nrepl :any,
+                                                                                              :component/interceptor :any,
+                                                                                              :component/host {:op :keys,
+                                                                                                               :req {:host-store :any}},
+                                                                                              :component/session-storage :any,
+                                                                                              :component/clj-kondo :any}}
+                                                                                       :string
+                                                                                       :map],
+                                                                                :ret :int}}},
+                                                             close {:arities {2 {:args [{:op :keys,
+                                                                                         :req {:message {:op :keys,
+                                                                                                         :req {:host :string,
+                                                                                                               :message :sequential}},
+                                                                                               :component/nrepl :any,
+                                                                                               :component/interceptor :any,
+                                                                                               :component/host {:op :keys,
+                                                                                                                :req {:host-store :any}},
+                                                                                               :component/session-storage :any,
+                                                                                               :component/clj-kondo :any}}
+                                                                                        :int],
+                                                                                 :ret :nil}}}},
                                         elin.function.sexpr {get-top-list {:arities {3 {:args [{:op :keys,
                                                                                                 :req {:message {:op :keys,
                                                                                                                 :req {:host :string,
@@ -335,7 +372,13 @@
                                                          extract-form-by-position {:arities {3 {:args [:string
                                                                                                        :int
                                                                                                        :int],
-                                                                                                :ret :any}}}},
+                                                                                                :ret :any}}},
+                                                         apply-cider-coordination {:arities {2 {:args [:string
+                                                                                                       :sequential],
+                                                                                                :ret {:op :keys,
+                                                                                                      :req {:code :string,
+                                                                                                            :position [:int
+                                                                                                                       :int]}}}}}},
                                         elin.util.map {select-keys-by-namespace {:arities {2 {:args [:map :keyword],
                                                                                               :ret :map}}},
                                                        map->str {:arities {2 {:args [:map :sequential], :ret :string}}}},
