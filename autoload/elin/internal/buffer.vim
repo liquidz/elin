@@ -126,8 +126,8 @@ function! elin#internal#buffer#set_highlight(hl_group, line, ...) abort
   if start_column == -1 && end_column == -1
     silent exec printf('match %s /\%%>%dl\%%<%dl./', a:hl_group, start_line, end_line)
   else
-    let start_column = max([a:start_column-1, 0])
-    let end_column = a:end_column+2
+    let start_column = max([start_column-1, 0])
+    let end_column = end_column+2
     silent exec printf('2match %s /\%%>%dl\%%<%dl\%%>%dv.\+\%%<%dv/',
           \ a:hl_group, start_line, end_line, start_column, end_column)
   endif
