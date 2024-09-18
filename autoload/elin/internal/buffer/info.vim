@@ -36,16 +36,16 @@ function! elin#internal#buffer#info#ready() abort
   silent execute printf(':split %s', s:buf_name)
   silent execute ':q'
 
-  call setbufvar(s:buf_name, 'lsp_diagnostics_enabled', 0)
-  call setbufvar(s:buf_name, '&bufhidden', 'hide')
-  call setbufvar(s:buf_name, '&buflisted', 0)
-  call setbufvar(s:buf_name, '&buftype', 'nofile')
-  call setbufvar(s:buf_name, '&filetype', 'clojure')
-  call setbufvar(s:buf_name, '&swapfile', 0)
-  call setbufvar(s:buf_name, '&wrap', 0)
+  silent call setbufvar(s:buf_name, 'lsp_diagnostics_enabled', 0)
+  silent call setbufvar(s:buf_name, '&bufhidden', 'hide')
+  silent call setbufvar(s:buf_name, '&buflisted', 0)
+  silent call setbufvar(s:buf_name, '&buftype', 'nofile')
+  silent call setbufvar(s:buf_name, '&filetype', 'clojure')
+  silent call setbufvar(s:buf_name, '&swapfile', 0)
+  silent call setbufvar(s:buf_name, '&wrap', 0)
 
-  call elin#internal#buffer#append(s:buf_name, s:title)
-  call deletebufline(s:buf_name, 1)
+  silent call elin#internal#buffer#append(s:buf_name, s:title)
+  silent call deletebufline(s:buf_name, 1)
 endfunction
 
 function! elin#internal#buffer#info#append(s) abort
