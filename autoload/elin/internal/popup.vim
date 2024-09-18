@@ -191,10 +191,10 @@ if has('nvim')
         continue
       elseif type(moved) == v:t_string && moved ==# 'any' && elapsed > 0.1
         unlet s:opened_winids[group]
-        s:close(last_winid)
+        call s:close(last_winid)
       elseif type(moved) == v:t_list && (line != base_line || col < moved[0] || col > moved[1]) && elapsed > 0.1
         unlet s:opened_winids[group]
-        s:close(last_winid)
+        call s:close(last_winid)
       endif
     endfor
 
