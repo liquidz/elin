@@ -5,4 +5,5 @@
   (restore [this])
   (analyzing? [this])
   (analyzed? [this])
-  (analysis [this]))
+  (analysis [this])
+  (analyze-code!! [this code]))

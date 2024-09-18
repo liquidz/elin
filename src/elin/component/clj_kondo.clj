@@ -108,7 +108,20 @@
   (analysis [this]
     (when (and clj-kondo-available?
                (e.p.clj-kondo/analyzed? this))
-      (:analysis @analyzed-atom))))
+      (:analysis @analyzed-atom)))
+
+  (analyze-code!! [_ code]
+    (when clj-kondo-available?
+      (let [file (java.io.File/createTempFile (str (random-uuid)) ".clj")]
+        (try
+          (spit file code)
+          (clj-kondo/run! {:lint [(.getAbsolutePath file)]
+                           :config {:output {:analysis {:protocol-impls true
+                                                        :arglists true
+                                                        :locals true
+                                                        :keywords true}}}})
+          (finally
+            (.delete file)))))))
 
 (defn new-clj-kondo
   [config]
