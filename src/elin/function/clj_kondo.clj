@@ -217,6 +217,18 @@
                                  (str/join " " %)
                                  (str %))))))
 
+(defn local-lookup
+  [clj-kondo top-code sym-str]
+  (e/let [resp (e.p.clj-kondo/analyze-code!! clj-kondo top-code)
+          local-vars (get-in resp [:analysis :locals])
+          local-def (or (find-first #(= sym-str (:str %)) local-vars)
+                        (e/not-found {:message (format "Var '%s' is not found" sym-str)}))]
+    (-> local-def
+        (select-keys [:name :row :col])
+        (set/rename-keys {:row :line
+                          :col :column})
+        (update :name str))))
+
 (defn requiring-namespaces
   [clj-kondo ns-str]
   (let [ns-sym (symbol ns-str)]
@@ -244,4 +256,13 @@
         sym-str "e.p.host/get-cursor-position!!"
         sym-str "generate-cljdocc"]
       (clojure.pprint/pprint
-        (lookup clj-kondo ns-str sym-str))))
+        (lookup clj-kondo ns-str sym-str)))
+
+  (def code-analysis
+    (e.p.clj-kondo/analyze-code!! (elin.dev/$ :clj-kondo) (str '(defn foo [x]
+                                                                  (let [y (+ x 1)]
+                                                                    y)))))
+  (clojure.pprint/pprint
+   (:var-definitions (:analysis code-analysis)))
+  (clojure.pprint/pprint
+    (:locals (:analysis code-analysis))))
