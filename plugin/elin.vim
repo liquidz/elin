@@ -17,6 +17,10 @@ function! s:init() abort
   endif
   let g:initialized_vim_elin = 1
 
+  " Initialize internal buffers
+  call elin#internal#buffer#info#ready()
+  call elin#internal#buffer#temp#ready()
+
   if g:elin_server_port is v:null
     echom 'vim-elin: start server'
     call elin#server#start()
