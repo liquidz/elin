@@ -93,7 +93,7 @@
                                        e.c.nrepl/reload-op "Reloading..."
                                        e.c.nrepl/reload-all-op "Reloading all..."
                                        "Processing...")
-                                popup-id (async/<!!
+                                popup-id (async/<!
                                           (e.p.host/open-popup!
                                            host
                                            text
