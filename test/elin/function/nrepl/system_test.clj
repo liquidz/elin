@@ -26,7 +26,7 @@
       (let [{:as info :keys [user-dir file-separator project-name]} (sut/get-system-info nrepl)]
         (t/is (and (string? user-dir) (seq user-dir)))
         (t/is (and (string? file-separator) (seq file-separator)))
-        (t/is (= "vim-elin" project-name))
+        (t/is (= "elin" project-name))
 
         (t/testing "Try to check if the result is cached"
           (let [session (e.p.nrepl/current-session nrepl)

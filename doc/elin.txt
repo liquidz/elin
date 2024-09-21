@@ -1,4 +1,4 @@
-*vim-elin.txt*   A Clojure development environment for Vim/Neovim
+*elin.txt*   A Clojure development environment for Vim/Neovim
 
 Version: 0.0.1
 Author : Masashi Iizuka <liquidz.uo+vim@gmail.com>

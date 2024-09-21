@@ -17,7 +17,7 @@ endfunction
 if has('nvim')
   function! s:select(candidates, callback ) abort
     let callback_id = elin#callback#register(a:callback)
-    call luaeval('require("vim-elin.select").select(_A[1], _A[2], _A[3])', [
+    call luaeval('require("elin.select").select(_A[1], _A[2], _A[3])', [
          \ a:candidates,
          \ 'elin#internal#select#_callback',
          \ [callback_id],

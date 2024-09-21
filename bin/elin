@@ -22,7 +22,7 @@
 
 (deps/add-deps
   {:deps {'babashka/process {:mvn/version "0.5.21"}
-          'liquidz/vim-elin {:local/root project-root}}})
+          'liquidz/elin {:local/root project-root}}})
 (require
   '[babashka.process :as proc])
 

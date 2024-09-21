@@ -14,12 +14,12 @@
                 (slurp)
                 (str/split-lines)
                 (first)
-                (str/includes? "vim-elin")))
+                (str/includes? "elin")))
       (t/is (-> (sut/find-file-in-parent-directories "./src" "README.adoc")
                 (slurp)
                 (str/split-lines)
                 (first)
-                (str/includes? "vim-elin"))))
+                (str/includes? "elin"))))
 
     (t/testing "Not found"
       (t/is (nil? (sut/find-file-in-parent-directories "." (str "non-existing" (random-uuid)))))))

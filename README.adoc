@@ -1,4 +1,4 @@
-= 🍏 vim-elin
+= 🍏 elin
 
 +++
 <blockquote>
@@ -9,7 +9,7 @@
 
 A Clojure development environment for Vim/Neovim, primarily written in https://babashka.org[Babashka].
 
-image:https://github.com/liquidz/vim-elin/workflows/test/badge.svg["GitHub Actions for test workflow", link="https://github.com/liquidz/vim-elin/actions?query=workflow%3Atest"]
+image:https://github.com/liquidz/elin/workflows/test/badge.svg["GitHub Actions for test workflow", link="https://github.com/liquidz/elin/actions?query=workflow%3Atest"]
 
 == 🌱 Requirements
 
@@ -21,12 +21,12 @@ image:https://github.com/liquidz/vim-elin/workflows/test/badge.svg["GitHub Actio
 
 This project is a work in progress. The APIs and behaviors are not stable and may change in the future.
 
-See link:./doc/vim-elin.txt[help] for example configurations.
+See link:./doc/elin.txt[help] for example configurations.
 
 == 🍃 Related works
 
 * https://github.com/liquidz/vim-elin-coc-source[vim-elin-coc-source] - Completion source for coc.nvim
-* https://github.com/liquidz/vim-elin-format[vim-elin-format] - Formatting plugin for vim-elin
+* https://github.com/liquidz/vim-elin-format[vim-elin-format] - Formatting plugin for elin
 
 == 💚 Support
 

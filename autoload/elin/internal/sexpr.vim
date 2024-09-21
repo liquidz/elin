@@ -45,11 +45,11 @@ endfunction
 if has('nvim') && exists('*nvim_get_runtime_file') && len(nvim_get_runtime_file('parser', v:true)) > 0
 
   function! s:get_top_list(lnum, col) abort
-    return luaeval('require("vim-elin.sexpr").get_top_list(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
+    return luaeval('require("elin.sexpr").get_top_list(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
   endfunction
 
   function! s:get_list(lnum, col) abort
-    return luaeval('require("vim-elin.sexpr").get_list(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
+    return luaeval('require("elin.sexpr").get_list(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
   endfunction
 
 else

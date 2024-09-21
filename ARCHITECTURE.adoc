@@ -3,8 +3,8 @@
 Launch a server (Elin Server) that work with hosts(Vim/Neovim in this case).
 Elin Server connects to nREPL server and returns the processed result to hosts from Elin Server.
 
-image:http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/liquidz/vim-elin/main/doc/graph/component.pum[Components]
-image:http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/liquidz/vim-elin/main/doc/graph/sequence.pum[Sequences]
+image:http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/liquidz/elin/main/doc/graph/component.pum[Components]
+image:http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/liquidz/elin/main/doc/graph/sequence.pum[Sequences]
 
 == Basic Policy
 
