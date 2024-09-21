@@ -43,9 +43,3 @@ endfunction
 function! elin#internal#execute(cmd) abort
   call execute(a:cmd)
 endfunction
-
-" FIXME WIP fzf only for now
-function! elin#internal#select(candidates, callback_handler, ...) abort
-  let optional_params = get(a:, 1, [])
-  return elin#internal#select#fzf#start(a:candidates, a:callback_handler, optional_params)
-endfunction

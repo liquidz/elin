@@ -10,7 +10,7 @@
   (let [args (cond-> [candidates callback-handler-symbol]
                optional-params
                (concat [optional-params]))]
-    (e.c.s.function/notify host "elin#internal#select" args)))
+    (e.c.s.function/notify host "elin#internal#select#run" args)))
 
 (extend-protocol e.p.host/ISelector
   elin.component.server.vim.VimHost
