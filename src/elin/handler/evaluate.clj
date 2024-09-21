@@ -81,8 +81,8 @@
 
 (defn print-last-result
   [{:component/keys [host nrepl]}]
-  (let [resp (e.f.nrepl/eval!! nrepl "*1" {:use-printer? true})]
-    (e.p.host/append-to-info-buffer host (:value resp))))
+  (let [resp (e.f.nrepl/eval!! nrepl "(with-out-str (clojure.pprint/pprint *1))")]
+    (e.p.host/append-to-info-buffer host (read-string (:value resp)))))
 
 (defn reload
   [{:component/keys [nrepl]}]
