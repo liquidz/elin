@@ -9,8 +9,7 @@
 (m/=> on-connect* [:=> [:cat e.c.s.function/?IFunction] :nil])
 (defn- on-connect*
   [host]
-  (e.c.s.function/notify host "elin#internal#buffer#info#ready" [])
-  (e.c.s.function/notify host "elin#internal#buffer#temp#ready" []))
+  (e.c.s.function/notify host "elin#ready" []))
 
 (extend-protocol e.p.host/IEvent
   elin.component.server.vim.VimHost

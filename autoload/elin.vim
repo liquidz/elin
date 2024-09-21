@@ -1,9 +1,11 @@
 let g:elin#babashka = get(g:, 'elin#babashka', 'bb')
 
+let s:queue = []
+
 function! elin#notify(...) abort
   let conn = elin#server#connection()
   if conn is# v:null
-    echom printf('Not connected to Elin server: %s', a:000)
+    call add(s:queue, {'type': 'notify', 'request': a:000})
     return
   endif
   return call(function('elin#internal#rpc#notify'), [conn] + a:000)
@@ -12,10 +14,21 @@ endfunction
 function! elin#request(...) abort
   let conn = elin#server#connection()
   if conn is# v:null
-    echom printf('Not connected to Elin server: %s', a:000)
+    call add(s:queue, {'type': 'request', 'request': a:000})
     return
   endif
   return call(function('elin#internal#rpc#request'), [conn] + a:000)
+endfunction
+
+function! elin#ready() abort
+  for q in s:queue
+    if q.type ==# 'notify'
+      call call('elin#notify', q.request)
+    elseif q.type ==# 'request'
+      call call('elin#request', q.request)
+    endif
+  endfor
+  let s:queue = []
 endfunction
 
 function! elin#intercept_notify(...) abort
