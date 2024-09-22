@@ -1,6 +1,6 @@
 let s:buf_name = 'elin_info_buffer'
 let s:title = ';; Elin Info Buffer'
-let s:delimiter = ';; ----------'
+let s:delimiter = ";; ====================\n\n"
 
 function! elin#internal#buffer#info#is_visible() abort
   return elin#internal#buffer#is_visible(s:buf_name)
