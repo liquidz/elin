@@ -1,7 +1,6 @@
 (ns elin.schema.handler
   (:require
    [elin.schema.component :as e.s.component]
-   [elin.schema.server :as e.s.server]
    [malli.util :as m.util]))
 
 (def ?Components
@@ -12,10 +11,14 @@
    [:component/session-storage e.s.component/?Storage]
    [:component/clj-kondo e.s.component/?CljKondo]])
 
+(def ?ParsedMessage
+  [:map
+   [:method qualified-keyword?]])
+
 (def ?Elin
   (m.util/merge
    [:map
-    [:message e.s.server/?Message]]
+    [:message ?ParsedMessage]]
    ?Components))
 
 (def ?HandlerMap

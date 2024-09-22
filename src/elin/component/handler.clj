@@ -46,31 +46,27 @@
 (defn- construct-handler-parameter
   [{:as context :keys [message config-map]}]
   (let [{:component/keys [interceptor nrepl]} context
-        {:as message' :keys [method]} (merge message
-                                             (e.p.h.rpc/parse-message message))
-        handler-config (or (get config-map (symbol method))
+        handler-config (or (get config-map (symbol (:method message)))
                            {})
-        message-config (some-> (get-in message' [:options :config])
+        message-config (some-> (get-in message [:options :config])
                                (edn/read-string))
         this-config (e.config/configure-handler handler-config
                                                 message-config)
         interceptor' (when this-config
-                       (e.p.config/configure interceptor this-config))
-        context' (cond-> context
-                   this-config
-                   (assoc :component/interceptor interceptor'
-                          :component/nrepl (assoc nrepl :interceptor interceptor')))]
-    (assoc context' :message message')))
+                       (e.p.config/configure interceptor this-config))]
+    (cond-> context
+      this-config
+      (assoc :component/interceptor interceptor'
+             :component/nrepl (assoc nrepl :interceptor interceptor')))))
 
 (defn- handler* [handler-map context]
   (:response
    (e.p.interceptor/execute
     (:component/interceptor context) e.c.interceptor/handler context
     (fn [{:as context :component/keys [host]}]
-      (let [elin (construct-handler-parameter context)
-            handler-key (get-in elin [:message :method])
+      (let [handler-key (get-in context [:message :method])
             resp (if-let [handler-fn (get handler-map handler-key)]
-                   (handler-fn elin)
+                   (handler-fn context)
                    (let [msg (format "Unknown handler: %s" handler-key)]
                      (e.message/error host msg)
                      msg))
@@ -84,8 +80,10 @@
    config-map
    handler-map
    message]
-  (let [method (:method (e.p.h.rpc/parse-message message))
-        context (assoc components :message message :config-map config-map)]
+  (let [{:as message' :keys [method]} (e.p.h.rpc/parse-message message)
+        context (-> components
+                    (assoc :message message' :config-map config-map)
+                    (construct-handler-parameter))]
     (if-let [log-level (get-in config-map [(symbol method) :log :min-level])]
       (timbre/with-level log-level (handler* handler-map context))
       (handler* handler-map context))))
