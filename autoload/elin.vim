@@ -1,4 +1,5 @@
 let g:elin#babashka = get(g:, 'elin#babashka', 'bb')
+let g:elin#status_text = ''
 
 let s:queue = []
 
@@ -45,25 +46,17 @@ function! elin#intercept_request(...) abort
   return elin#request('elin.handler.internal/intercept', a:000)
 endfunction
 
+" NOTE: Requires elin.interceptor.handler/setting-nrepl-connection-status-interceptor
 function! elin#status() abort
   try
     if elin#server#connection() is# v:null
       return ''
     endif
-    return elin#request('elin.handler.internal/status', [])
+
+    call elin#util#start_lazily('status', 500, {-> elin#notify('elin.handler.internal/status', [])})
+
+    return g:elin#status_text
   catch
     return ''
   endtry
-endfunction
-
-function! s:callback(...) abort
-  echom printf('FIXME callback %s', a:000)
-endfunction
-
-function! elin#callback_test(method, params) abort
-  call elin#notify(a:method, a:params, funcref('s:callback'))
-endfunction
-
-function! elin#plus_test(a, b) abort
-  return a:a + a:b
 endfunction
