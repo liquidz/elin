@@ -1,0 +1,39 @@
+------------------------------------------------------------------------------
+DEFAULT KEYS                                 *elin-configuration-default-keys*
+
+{mode} {lhs}         {rhs}
+------ ------------- -----------------------------------------------
+n      <Leader>'     elin.handler.connect/connect
+n      <Leader>ei    elin.handler.evaluate/evaluate-current-expr
+n      <Leader>ee    elin.handler.evaluate/evaluate-current-list
+n      <Leader>et    elin.handler.evaluate/evaluate-current-top-list
+n      <Leader>eb    elin.handler.evaluate/evaluate-current-buffer
+n      <Leader>en    elin.handler.evaluate/evaluate-namespace-form
+n      <Leader>ep    elin.handler.evaluate/print-last-result
+n      <Leader>ea    elin.handler.evaluate/evaluate-at-mark
+n      <Leader>ece   elin.handler.evaluate/evaluate-current-list
+                     Uses: elin.interceptor.optional.evaluate/eval-with-context-interceptor
+n      <Leader>epe   elin.handler.evaluate/evaluate-current-list
+                     Uses: [elin.interceptor.optional.evaluate/wrap-eval-code-interceptor "println"]
+n      <Leader>eq    elin.handler.evaluate/interrupt
+n      <Leader>eu    elin.handler.evaluate/undef
+n      <Leader>eU    elin.handler.evaluate/undef-all
+n      <Leader>enr   elin.handler.evaluate/reload
+n      <Leader>enR   elin.handler.evaluate/reload-all
+n      <Leader>ran   elin.handler.namespace/add-libspec
+n      <Leader>ram   elin.handler.namespace/add-missing-libspec
+n      <C-]>         elin.handler.navigate/jump-to-definition
+n      <Leader>br    elin.handler.navigate/references
+n      K             elin.handler.lookup/lookup
+n      <Leader>hs    elin.handler.lookup/show-source
+n      <Leader>tt    elin.handler.test/run-test-under-cursor
+n      <Leader>tn    elin.handler.test/run-tests-in-ns
+n      <Leader>tl    elin.handler.test/rerun-last-tests
+n      <Leader>tr    elin.handler.test/rerun-last-tests
+n      tt            elin.handler.navigate/cycle-source-and-test
+n      <Leader>ss    elin#internal#buffer#info#toggle()
+n      <Leader>sl    elin#internal#buffer#info#clear()
+n      <Leader><Esc> elin#internal#virtual_text#clear()
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:
