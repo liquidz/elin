@@ -159,7 +159,7 @@
                                                                                               :params :sequential,
                                                                                               :enter :fn,
                                                                                               :leave :fn},
-                                                                                        :req {:name :keyword,
+                                                                                        :req {:name :symbol,
                                                                                               :kind :keyword},
                                                                                         :nilable true}}}},
                                                                parse {:arities {1 {:args [:any],
