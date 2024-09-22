@@ -6,8 +6,7 @@
    [exoscale.interceptor :as ix]))
 
 (def handling-error-interceptor
-  {:name ::handling-error-interceptor
-   :kind e.c.interceptor/handler
+  {:kind e.c.interceptor/handler
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (e.message/error host (ex-message response)))
               (ix/when (comp e/error? :response))

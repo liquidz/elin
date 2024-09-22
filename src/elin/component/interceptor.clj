@@ -30,6 +30,7 @@
       (-> (:symbol parsed)
           (requiring-resolve)
           (deref)
+          (assoc :name (:symbol parsed))
           (cond->
            (seq params) (assoc :params params))))
     (catch Exception ex

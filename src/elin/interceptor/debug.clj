@@ -21,8 +21,7 @@
   #{"completions" "complete"})
 
 (def nrepl-debug-interceptor
-  {:name ::nrepl-debug-interceptor
-   :kind e.c.interceptor/nrepl
+  {:kind e.c.interceptor/nrepl
    :enter (-> (fn [{:keys [request]}]
                 (timbre/debug "Nrepl >>>" (pr-str request)))
               (ix/when #(not (contains? do-not-log-ops (get-in % [:request :op]))))
@@ -45,8 +44,7 @@
    e.c.interceptor/quickfix e.s.interceptor/?QuickfixContext})
 
 (def interceptor-context-checking-interceptor
-  {:name ::interceptor-context-checking-interceptor
-   :kind e.c.interceptor/all
+  {:kind e.c.interceptor/all
    :enter (fn [{:as ctx :elin/keys [kind]}]
             (if-let [schema (get kind-schema-map kind)]
               (do
@@ -62,15 +60,13 @@
 
 (def tap-interceptor
   "TODO remove-tap"
-  {:name ::tap-interceptor
-   :kind e.c.interceptor/connect
+  {:kind e.c.interceptor/connect
    :leave (-> (fn [_]
                 (add-tap #(timbre/error "Debug tap:" %)))
               (ix/discard))})
 
 (def initialize-debugger-interceptor
-  {:name ::initialize-debugger-interceptor
-   :kind e.c.interceptor/connect
+  {:kind e.c.interceptor/connect
    :leave (-> (fn [{:component/keys [nrepl]}]
                 (when (e.p.nrepl/supported-op? nrepl e.c.nrepl/init-debugger-op)
                   (e.f.n.cider/init-debugger nrepl)))
@@ -135,8 +131,7 @@
 ;;  :original-id 15,
 ;;  :session "c64e3734-5813-47da-af8b-a1af053db19d"))
 (def process-debugger-interceptor
-  {:name ::process-debugger-interceptor
-   :kind e.c.interceptor/raw-nrepl
+  {:kind e.c.interceptor/raw-nrepl
    :enter (-> (fn [{:as ctx :component/keys [nrepl host] :keys [message]}]
                 (when (e.u.nrepl/has-status? message "need-debug-input")
                   (let [{:keys [line column coor input-type]} message

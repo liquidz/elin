@@ -7,16 +7,14 @@
    [rewrite-clj.zip :as r.zip]))
 
 (def output-eval-result-to-cmdline-interceptor
-  {:name ::output-eval-result-to-cmdline-interceptor
-   :kind e.c.interceptor/evaluate
+  {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (when-let [v (:value response)]
                   (e.p.host/echo-text host (str/trim (str v)))))
               (ix/discard))})
 
 (def set-eval-result-to-virtual-text-interceptor
-  {:name ::set-eval-result-to-virtual-text-interceptor
-   :kind e.c.interceptor/evaluate
+  {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response options]}]
                 (when-let [v (:value response)]
                   (e.p.host/set-virtual-text host
@@ -37,8 +35,7 @@
         (recur up-zloc)))))
 
 (def eval-in-comment-interceptor
-  {:name ::eval-in-comment-interceptor
-   :kind e.c.interceptor/evaluate
+  {:kind e.c.interceptor/evaluate
    :enter (-> (fn [{:as ctx :keys [code options]}]
                 (let [{:keys [line column cursor-line cursor-column]} options
                       one-based-rel-line (inc (- cursor-line line))

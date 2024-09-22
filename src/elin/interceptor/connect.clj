@@ -11,8 +11,7 @@
 (def ^:private default-hostname "localhost")
 
 (def port-auto-detecting-interceptor
-  {:name ::port-auto-detecting-interceptor
-   :kind e.c.interceptor/connect
+  {:kind e.c.interceptor/connect
    :enter (fn [{:as ctx :component/keys [host] :keys [hostname port]}]
             (cond
               (and hostname port)
@@ -34,8 +33,7 @@
                   (assoc ctx :hostname hostname' :port port')))))})
 
 (def raw-message-channel-interceptor
-  {:name ::raw-message-channel-interceptor
-   :kind e.c.interceptor/connect
+  {:kind e.c.interceptor/connect
    :leave (-> (fn [{:as ctx :component/keys [interceptor] :keys [client]}]
                 (let [ch (get-in client [:connection :raw-message-channel])]
                   (async/go-loop []
@@ -49,8 +47,7 @@
               (ix/discard))})
 
 (def connected-interceptor
-  {:name ::connected-interceptor
-   :kind e.c.interceptor/connect
+  {:kind e.c.interceptor/connect
    :leave (fn [{:as ctx :component/keys [interceptor]}]
             (-> ctx
                 (e.u.map/select-keys-by-namespace :component)

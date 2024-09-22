@@ -13,19 +13,19 @@
 (t/use-fixtures :once h/warn-log-level-fixture)
 
 (def ^:private test-interceptor
-  {:name ::test-interceptor
+  {:name 'elin.component.interceptor-test/test-interceptor
    :kind ::test
    :enter (fn [ctx]
             (update ctx :x inc))})
 
 (def ^:private test-interceptor2
-  {:name ::test-interceptor2
+  {:name 'elin.component.interceptor-test/test-interceptor2
    :kind ::test
    :enter (fn [ctx]
             (update ctx :x (partial * 2)))})
 
 (def ^:private test-optional-interceptor
-  {:name ::test-optional-interceptor
+  {:name 'elin.component.interceptor-test/test-optional-interceptor
    :kind ::test
    :optional true
    :enter (fn [ctx]

@@ -20,7 +20,7 @@
 
 (def ?Interceptor
   [:map
-   [:name qualified-keyword?]
+   [:name qualified-symbol?]
    [:kind ?Kind]
    [:optional {:optional true} boolean?]
    [:params {:optional true} sequential?]

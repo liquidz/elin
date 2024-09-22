@@ -5,8 +5,7 @@
    [exoscale.interceptor :as ix]))
 
 (def print-output-interceptor
-  {:name ::print-output-interceptor
-   :kind e.c.interceptor/output
+  {:kind e.c.interceptor/output
    :enter (-> (fn [{:component/keys [host] :keys [output]}]
                 (e.p.host/append-to-info-buffer host (format ";; %s\n%s" (:type output) (:text output))))
               (ix/discard))})

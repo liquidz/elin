@@ -17,16 +17,14 @@
   "b:elin_ns_created")
 
 (def deinitialize-interceptor
-  {:name ::deinitialize-interceptor
-   :kind e.c.interceptor/autocmd
+  {:kind e.c.interceptor/autocmd
    :enter (-> (fn [{:component/keys [nrepl]}]
                 (e.p.nrepl/remove-all! nrepl))
               (ix/when #(= "VimLeave" (:autocmd-type %)))
               (ix/discard))})
 
 (def ns-create-interceptor
-  {:name ::ns-create-interceptor
-   :kind e.c.interceptor/autocmd
+  {:kind e.c.interceptor/autocmd
    :enter (-> (fn [{:as ctx :component/keys [host nrepl] :keys [autocmd-type]}]
                 (when (and (contains? #{"BufRead" "BufEnter"} autocmd-type)
                            (not (e.p.nrepl/disconnected? nrepl))
@@ -74,8 +72,7 @@
                false)))))
 
 (def skeleton-interceptor
-  {:name ::skelton-interceptor
-   :kind e.c.interceptor/autocmd
+  {:kind e.c.interceptor/autocmd
    :enter (-> (fn [{:component/keys [host]}]
                 (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
                         ns-str (or (e.f.n.namespace/guess-namespace-from-path path)
@@ -93,8 +90,7 @@
               (ix/discard))})
 
 (def clj-kondo-analyzing-interceptor
-  {:name ::clj-kondo-analyzing-interceptor
-   :kind e.c.interceptor/autocmd
+  {:kind e.c.interceptor/autocmd
    :leave (-> (fn [{:component/keys [clj-kondo]}]
                 (e.p.clj-kondo/analyze clj-kondo))
               (ix/when #(= "BufWritePost" (:autocmd-type %)))

@@ -39,8 +39,7 @@
     (get-failed-tests-plain-repl-query failed-results)))
 
 (def done-test-interceptor
-  {:name ::done-test-interceptor
-   :kind e.c.interceptor/test
+  {:kind e.c.interceptor/test
    :leave (-> (fn [{:as ctx :component/keys [host nrepl session-storage] :keys [response]}]
                 (let [{:keys [passed failed]} (->> (e.f.n.c.test/collect-results nrepl response)
                                                    (group-by :result))

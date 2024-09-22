@@ -14,8 +14,7 @@
    [exoscale.interceptor :as ix]))
 
 (def eval-ns-interceptor
-  {:name ::eval-ns-interceptor
-   :kind e.c.interceptor/nrepl
+  {:kind e.c.interceptor/nrepl
    :enter (-> (fn [{:as ctx :keys [request]}]
                 (let [{:keys [code]} request]
                   (if (str/starts-with? code "(ns")
@@ -24,8 +23,7 @@
               (ix/when #(= e.c.nrepl/eval-op (get-in % [:request :op]))))})
 
 (def normalize-path-interceptor
-  {:name ::normalize-path-interceptor
-   :kind e.c.interceptor/nrepl
+  {:kind e.c.interceptor/nrepl
    :leave (fn [{:as ctx :keys [request response]}]
             (cond
               (contains? #{e.c.nrepl/lookup-op e.c.nrepl/info-op} (:op request))
@@ -43,8 +41,7 @@
               ctx))})
 
 (def output-result-to-cmdline-interceptor
-  {:name ::output-result-to-cmdline-interceptor
-   :kind e.c.interceptor/nrepl
+  {:kind e.c.interceptor/nrepl
    :leave (-> (fn [{:component/keys [host] :keys [request response]}]
                 (let [msg (e.u.nrepl/merge-messages response)
                       text (condp = (:op request)
@@ -69,8 +66,7 @@
                      e.c.nrepl/reload-op
                      e.c.nrepl/reload-all-op}
         channel-store (atom {})]
-    {:name ::progress-interceptor
-     :kind e.c.interceptor/nrepl
+    {:kind e.c.interceptor/nrepl
      :enter (-> (fn [{:as ctx :component/keys [host] :keys [request]}]
                   (let [timeout-ch (async/timeout 300)
                         result-ch (async/promise-chan)
@@ -119,8 +115,7 @@
                 (ix/discard))}))
 
 (def nrepl-output-interceptor
-  {:name ::output-channel-interceptor
-   :kind e.c.interceptor/raw-nrepl
+  {:kind e.c.interceptor/raw-nrepl
    :leave (-> (fn [{:as ctx :component/keys [interceptor] :keys [message]}]
                 (let [output (cond
                                (string? (:out message))

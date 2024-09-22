@@ -8,8 +8,7 @@
    [exoscale.interceptor :as ix]))
 
 (def auto-toggling-vim-quickfix-window-interceptor
-  {:name ::auto-toggling-quickfix-window-interceptor
-   :kind e.c.interceptor/quickfix
+  {:kind e.c.interceptor/quickfix
    :leave (-> (fn [{:as ctx :component/keys [host]}]
                 (when (and (satisfies? e.p.rpc/IFunction host)
                            (not= :location (:type ctx)))
@@ -22,8 +21,7 @@
               (ix/discard))})
 
 (def auto-toggling-vim-location-window-interceptor
-  {:name ::auto-toggling-quickfix-window-interceptor
-   :kind e.c.interceptor/quickfix
+  {:kind e.c.interceptor/quickfix
    :leave (-> (fn [{:as ctx :component/keys [host]}]
                 (when (and (satisfies? e.p.rpc/IFunction host)
                            (= :location (:type ctx)))
@@ -36,8 +34,7 @@
               (ix/discard))})
 
 (def use-selector-for-location-interceptor
-  {:name ::use-selector-for-location-interceptor
-   :kind e.c.interceptor/quickfix
+  {:kind e.c.interceptor/quickfix
    :leave (-> (fn [{:as ctx :component/keys [host]}]
                 (when (= :location (:type ctx))
                   (let [candidates (->> (:list ctx)
