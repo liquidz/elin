@@ -1,6 +1,7 @@
 (ns elin.handler.connect
   (:require
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.error :as e]
    [elin.message :as e.message]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
@@ -29,14 +30,28 @@
                         (assoc :hostname hostname
                                :port port))
             connect-fn (fn [{:as ctx :keys [hostname port]}]
-                         (if (and hostname port)
+                         (cond
+                           (or (not hostname) (not port))
+                           (assoc ctx :error (e/fault))
+
+                           (e.p.nrepl/get-client nrepl hostname port)
+                           (assoc ctx :error (e/conflict))
+
+                           :else
                            (let [client (e.p.nrepl/add-client! nrepl hostname port)]
                              (e.p.nrepl/switch-client! nrepl client)
-                             (assoc ctx :client client))
-                           ctx))
-            result (e.p.interceptor/execute interceptor e.c.interceptor/connect
-                                            context connect-fn)]
-        (if (contains? result :client)
-          (e.message/info host (format "Connected to %s:%s" (:hostname result) (:port result)))
+                             (assoc ctx :client client))))
+            {:as result :keys [error hostname port]} (e.p.interceptor/execute interceptor
+                                                                              e.c.interceptor/connect
+                                                                              context connect-fn)]
+        (cond
+          (e/fault? error)
           (e.message/warning host (format "Host or port is not specified: %s"
-                                          (pr-str (select-keys result [:hostname :port])))))))))
+                                          {:hostname hostname :port port}))
+
+          (e/conflict? error)
+          (e.message/warning host (format "Already connected to %s:%s"
+                                          hostname port))
+
+          (contains? result :client)
+          (e.message/info host (format "Connected to %s:%s" hostname port)))))))
