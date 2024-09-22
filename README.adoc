@@ -7,7 +7,7 @@
 </blockquote>
 +++
 
-A Clojure development environment for Vim/Neovim, primarily written in https://babashka.org[Babashka].
+A Clojure development environment for Vim/Neovim and more!, primarily written in https://babashka.org[Babashka].
 
 image:https://github.com/liquidz/elin/workflows/test/badge.svg["GitHub Actions for test workflow", link="https://github.com/liquidz/elin/actions?query=workflow%3Atest"]
 
@@ -15,7 +15,7 @@ image:https://github.com/liquidz/elin/workflows/test/badge.svg["GitHub Actions f
 
 * https://github.com/vim/vim[Vim] v9.1 or later, https://github.com/neovim/neovim[Neovim] v0.9.5 or later
 * https://github.com/babashka/babashka[Babashka] v1.3.189 or later
-* Optionals: https://github.com/clj-kondo/clj-kondo[Clj-kondo]
+* https://github.com/clj-kondo/clj-kondo[Clj-kondo] (Optional but highly recommended)
 
 == 🤖 Work in progress
 
