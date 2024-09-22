@@ -115,8 +115,8 @@
           terminator' {:name ::terminator
                        :enter terminator}
           context' (assoc context
-                          :elin/interceptor this
-                          :elin/kind kind)]
+                          :component/interceptor this
+                          :interceptor/kind kind)]
       (try
         (timbre/debug (format "Start to intercept %s with [%s]" kind (->> (map :name interceptors)
                                                                           (str/join ", "))))

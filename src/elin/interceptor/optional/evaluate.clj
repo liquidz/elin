@@ -19,7 +19,7 @@
   {:name ::eval-with-context-interceptor
    :kind e.c.interceptor/evaluate
    :optional true
-   :enter (fn [{:as ctx :elin/keys [kind] :component/keys [host session-storage] :keys [code]}]
+   :enter (fn [{:as ctx :interceptor/keys [kind] :component/keys [host session-storage] :keys [code]}]
             (let [last-context (or (e.p.storage/get session-storage kind)
                                    "")
                   context (async/<!! (e.p.host/input! host "Evaluation context (let-style): " last-context))]
