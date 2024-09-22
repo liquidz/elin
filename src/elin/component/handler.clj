@@ -15,7 +15,6 @@
    [elin.protocol.config :as e.p.config]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.interceptor :as e.p.interceptor]
-   [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.component :as e.s.component]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.server :as e.s.server]
@@ -75,14 +74,7 @@
                    (let [msg (format "Unknown handler: %s" handler-key)]
                      (e.message/error host msg)
                      msg))
-            resp' (e.u.server/format resp)
-            resp' (if-let [callback (get-in elin [:message :options :callback])]
-                    (try
-                      (e.p.rpc/notify-function host "elin#callback#call" [callback resp'])
-                      ;; FIXME
-                      (catch Exception ex
-                        (e.message/error host "Failed to callback" (ex-message ex))))
-                    resp')]
+            resp' (e.u.server/format resp)]
         (assoc context :response resp'))))))
 
 (m/=> handler [:=> [:cat e.s.handler/?Components map? e.s.handler/?HandlerMap e.s.server/?Message]

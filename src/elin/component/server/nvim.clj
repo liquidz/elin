@@ -30,9 +30,7 @@
           {:id id
            :method (keyword method)
            :params params
-           :options (-> (e.u.server/unformat options)
-                        ;; Do not allow 'callback' option for request
-                        (dissoc :callback))})
+           :options (e.u.server/unformat options)})
       ;; response
       1 (let [[_ id error result] message]
           {:id id
