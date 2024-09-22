@@ -64,7 +64,6 @@
 
   generate-vim-help {:doc "Generate vim help files"
                      :extra-paths ["dev"]
-                     :requires ([elin.task.doc])
                      :task (exec 'elin.task.help/-main)}
 
   check {:doc "Check all"
