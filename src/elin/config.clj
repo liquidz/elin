@@ -126,3 +126,7 @@
     (m/coerce e.s.config/?Config
               config
               config-transformer)))
+
+(comment
+  (def config (load-config "." {:server {:host "" :port 0}
+                                :env {:cwd "."}})))
