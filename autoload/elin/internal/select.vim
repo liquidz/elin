@@ -1,5 +1,5 @@
 function! elin#internal#select#run(candidates, callback_handler, ...) abort
-  let optional_params = a:000
+  let optional_params = get(a:, 1, [])
   return s:select(
         \ a:candidates,
         \ {choice -> elin#notify(a:callback_handler, optional_params + [choice])},
