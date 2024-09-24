@@ -16,7 +16,8 @@
    e.c.interceptor/raw-nrepl
    e.c.interceptor/output
    e.c.interceptor/test
-   e.c.interceptor/quickfix])
+   e.c.interceptor/quickfix
+   e.c.interceptor/code-change])
 
 (def ?Interceptor
   [:map
@@ -91,4 +92,14 @@
        ;; ENTER
        [:type keyword?]
        [:list sequential?]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?CodeChangeContext
+  (-> [:map
+       ;; ENTER
+       [:type [:enum :add-libspec]]
+       [:code string?]
+       [:target map?]
+       ;; LEAVE
+       [:response {:optional true} boolean?]]
       (m.util/merge e.s.handler/?Components)))

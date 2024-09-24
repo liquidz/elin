@@ -13,3 +13,4 @@
 (def test ::test)
 (def quickfix ::quickfix)
 (def debug ::debug)
+(def code-change ::code-change)
