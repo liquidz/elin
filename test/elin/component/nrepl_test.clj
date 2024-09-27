@@ -22,6 +22,8 @@
       (let [client (e.p.nrepl/add-client! nrepl "localhost" h/*nrepl-server-port*)]
         (t/is (true? (e.p.nrepl/switch-client! nrepl client)))
         (t/is (= client (e.p.nrepl/current-client nrepl)))
+        (t/is (false? (e.p.nrepl/disconnected? nrepl)))
+
         (t/is (= {:status ["done"]
                   :session (:session client)
                   :value "6"}
@@ -33,6 +35,11 @@
                  (-> (e.p.nrepl/request nrepl {:op "ls-sessions"})
                      (async/<!!)
                      (e.u.nrepl/merge-messages)
-                     (:sessions)))))
+                     (:sessions))))
+
+        ;; remove
+        (t/is (true? (e.p.nrepl/remove-client! nrepl client)))
+        (t/is (nil? (e.p.nrepl/current-client nrepl)))
+        (t/is (true? (e.p.nrepl/disconnected? nrepl))))
       (finally
         (component/stop-system sys)))))
