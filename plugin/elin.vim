@@ -22,12 +22,10 @@ function! s:init() abort
   call elin#internal#buffer#temp#ready()
 
   if g:elin_server_port is v:null
-    echom 'elin: start server'
     call elin#server#start()
   endif
 
   if g:elin_auto_connect is v:true
-    echom 'elin: connect to server'
     call elin#server#connect(g:elin_server_port)
   endif
 

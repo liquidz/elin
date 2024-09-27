@@ -44,7 +44,6 @@ endfunction
 function! s:try_connecting(port, timer_id) abort
   let port = a:port is# v:null ? s:port : a:port
   if port is# v:null
-    call elin#internal#echom('Port is not set', 'ErrorMsg')
     return
   endif
 
