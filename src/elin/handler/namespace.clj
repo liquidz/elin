@@ -2,12 +2,15 @@
   (:require
    [clojure.core.async :as async]
    [clojure.string :as str]
+   [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
    [elin.function.evaluate :as e.f.evaluate]
    [elin.function.namespace :as e.f.namespace]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
+   [elin.protocol.interceptor :as e.p.interceptor]
+   [elin.util.map :as e.u.map]
    [elin.util.sexpr :as e.u.sexpr]
    [elin.util.string :as e.u.string]))
 
@@ -22,7 +25,7 @@
       (some?)))
 
 (defn add-libspec*
-  [{:as elin :component/keys [handler host] :keys [message]}]
+  [{:as elin :component/keys [handler host interceptor] :keys [message]}]
   (e/let [favorites (get-in handler [:config-map (symbol #'add-libspec) :favorites])
           ns-sym (-> (:params message)
                      (first)
@@ -35,17 +38,22 @@
                                                 (str default-alias-sym)))
           alias-sym (when (seq alias-str)
                       (symbol alias-str))
-          {ns-form :code lnum :lnum col :col} (e.f.sexpr/get-namespace-sexpr elin)]
-    (if (has-namespace? ns-form ns-sym)
-      (e.message/warning host (format "'%s' already exists." ns-sym))
-      (e/let [ns-form' (e.u.sexpr/add-require ns-form ns-sym alias-sym)]
-        (e.f.sexpr/replace-list-sexpr elin lnum col ns-form')
-        (e.f.evaluate/evaluate-namespace-form elin)
-        (e.message/info host (if alias-sym
-                               (format "'%s' added as '%s'."
-                                       ns-sym alias-sym)
-                               (format "'%s' added."
-                                       ns-sym)))))))
+          {ns-form :code lnum :lnum col :col} (e.f.sexpr/get-namespace-sexpr elin)
+          context (-> (e.u.map/select-keys-by-namespace elin :component)
+                      (assoc :code ns-form
+                             :type :add-libspec
+                             :target {:namespace-symbol ns-sym
+                                      :alias-symbol alias-sym}))]
+    (e.p.interceptor/execute
+     interceptor e.c.interceptor/code-change context
+     (fn [{:as ctx :keys [code target]}]
+       (let [{:keys [namespace-symbol alias-symbol]} target]
+         (if (has-namespace? code namespace-symbol)
+           (assoc ctx :response false)
+           (e/let [ns-form' (e.u.sexpr/add-require code namespace-symbol alias-symbol)]
+             (e.f.sexpr/replace-list-sexpr ctx lnum col ns-form')
+             (e.f.evaluate/evaluate-namespace-form ctx)
+             (assoc ctx :response true))))))))
 
 (defn add-libspec
   [{:as elin :component/keys [host]}]
@@ -53,20 +61,38 @@
     (e.p.host/select-from-candidates host coll (symbol #'add-libspec*))))
 
 (defn- add-missing-import*
-  [{:as elin :component/keys [host]} class-name-sym]
+  [{:as elin :component/keys [interceptor]} class-name-sym]
   (e/let [{ns-form :code lnum :lnum col :col} (e.f.sexpr/get-namespace-sexpr elin)
-          ns-form' (e.u.sexpr/add-import ns-form class-name-sym)]
-    (e.f.sexpr/replace-list-sexpr elin lnum col ns-form')
-    (e.f.evaluate/evaluate-namespace-form elin)
-    (e.message/info host (format "'%s' added." class-name-sym))))
+          context (-> (e.u.map/select-keys-by-namespace elin :component)
+                      (assoc :code ns-form
+                             :type :add-missing-import
+                             :target {:class-name-symbol class-name-sym}))]
+    (e.p.interceptor/execute
+     interceptor e.c.interceptor/code-change context
+     (fn [{:as ctx :keys [code target]}]
+       (let [ns-form' (e.u.sexpr/add-import code (:class-name-symbol target))]
+         (e.f.sexpr/replace-list-sexpr ctx lnum col ns-form')
+         (e.f.evaluate/evaluate-namespace-form ctx)
+         (assoc ctx :response true))))))
 
 (defn- add-missing-require*
-  [{:as elin :component/keys [host]} alias-sym ns-sym]
+  [{:as elin :component/keys [interceptor]} alias-sym ns-sym]
   (e/let [{ns-form :code lnum :lnum col :col} (e.f.sexpr/get-namespace-sexpr elin)
-          ns-form' (e.u.sexpr/add-require ns-form ns-sym alias-sym)]
-    (e.f.sexpr/replace-list-sexpr elin lnum col ns-form')
-    (e.f.evaluate/evaluate-namespace-form elin)
-    (e.message/info host (format "'%s' added as '%s'." ns-sym alias-sym))))
+          context (-> (e.u.map/select-keys-by-namespace elin :component)
+                      (assoc :code ns-form
+                             :type :add-missing-require
+                             :target {:namespace-symbol ns-sym
+                                      :alias-symbol alias-sym}))]
+    (e.p.interceptor/execute
+     interceptor e.c.interceptor/code-change context
+     (fn [{:as ctx :keys [code target]}]
+       (let [{:keys [namespace-symbol alias-symbol]} target]
+         (if (has-namespace? code namespace-symbol)
+           (assoc ctx :response false)
+           (let [ns-form' (e.u.sexpr/add-require code namespace-symbol alias-symbol)]
+             (e.f.sexpr/replace-list-sexpr elin lnum col ns-form')
+             (e.f.evaluate/evaluate-namespace-form ctx)
+             (assoc ctx :response true))))))))
 
 (defn add-missing-libspec*
   [{:as elin :keys [message]}]
