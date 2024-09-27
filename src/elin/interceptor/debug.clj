@@ -35,6 +35,7 @@
   {e.c.interceptor/all any?
    e.c.interceptor/autocmd e.s.interceptor/?AutocmdContext
    e.c.interceptor/connect e.s.interceptor/?ConnectContext
+   e.c.interceptor/disconnect e.s.interceptor/?DisconnectContext
    e.c.interceptor/evaluate e.s.interceptor/?EvaluateContext
    e.c.interceptor/handler e.s.interceptor/?HandlerContext
    e.c.interceptor/nrepl e.s.interceptor/?NreplContext

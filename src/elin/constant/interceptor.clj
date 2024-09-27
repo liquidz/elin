@@ -5,6 +5,7 @@
 (def all ::all)
 (def autocmd ::autocmd)
 (def connect ::connect)
+(def disconnect ::disconnect)
 (def evaluate ::evaluate)
 (def handler ::handler)
 (def nrepl ::nrepl)

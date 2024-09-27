@@ -10,6 +10,7 @@
    e.c.interceptor/all
    e.c.interceptor/autocmd
    e.c.interceptor/connect
+   e.c.interceptor/disconnect
    e.c.interceptor/evaluate
    e.c.interceptor/handler
    e.c.interceptor/nrepl
@@ -43,6 +44,13 @@
        [:port [:maybe int?]]
        ;; LEAVE
        [:client {:optional true} any?]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?DisconnectContext
+  (-> [:map
+       ;; ENTER
+       [:hostname [:maybe string?]]
+       [:port [:maybe int?]]]
       (m.util/merge e.s.handler/?Components)))
 
 (def ?NreplContext
