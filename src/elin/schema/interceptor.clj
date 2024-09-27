@@ -97,7 +97,7 @@
 (def ?CodeChangeContext
   (-> [:map
        ;; ENTER
-       [:type [:enum :add-libspec]]
+       [:type [:enum :add-libspec :add-missing-import :add-missing-require]]
        [:code string?]
        [:target map?]
        ;; LEAVE
