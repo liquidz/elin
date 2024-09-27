@@ -108,3 +108,7 @@
 (defprotocol IMark
   (get-mark
     [this mark-id]))
+
+(defprotocol IRegister
+  (yank
+    [this text]))

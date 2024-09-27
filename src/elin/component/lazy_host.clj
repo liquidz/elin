@@ -410,6 +410,15 @@
               :queue host-channel}))
   ;; }}}
 
+  e.p.host/IRegister ; {{{
+  (yank [_ text]
+    (execute {:host @host-store
+              :protocol e.p.host/IRegister
+              :method e.p.host/yank
+              :args [text]
+              :queue host-channel}))
+  ;; }}}
+
   e.p.rpc/IFunction ; {{{
   (call-function [_ method params]
     (if-let [host @host-store]

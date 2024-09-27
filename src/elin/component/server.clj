@@ -10,6 +10,7 @@
    [elin.component.server.impl.mark]
    [elin.component.server.impl.popup]
    [elin.component.server.impl.quickfix]
+   [elin.component.server.impl.register]
    [elin.component.server.impl.select]
    [elin.component.server.impl.sexpr]
    [elin.component.server.impl.sign]
