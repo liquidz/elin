@@ -8,7 +8,8 @@ image:http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.c
 
 == Basic Policy
 
-* Implement UI-related processing on Vim/Neovim in Vim script.
+* Implement UI-related processing on host editor side.
+** Vim/Neovim in Vim script.
 * Handle interactions with the nREPL server and processing of data received from Vim/Neovim in Clojure (Babashka).
 * Implement the Clojure side based on https://github.com/stuartsierra/component[stuartsierra/component].
 * Define all settings related to each component explicitly in `resources/config.edn`.
@@ -40,6 +41,14 @@ image:http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.c
 | Provides concrete functionality using various components. The first argument always receives `elin` passed to the handler. Essentially, everything is synchronous.
 
 |===
+
+== Role of elin core
+
+* Connection management with nREPL
+* Management of interactions with the editor (Handler)
+* Allow behavior of various operations to be modified (Interceptor)
+
+The core will guarantee only these, and additional functionality will be provided through Handlers and Interceptors.
 
 == Plugin
 

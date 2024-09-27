@@ -11,3 +11,5 @@ dev/elin/config.edn
 doc/graph/component.png
 doc/graph/sequence.png
 elin-debug.log
+doc/pages/generated
+target

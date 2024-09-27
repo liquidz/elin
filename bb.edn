@@ -66,6 +66,17 @@
                      :extra-paths ["dev"]
                      :task (exec 'elin.task.help/-main)}
 
+  generate-document-adoc {:doc "Generate document adoc files"
+                          :extra-paths ["dev"]
+                          :task (do (shell "rm -rf doc/pages/generated")
+                                    (exec 'elin.task.doc/-main))}
+
+  generate-document-html {:doc "Generate document HTMLs"
+                          :requires ([clojure.java.io :as io])
+                          #_#_:depends [generate-document-adoc]
+                          :task (let [pwd (.getAbsolutePath (io/file "."))]
+                                  (shell (str "docker run --rm -v " pwd ":/documents/ asciidoctor/docker-asciidoctor asciidoctor -o target/html/index.html doc/pages/index.adoc")))}
+
   check {:doc "Check all"
          :depends [clj-kondo-emit generate-test-analysis generate-deps-edn generate-vim-help
                    lint format-check test]}

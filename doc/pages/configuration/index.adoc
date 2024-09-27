@@ -1,0 +1,15 @@
+
+=== Configuration files
+
+User configuration:
+
+* `$XDG_CONFIG_HOME/elin/config.edn`
+* `$HOME/.config/elin/config.edn`
+
+Project local configuration:
+
+* `.elin/config.edn`
+
+=== Vim/Neovim
+
+include::./vim/index.adoc[]

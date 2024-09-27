@@ -1,0 +1,8 @@
+
+
+
+Open the location list with Telescope:
+[source,clojure]
+----
+{:interceptor {:includes [[elin.interceptor.quickfix/location-function-hook-interceptor "luaeval" ["require('telescope.builtin').loclist()"]]]}}
+----

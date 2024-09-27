@@ -26,7 +26,7 @@
                    (first))
      :interceptor (get-in config [:interceptor :includes])}))
 
-(defn- parse-mapping-line
+(defn parse-mapping-line
   [s]
   (let [[map-type mapping-key command] (-> s
                                            (subs (inc (str/index-of s "(")))
@@ -47,7 +47,7 @@
       :command command}
      (parse-command command))))
 
-(defn- get-mapping-lines
+(defn get-mapping-lines
   []
   (->> (slurp plugin-elin-vim-file)
        (str/split-lines)
