@@ -24,6 +24,13 @@
                                               :close-after 3000})))
               (ix/discard))})
 
+(def store-eval-result-to-clipboard-interceptor
+  {:kind e.c.interceptor/evaluate
+   :leave (-> (fn [{:component/keys [host] :keys [response]}]
+                (some->> (:value response)
+                         (e.p.host/yank host)))
+              (ix/discard))})
+
 (defn- up-until-top [zloc]
   (loop [zloc zloc]
     (let [up-zloc (r.zip/up zloc)]
