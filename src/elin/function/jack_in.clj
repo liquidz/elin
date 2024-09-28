@@ -3,6 +3,7 @@
    [clojure.core.async :as async]
    [clojure.edn :as edn]
    [clojure.java.io :as io]
+   [elin.constant.jack-in :as e.c.jack-in]
    [elin.error :as e]
    [elin.protocol.host :as e.p.host]
    [elin.util.process :as e.u.process])
@@ -30,6 +31,11 @@
   (with-open [sock (ServerSocket. 0)]
     (.getLocalPort sock)))
 
+(defn- parent-absolute-path
+  [path]
+  (-> (io/file path)
+      (.getParentFile)
+      (.getAbsolutePath)))
 
 (defn- existing-file
   [dir filename]
@@ -47,24 +53,19 @@
         (if (or deps-edn-file
                 project-clj-file
                 bb-edn-file)
-          {:clojure-cli deps-edn-file
-           :leiningen project-clj-file
-           :babashka bb-edn-file}
+          {e.c.jack-in/clojure-cli deps-edn-file
+           e.c.jack-in/leiningen project-clj-file
+           e.c.jack-in/babashka bb-edn-file}
           (recur (.getParentFile dir)))))))
 
 (defn- select-project
-  [{:keys [force-leiningen force-shadow-cljs]}
+  [{:keys [forced-project]}
    cwd]
-  (let [res (find-project-files cwd)]
-    (cond
-      force-leiningen
-      (first (select-keys res [:leiningen]))
-
-      force-shadow-cljs
-      (first (select-keys res [:shadow-cljs]))
-
-      :else
-      (first (select-keys res [:clojure-cli])))))
+  (if forced-project
+    [forced-project cwd]
+    (->> (find-project-files cwd)
+         (filter val)
+         (first))))
 
 (def ^:private command-config
   (-> (io/file elin-root-dir "bb.edn")
@@ -74,17 +75,19 @@
 
 (defn- generate-command
   [project-type port]
-  (case project-type
-    :clojure-cli [clojure-command
-                  "-Sdeps" (pr-str {:deps (:deps command-config)})
-                  "-M" "-m" "nrepl.cmdline"
-                  "--port" (str port)
-                  "--middleware" (pr-str (:middlewares command-config))
-                  "--interactive"]
+  (condp = project-type
+    e.c.jack-in/clojure-cli
+    [clojure-command
+     "-Sdeps" (pr-str {:deps (:deps command-config)})
+     "-M" "-m" "nrepl.cmdline"
+     "--port" (str port)
+     "--middleware" (pr-str (:middlewares command-config))
+     "--interactive"]
 
-    :babashka [babashka-command
-               "nrepl-server"
-               (str "localhost:" port)]
+    e.c.jack-in/babashka
+    [babashka-command
+     "nrepl-server"
+     (str "localhost:" port)]
 
     (e/unsupported)))
 
@@ -99,9 +102,7 @@
     options]
    (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
            [project-type project-file] (select-project options path)
-           project-root-dir (-> project-file
-                                (.getParentFile)
-                                (.getAbsolutePath))
+           project-root-dir (parent-absolute-path project-file)
            port (get-free-port)
            args (->> (generate-command project-type port)
                      (cons {:dir project-root-dir}))]
