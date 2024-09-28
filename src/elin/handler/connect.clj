@@ -1,5 +1,6 @@
 (ns elin.handler.connect
   (:require
+   [elin.constant.jack-in :as e.c.jack-in]
    [elin.error :as e]
    [elin.function.connect :as e.f.connect]
    [elin.function.jack-in :as e.f.jack-in]
@@ -9,7 +10,7 @@
    [elin.util.param :as e.u.param]
    [malli.core :as m]))
 
-(def ^:private ?Params
+(def ^:private ?ConnectParams
   [:or
    :catn
    [:catn
@@ -37,7 +38,7 @@
 (m/=> connect [:=> [:cat e.s.handler/?Elin] any?])
 (defn connect
   [{:as elin :component/keys [host] :keys [message]}]
-  (let [[{:keys [hostname port]} error] (e.u.param/parse ?Params (:params message))]
+  (let [[{:keys [hostname port]} error] (e.u.param/parse ?ConnectParams (:params message))]
     (if error
       (e.message/error host "Invalid parameter" error)
       (connect* elin {:hostname hostname :port port}))))
@@ -60,7 +61,22 @@
 
 (defn jack-in
   [{:as elin :component/keys [host]}]
-  (e.message/info host "Jacking in...")
   (let [port (e.f.jack-in/launch-process elin)]
     (e.message/info host (format "Wainting to connect to localhost:%s" port))
     (connect* elin {:hostname "localhost" :port port :wait? true})))
+
+(def ^:private ?InstantParams
+  [:catn
+   [:project
+    (apply vector :enum
+           (map name e.c.jack-in/supported-project-types))]])
+
+(defn instant
+  [{:as elin :component/keys [host] :keys [message]}]
+  (let [[{:keys [project]} error] (e.u.param/parse ?InstantParams (:params message))
+        port (when-not error
+               (e.f.jack-in/launch-process elin {:forced-project (keyword project)}))]
+    (if error
+      (e.message/error host "Invalid parameter" error)
+      (do (e.message/info host (format "Wainting to connect to localhost:%s" port))
+          (connect* elin {:hostname "localhost" :port port :wait? true})))))
