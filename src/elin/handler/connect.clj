@@ -2,6 +2,7 @@
   (:require
    [elin.error :as e]
    [elin.function.connect :as e.f.connect]
+   [elin.function.jack-in :as e.f.jack-in]
    [elin.message :as e.message]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
@@ -17,24 +18,29 @@
     [:hostname string?]
     [:port int?]]])
 
+(defn- connect*
+  [{:as elin :component/keys [host]}
+   connect-arg-map]
+  (let [{:as result :keys [error hostname port]} (e.f.connect/connect elin connect-arg-map)]
+    (cond
+      (e/fault? error)
+      (e.message/warning host (format "Host or port is not specified: %s"
+                                      {:hostname hostname :port port}))
+
+      (e/conflict? error)
+      (e.message/warning host (format "Already connected to %s:%s"
+                                      hostname port))
+
+      (contains? result :client)
+      (e.message/info host (format "Connected to %s:%s" hostname port)))))
+
 (m/=> connect [:=> [:cat e.s.handler/?Elin] any?])
 (defn connect
   [{:as elin :component/keys [host] :keys [message]}]
   (let [[{:keys [hostname port]} error] (e.u.param/parse ?Params (:params message))]
     (if error
       (e.message/error host "Invalid parameter" error)
-      (let [{:as result :keys [error hostname port]} (e.f.connect/connect elin {:hostname hostname :port port})]
-        (cond
-          (e/fault? error)
-          (e.message/warning host (format "Host or port is not specified: %s"
-                                          {:hostname hostname :port port}))
-
-          (e/conflict? error)
-          (e.message/warning host (format "Already connected to %s:%s"
-                                          hostname port))
-
-          (contains? result :client)
-          (e.message/info host (format "Connected to %s:%s" hostname port)))))))
+      (connect* elin {:hostname hostname :port port}))))
 
 (defn disconnect
   [{:as elin :component/keys [host nrepl]}]
@@ -51,3 +57,10 @@
         (e.message/info host (format "Disconnected from %s:%s" hostname port))))
 
     (e.message/warning host "Not connected.")))
+
+(defn jack-in
+  [{:as elin :component/keys [host]}]
+  (e.message/info host "Jacking in...")
+  (let [port (e.f.jack-in/launch-process elin)]
+    (e.message/info host (format "Wainting to connect to localhost:%s" port))
+    (connect* elin {:hostname "localhost" :port port :wait? true})))

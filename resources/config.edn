@@ -29,6 +29,7 @@
  :handler {:includes [elin.handler.complete/complete
                       elin.handler.connect/connect
                       elin.handler.connect/disconnect
+                      elin.handler.connect/jack-in
                       elin.handler.evaluate/evaluate
                       elin.handler.evaluate/evaluate-at-mark
                       elin.handler.evaluate/evaluate-current-buffer

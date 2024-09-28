@@ -90,6 +90,7 @@ function! s:default_key_mappings() abort
   let b:elin_default_key_mappings_applied = v:true
 
   call s:define_mapping('nmap', "<Leader>'",     '<Cmd>call elin#notify("elin.handler.connect/connect", [])<CR>')
+  call s:define_mapping('nmap', '<Leader>"',     '<Cmd>call elin#notify("elin.handler.connect/jack-in", [])<CR>')
 
   " Evaluation
   call s:define_mapping('nmap', "<Leader>ei",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-expr", [])<CR>')
