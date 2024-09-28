@@ -12,7 +12,7 @@
     (let [res (try
                 (f)
                 (catch java.net.ConnectException _
-                  (Thread/sleep 500)
+                  (Thread/sleep 200)
                   ::retry))]
       (if (= ::retry res)
         (recur)
