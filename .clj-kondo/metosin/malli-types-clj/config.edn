@@ -62,9 +62,14 @@
                                                                                                     :ret :any}}},
                                                                              eval! {:arities {2 {:args [:any :string],
                                                                                                  :ret :any}}}},
-                                        elin.component.server.impl.quickfix {set-quickfix-list* {:arities {2 {:args [:any
+                                        elin.component.server.impl.quickfix {get-quickfix-list* {:arities {1 {:args [:any],
+                                                                                                              :ret :sequential}}},
+                                                                             set-quickfix-list* {:arities {2 {:args [:any
                                                                                                                      :sequential],
                                                                                                               :ret :nil}}},
+                                                                             get-location-list* {:arities {2 {:args [:any
+                                                                                                                     :int],
+                                                                                                              :ret :sequential}}},
                                                                              set-location-list* {:arities {3 {:args [:any
                                                                                                                      :int
                                                                                                                      :sequential],
