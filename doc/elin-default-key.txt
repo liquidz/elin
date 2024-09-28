@@ -4,6 +4,7 @@ DEFAULT KEYS                                 *elin-configuration-default-keys*
 {mode} {lhs}         {rhs}
 ------ ------------- -----------------------------------------------
 n      <Leader>'     elin.handler.connect/connect
+n      <Leader>"     elin.handler.connect/jack-in
 n      <Leader>ei    elin.handler.evaluate/evaluate-current-expr
 n      <Leader>ee    elin.handler.evaluate/evaluate-current-list
 n      <Leader>et    elin.handler.evaluate/evaluate-current-top-list
