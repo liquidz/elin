@@ -62,3 +62,12 @@
                 :arglists-str ""}
                (-> (sut/lookup c "elin.function.clj-kondo" "elin.error")
                    (dissoc :line :column)))))))
+
+(t/deftest protocol-implementations-test
+  (let [c (h/test-clj-kondo)]
+    (t/is (= [{:impl-ns 'elin.component.clj-kondo
+               :filename "src/elin/component/clj_kondo.clj"
+               :defined-by 'clojure.core/defrecord}]
+             (->> (sut/protocol-implementations
+                   c 'elin.protocol.clj-kondo 'ICljKondo 'analyze)
+                  (map #(select-keys % [:impl-ns :filename :defined-by])))))))

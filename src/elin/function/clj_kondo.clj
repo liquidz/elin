@@ -73,6 +73,18 @@
     (or (:keywords ana)
         [])))
 
+(defn protocols [clj-kondo]
+  (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
+    (or (:protocol-impls ana)
+        [])))
+
+(defn protocol-implementations
+  [clj-kondo protocol-ns protocol-name method-name]
+  (->> (protocols clj-kondo)
+       (filter #(and (= protocol-ns (:protocol-ns %))
+                     (= protocol-name (:protocol-name %))
+                     (= method-name (:method-name %))))))
+
 (defn keyword-usages
   [clj-kondo keyword']
   (when-let [keywords' (keywords clj-kondo)]
