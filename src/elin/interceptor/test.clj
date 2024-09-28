@@ -38,6 +38,12 @@
     (get-failed-tests-cider-nrepl-query failed-results)
     (get-failed-tests-plain-repl-query failed-results)))
 
+(defn- generate-quickfix-text
+  [result]
+  (cond-> (format "%s/%s" (:ns result) (:var result))
+    (seq (:text result))
+    (str ": " (:text result))))
+
 (def done-test-interceptor
   {:kind e.c.interceptor/test
    :leave (-> (fn [{:as ctx :component/keys [host nrepl session-storage] :keys [response]}]
@@ -69,14 +75,18 @@
                                (str/join "\n"))]
                     (e.p.host/append-to-info-buffer host s {:show-temporarily? true}))
                   ;; set errors to quickfix list
-                  (->> failed
-                       (map #(hash-map :filename (:filename %)
-                                       :lnum (:lnum %)
-                                       :text (cond-> (format "%s/%s" (:ns %) (:var %))
-                                               (seq (:text %))
-                                               (str ": " (:text %)))
-                                       :type "Error"))
-                       (e.f.quickfix/set-quickfix-list ctx))
+                  (let [tested-texts (->> (concat passed failed)
+                                          (map generate-quickfix-text)
+                                          (set))
+                        current-list (->> (e.f.quickfix/get-quickfix-list ctx)
+                                          (remove #(contains? tested-texts (:text %))))]
+                    (->> failed
+                         (map #(hash-map :filename (:filename %)
+                                         :lnum (:lnum %)
+                                         :text (generate-quickfix-text %)
+                                         :type "Error"))
+                         (concat current-list)
+                         (e.f.quickfix/set-quickfix-list ctx)))
 
                   ;; store last failed tests as test query
                   (some->> (get-failed-tests-query nrepl failed)
