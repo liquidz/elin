@@ -16,6 +16,8 @@
 (defn map->str [m keyseq]
   (let [max-key-length (apply max (map #(count (name %)) keyseq))]
     (->> (select-keys m keyseq)
+         (filter (fn [[_ v]]
+                   (string? v)))
          (mapcat (fn [[k v]]
                    (let [lines (str/split-lines v)]
                      (cons (format (str "%" max-key-length "s: %s") (name k) (first lines))

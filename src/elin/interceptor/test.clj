@@ -1,5 +1,6 @@
 (ns elin.interceptor.test
   (:require
+   [clojure.pprint :as pp]
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
@@ -44,6 +45,16 @@
     (seq (:text result))
     (str ": " (:text result))))
 
+(defn pprint-str
+  [s]
+  (when s
+    (try
+      (with-out-str
+        (-> (read-string s)
+            (pp/pprint)))
+      (catch Exception _
+        s))))
+
 (def done-test-interceptor
   {:kind e.c.interceptor/test
    :leave (-> (fn [{:as ctx :component/keys [host nrepl session-storage] :keys [response]}]
@@ -69,7 +80,11 @@
                                            []
                                            [(format ";; %s%s" text lnum)
                                             (if (seq expected)
-                                              (e.u.map/map->str failed-result [:expected :actual :diffs])
+                                              (-> failed-result
+                                                  (update :expected pprint-str)
+                                                  (update :actual pprint-str)
+                                                  (update :diffs pprint-str)
+                                                  (e.u.map/map->str [:expected :actual :diffs]))
                                               actual)
                                             ""])))
                                (str/join "\n"))]
