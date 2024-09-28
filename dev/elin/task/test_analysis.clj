@@ -8,7 +8,10 @@
 (defn -main
   [& _]
   (-> (clj-kondo/run! {:lint ["src"]
-                       :config {:analysis true}})
+                       :config {:output {:analysis {:protocol-impls true
+                                                    :arglists true
+                                                    :locals true
+                                                    :keywords true}}}})
       (select-keys [:analysis])
       (pr-str)
       (->> (spit "dev/analysis.edn"))))
