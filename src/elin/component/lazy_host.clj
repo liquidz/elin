@@ -372,11 +372,23 @@
   ;; }}}
 
   e.p.host/IQuickfix ; {{{
+  (get-quickfix-list [_]
+    (execute {:host @host-store
+              :protocol e.p.host/IQuickfix
+              :method e.p.host/get-quickfix-list
+              :args []
+              :queue host-channel}))
   (set-quickfix-list [_ qf-list]
     (execute {:host @host-store
               :protocol e.p.host/IQuickfix
               :method e.p.host/set-quickfix-list
               :args [qf-list]
+              :queue host-channel}))
+  (get-location-list [_ window-id]
+    (execute {:host @host-store
+              :protocol e.p.host/IQuickfix
+              :method e.p.host/get-location-list
+              :args [window-id]
               :queue host-channel}))
   (set-location-list [_ window-id qf-list]
     (execute {:host @host-store

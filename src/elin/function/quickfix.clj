@@ -1,9 +1,14 @@
 (ns elin.function.quickfix
   (:require
+   [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.util.map :as e.u.map]))
+
+(defn get-quickfix-list
+  [{:component/keys [host]}]
+  (async/<!! (e.p.host/get-quickfix-list host)))
 
 (defn set-quickfix-list
   [{:as elin :component/keys [interceptor]} qf-list]

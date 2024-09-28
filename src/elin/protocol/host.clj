@@ -100,8 +100,12 @@
     [this candidates callback-handler-symbol optional-params]))
 
 (defprotocol IQuickfix
+  (get-quickfix-list
+    [this])
   (set-quickfix-list
     [this quickfix-list])
+  (get-location-list
+    [this window-id])
   (set-location-list
     [this window-id location-list]))
 
