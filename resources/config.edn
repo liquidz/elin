@@ -10,6 +10,7 @@
                           elin.interceptor.connect/connected-interceptor
                           elin.interceptor.connect/raw-message-channel-interceptor
                           elin.interceptor.connect/port-auto-detecting-interceptor
+                          elin.interceptor.connect/cleanup-jacked-in-process-interceptor
                           elin.interceptor.debug/initialize-debugger-interceptor
                           elin.interceptor.debug/process-debugger-interceptor
                           elin.interceptor.handler/handling-error-interceptor

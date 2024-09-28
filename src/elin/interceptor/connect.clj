@@ -2,10 +2,12 @@
   (:require
    [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.function.jack-in :as e.f.jack-in]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.util.file :as e.u.file]
    [elin.util.map :as e.u.map]
+   [elin.util.process :as e.u.process]
    [exoscale.interceptor :as ix]))
 
 (def ^:private default-hostname "localhost")
@@ -54,3 +56,11 @@
                 (assoc :autocmd-type "BufEnter")
                 (->> (e.p.interceptor/execute interceptor e.c.interceptor/autocmd)))
             ctx)})
+
+(def cleanup-jacked-in-process-interceptor
+  {:kind e.c.interceptor/disconnect
+   :leave (-> (fn [{:keys [port]}]
+                (-> port
+                    (e.f.jack-in/port->process-id)
+                    (e.u.process/kill)))
+              (ix/discard))})
