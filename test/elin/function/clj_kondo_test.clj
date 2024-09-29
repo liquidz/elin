@@ -35,7 +35,7 @@
       (t/is (= {:ns "elin.function.clj-kondo"
                 :name "lookup"
                 :file "src/elin/function/clj_kondo.clj"
-                :arglists-str ""}
+                :arglists-str "[clj-kondo ns-str sym-str]"}
                (-> (sut/lookup c "elin.function.clj-kondo" "lookup")
                    (dissoc :line :column)))))
 
@@ -43,7 +43,7 @@
       (t/is (= {:ns "elin.error"
                 :name "not-found"
                 :file "src/elin/error.clj"
-                :arglists-str ""}
+                :arglists-str "[& [m]]"}
                (-> (sut/lookup c "elin.function.clj-kondo" "e/not-found")
                    (dissoc :line :column)))))
 
@@ -51,7 +51,7 @@
       (t/is (= {:ns "elin.error"
                 :name "not-found"
                 :file "src/elin/error.clj"
-                :arglists-str ""}
+                :arglists-str "[& [m]]"}
                (-> (sut/lookup c "elin.function.clj-kondo" "elin.error/not-found")
                    (dissoc :line :column)))))
 
