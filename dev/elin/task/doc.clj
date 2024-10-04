@@ -52,15 +52,22 @@
   [handler-symbol]
   (str/replace (str handler-symbol) #"[./]" "-"))
 
+(defn- into-hash-map
+  [key-fn val-fn coll]
+  (reduce (fn [accm x]
+            (assoc accm (key-fn x) (val-fn x)))
+          {} coll))
+
 (def ^:private handler-key-mapping-dict
-  (let [dict (->> (help/get-mapping-lines)
-                  (map help/parse-mapping-line)
-                  (group-by :handler))]
-    (->> (get-in config [:handler :includes])
-         (keep (fn [handler-symbol]
-                 (when-let [mapping-key (:mapping-key (first (get dict (str handler-symbol))))]
-                   [handler-symbol mapping-key])))
-         (into {}))))
+  (let [grouped-lines (help/get-grouped-lines)
+        {:keys [commands mappings default-mappings]} (help/parse-grouped-lines grouped-lines)
+        command-to-mapping-dict (into-hash-map :command :mapping mappings)
+        mapping-to-key-dict (into-hash-map :mapping :mapping-key default-mappings)]
+    (-> (into-hash-map :handler :command commands)
+        (update-vals #(some->> %
+                               (get command-to-mapping-dict)
+                               (get mapping-to-key-dict)))
+        (update-keys symbol))))
 
 ;; Analysis {{{
 (def ^:private analysis

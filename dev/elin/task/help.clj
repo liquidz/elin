@@ -5,54 +5,133 @@
    [clojure.java.io :as io]
    [clojure.string :as str]))
 
+(def ^:private width 78)
+
 (def ^:private plugin-elin-vim-file
   (io/file "plugin" "elin.vim"))
 
 (def ^:private help-file
-  (io/file "doc" "elin-default-key.txt"))
+  (io/file "doc" "elin-fixme.txt"))
 
-(defn- parse-command
-  [command]
-  (let [start-idx (str/index-of command "{\"config\"")
-        end-idx (when start-idx
-                  (str/index-of command ")<CR>" start-idx))
-        config (when (and start-idx end-idx)
-                 (-> (subs command start-idx end-idx)
-                     (json/parse-string keyword)
-                     (:config)
-                     (edn/read-string)))]
-    {:handler (->> command
-                   (re-seq #"elin\.handler\.[^'\"]+")
-                   (first))
-     :interceptor (get-in config [:interceptor :includes])}))
+(defn- into-hash-map
+  [key-fn val-fn coll]
+  (reduce (fn [accm x]
+            (assoc accm (key-fn x) (val-fn x)))
+          {} coll))
 
-(defn parse-mapping-line
-  [s]
-  (let [[map-type mapping-key command] (-> s
-                                           (subs (inc (str/index-of s "(")))
-                                           (str/split #",\s*" 3))
-        command (->> (str/trim command)
-                     (re-seq #"^['\"](.+?)['\"]\)$")
-                     (first)
-                     (second))]
-    (merge
-     {:map-type (->> (str/trim map-type)
-                     (re-seq #"^['\"](.+?)['\"]$")
-                     (first)
-                     (second))
-      :mapping-key (->> (str/trim mapping-key)
-                        (re-seq #"^['\"](.+?)['\"]$")
-                        (first)
-                        (second))
-      :command command}
-     (parse-command command))))
+(defn- repeat-char
+  [n c]
+  (apply str (repeat n c)))
 
-(defn get-mapping-lines
+(defn- section-title
+  [title tag-name]
+  (format "%s%s%s"
+          (str/upper-case title)
+          (repeat-char (- width (count title) (count tag-name)) " ")
+          (format "*%s*" tag-name)))
+
+(defn get-grouped-lines
   []
   (->> (slurp plugin-elin-vim-file)
        (str/split-lines)
        (map str/trim)
-       (filter #(str/starts-with? % "call s:define_mapping("))))
+       (reduce (fn [accm line]
+                 (cond
+                   (str/starts-with? line "call s:define_mapping(")
+                   (update accm :default-mapping conj line)
+
+                   (str/starts-with? line "nnoremap <silent>")
+                   (update accm :mapping conj line)
+
+                   (str/starts-with? line "command!")
+                   (update accm :command conj line)
+
+                   :else accm))
+               {:command [] :mapping [] :default-mapping []})))
+
+(defn- parse-command-line
+  [line]
+  (let [[command _ func] (-> line
+                             (str/replace-first #"command! (-nargs=. )?" "")
+                             (str/split #"\s+" 3))
+
+        [handler _params config] (if (re-seq #"^elin#(notify|request)" func)
+                                   (-> func
+                                       (subs (inc (str/index-of func "(")))
+                                       (str/split #",\s*" 3))
+                                   [func nil nil])
+        config (-> config
+                   (json/parse-string keyword)
+                   (:config)
+                   (edn/read-string))]
+    {:command command
+     :handler (-> handler
+                  (str/replace #"['\"]" ""))
+     :interceptor (->> (get-in config [:interceptor :includes])
+                       (mapv str))}))
+
+(defn- parse-mapping-line
+  [line]
+  (when-let [[_ mapping command] (some->> line
+                                          (re-seq #"(<Plug>\(.+?\)).+(Elin[^<]+)")
+                                          (first))]
+    {:mapping mapping
+     :command command}))
+
+(defn- parse-default-mapping-line
+  [line]
+  (let [[map-type mapping-key mapping] (-> line
+                                           (subs (inc (str/index-of line "(")))
+                                           (str/split #",\s*" 3))]
+    {:map-type (->> (str/trim map-type)
+                    (re-seq #"^['\"](.+?)['\"]$")
+                    (first)
+                    (second))
+     :mapping-key (->> (str/trim mapping-key)
+                       (re-seq #"^['\"](.+?)['\"]$")
+                       (first)
+                       (second))
+     :mapping (->> (str/trim mapping)
+                   (re-seq #"^['\"](.+?)['\"]\)$")
+                   (first)
+                   (second))}))
+
+(defn parse-grouped-lines
+  [grouped-lines]
+  {:commands (->> (:command grouped-lines)
+                  (map parse-command-line))
+   :mappings (->> (:mapping grouped-lines)
+                  (map parse-mapping-line))
+   :default-mappings (->> (:default-mapping grouped-lines)
+                          (map parse-default-mapping-line))})
+
+(defn- generate-command-help-contents
+  [{:keys [commands mappings]}]
+  (let [command-to-mapping-dict (into-hash-map :command :mapping mappings)]
+    (->> (for [{:keys [command handler]} commands]
+           (let [tag (format "%s*%s*"
+                             (repeat-char (- width (count command)) " ")
+                             command)]
+             (->> [tag
+                   command
+                   (if (str/includes? handler "#")
+                     (format "  Calls `%s`." handler)
+                     (format "  Calls `%s` handler." handler))
+                   (format "  Key is mapped to |%s|." (get command-to-mapping-dict command))]
+                  (str/join "\n"))))
+         (str/join "\n\n"))))
+
+(defn- generate-mapping-help-contents
+  [{:keys [mappings]}]
+  (->> (for [{:keys [mapping command]} mappings]
+         (let [tag (format "%s*%s*"
+                           (repeat-char (- width (count mapping)) " ")
+                           mapping)]
+           (->> [tag
+                 mapping
+                 (format "  Same as |%s|." command)]
+                (str/join "\n"))))
+       (str/join "\n\n")))
 
 (defn- format-map-type
   [map-type]
@@ -60,55 +139,58 @@
     "nmap" "n"
     "-"))
 
-(defn- format-command
-  [command]
-  (->> command
-       (re-seq #"elin#[^<]+")
-       (first)))
-
-(defn- repeat-char
-  [n c]
-  (apply str (repeat n c)))
-
-(defn- generate-help-contents
-  []
-  (let [parsed-lines (->> (get-mapping-lines)
-                          (map parse-mapping-line))
-        max-mapping-key-length (apply max (map (comp count :mapping-key) parsed-lines))
-        max-handler-length (apply max (map (comp count :handler) parsed-lines))
+(defn- generate-default-mapping-help-contents
+  [{:keys [default-mappings]}]
+  (let [max-mapping-key-length (apply max (map (comp count :mapping-key) default-mappings))
         format-str (format "%%-6s %%-%ds %%s"
                            max-mapping-key-length)]
-    (->> parsed-lines
-         (mapcat (fn [{:keys [map-type mapping-key command handler interceptor]}]
-                   (concat
-                    [[(format-map-type map-type)
-                      mapping-key
-                      (or handler
-                          (format-command command))]]
-                    (map #(vector "" "" (str "Uses: " %)) interceptor))))
-         ;; (map (juxt :map-type :mapping-key :handler))
-         (map #(apply format format-str %))
-         (cons (->> [(repeat-char 6 "-")
-                     (repeat-char max-mapping-key-length "-")
-                     (repeat-char max-handler-length "-")]
-                    (str/join " ")))
+    (->> (for [{:keys [map-type mapping-key mapping]} default-mappings]
+           (format format-str
+                   (format-map-type map-type)
+                   mapping-key
+                   mapping))
          (cons (format format-str "{mode}" "{lhs}" "{rhs}"))
+         (str/join "\n"))))
+
+(defn- section
+  [title content]
+  (let [tag-name (-> (str "elin " title)
+                     (str/lower-case)
+                     (str/replace " " "-"))]
+    (->> [(repeat-char width "-")
+          (section-title title tag-name)
+          ""
+          content
+          ""]
          (str/join "\n"))))
 
 (defn -main
   [& _]
-  (->> ["------------------------------------------------------------------------------"
-        "DEFAULT KEYS                                 *elin-configuration-default-keys*"
-        ""
-        (generate-help-contents)
-        ""
-        "=============================================================================="
-        "vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:"]
-       (str/join "\n")
-       (spit help-file))
+  (let [grouped-lines (get-grouped-lines)
+        {:keys [commands mappings default-mappings]} (parse-grouped-lines grouped-lines)]
+    (->> [(section "commands"
+                   (generate-command-help-contents {:commands commands :mappings mappings}))
+
+          (section "mappings"
+                   (generate-mapping-help-contents {:mappings mappings}))
+
+          (section "default mappings"
+                   (generate-default-mapping-help-contents {:default-mappings default-mappings}))
+          (repeat-char width "=")
+          (str "vim:tw=" width ":ts=8:ft=help:norl:noet:fen:fdl=0:")]
+         (str/join "\n")
+         (spit help-file)))
   (println "Generated help files."))
 
 (comment
+  (def grouped-lines (get-grouped-lines))
+  (def commands (->> (:command grouped-lines)
+                     (map parse-command-line)))
+  (def mappings (->> (:mapping grouped-lines)
+                     (map parse-mapping-line)))
+  (def default-mappings (->> (:default-mapping grouped-lines)
+                             (map parse-default-mapping-line)))
+
   (with-redefs [spit (fn [_ content]
                        (println content))]
     (-main)))
