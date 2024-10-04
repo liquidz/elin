@@ -47,9 +47,30 @@
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           code (normalize-var-code code)
           {:keys [ns-str sym-str]} (select-ns-and-sym-str ns-str code)
-          {:keys [file line column]} (e.f.lookup/lookup elin ns-str sym-str)]
-    (when (and file line)
+          {:keys [file line column protocol-implementations]} (e.f.lookup/lookup elin ns-str sym-str)]
+    (cond
+      (seq protocol-implementations)
+      (do (e.p.host/echo-text host "Multiple implementations found. See location list.")
+          (->> protocol-implementations
+               (map #(hash-map :filename (:filename %)
+                               :lnum (:row %)
+                               :col (:col %)
+                               :text (str (:impl-ns %)
+                                          ": "
+                                          (:protocol-name %)
+                                          "/"
+                                          (:method-name %))
+                               :type "Protocol"))
+               (cons {:filename file
+                      :lnum line
+                      :col column
+                      :text (str ns-str "/" sym-str)
+                      :type "Definition"})
+               (e.f.quickfix/set-location-list elin)))
+
+      (and file line)
       (async/<!! (e.p.host/jump! host file line (or column 1))))
+
     true))
 
 (m/=> cycle-source-and-test [:=> [:cat e.s.handler/?Elin] any?])
@@ -80,10 +101,11 @@
         (async/<!! (e.p.host/jump! host filename lnum col)))
 
       :else
-      (->> refs
-           (map #(hash-map :filename (:filename %)
-                           :lnum (:lnum %)
-                           :col (:col %)
-                           :text (str (:ns %))
-                           :type "Reference"))
-           (e.f.quickfix/set-location-list elin)))))
+      (do (e.p.host/echo-text host "Multiple references found. See location list.")
+          (->> refs
+               (map #(hash-map :filename (:filename %)
+                               :lnum (:lnum %)
+                               :col (:col %)
+                               :text (str (:ns %))
+                               :type "Reference"))
+               (e.f.quickfix/set-location-list elin))))))
