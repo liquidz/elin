@@ -11,7 +11,7 @@
   (io/file "plugin" "elin.vim"))
 
 (def ^:private help-file
-  (io/file "doc" "elin-fixme.txt"))
+  (io/file "doc" "elin-mapping.txt"))
 
 (defn- into-hash-map
   [key-fn val-fn coll]
