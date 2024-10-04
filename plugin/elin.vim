@@ -11,6 +11,7 @@ if !exists('g:elin_default_key_mapping_leader')
   let g:elin_default_key_mapping_leader = '<Leader>'
 endif
 
+" Initialize {{{
 function! s:init() abort
   if &ft !=# 'clojure' || exists('g:initialized_vim_elin')
     return
@@ -61,7 +62,108 @@ else
     call s:init()
   endif
 endif
+" }}}
 
+" Commands {{{
+
+" Connection
+command! -nargs=? ElinConnect call elin#notify('elin.handler.connect/connect', <q-args> ? [str2nr(<q-args>)] : [])
+command! -nargs=1 ElinInstantConnect call elin#notify('elin.handler.connect/instant', [<q-args>])
+command! ElinDisconnect call elin#notify('elin.handler.connect/disconnect', [])
+command! ElinJackIn call elin#notify("elin.handler.connect/jack-in", [])
+
+" Evaluation
+command! -nargs=1 ElinEval call elin#notify('elin.handler.evaluate/evaluate', [<q-args>])
+command! ElinEvalCurrentExpr call elin#notify("elin.handler.evaluate/evaluate-current-expr", [])
+command! ElinEvalCurrentList call elin#notify("elin.handler.evaluate/evaluate-current-list", [])
+command! ElinEvalCurrentTopList call elin#notify("elin.handler.evaluate/evaluate-current-top-list", [])
+command! ElinEvalCurrentBuffer call elin#notify("elin.handler.evaluate/evaluate-current-buffer", [])
+command! ElinEvalNsForm call elin#notify("elin.handler.evaluate/evaluate-namespace-form", [])
+command! ElinEvalAtMark call elin#notify("elin.handler.evaluate/evaluate-at-mark", [nr2char(getchar())])
+command! ElinEvalInContext call elin#notify("elin.handler.evaluate/evaluate-current-list", [], {"config": "{:interceptor {:includes [elin.interceptor.optional.evaluate/eval-with-context-interceptor]}}"})
+command! ElinPrintLastResult call elin#notify("elin.handler.evaluate/print-last-result", [])
+
+command! ElinInterrupt call elin#notify("elin.handler.evaluate/interrupt", [])
+command! ElinUndef call elin#notify("elin.handler.evaluate/undef", [])
+command! ElinUndefAll call elin#notify("elin.handler.evaluate/undef-all", [])
+
+command! ElinReload call elin#notify("elin.handler.evaluate/reload", [])
+command! ElinReloadAll call elin#notify("elin.handler.evaluate/reload-all", [])
+
+" Refactoring
+command! ElinAddLibspec call elin#notify("elin.handler.namespace/add-libspec", [])
+command! ElinAddMissingLibspec call elin#notify("elin.handler.namespace/add-missing-libspec", [])
+
+" Navigation
+command! ElinJumpToDefinition call elin#notify("elin.handler.navigate/jump-to-definition", [])
+command! ElinReferences call elin#notify("elin.handler.navigate/references", [])
+
+" Documentation
+command! ElinLookup call elin#notify("elin.handler.lookup/lookup", [])
+command! ElinShowSource call elin#notify("elin.handler.lookup/show-source", [])
+
+" Testing
+command! ElinTestUnderCursor call elin#notify("elin.handler.test/run-test-under-cursor", [])
+command! ElinTestInNs call elin#notify("elin.handler.test/run-tests-in-ns", [])
+command! ElinTestLast call elin#notify("elin.handler.test/rerun-last-tests", [])
+command! ElinTestLastFailed call elin#notify("elin.handler.test/rerun-last-failed-tests", [])
+command! ElinCycleSourceAndTest call elin#notify("elin.handler.navigate/cycle-source-and-test", [])
+
+" Misc
+command! ElinToggleInfoBuffer call elin#internal#buffer#info#toggle()
+command! ElinClearInfoBuffer call elin#internal#buffer#info#clear()
+command! ElinClearVirtualTexts call elin#internal#virtual_text#clear()
+" }}}
+
+" Mappings {{{
+
+" Connection
+nnoremap <silent> <Plug>(elin_connect) <Cmd>ElinConnect<CR>
+nnoremap <silent> <Plug>(elin_jack_in) <Cmd>ElinJackIn<CR>
+
+" Evaluation
+nnoremap <silent> <Plug>(elin_eval_current_expr) <Cmd>ElinEvalCurrentExpr<CR>
+nnoremap <silent> <Plug>(elin_eval_current_list) <Cmd>ElinEvalCurrentList<CR>
+nnoremap <silent> <Plug>(elin_eval_current_top_list) <Cmd>ElinEvalCurrentTopList<CR>
+nnoremap <silent> <Plug>(elin_eval_current_buffer) <Cmd>ElinEvalCurrentBuffer<CR>
+nnoremap <silent> <Plug>(elin_eval_ns_form) <Cmd>ElinEvalNsForm<CR>
+nnoremap <silent> <Plug>(elin_eval_at_mark) <Cmd>ElinEvalAtMark<CR>
+nnoremap <silent> <Plug>(elin_eval_in_context) <Cmd>ElinEvalInContext<CR>
+nnoremap <silent> <Plug>(elin_print_last_result) <Cmd>ElinPrintLastResult<CR>
+
+nnoremap <silent> <Plug>(elin_interrupt) <Cmd>ElinInterrupt<CR>
+nnoremap <silent> <Plug>(elin_undef) <Cmd>ElinUndef<CR>
+nnoremap <silent> <Plug>(elin_undef_all) <Cmd>ElinUndefAll<CR>
+
+nnoremap <silent> <Plug>(elin_reload) <Cmd>ElinReload<CR>
+nnoremap <silent> <Plug>(elin_reload_all) <Cmd>ElinReloadAll<CR>
+
+" Refactoring
+nnoremap <silent> <Plug>(elin_add_libspec) <Cmd>ElinAddLibspec<CR>
+nnoremap <silent> <Plug>(elin_add_missing_libspec) <Cmd>ElinAddMissingLibspec<CR>
+
+" Navigation
+nnoremap <silent> <Plug>(elin_jump_to_definition) <Cmd>ElinJumpToDefinition<CR>
+nnoremap <silent> <Plug>(elin_references) <Cmd>ElinReferences<CR>
+
+" Documentation
+nnoremap <silent> <Plug>(elin_lookup) <Cmd>ElinLookup<CR>
+nnoremap <silent> <Plug>(elin_show_source) <Cmd>ElinShowSource<CR>
+
+" Testing
+nnoremap <silent> <Plug>(elin_test_under_cursor) <Cmd>ElinTestUnderCursor<CR>
+nnoremap <silent> <Plug>(elin_test_in_ns) <Cmd>ElinTestInNs<CR>
+nnoremap <silent> <Plug>(elin_test_last) <Cmd>ElinTestLast<CR>
+nnoremap <silent> <Plug>(elin_test_last_failed) <Cmd>ElinTestLastFailed<CR>
+nnoremap <silent> <Plug>(elin_cycle_source_and_test) <Cmd>ElinCycleSourceAndTest<CR>
+
+" Misc
+nnoremap <silent> <Plug>(elin_toggle_info_buffer) <Cmd>ElinToggleInfoBuffer<CR>
+nnoremap <silent> <Plug>(elin_clear_info_buffer) <Cmd>ElinClearInfoBuffer<CR>
+nnoremap <silent> <Plug>(elin_clear_virtual_texts) <Cmd>ElinClearVirtualTexts<CR>
+" }}}
+
+" Default key mappings {{{
 if exists('g:elin_enable_default_key_mappings')
       \ && g:elin_enable_default_key_mappings
   silent! call s:default_key_mappings()
@@ -89,48 +191,51 @@ function! s:default_key_mappings() abort
   endif
   let b:elin_default_key_mappings_applied = v:true
 
-  call s:define_mapping('nmap', "<Leader>'",     '<Cmd>call elin#notify("elin.handler.connect/connect", [])<CR>')
-  call s:define_mapping('nmap', '<Leader>"',     '<Cmd>call elin#notify("elin.handler.connect/jack-in", [])<CR>')
+  " Connection
+  call s:define_mapping('nmap', "<Leader>'", '<Plug>(elin_connect)')
+  call s:define_mapping('nmap', '<Leader>"', '<Plug>(elin_jack_in)')
 
   " Evaluation
-  call s:define_mapping('nmap', "<Leader>ei",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-expr", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>ee",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-list", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>et",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-top-list", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>eb",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-buffer", [])<CR>')
+  call s:define_mapping('nmap', "<Leader>ei", '<Plug>(elin_eval_current_expr)')
+  call s:define_mapping('nmap', "<Leader>ee", '<Plug>(elin_eval_current_list)')
+  call s:define_mapping('nmap', "<Leader>et", '<Plug>(elin_eval_current_top_list)')
+  call s:define_mapping('nmap', "<Leader>eb", '<Plug>(elin_eval_current_buffer)')
+  call s:define_mapping('nmap', "<Leader>en", '<Plug>(elin_eval_ns_form)')
+  call s:define_mapping('nmap', "<Leader>ea", '<Plug>(elin_eval_at_mark)')
+  call s:define_mapping('nmap', "<Leader>ece", '<Plug>(elin_eval_in_context)')
+  call s:define_mapping('nmap', "<Leader>ep", '<Plug>(elin_print_last_result)')
 
-  call s:define_mapping('nmap', "<Leader>en",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-namespace-form", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>ep",    '<Cmd>call elin#notify("elin.handler.evaluate/print-last-result", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>ea",    '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-at-mark", [nr2char(getchar())])<CR>')
-  call s:define_mapping('nmap', "<Leader>ece",   '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-list", [], {"config": "{:interceptor {:includes [elin.interceptor.optional.evaluate/eval-with-context-interceptor]}}"})<CR>')
-  call s:define_mapping('nmap', "<Leader>epe",   '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-list", [], {"config": "{:interceptor {:includes [[elin.interceptor.optional.evaluate/wrap-eval-code-interceptor \"println\"]]}}"})<CR>')
-  call s:define_mapping('nmap', "<Leader>eq",    '<Cmd>call elin#notify("elin.handler.evaluate/interrupt", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>eu",    '<Cmd>call elin#notify("elin.handler.evaluate/undef", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>eU",    '<Cmd>call elin#notify("elin.handler.evaluate/undef-all", [])<CR>')
+  call s:define_mapping('nmap', "<Leader>eq", '<Plug>(elin_interrupt)')
+  call s:define_mapping('nmap', "<Leader>eu", '<Plug>(elin_undef)')
+  call s:define_mapping('nmap', "<Leader>eU", '<Plug>(elin_undef_all)')
 
-  call s:define_mapping('nmap', "<Leader>enr",   '<Cmd>call elin#notify("elin.handler.evaluate/reload", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>enR",   '<Cmd>call elin#notify("elin.handler.evaluate/reload-all", [])<CR>')
+  call s:define_mapping('nmap', "<Leader>enr", '<Plug>(elin_reload)')
+  call s:define_mapping('nmap', "<Leader>enR", '<Plug>(elin_reload_all)')
 
   " Refactoring
-  call s:define_mapping('nmap', "<Leader>ran",   '<Cmd>call elin#notify("elin.handler.namespace/add-libspec", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>ram",   '<Cmd>call elin#notify("elin.handler.namespace/add-missing-libspec", [])<CR>')
+  call s:define_mapping('nmap', "<Leader>ran", '<Plug>(elin_add_libspec)')
+  call s:define_mapping('nmap', "<Leader>ram", '<Plug>(elin_add_missing_libspec)')
 
   " Navigation
-  call s:define_mapping('nmap', "<C-]>",         '<Cmd>call elin#notify("elin.handler.navigate/jump-to-definition", [])<CR>')
-  call s:define_mapping('nmap', '<Leader>br',    '<Cmd>call elin#notify("elin.handler.navigate/references", [])<CR>')
+  call s:define_mapping('nmap', "<C-]>", '<Plug>(elin_jump_to_definition)')
+  call s:define_mapping('nmap', '<Leader>br', '<Plug>(elin_references)')
 
   " Documentation
-  call s:define_mapping('nmap', "K",             '<Cmd>call elin#notify("elin.handler.lookup/lookup", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>hs",    '<Cmd>call elin#notify("elin.handler.lookup/show-source", [])<CR>')
+  call s:define_mapping('nmap', "K", '<Plug>(elin_lookup)')
+  call s:define_mapping('nmap', "<Leader>hs", '<Plug>(elin_show_source)')
 
   " Testing
-  call s:define_mapping('nmap', "<Leader>tt",    '<Cmd>call elin#notify("elin.handler.test/run-test-under-cursor", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>tn",    '<Cmd>call elin#notify("elin.handler.test/run-tests-in-ns", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>tl",    '<Cmd>call elin#notify("elin.handler.test/rerun-last-tests", [])<CR>')
-  call s:define_mapping('nmap', "<Leader>tr",    '<Cmd>call elin#notify("elin.handler.test/rerun-last-tests", [])<CR>')
-  call s:define_mapping('nmap', "tt",            '<Cmd>call elin#notify("elin.handler.navigate/cycle-source-and-test", [])<CR>')
+  call s:define_mapping('nmap', "<Leader>tt", '<Plug>(elin_test_under_cursor)')
+  call s:define_mapping('nmap', "<Leader>tn", '<Plug>(elin_test_in_ns)')
+  call s:define_mapping('nmap', "<Leader>tl", '<Plug>(elin_test_last)')
+  call s:define_mapping('nmap', "<Leader>tr", '<Plug>(elin_test_last_failed)')
+  call s:define_mapping('nmap', "tt", '<Plug>(elin_cycle_source_and_test)')
 
   " Misc
-  call s:define_mapping('nmap', "<Leader>ss",    '<Cmd>call elin#internal#buffer#info#toggle()<CR>')
-  call s:define_mapping('nmap', "<Leader>sl",    '<Cmd>call elin#internal#buffer#info#clear()<CR>')
-  call s:define_mapping('nmap', "<Leader><Esc>", '<Cmd>call elin#internal#virtual_text#clear()<CR>')
+  call s:define_mapping('nmap', "<Leader>ss", '<Plug>(elin_toggle_info_buffer)')
+  call s:define_mapping('nmap', "<Leader>sl", '<Plug>(elin_clear_info_buffer)')
+  call s:define_mapping('nmap', "<Leader><Esc>", '<Plug>(elin_clear_virtual_texts)')
 endfunction
+" }}}
+
+" vim:fdl=0:
