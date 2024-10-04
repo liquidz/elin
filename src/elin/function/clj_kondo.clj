@@ -73,17 +73,35 @@
     (or (:keywords ana)
         [])))
 
-(defn protocols [clj-kondo]
+(defn protocol-definitions
+  [clj-kondo]
+  (->> (var-definitions clj-kondo)
+       (filter :protocol-name)))
+
+(defn- protocol-implementations*
+  [clj-kondo]
   (when-let [ana (e.p.clj-kondo/analysis clj-kondo)]
     (or (:protocol-impls ana)
         [])))
 
 (defn protocol-implementations
   [clj-kondo protocol-ns protocol-name method-name]
-  (->> (protocols clj-kondo)
-       (filter #(and (= protocol-ns (:protocol-ns %))
-                     (= protocol-name (:protocol-name %))
-                     (= method-name (:method-name %))))))
+  (let [protocol-ns-sym (symbol protocol-ns)
+        protocol-name-sym (symbol protocol-name)
+        method-name-sym (symbol method-name)]
+    (->> (protocol-implementations* clj-kondo)
+         (filter #(and (= protocol-ns-sym (:protocol-ns %))
+                       (= protocol-name-sym (:protocol-name %))
+                       (= method-name-sym (:method-name %)))))))
+
+(defn protocol-definition
+  [clj-kondo ns-str sym-str]
+  (let [ns-sym (symbol ns-str)
+        sym-sym (symbol sym-str)]
+    (->> (protocol-definitions clj-kondo)
+         (filter #(and (= ns-sym (:protocol-ns %))
+                       (= sym-sym (:name %))))
+         (first))))
 
 (defn keyword-usages
   [clj-kondo keyword']
