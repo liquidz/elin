@@ -2,10 +2,17 @@
   (:require
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.schema.nrepl :as e.s.nrepl]
-   [malli.core :as m]))
+   [malli.core :as m])
+  (:import
+   java.net.ServerSocket))
 
 (def ^:private ?Messages
   [:sequential e.s.nrepl/?Message])
+
+(defn get-free-port
+  []
+  (with-open [sock (ServerSocket. 0)]
+    (.getLocalPort sock)))
 
 (m/=> merge-messages [:=> [:cat ?Messages] e.s.nrepl/?Message])
 (defn merge-messages

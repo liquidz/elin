@@ -6,9 +6,8 @@
    [elin.constant.jack-in :as e.c.jack-in]
    [elin.error :as e]
    [elin.protocol.host :as e.p.host]
-   [elin.util.process :as e.u.process])
-  (:import
-   java.net.ServerSocket))
+   [elin.util.nrepl :as e.u.nrepl]
+   [elin.util.process :as e.u.process]))
 
 (def ^:private clojure-command
   (or (System/getenv "ELIN_REPL_CLOJURE_CLI_CMD")
@@ -25,11 +24,6 @@
       (.getParentFile)
       (.getParentFile)
       (.getAbsolutePath)))
-
-(defn- get-free-port
-  []
-  (with-open [sock (ServerSocket. 0)]
-    (.getLocalPort sock)))
 
 (defn- parent-absolute-path
   [path]
@@ -58,7 +52,7 @@
            e.c.jack-in/babashka bb-edn-file}
           (recur (.getParentFile dir)))))))
 
-(defn- select-project
+(defn select-project
   [{:keys [forced-project]}
    cwd]
   (if forced-project
@@ -73,23 +67,26 @@
       (edn/read-string)
       (get-in [:__elin_internal__ :command])))
 
-(defn- generate-command
-  [project-type port]
-  (condp = project-type
-    e.c.jack-in/clojure-cli
-    [clojure-command
-     "-Sdeps" (pr-str {:deps (:deps command-config)})
-     "-M" "-m" "nrepl.cmdline"
-     "--port" (str port)
-     "--middleware" (pr-str (:middlewares command-config))
-     "--interactive"]
+(defn generate-command
+  ([project-type port]
+   (generate-command project-type port []))
+  ([project-type port optional-args]
+   (condp = project-type
+     e.c.jack-in/clojure-cli
+     (concat [clojure-command]
+             optional-args
+             ["-Sdeps" (pr-str {:deps (:deps command-config)})
+              "-M" "-m" "nrepl.cmdline"
+              "--port" (str port)
+              "--middleware" (pr-str (:middlewares command-config))
+              "--interactive"])
 
-    e.c.jack-in/babashka
-    [babashka-command
-     "nrepl-server"
-     (str "localhost:" port)]
+     e.c.jack-in/babashka
+     [babashka-command
+      "nrepl-server"
+      (str "localhost:" port)]
 
-    (e/unsupported)))
+     (e/unsupported))))
 
 (defn port->process-id
   [port]
@@ -103,7 +100,7 @@
    (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
            [project-type project-file] (select-project options path)
            project-root-dir (parent-absolute-path project-file)
-           port (get-free-port)
+           port (e.u.nrepl/get-free-port)
            args (->> (generate-command project-type port)
                      (cons {:dir project-root-dir}))]
      (e.u.process/start (port->process-id port) args)

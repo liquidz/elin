@@ -5,14 +5,10 @@
   (:require
     [babashka.cli :as cli]
     [babashka.deps :as deps]
-    [clojure.edn :as edn]
     [clojure.java.io :as io]
     [clojure.string :as str]))
 
 (def ^:private cwd (System/getProperty "user.dir"))
-(def ^:private clojure-command
-  (or (System/getenv "ELIN_REPL_CLOJURE_CLI_CMD")
-      "clj"))
 
 (def ^:private project-root
   (-> (io/file *file*)
@@ -21,48 +17,12 @@
       (.getAbsolutePath)))
 
 (deps/add-deps
-  {:deps {'babashka/process {:mvn/version "0.5.21"}
-          'liquidz/elin {:local/root project-root}}})
+  {:deps {'liquidz/elin {:local/root project-root}}})
+
 (require
-  '[babashka.process :as proc])
-
-(def ^:private command-config
-  (-> (io/file project-root "bb.edn")
-      (slurp)
-      (edn/read-string)
-      (get-in [:__elin_internal__ :command])))
-
-(defn- existing-file
-  [dir filename]
-  (let [file (io/file dir filename)]
-    (when (.exists file)
-      file)))
-
-(defn- find-project-files
-  [cwd]
-  (loop [dir (io/file cwd)]
-    (when dir
-      (let [deps-edn-file (existing-file dir "deps.edn")
-            project-clj-file (existing-file dir "project.clj")]
-
-        (if (or deps-edn-file project-clj-file)
-          {:clojure-cli deps-edn-file
-           :leiningen project-clj-file}
-          (recur (.getParentFile dir)))))))
-
-(defn- select-project
-  [{:keys [force-leiningen force-shadow-cljs]}
-   cwd]
-  (let [res (find-project-files cwd)]
-    (cond
-      force-leiningen
-      (first (select-keys res [:leiningen]))
-
-      force-shadow-cljs
-      (first (select-keys res [:shadow-cljs]))
-
-      :else
-      (first (select-keys res [:clojure-cli])))))
+  '[babashka.process :as proc]
+  '[elin.function.jack-in :as e.f.jack-in]
+  '[elin.util.nrepl :as e.u.nrepl])
 
 (def ^:private cli-options-map
   {"repl" {:force-leiningen {:coerce :boolean}
@@ -94,17 +54,10 @@
 (defmethod dispatch "repl"
   [args]
   (let [{:keys [options rest-args]} (parse-opts args)
-        [project _] (select-project options cwd)
-        commands (case project
-                    :clojure-cli
-                    (concat [clojure-command]
-                            rest-args
-                            ["-Sdeps" (pr-str {:deps (:deps command-config)})
-                             "-M" "-m" "nrepl.cmdline"
-                             "-m" (pr-str (:middlewares command-config))
-                             "--interactive"])
-
-                   (throw (ex-info "No project found" {:cwd cwd})))]
+        ;; TODO apply options to force protject-type
+        [project-type _] (e.f.jack-in/select-project {} cwd)
+        port (e.u.nrepl/get-free-port)
+        commands (e.f.jack-in/generate-command project-type port rest-args)]
     (if (:dry-run options)
       (println (str/join " " commands))
       (apply proc/shell {:out :inherit :in :inherit} commands))))
