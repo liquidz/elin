@@ -63,4 +63,3 @@ function! elin#util#shorten(msg, ...) abort
         \ ? strpart(msg, 0, max_length - 3).'...'
         \ : msg
 endfunction
-
