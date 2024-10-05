@@ -83,7 +83,6 @@
                                               (-> failed-result
                                                   (update :expected pprint-str)
                                                   (update :actual pprint-str)
-                                                  (update :diffs pprint-str)
                                                   (e.u.map/map->str [:expected :actual :diffs]))
                                               actual)
                                             ""])))
