@@ -28,3 +28,12 @@ include::./vim/index.adoc[]
 
 
 // call s:define_mapping('nmap', "<Leader>epe", '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-list", [], {"config": "{:interceptor {:includes [[elin.interceptor.optional.evaluate/wrap-eval-code-interceptor \"println\"]]}}"})<CR>')
+
+
+
+* lookupの挙動をポップアップではなくinfo buffer表示に切り替える
+[source,edn]
+----
+{:handler {:uses [elin.handler.lookup/lookup {:interceptor {:excludes [elin.interceptor.handler/show-result-as-popup]
+                                                            :uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}]}}
+----

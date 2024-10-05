@@ -91,6 +91,11 @@ ElinReloadAll
   Calls `elin.handler.evaluate/reload-all` handler.
   Key is mapped to |<Plug>(elin_reload_all)|.
 
+                                                   *ElinMacroExpand1CurrentList*
+ElinMacroExpand1CurrentList
+  Calls `elin.handler.evaluate/expand-1-current-list` handler.
+  Key is mapped to |<Plug>(elin_macro_expand1_current_list)|.
+
                                                                 *ElinAddLibspec*
 ElinAddLibspec
   Calls `elin.handler.namespace/add-libspec` handler.
@@ -229,6 +234,10 @@ MAPPINGS                                                         *elin-mappings*
 <Plug>(elin_reload_all)
   Same as |ElinReloadAll|.
 
+                                       *<Plug>(elin_macro_expand1_current_list)*
+<Plug>(elin_macro_expand1_current_list)
+  Same as |ElinMacroExpand1CurrentList|.
+
                                                       *<Plug>(elin_add_libspec)*
 <Plug>(elin_add_libspec)
   Same as |ElinAddLibspec|.
@@ -308,6 +317,7 @@ n      <Leader>eu    <Plug>(elin_undef)
 n      <Leader>eU    <Plug>(elin_undef_all)
 n      <Leader>enr   <Plug>(elin_reload)
 n      <Leader>enR   <Plug>(elin_reload_all)
+n      <Leader>em    <Plug>(elin_macro_expand1_current_list)
 n      <Leader>ran   <Plug>(elin_add_libspec)
 n      <Leader>ram   <Plug>(elin_add_missing_libspec)
 n      <C-]>         <Plug>(elin_jump_to_definition)
