@@ -13,3 +13,15 @@
   (t/is (false? (sut/java-class-name? "Foo.bar")))
   (t/is (true? (sut/java-class-name? "foo.Bar")))
   (t/is (true? (sut/java-class-name? "Foo"))))
+
+(t/deftest render-test
+  (t/is (= "ab"
+           (sut/render "a{{a}}" {:a "b"})))
+  (t/is (= "ab"
+           (sut/render "a{{a/b}}" {:a/b "b"})))
+  (t/is (= "a{{c}}"
+           (sut/render "a{{c}}" {:a/b "b"})))
+  (t/is (= "a1"
+           (sut/render "a{{a}}" {:a 1})))
+  (t/is (= "a"
+           (sut/render "a{{a}}" {:a nil}))))

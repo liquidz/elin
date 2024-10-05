@@ -15,3 +15,9 @@
   (-> (str/split s #"[\.\$]")
       (last)
       (starts-with-upper?)))
+
+(defn render [s m]
+  (reduce-kv
+   (fn [accm k v]
+     (str/replace accm (str "{{" (subs (str k) 1) "}}") (str v)))
+   s m))
