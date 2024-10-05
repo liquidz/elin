@@ -52,15 +52,15 @@
               (ix/discard))})
 
 (def location-function-hook-interceptor
+  "Interceptor to call any function on host side when location list is updated.
+  Required to config like below.
+
+  {:function [\"luaeval\" [\"require('telescope.builtin').loclist()\"]]}"
   {:kind e.c.interceptor/quickfix
-   :params []
-   :enter (-> (fn [ctx]
-                (let [{:keys [params]} (e.u.interceptor/self ctx)]
-                  (assoc ctx ::params params)))
-              (ix/when location-list?))
-   :leave (-> (fn [{:component/keys [host] ::keys [params]}]
-                (when (and (seq params)
-                           (satisfies? e.p.rpc/IFunction host))
-                  (apply e.p.rpc/notify-function host params)))
+   :leave (-> (fn [{:as ctx :component/keys [host]}]
+                (let [{:keys [function]} (e.u.interceptor/config ctx #'location-function-hook-interceptor)]
+                  (when (and (seq function)
+                             (satisfies? e.p.rpc/IFunction host))
+                    (apply e.p.rpc/notify-function host function))))
               (ix/when location-list?)
               (ix/discard))})

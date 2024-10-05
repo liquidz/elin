@@ -1,8 +1,8 @@
 (ns elin.component.interceptor
   (:require
    [clojure.set :as set]
-   [clojure.string :as str]
    [com.stuartsierra.component :as component]
+   [elin.config :as e.config]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.interceptor.autocmd]
    [elin.interceptor.code-change]
@@ -14,7 +14,6 @@
    [elin.protocol.config :as e.p.config]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.interceptor :as e.s.interceptor]
-   [elin.util.interceptor :as e.u.interceptor]
    [exoscale.interceptor :as interceptor]
    [malli.core :as m]
    [msgpack.clojure-extensions]
@@ -27,13 +26,9 @@
 
 (defn- resolve-interceptor [lazy-host sym]
   (try
-    (when-let [{:as parsed :keys [params]} (e.u.interceptor/parse sym)]
-      (-> (:symbol parsed)
-          (requiring-resolve)
-          (deref)
-          (assoc :name (:symbol parsed))
-          (cond->
-           (seq params) (assoc :params params))))
+    (-> (requiring-resolve sym)
+        (deref)
+        (assoc :name sym))
     (catch Exception ex
       (e.message/warning lazy-host "Failed to resolve interceptor" {:symbol sym :ex ex})
       nil)))
@@ -77,6 +72,7 @@
    ;; CONFIGS
    includes
    excludes
+   config-map
    ;; PARAMS
    name-to-symbol-dict
    interceptor-map]
@@ -119,8 +115,8 @@
                           :component/interceptor this
                           :interceptor/kind kind)]
       (try
-        (timbre/debug (format "Start to intercept %s with [%s]" kind (->> (map :name interceptors)
-                                                                          (str/join ", "))))
+        #_(timbre/debug (format "Start to intercept %s with [%s]" kind (->> (map :name interceptors)
+                                                                            (str/join ", "))))
         (interceptor/execute context' (concat interceptors [terminator']))
         (catch Exception ex
           (e.message/error lazy-host (format "Failed to intercept for %s: %s"
@@ -129,13 +125,13 @@
 
   e.p.config/IConfigure
   (configure [this config]
-    (let [{:keys [includes excludes]} (get config config-key)
-          exclude-set (set/union (->> (or excludes [])
-                                      (map (comp :symbol e.u.interceptor/parse))
-                                      (set))
-                                 (->> (or includes [])
-                                      (map (comp :symbol e.u.interceptor/parse))
-                                      (set)))
+    (let [{:as target :keys [includes excludes]} (-> (e.config/expand-config config)
+                                                     (get config-key))
+          exclude-set (set/union (set (or excludes []))
+                                 (set (or includes [])))
+          config-map' (if-let [target-config-map (:config-map target)]
+                        (e.config/merge-configs config-map target-config-map)
+                        config-map)
           grouped (->> (or includes [])
                        (keep #(resolve-interceptor lazy-host %))
                        (map wrap-interceptor-for-logging)
@@ -152,7 +148,9 @@
                               (assoc accm kind (concat (or (get accm kind) [])
                                                        interceptors)))
                             interceptor-map' include-map)]
-      (assoc this :interceptor-map interceptor-map'))))
+      (assoc this
+             :config-map config-map'
+             :interceptor-map interceptor-map'))))
 
 (defn new-interceptor
   [config]

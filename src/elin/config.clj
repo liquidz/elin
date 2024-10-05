@@ -6,7 +6,6 @@
    [elin.constant.project :as e.c.project]
    [elin.schema.config :as e.s.config]
    [elin.util.file :as e.u.file]
-   [elin.util.interceptor :as e.u.interceptor]
    [malli.core :as m]
    [malli.transform :as mt]
    [taoensso.timbre :as timbre])
@@ -57,23 +56,6 @@
   ([c1 c2 & more-configs]
    (reduce merge-configs (or c1 {}) (cons c2 more-configs))))
 
-(m/=> load-user-config [:-> map?])
-(defn- load-user-config
-  []
-  (let [file (io/file (e.u.file/get-config-directory) "config.edn")]
-    (or (when (.exists file)
-          (aero/read-config file))
-        {})))
-
-(m/=> load-project-local-config [:-> string? map?])
-(defn- load-project-local-config
-  [dir]
-  (let [config-dir-name (str "." e.c.project/name)
-        file (some-> (e.u.file/find-file-in-parent-directories dir config-dir-name)
-                     (io/file "config.edn"))]
-    (or (when (and file (.exists file))
-          (aero/read-config file))
-        {})))
 
 (defn configure-handler
   [base-handler-config target-handler-config]
@@ -84,39 +66,89 @@
         (merge-configs (assoc target-handler-config
                               :includes []
                               :excludes []))
-        (update :includes #(->> (remove exclude-set %)
-                                (concat includes))))))
+        (update :includes #(-> (remove exclude-set %)
+                               (concat includes))))))
 
 (defn configure-interceptor
   [base-interceptor-config target-interceptor-config]
   (let [{:keys [includes excludes]} target-interceptor-config
-        exclude-set (set/union (->> (or excludes [])
-                                    (map (comp :symbol e.u.interceptor/parse))
-                                    (set))
-                               (->> (or includes [])
-                                    (map (comp :symbol e.u.interceptor/parse))
-                                    (set)))]
+        exclude-set (set/union (set (or excludes []))
+                               (set (or includes [])))]
     (-> base-interceptor-config
         (merge-configs (assoc target-interceptor-config
                               :includes []
                               :excludes []))
-        (update :includes (fn [interceptors]
-                            (->> interceptors
-                                 (remove #(contains? exclude-set
-                                                     (:symbol (e.u.interceptor/parse %))))
-                                 (concat includes)))))))
+        (update :includes #(-> (remove exclude-set %)
+                               (concat includes))))))
+
+#_(m/=> expand-uses [:=> [:cat [:* [:cat symbol? map?]]]
+                     [:map [:includes [:sequential symbol?]]
+                      [:config-map [:map-of symbol? map?]]]])
+(defn- expand-uses
+  [uses]
+  (->> (partition 2 uses)
+       (reduce
+        (fn [accm [k v]]
+          (cond-> (update accm :includes conj k)
+            (seq v)
+            (update :config-map assoc k v)))
+        {:includes [] :config-map {}})))
+
+(defn expand-config
+  [{:as config :keys [handler interceptor]}]
+  (assoc config
+         :handler (if-let [expanded (some-> (:uses handler)
+                                            (expand-uses))]
+                    (configure-handler expanded (dissoc handler :uses))
+                    handler)
+         :interceptor (if-let [expanded (some-> (:uses interceptor)
+                                                (expand-uses))]
+                        (configure-interceptor expanded (dissoc interceptor :uses))
+                        interceptor)))
 
 (defn configure
   [base-config target-config]
-  (-> base-config
-      (merge-configs (dissoc target-config :handler :interceptor))
-      (update :handler #(configure-handler % (:handler target-config)))
-      (update :interceptor #(configure-interceptor % (:interceptor target-config)))))
+  (let [target-config' (expand-config target-config)]
+    (-> base-config
+        (merge-configs (dissoc target-config' :handler :interceptor))
+        (update :handler #(configure-handler % (:handler target-config')))
+        (update :interceptor #(configure-interceptor % (:interceptor target-config'))))))
+
+
+(comment
+  (configure {:handler {:includes ['foo]}}
+             {:handler {:uses ['foo {:a 1}]}}))
+
+(defn- load-default-config
+  []
+  (-> (io/resource "config.edn")
+      (aero/read-config)
+      (expand-config)))
+
+(m/=> load-user-config [:-> map?])
+(defn- load-user-config
+  []
+  (let [file (io/file (e.u.file/get-config-directory) "config.edn")]
+    (or (when (.exists file)
+          (-> (aero/read-config file)
+              (expand-config)))
+        {})))
+
+(m/=> load-project-local-config [:-> string? map?])
+(defn- load-project-local-config
+  [dir]
+  (let [config-dir-name (str "." e.c.project/name)
+        file (some-> (e.u.file/find-file-in-parent-directories dir config-dir-name)
+                     (io/file "config.edn"))]
+    (or (when (and file (.exists file))
+          (-> (aero/read-config file)
+              (expand-config)))
+        {})))
 
 (m/=> load-config [:-> string? map? e.s.config/?Config])
 (defn load-config
   [dir server-config]
-  (let [default-config (aero/read-config (io/resource "config.edn"))
+  (let [default-config (load-default-config)
         user-config (load-user-config)
         project-local-config (load-project-local-config dir)
         config (-> server-config

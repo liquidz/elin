@@ -2,8 +2,7 @@
   (:require
    [clojure.test :as t]
    [elin.config :as sut]
-   [elin.test-helper :as h]
-   [elin.util.interceptor :as e.u.interceptor]))
+   [elin.test-helper :as h]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 
@@ -74,11 +73,163 @@
 (defn- find-included-interceptor
   [target-config interceptor-symbol]
   (let [res (->> (get-in target-config [:interceptor :includes])
-                 (filter #(= interceptor-symbol (:symbol (e.u.interceptor/parse %)))))]
+                 (filter #(= interceptor-symbol %)))]
     (cond
       (empty? res) nil
-      (= 1 (count res)) (first res)
+      (= 1 (count res)) {:included (first res)
+                         :config (get-in target-config [:interceptor :config-map interceptor-symbol])}
       :else (throw (ex-info "interceptor should be only once" {})))))
+
+(t/deftest configure-test
+  (t/is (= {:handler {:includes [] :excludes []}
+            :interceptor {:includes [] :excludes []}}
+           (sut/configure {} {})))
+
+  (t/testing "handler"
+    (t/testing "includes"
+      (t/is (= {:handler {:includes ['foo] :excludes []}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {}
+                              {:handler {:includes ['foo]}})))
+
+      (t/is (= {:handler {:includes ['foo] :excludes []}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:handler {:includes ['foo]}}
+                              {:handler {:includes ['foo]}})))
+
+      (t/is (= {:handler {:includes ['foo 'bar] :excludes []}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:handler {:includes ['foo]}}
+                              {:handler {:includes ['bar]}}))))
+
+    (t/testing "exclude"
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:handler {:includes ['foo]}}
+                              {:handler {:excludes ['foo]}}))))
+
+    (t/testing "includes and excludes"
+      (t/is (= {:handler {:includes ['foo] :excludes []}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {}
+                              {:handler {:includes ['foo] :excludes ['foo]}}))))
+
+    (t/testing "config-map"
+      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 1}}}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {}
+                              {:handler {:config-map {'foo {:a 1}}}})))
+
+      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 1}}}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:handler {:config-map {'foo {:a 1}}}}
+                              {:handler {:config-map {'foo {:a 1}}}})))
+
+      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 10}}}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:handler {:config-map {'foo {:a 1}}}}
+                              {:handler {:config-map {'foo {:a 10}}}})))
+
+      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 1}
+                                                                 'bar {:b 2}}}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:handler {:config-map {'foo {:a 1}}}}
+                              {:handler {:config-map {'bar {:b 2}}}}))))
+
+    (t/testing "uses"
+      (t/is (= {:handler {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {}
+                              {:handler {:uses ['foo {:a 1}]}})))
+
+      (t/is (= {:handler {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:handler {:includes ['foo] :config-map {'foo {:a 1}}}}
+                              {:handler {:uses ['foo {:a 1}]}})))
+
+      (t/is (= {:handler {:includes ['foo] :excludes [] :config-map {'foo {:a 10}}}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:handler {:includes ['foo] :config-map {'foo {:a 1}}}}
+                              {:handler {:uses ['foo {:a 10}]}})))
+
+      (t/is (= {:handler {:includes ['foo 'bar] :excludes [] :config-map {'foo {:a 1}
+                                                                          'bar {:b 2}}}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:handler {:includes ['foo] :config-map {'foo {:a 1}}}}
+                              {:handler {:uses ['bar {:b 2}]}})))))
+
+  (t/testing "interceptor"
+    (t/testing "includes"
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes ['foo] :excludes []}}
+               (sut/configure {}
+                              {:interceptor {:includes ['foo]}})))
+
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes ['foo] :excludes []}}
+               (sut/configure {:interceptor {:includes ['foo]}}
+                              {:interceptor {:includes ['foo]}})))
+
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes ['foo 'bar] :excludes []}}
+               (sut/configure {:interceptor {:includes ['foo]}}
+                              {:interceptor {:includes ['bar]}}))))
+
+    (t/testing "excludes"
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes [] :excludes []}}
+               (sut/configure {:interceptor {:includes ['foo]}}
+                              {:interceptor {:excludes ['foo]}}))))
+
+    (t/testing "includes and excludes"
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes ['foo] :excludes []}}
+               (sut/configure {}
+                              {:interceptor {:includes ['foo] :excludes ['foo]}}))))
+
+    (t/testing "config-map"
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes [] :excludes [] :config-map {'foo {:a 1}}}}
+               (sut/configure {}
+                              {:interceptor {:config-map {'foo {:a 1}}}})))
+
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes [] :excludes [] :config-map {'foo {:a 1}}}}
+               (sut/configure {:interceptor {:config-map {'foo {:a 1}}}}
+                              {:interceptor {:config-map {'foo {:a 1}}}})))
+
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes [] :excludes [] :config-map {'foo {:a 10}}}}
+               (sut/configure {:interceptor {:config-map {'foo {:a 1}}}}
+                              {:interceptor {:config-map {'foo {:a 10}}}})))
+
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes [] :excludes [] :config-map {'foo {:a 1}
+                                                                     'bar {:b 2}}}}
+               (sut/configure {:interceptor {:config-map {'foo {:a 1}}}}
+                              {:interceptor {:config-map {'bar {:b 2}}}}))))
+
+    (t/testing "uses"
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}}
+               (sut/configure {}
+                              {:interceptor {:uses ['foo {:a 1}]}})))
+
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}}
+               (sut/configure {:interceptor {:includes ['foo] :config-map {'foo {:a 1}}}}
+                              {:interceptor {:uses ['foo {:a 1}]}})))
+
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes ['foo] :excludes [] :config-map {'foo {:a 10}}}}
+               (sut/configure {:interceptor {:includes ['foo] :config-map {'foo {:a 1}}}}
+                              {:interceptor {:uses ['foo {:a 10}]}})))
+
+      (t/is (= {:handler {:includes [] :excludes []}
+                :interceptor {:includes ['foo 'bar] :excludes [] :config-map {'foo {:a 1}
+                                                                              'bar {:b 2}}}}
+               (sut/configure {:interceptor {:includes ['foo] :config-map {'foo {:a 1}}}}
+                              {:interceptor {:uses ['bar {:b 2}]}}))))))
 
 (t/deftest load-config-test
   (with-redefs [sut/load-user-config (constantly {})
@@ -103,13 +254,7 @@
         (t/testing "handler"
           (with-redefs [sut/load-user-config (constantly {:handler {:includes [sample-handler]}})]
             (t/is (= sample-handler
-                     (find-included-handler (test-load-config) sample-handler)))))
-
-        (t/testing "interceptor"
-          (with-redefs [sut/load-user-config (constantly {:interceptor {:includes [[sample-interceptor "param"]]}})]
-            (t/is (= [sample-interceptor "param"]
-                     (find-included-interceptor (test-load-config) sample-interceptor))))))
-
+                     (find-included-handler (test-load-config) sample-handler))))))
 
       (t/testing "project-local-config can override default-config"
         (with-redefs [sut/load-project-local-config (constantly {:env {:cwd "bar"}})]
@@ -119,13 +264,7 @@
         (t/testing "handler"
           (with-redefs [sut/load-project-local-config (constantly {:handler {:includes [sample-handler]}})]
             (t/is (= sample-handler
-                     (find-included-handler (test-load-config) sample-handler)))))
-
-        (t/testing "interceptor"
-          (with-redefs [sut/load-project-local-config (constantly {:interceptor {:includes [[sample-interceptor "param"]]}})]
-            (t/is (= [sample-interceptor "param"]
-                     (find-included-interceptor (test-load-config) sample-interceptor))))))
-
+                     (find-included-handler (test-load-config) sample-handler))))))
 
       (t/testing "project-local-config can override user-config"
         (with-redefs [sut/load-user-config (constantly {:env {:cwd "foo"}})
@@ -137,14 +276,7 @@
           (with-redefs [sut/load-user-config (constantly {:handler {:includes [random-symbol]}})
                         sut/load-project-local-config (constantly {:handler {:includes [random-symbol]}})]
             (t/is (= random-symbol
-                     (find-included-handler (test-load-config) random-symbol)))))
-
-        (t/testing "interceptor"
-          (with-redefs [sut/load-user-config (constantly {:interceptor {:includes [random-symbol]}})
-                        sut/load-project-local-config (constantly {:interceptor {:includes [[random-symbol "param"]]}})]
-            (t/is (= [random-symbol "param"]
-                     (find-included-interceptor (test-load-config) random-symbol))))))
-
+                     (find-included-handler (test-load-config) random-symbol))))))
 
       (t/testing "user-config should exclude handlers/interceptors in default-config"
         (t/testing "handler"
@@ -152,14 +284,8 @@
             (t/is (nil? (find-included-handler (test-load-config) sample-handler)))))
 
         (t/testing "interceptor"
-          (t/testing "no parameter"
-            (with-redefs [sut/load-user-config (constantly {:interceptor {:excludes [sample-interceptor]}})]
-              (t/is (nil? (find-included-interceptor (test-load-config) sample-interceptor)))))
-
-
-          (t/testing "parameter"
-            (with-redefs [sut/load-user-config (constantly {:interceptor {:excludes [[sample-interceptor "param"]]}})]
-              (t/is (nil? (find-included-interceptor (test-load-config) sample-interceptor)))))))
+          (with-redefs [sut/load-user-config (constantly {:interceptor {:excludes [sample-interceptor]}})]
+            (t/is (nil? (find-included-interceptor (test-load-config) sample-interceptor))))))
 
 
       (t/testing "project-local-config should exclude handlers/interceptors in default-config"
@@ -168,14 +294,8 @@
             (t/is (nil? (find-included-handler (test-load-config) sample-handler)))))
 
         (t/testing "interceptor"
-          (t/testing "no parameter"
-            (with-redefs [sut/load-project-local-config (constantly {:interceptor {:excludes [sample-interceptor]}})]
-              (t/is (nil? (find-included-interceptor (test-load-config) sample-interceptor)))))
-
-          (t/testing "parameter"
-            (with-redefs [sut/load-project-local-config (constantly {:interceptor {:excludes [[sample-interceptor "param"]]}})]
-              (t/is (nil? (find-included-interceptor (test-load-config) sample-interceptor)))))))
-
+          (with-redefs [sut/load-project-local-config (constantly {:interceptor {:excludes [sample-interceptor]}})]
+            (t/is (nil? (find-included-interceptor (test-load-config) sample-interceptor))))))
 
       (t/testing "project-local-config should exclude handlers/interceptors in user-config"
         (t/testing "handler"
@@ -184,12 +304,6 @@
             (t/is (nil? (find-included-handler (test-load-config) random-symbol)))))
 
         (t/testing "interceptor"
-          (t/testing "no parameter"
-            (with-redefs [sut/load-user-config (constantly {:interceptor {:includes [random-symbol]}})
-                          sut/load-project-local-config (constantly {:interceptor {:excludes [random-symbol]}})]
-              (t/is (nil? (find-included-interceptor (test-load-config) random-symbol)))))
-
-          (t/testing "parameter"
-            (with-redefs [sut/load-user-config (constantly {:interceptor {:includes [[random-symbol "param"]]}})
-                          sut/load-project-local-config (constantly {:interceptor {:excludes [random-symbol]}})]
-              (t/is (nil? (find-included-interceptor (test-load-config) random-symbol))))))))))
+          (with-redefs [sut/load-user-config (constantly {:interceptor {:includes [random-symbol]}})
+                        sut/load-project-local-config (constantly {:interceptor {:excludes [random-symbol]}})]
+            (t/is (nil? (find-included-interceptor (test-load-config) random-symbol)))))))))

@@ -19,17 +19,13 @@
   (let [status-handler? #(= :elin.handler.internal/status
                             (get-in % [:message :method]))]
     {:kind e.c.interceptor/handler
-     :params [""]
-     :enter (-> (fn [ctx]
-                  (let [{:keys [params]} (e.u.interceptor/self ctx)
-                        variable-name (first params)]
-                    (assoc ctx ::variable-name variable-name)))
-                (ix/when status-handler?))
-     :leave (-> (fn [{:component/keys [host] ::keys [variable-name] :keys [response]}]
-                  (when (and (string? variable-name)
-                             (string? response)
-                             (seq variable-name)
-                             (seq response))
-                    (e.p.host/set-variable! host variable-name response)))
+     :leave (-> (fn [{:as ctx :component/keys [host] :keys [response]}]
+                  (let [config (e.u.interceptor/config ctx #'setting-nrepl-connection-status-interceptor)
+                        {:keys [variable]} config]
+                    (when (and (string? variable)
+                               (string? response)
+                               (seq variable)
+                               (seq response))
+                      (e.p.host/set-variable! host variable response))))
                 (ix/when status-handler?)
                 (ix/discard))}))

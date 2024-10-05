@@ -7,6 +7,7 @@
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
+   [elin.util.handler :as e.u.handler]
    [elin.util.map :as e.u.map]
    [malli.core :as m]
    [taoensso.timbre :as timbre]))
@@ -39,10 +40,9 @@
   true)
 
 (defn status
-  [{:component/keys [handler nrepl]}]
-  (let [{:keys [disconnected connected]} (get-in handler [:config-map
-                                                          (symbol #'status)
-                                                          :label])]
+  [{:as elin :component/keys [nrepl]}]
+  (let [{:keys [label]} (e.u.handler/config elin #'status)
+        {:keys [disconnected connected]} label]
     (if (e.p.nrepl/disconnected? nrepl)
       disconnected
       connected)))

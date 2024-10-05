@@ -3,23 +3,23 @@
 
  :http-server {:port #empty-port []}
 
- :interceptor {:includes [elin.interceptor.autocmd/deinitialize-interceptor
-                          elin.interceptor.autocmd/ns-create-interceptor
-                          elin.interceptor.autocmd/skeleton-interceptor
-                          elin.interceptor.autocmd/clj-kondo-analyzing-interceptor
-                          elin.interceptor.connect/connected-interceptor
-                          elin.interceptor.connect/raw-message-channel-interceptor
-                          elin.interceptor.connect/port-auto-detecting-interceptor
-                          elin.interceptor.connect/cleanup-jacked-in-process-interceptor
-                          elin.interceptor.debug/initialize-debugger-interceptor
-                          elin.interceptor.debug/process-debugger-interceptor
-                          elin.interceptor.handler/handling-error-interceptor
-                          elin.interceptor.nrepl/nrepl-output-interceptor
-                          elin.interceptor.nrepl/eval-ns-interceptor
-                          elin.interceptor.nrepl/normalize-path-interceptor
-                          elin.interceptor.nrepl/progress-interceptor
-                          elin.interceptor.output/print-output-interceptor
-                          elin.interceptor.test/done-test-interceptor]
+ :interceptor {:uses [elin.interceptor.autocmd/deinitialize-interceptor {}
+                      elin.interceptor.autocmd/ns-create-interceptor {}
+                      elin.interceptor.autocmd/skeleton-interceptor {}
+                      elin.interceptor.autocmd/clj-kondo-analyzing-interceptor {}
+                      elin.interceptor.connect/connected-interceptor {}
+                      elin.interceptor.connect/raw-message-channel-interceptor {}
+                      elin.interceptor.connect/port-auto-detecting-interceptor {}
+                      elin.interceptor.connect/cleanup-jacked-in-process-interceptor {}
+                      elin.interceptor.debug/initialize-debugger-interceptor {}
+                      elin.interceptor.debug/process-debugger-interceptor {}
+                      elin.interceptor.handler/handling-error-interceptor {}
+                      elin.interceptor.nrepl/nrepl-output-interceptor {}
+                      elin.interceptor.nrepl/eval-ns-interceptor {}
+                      elin.interceptor.nrepl/normalize-path-interceptor {}
+                      elin.interceptor.nrepl/progress-interceptor {}
+                      elin.interceptor.output/print-output-interceptor {}
+                      elin.interceptor.test/done-test-interceptor {}]
 
                :preset {:evaluation {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor
                                                 elin.interceptor.evaluate/set-eval-result-to-virtual-text-interceptor
@@ -27,69 +27,50 @@
                                                 elin.interceptor.evaluate/store-eval-result-to-clipboard-interceptor]}
                         :code-change {:includes [elin.interceptor.code-change/code-changed-result-interceptor]}}}
 
- :handler {:includes [elin.handler.complete/complete
-                      elin.handler.connect/connect
-                      elin.handler.connect/disconnect
-                      elin.handler.connect/instant
-                      elin.handler.connect/jack-in
-                      elin.handler.evaluate/evaluate
-                      elin.handler.evaluate/evaluate-at-mark
-                      elin.handler.evaluate/evaluate-current-buffer
-                      elin.handler.evaluate/evaluate-current-expr
-                      elin.handler.evaluate/evaluate-current-list
-                      elin.handler.evaluate/evaluate-current-top-list
-                      elin.handler.evaluate/evaluate-namespace-form
-                      elin.handler.evaluate/interrupt
-                      elin.handler.evaluate/print-last-result
-                      elin.handler.evaluate/reload
-                      elin.handler.evaluate/reload-all
-                      elin.handler.evaluate/undef
-                      elin.handler.evaluate/undef-all
-                      elin.handler.internal/error
-                      elin.handler.internal/healthcheck
-                      elin.handler.internal/initialize
-                      elin.handler.internal/intercept
-                      elin.handler.internal/status
-                      elin.handler.lookup/lookup
-                      elin.handler.lookup/show-source
-                      elin.handler.namespace/add-libspec
-                      elin.handler.namespace/add-libspec*
-                      elin.handler.namespace/add-missing-libspec
-                      elin.handler.namespace/add-missing-libspec*
-                      elin.handler.navigate/cycle-source-and-test
-                      elin.handler.navigate/jump
-                      elin.handler.navigate/jump-to-definition
-                      elin.handler.navigate/references
-                      elin.handler.test/rerun-last-failed-tests
-                      elin.handler.test/rerun-last-tests
-                      elin.handler.test/run-test-under-cursor
-                      elin.handler.test/run-tests-in-ns]
-
-           :config-map {elin.handler.internal/healthcheck {:log {:min-level :error}}
-                        elin.handler.internal/status {:log {:min-level :error}
-                                                      :label {:disconnected ""
-                                                              :connected "🍏"}}
-                        elin.handler.complete/complete {:log {:min-level :error}}
-
-                        elin.handler.namespace/add-libspec* {:interceptor #ref [:interceptor :preset :code-change]}
-                        elin.handler.namespace/add-libspec {:favorites #include "favorite_aliases.edn"
-                                                            :java-classes #include "java_classes.edn"
-                                                            :interceptor #ref [:interceptor :preset :code-change]}
-                        elin.handler.namespace/add-missing-libspec* {:interceptor #ref [:interceptor :preset :code-change]}
-                        elin.handler.namespace/add-missing-libspec {:favorites #include "favorite_aliases.edn"
-                                                                    :java-classes #include "java_classes.edn"
-                                                                    :interceptor #ref [:interceptor :preset :code-change]}
-                        elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor]}}
-                        elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
-                        elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
-                        elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}
-                        elin.handler.evaluate/evaluate-namespace-form {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor]}}
-                        elin.handler.evaluate/evaluate-at-mark {:interceptor #ref [:interceptor :preset :evaluation]}
-                        elin.handler.evaluate/evaluate-current-buffer {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
-                        elin.handler.evaluate/reload {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
-                        elin.handler.evaluate/reload-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
-                        elin.handler.evaluate/undef {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
-                        elin.handler.evaluate/undef-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}}
+ :handler {:uses [elin.handler.complete/complete {:log {:min-level :error}}
+                  elin.handler.connect/connect {}
+                  elin.handler.connect/disconnect {}
+                  elin.handler.connect/instant {}
+                  elin.handler.connect/jack-in {}
+                  elin.handler.debug/nrepl-request {}
+                  elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor]}}
+                  elin.handler.evaluate/evaluate-at-mark {}
+                  elin.handler.evaluate/evaluate-current-buffer {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
+                  elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
+                  elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
+                  elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}
+                  elin.handler.evaluate/evaluate-namespace-form {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline-interceptor]}}
+                  elin.handler.evaluate/interrupt {}
+                  elin.handler.evaluate/print-last-result {}
+                  elin.handler.evaluate/reload {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
+                  elin.handler.evaluate/reload-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
+                  elin.handler.evaluate/undef {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
+                  elin.handler.evaluate/undef-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline-interceptor]}}
+                  elin.handler.internal/error {}
+                  elin.handler.internal/healthcheck {:log {:min-level :error}}
+                  elin.handler.internal/initialize {}
+                  elin.handler.internal/intercept {}
+                  elin.handler.internal/status {:log {:min-level :error}
+                                                :label {:disconnected ""
+                                                        :connected "🍏"}}
+                  elin.handler.lookup/lookup {}
+                  elin.handler.lookup/show-source {}
+                  elin.handler.namespace/add-libspec {:favorites #include "favorite_aliases.edn"
+                                                      :java-classes #include "java_classes.edn"
+                                                      :interceptor #ref [:interceptor :preset :code-change]}
+                  elin.handler.namespace/add-libspec* {:interceptor #ref [:interceptor :preset :code-change]}
+                  elin.handler.namespace/add-missing-libspec {:favorites #include "favorite_aliases.edn"
+                                                              :java-classes #include "java_classes.edn"
+                                                              :interceptor #ref [:interceptor :preset :code-change]}
+                  elin.handler.namespace/add-missing-libspec* {:interceptor #ref [:interceptor :preset :code-change]}
+                  elin.handler.navigate/cycle-source-and-test {}
+                  elin.handler.navigate/jump {}
+                  elin.handler.navigate/jump-to-definition {}
+                  elin.handler.navigate/references {}
+                  elin.handler.test/rerun-last-failed-tests {}
+                  elin.handler.test/rerun-last-tests {}
+                  elin.handler.test/run-test-under-cursor {}
+                  elin.handler.test/run-tests-in-ns {}]
 
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 

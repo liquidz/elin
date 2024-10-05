@@ -12,8 +12,10 @@
    :optional true
    :params ["identity"]
    :enter (fn [{:as ctx :keys [code]}]
-            (let [{:keys [params]} (e.u.interceptor/self ctx)]
-              (assoc ctx :code (format "(%s %s)" (first params) code))))})
+            (let [config (e.u.interceptor/config ctx #'wrap-eval-code-interceptor)]
+              (if (seq (:code config))
+                (assoc ctx :code (format "(%s %s)" (:code config) code))
+                ctx)))})
 
 (def eval-with-context-interceptor
   {:name ::eval-with-context-interceptor
