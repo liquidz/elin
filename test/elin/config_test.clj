@@ -38,6 +38,11 @@
              (sut/merge-configs {:a {:excludes [1]}}
                                 {:a {:excludes [2]}}))))
 
+  (t/testing "uses"
+    (t/is (= {:a {:uses [1 2]}}
+             (sut/merge-configs {:a {:uses [1]}}
+                                {:a {:uses [2]}}))))
+
   (t/testing "set"
     (t/is (= {:a {:set #{1 2}}}
              (sut/merge-configs {:a {:set #{1}}}

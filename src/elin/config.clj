@@ -39,7 +39,7 @@
                              (not v1)
                              v2
 
-                             (and (contains? #{:includes :excludes} k)
+                             (and (contains? #{:includes :excludes :uses} k)
                                   (sequential? v1) (sequential? v2))
                              (vec (concat v1 v2))
 
