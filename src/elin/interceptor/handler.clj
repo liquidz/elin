@@ -1,5 +1,6 @@
 (ns elin.interceptor.handler
   (:require
+   [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
    [elin.message :as e.message]
@@ -29,3 +30,19 @@
                       (e.p.host/set-variable! host variable response))))
                 (ix/when status-handler?)
                 (ix/discard))}))
+
+(def show-result-as-popup
+  "Interceptor to show handler result as popup."
+  {:kind e.c.interceptor/handler
+   :leave (-> (fn [{:as ctx :component/keys [host] :keys [response]}]
+                (when (and (string? response)
+                           (seq response))
+                  (let [config (e.u.interceptor/config ctx #'show-result-as-popup)
+                        options (merge {:line "near-cursor"
+                                        :border []
+                                        :filetype "clojure"
+                                        :moved "any"}
+                                       config)]
+                    (async/<!!
+                     (e.p.host/open-popup! host response options)))))
+              (ix/discard))})
