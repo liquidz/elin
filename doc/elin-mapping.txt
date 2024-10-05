@@ -1,40 +1,318 @@
 ------------------------------------------------------------------------------
-DEFAULT KEYS                                 *elin-configuration-default-keys*
+COMMANDS                                                         *elin-commands*
+
+                                                                   *ElinConnect*
+ElinConnect
+  Calls `elin.handler.connect/connect` handler.
+  Key is mapped to |<Plug>(elin_connect)|.
+
+                                                            *ElinInstantConnect*
+ElinInstantConnect
+  Calls `elin.handler.connect/instant` handler.
+  Key is mapped to |null|.
+
+                                                                *ElinDisconnect*
+ElinDisconnect
+  Calls `elin.handler.connect/disconnect` handler.
+  Key is mapped to |null|.
+
+                                                                    *ElinJackIn*
+ElinJackIn
+  Calls `elin.handler.connect/jack-in` handler.
+  Key is mapped to |<Plug>(elin_jack_in)|.
+
+                                                                      *ElinEval*
+ElinEval
+  Calls `elin.handler.evaluate/evaluate` handler.
+  Key is mapped to |null|.
+
+                                                           *ElinEvalCurrentExpr*
+ElinEvalCurrentExpr
+  Calls `elin.handler.evaluate/evaluate-current-expr` handler.
+  Key is mapped to |<Plug>(elin_eval_current_expr)|.
+
+                                                           *ElinEvalCurrentList*
+ElinEvalCurrentList
+  Calls `elin.handler.evaluate/evaluate-current-list` handler.
+  Key is mapped to |<Plug>(elin_eval_current_list)|.
+
+                                                        *ElinEvalCurrentTopList*
+ElinEvalCurrentTopList
+  Calls `elin.handler.evaluate/evaluate-current-top-list` handler.
+  Key is mapped to |<Plug>(elin_eval_current_top_list)|.
+
+                                                         *ElinEvalCurrentBuffer*
+ElinEvalCurrentBuffer
+  Calls `elin.handler.evaluate/evaluate-current-buffer` handler.
+  Key is mapped to |<Plug>(elin_eval_current_buffer)|.
+
+                                                                *ElinEvalNsForm*
+ElinEvalNsForm
+  Calls `elin.handler.evaluate/evaluate-namespace-form` handler.
+  Key is mapped to |<Plug>(elin_eval_ns_form)|.
+
+                                                                *ElinEvalAtMark*
+ElinEvalAtMark
+  Calls `elin.handler.evaluate/evaluate-at-mark` handler.
+  Key is mapped to |<Plug>(elin_eval_at_mark)|.
+
+                                                             *ElinEvalInContext*
+ElinEvalInContext
+  Calls `elin.handler.evaluate/evaluate-current-list` handler.
+  Key is mapped to |<Plug>(elin_eval_in_context)|.
+
+                                                           *ElinPrintLastResult*
+ElinPrintLastResult
+  Calls `elin.handler.evaluate/print-last-result` handler.
+  Key is mapped to |<Plug>(elin_print_last_result)|.
+
+                                                                 *ElinInterrupt*
+ElinInterrupt
+  Calls `elin.handler.evaluate/interrupt` handler.
+  Key is mapped to |<Plug>(elin_interrupt)|.
+
+                                                                     *ElinUndef*
+ElinUndef
+  Calls `elin.handler.evaluate/undef` handler.
+  Key is mapped to |<Plug>(elin_undef)|.
+
+                                                                  *ElinUndefAll*
+ElinUndefAll
+  Calls `elin.handler.evaluate/undef-all` handler.
+  Key is mapped to |<Plug>(elin_undef_all)|.
+
+                                                                    *ElinReload*
+ElinReload
+  Calls `elin.handler.evaluate/reload` handler.
+  Key is mapped to |<Plug>(elin_reload)|.
+
+                                                                 *ElinReloadAll*
+ElinReloadAll
+  Calls `elin.handler.evaluate/reload-all` handler.
+  Key is mapped to |<Plug>(elin_reload_all)|.
+
+                                                                *ElinAddLibspec*
+ElinAddLibspec
+  Calls `elin.handler.namespace/add-libspec` handler.
+  Key is mapped to |<Plug>(elin_add_libspec)|.
+
+                                                         *ElinAddMissingLibspec*
+ElinAddMissingLibspec
+  Calls `elin.handler.namespace/add-missing-libspec` handler.
+  Key is mapped to |<Plug>(elin_add_missing_libspec)|.
+
+                                                          *ElinJumpToDefinition*
+ElinJumpToDefinition
+  Calls `elin.handler.navigate/jump-to-definition` handler.
+  Key is mapped to |<Plug>(elin_jump_to_definition)|.
+
+                                                                *ElinReferences*
+ElinReferences
+  Calls `elin.handler.navigate/references` handler.
+  Key is mapped to |<Plug>(elin_references)|.
+
+                                                                    *ElinLookup*
+ElinLookup
+  Calls `elin.handler.lookup/lookup` handler.
+  Key is mapped to |<Plug>(elin_lookup)|.
+
+                                                                *ElinShowSource*
+ElinShowSource
+  Calls `elin.handler.lookup/show-source` handler.
+  Key is mapped to |<Plug>(elin_show_source)|.
+
+                                                           *ElinTestUnderCursor*
+ElinTestUnderCursor
+  Calls `elin.handler.test/run-test-under-cursor` handler.
+  Key is mapped to |<Plug>(elin_test_under_cursor)|.
+
+                                                                  *ElinTestInNs*
+ElinTestInNs
+  Calls `elin.handler.test/run-tests-in-ns` handler.
+  Key is mapped to |<Plug>(elin_test_in_ns)|.
+
+                                                                  *ElinTestLast*
+ElinTestLast
+  Calls `elin.handler.test/rerun-last-tests` handler.
+  Key is mapped to |<Plug>(elin_test_last)|.
+
+                                                            *ElinTestLastFailed*
+ElinTestLastFailed
+  Calls `elin.handler.test/rerun-last-failed-tests` handler.
+  Key is mapped to |<Plug>(elin_test_last_failed)|.
+
+                                                        *ElinCycleSourceAndTest*
+ElinCycleSourceAndTest
+  Calls `elin.handler.navigate/cycle-source-and-test` handler.
+  Key is mapped to |<Plug>(elin_cycle_source_and_test)|.
+
+                                                          *ElinToggleInfoBuffer*
+ElinToggleInfoBuffer
+  Calls `elin#internal#buffer#info#toggle()`.
+  Key is mapped to |<Plug>(elin_toggle_info_buffer)|.
+
+                                                           *ElinClearInfoBuffer*
+ElinClearInfoBuffer
+  Calls `elin#internal#buffer#info#clear()`.
+  Key is mapped to |<Plug>(elin_clear_info_buffer)|.
+
+                                                         *ElinClearVirtualTexts*
+ElinClearVirtualTexts
+  Calls `elin#internal#virtual_text#clear()`.
+  Key is mapped to |<Plug>(elin_clear_virtual_texts)|.
+
+------------------------------------------------------------------------------
+MAPPINGS                                                         *elin-mappings*
+
+                                                          *<Plug>(elin_connect)*
+<Plug>(elin_connect)
+  Same as |ElinConnect|.
+
+                                                          *<Plug>(elin_jack_in)*
+<Plug>(elin_jack_in)
+  Same as |ElinJackIn|.
+
+                                                *<Plug>(elin_eval_current_expr)*
+<Plug>(elin_eval_current_expr)
+  Same as |ElinEvalCurrentExpr|.
+
+                                                *<Plug>(elin_eval_current_list)*
+<Plug>(elin_eval_current_list)
+  Same as |ElinEvalCurrentList|.
+
+                                            *<Plug>(elin_eval_current_top_list)*
+<Plug>(elin_eval_current_top_list)
+  Same as |ElinEvalCurrentTopList|.
+
+                                              *<Plug>(elin_eval_current_buffer)*
+<Plug>(elin_eval_current_buffer)
+  Same as |ElinEvalCurrentBuffer|.
+
+                                                     *<Plug>(elin_eval_ns_form)*
+<Plug>(elin_eval_ns_form)
+  Same as |ElinEvalNsForm|.
+
+                                                     *<Plug>(elin_eval_at_mark)*
+<Plug>(elin_eval_at_mark)
+  Same as |ElinEvalAtMark|.
+
+                                                  *<Plug>(elin_eval_in_context)*
+<Plug>(elin_eval_in_context)
+  Same as |ElinEvalInContext|.
+
+                                                *<Plug>(elin_print_last_result)*
+<Plug>(elin_print_last_result)
+  Same as |ElinPrintLastResult|.
+
+                                                        *<Plug>(elin_interrupt)*
+<Plug>(elin_interrupt)
+  Same as |ElinInterrupt|.
+
+                                                            *<Plug>(elin_undef)*
+<Plug>(elin_undef)
+  Same as |ElinUndef|.
+
+                                                        *<Plug>(elin_undef_all)*
+<Plug>(elin_undef_all)
+  Same as |ElinUndefAll|.
+
+                                                           *<Plug>(elin_reload)*
+<Plug>(elin_reload)
+  Same as |ElinReload|.
+
+                                                       *<Plug>(elin_reload_all)*
+<Plug>(elin_reload_all)
+  Same as |ElinReloadAll|.
+
+                                                      *<Plug>(elin_add_libspec)*
+<Plug>(elin_add_libspec)
+  Same as |ElinAddLibspec|.
+
+                                              *<Plug>(elin_add_missing_libspec)*
+<Plug>(elin_add_missing_libspec)
+  Same as |ElinAddMissingLibspec|.
+
+                                               *<Plug>(elin_jump_to_definition)*
+<Plug>(elin_jump_to_definition)
+  Same as |ElinJumpToDefinition|.
+
+                                                       *<Plug>(elin_references)*
+<Plug>(elin_references)
+  Same as |ElinReferences|.
+
+                                                           *<Plug>(elin_lookup)*
+<Plug>(elin_lookup)
+  Same as |ElinLookup|.
+
+                                                      *<Plug>(elin_show_source)*
+<Plug>(elin_show_source)
+  Same as |ElinShowSource|.
+
+                                                *<Plug>(elin_test_under_cursor)*
+<Plug>(elin_test_under_cursor)
+  Same as |ElinTestUnderCursor|.
+
+                                                       *<Plug>(elin_test_in_ns)*
+<Plug>(elin_test_in_ns)
+  Same as |ElinTestInNs|.
+
+                                                        *<Plug>(elin_test_last)*
+<Plug>(elin_test_last)
+  Same as |ElinTestLast|.
+
+                                                 *<Plug>(elin_test_last_failed)*
+<Plug>(elin_test_last_failed)
+  Same as |ElinTestLastFailed|.
+
+                                            *<Plug>(elin_cycle_source_and_test)*
+<Plug>(elin_cycle_source_and_test)
+  Same as |ElinCycleSourceAndTest|.
+
+                                               *<Plug>(elin_toggle_info_buffer)*
+<Plug>(elin_toggle_info_buffer)
+  Same as |ElinToggleInfoBuffer|.
+
+                                                *<Plug>(elin_clear_info_buffer)*
+<Plug>(elin_clear_info_buffer)
+  Same as |ElinClearInfoBuffer|.
+
+                                              *<Plug>(elin_clear_virtual_texts)*
+<Plug>(elin_clear_virtual_texts)
+  Same as |ElinClearVirtualTexts|.
+
+------------------------------------------------------------------------------
+DEFAULT MAPPINGS                                         *elin-default-mappings*
 
 {mode} {lhs}         {rhs}
------- ------------- -----------------------------------------------
-n      <Leader>'     elin.handler.connect/connect
-n      <Leader>"     elin.handler.connect/jack-in
-n      <Leader>ei    elin.handler.evaluate/evaluate-current-expr
-n      <Leader>ee    elin.handler.evaluate/evaluate-current-list
-n      <Leader>et    elin.handler.evaluate/evaluate-current-top-list
-n      <Leader>eb    elin.handler.evaluate/evaluate-current-buffer
-n      <Leader>en    elin.handler.evaluate/evaluate-namespace-form
-n      <Leader>ep    elin.handler.evaluate/print-last-result
-n      <Leader>ea    elin.handler.evaluate/evaluate-at-mark
-n      <Leader>ece   elin.handler.evaluate/evaluate-current-list
-                     Uses: elin.interceptor.optional.evaluate/eval-with-context-interceptor
-n      <Leader>epe   elin.handler.evaluate/evaluate-current-list
-                     Uses: [elin.interceptor.optional.evaluate/wrap-eval-code-interceptor "println"]
-n      <Leader>eq    elin.handler.evaluate/interrupt
-n      <Leader>eu    elin.handler.evaluate/undef
-n      <Leader>eU    elin.handler.evaluate/undef-all
-n      <Leader>enr   elin.handler.evaluate/reload
-n      <Leader>enR   elin.handler.evaluate/reload-all
-n      <Leader>ran   elin.handler.namespace/add-libspec
-n      <Leader>ram   elin.handler.namespace/add-missing-libspec
-n      <C-]>         elin.handler.navigate/jump-to-definition
-n      <Leader>br    elin.handler.navigate/references
-n      K             elin.handler.lookup/lookup
-n      <Leader>hs    elin.handler.lookup/show-source
-n      <Leader>tt    elin.handler.test/run-test-under-cursor
-n      <Leader>tn    elin.handler.test/run-tests-in-ns
-n      <Leader>tl    elin.handler.test/rerun-last-tests
-n      <Leader>tr    elin.handler.test/rerun-last-tests
-n      tt            elin.handler.navigate/cycle-source-and-test
-n      <Leader>ss    elin#internal#buffer#info#toggle()
-n      <Leader>sl    elin#internal#buffer#info#clear()
-n      <Leader><Esc> elin#internal#virtual_text#clear()
+n      <Leader>'     <Plug>(elin_connect)
+n      <Leader>"     <Plug>(elin_jack_in)
+n      <Leader>ei    <Plug>(elin_eval_current_expr)
+n      <Leader>ee    <Plug>(elin_eval_current_list)
+n      <Leader>et    <Plug>(elin_eval_current_top_list)
+n      <Leader>eb    <Plug>(elin_eval_current_buffer)
+n      <Leader>en    <Plug>(elin_eval_ns_form)
+n      <Leader>ea    <Plug>(elin_eval_at_mark)
+n      <Leader>ece   <Plug>(elin_eval_in_context)
+n      <Leader>ep    <Plug>(elin_print_last_result)
+n      <Leader>eq    <Plug>(elin_interrupt)
+n      <Leader>eu    <Plug>(elin_undef)
+n      <Leader>eU    <Plug>(elin_undef_all)
+n      <Leader>enr   <Plug>(elin_reload)
+n      <Leader>enR   <Plug>(elin_reload_all)
+n      <Leader>ran   <Plug>(elin_add_libspec)
+n      <Leader>ram   <Plug>(elin_add_missing_libspec)
+n      <C-]>         <Plug>(elin_jump_to_definition)
+n      <Leader>br    <Plug>(elin_references)
+n      K             <Plug>(elin_lookup)
+n      <Leader>hs    <Plug>(elin_show_source)
+n      <Leader>tt    <Plug>(elin_test_under_cursor)
+n      <Leader>tn    <Plug>(elin_test_in_ns)
+n      <Leader>tl    <Plug>(elin_test_last)
+n      <Leader>tr    <Plug>(elin_test_last_failed)
+n      tt            <Plug>(elin_cycle_source_and_test)
+n      <Leader>ss    <Plug>(elin_toggle_info_buffer)
+n      <Leader>sl    <Plug>(elin_clear_info_buffer)
+n      <Leader><Esc> <Plug>(elin_clear_virtual_texts)
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:
