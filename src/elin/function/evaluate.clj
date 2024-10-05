@@ -112,3 +112,12 @@
                                 :cursor-column cur-col
                                 :ns ns-str
                                 :file path})))))
+
+(defn expand-1
+  [{:component/keys [nrepl]} ns-str code]
+  (e/let [code' (format "(clojure.core/macroexpand-1 '%s)" code)
+          options (if (seq ns-str)
+                    {:ns ns-str}
+                    {})
+          resp (e.f.nrepl/eval!! nrepl code' options)]
+    resp))

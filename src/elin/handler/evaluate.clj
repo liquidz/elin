@@ -1,6 +1,7 @@
 (ns elin.handler.evaluate
   (:require
    [clojure.core.async :as async]
+   [clojure.pprint :as pp]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
    [elin.function.evaluate :as e.f.evaluate]
@@ -107,3 +108,15 @@
   [{:as elin :component/keys [nrepl]}]
   (e/let [ns-str (e.f.sexpr/get-namespace elin)]
     (e.f.n.cider/undef-all!! nrepl ns-str)))
+
+(defn expand-1-current-list
+  [{:as elin :component/keys [host]}]
+  (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
+          {:keys [code]} (e.f.sexpr/get-list elin cur-lnum cur-col)
+          ns-str (e/error-or (e.f.sexpr/get-namespace elin)
+                             "")
+          resp (e.f.evaluate/expand-1 elin ns-str code)]
+    (with-out-str
+      (-> (:value resp)
+          (read-string)
+          (pp/pprint)))))

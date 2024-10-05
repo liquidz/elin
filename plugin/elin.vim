@@ -90,6 +90,8 @@ command! ElinUndefAll call elin#notify('elin.handler.evaluate/undef-all', [])
 command! ElinReload call elin#notify('elin.handler.evaluate/reload', [])
 command! ElinReloadAll call elin#notify('elin.handler.evaluate/reload-all', [])
 
+command! ElinMacroExpand1CurrentList call elin#notify('elin.handler.evaluate/expand-1-current-list', [])
+
 " Refactoring
 command! ElinAddLibspec call elin#notify('elin.handler.namespace/add-libspec', [])
 command! ElinAddMissingLibspec call elin#notify('elin.handler.namespace/add-missing-libspec', [])
@@ -138,6 +140,8 @@ nnoremap <silent> <Plug>(elin_undef_all) <Cmd>ElinUndefAll<CR>
 
 nnoremap <silent> <Plug>(elin_reload) <Cmd>ElinReload<CR>
 nnoremap <silent> <Plug>(elin_reload_all) <Cmd>ElinReloadAll<CR>
+
+nnoremap <silent> <Plug>(elin_macro_expand1_current_list) <Cmd>ElinMacroExpand1CurrentList<CR>
 
 " Refactoring
 nnoremap <silent> <Plug>(elin_add_libspec) <Cmd>ElinAddLibspec<CR>
@@ -213,6 +217,8 @@ function! s:default_key_mappings() abort
 
   call s:define_mapping('nmap', '<Leader>enr', '<Plug>(elin_reload)')
   call s:define_mapping('nmap', '<Leader>enR', '<Plug>(elin_reload_all)')
+
+  call s:define_mapping('nmap', '<Leader>em', '<Plug>(elin_macro_expand1_current_list)')
 
   " Refactoring
   call s:define_mapping('nmap', '<Leader>ran', '<Plug>(elin_add_libspec)')
