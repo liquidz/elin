@@ -121,6 +121,11 @@ ElinShowSource
   Calls `elin.handler.lookup/show-source` handler.
   Key is mapped to |<Plug>(elin_show_source)|.
 
+                                                           *ElinShowClojureDocs*
+ElinShowClojureDocs
+  Calls `elin.handler.lookup/show-clojuredocs` handler.
+  Key is mapped to |<Plug>(elin_show_clojuredocs)|.
+
                                                            *ElinTestUnderCursor*
 ElinTestUnderCursor
   Calls `elin.handler.test/run-test-under-cursor` handler.
@@ -248,6 +253,10 @@ MAPPINGS                                                         *elin-mappings*
 <Plug>(elin_show_source)
   Same as |ElinShowSource|.
 
+                                                 *<Plug>(elin_show_clojuredocs)*
+<Plug>(elin_show_clojuredocs)
+  Same as |ElinShowClojureDocs|.
+
                                                 *<Plug>(elin_test_under_cursor)*
 <Plug>(elin_test_under_cursor)
   Same as |ElinTestUnderCursor|.
@@ -305,6 +314,7 @@ n      <C-]>         <Plug>(elin_jump_to_definition)
 n      <Leader>br    <Plug>(elin_references)
 n      K             <Plug>(elin_lookup)
 n      <Leader>hs    <Plug>(elin_show_source)
+n      <Leader>hc    <Plug>(elin_show_clojuredocs)
 n      <Leader>tt    <Plug>(elin_test_under_cursor)
 n      <Leader>tn    <Plug>(elin_test_in_ns)
 n      <Leader>tl    <Plug>(elin_test_last)

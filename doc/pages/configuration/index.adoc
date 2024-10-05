@@ -10,6 +10,21 @@ Project local configuration:
 
 * `.elin/config.edn`
 
+
+`:uses` は `:includes` と `:config-map` のシンタックスシュガーで以下と等価です。
+
+[source,edn]
+----
+{:uses [foo {:bar "baz"}]}
+
+{:includes [foo]
+ :config-map {foo {:bar "baz"}}}
+----
+
 === Vim/Neovim
 
 include::./vim/index.adoc[]
+
+
+
+// call s:define_mapping('nmap', "<Leader>epe", '<Cmd>call elin#notify("elin.handler.evaluate/evaluate-current-list", [], {"config": "{:interceptor {:includes [[elin.interceptor.optional.evaluate/wrap-eval-code-interceptor \"println\"]]}}"})<CR>')
