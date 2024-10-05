@@ -101,6 +101,7 @@ command! ElinReferences call elin#notify("elin.handler.navigate/references", [])
 " Documentation
 command! ElinLookup call elin#notify("elin.handler.lookup/lookup", [])
 command! ElinShowSource call elin#notify("elin.handler.lookup/show-source", [])
+command! ElinShowClojureDocs call elin#notify("elin.handler.lookup/show-clojuredocs", [])
 
 " Testing
 command! ElinTestUnderCursor call elin#notify("elin.handler.test/run-test-under-cursor", [])
@@ -149,6 +150,7 @@ nnoremap <silent> <Plug>(elin_references) <Cmd>ElinReferences<CR>
 " Documentation
 nnoremap <silent> <Plug>(elin_lookup) <Cmd>ElinLookup<CR>
 nnoremap <silent> <Plug>(elin_show_source) <Cmd>ElinShowSource<CR>
+nnoremap <silent> <Plug>(elin_show_clojuredocs) <Cmd>ElinShowClojureDocs<CR>
 
 " Testing
 nnoremap <silent> <Plug>(elin_test_under_cursor) <Cmd>ElinTestUnderCursor<CR>
@@ -223,6 +225,7 @@ function! s:default_key_mappings() abort
   " Documentation
   call s:define_mapping('nmap', "K", '<Plug>(elin_lookup)')
   call s:define_mapping('nmap', "<Leader>hs", '<Plug>(elin_show_source)')
+  call s:define_mapping('nmap', "<Leader>hc", '<Plug>(elin_show_clojuredocs)')
 
   " Testing
   call s:define_mapping('nmap', "<Leader>tt", '<Plug>(elin_test_under_cursor)')
