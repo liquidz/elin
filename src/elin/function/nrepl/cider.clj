@@ -100,3 +100,34 @@
   (e.p.nrepl/notify nrepl {:op e.c.nrepl/debug-input-op
                            :key key-str
                            :input input-str}))
+
+(defn log-frameworks
+  [nrepl]
+  (e.p.nrepl/notify nrepl {:op e.c.nrepl/log-frameworks}))
+
+(defn log-add-appender
+  [nrepl {:keys [framework appender filters size threshold]}]
+  (e.p.nrepl/notify nrepl {:op e.c.nrepl/log-add-appender
+                           :framework framework
+                           :appender appender
+                           :filters filters
+                           :size size
+                           :threshold threshold}))
+
+(defn log-clear-appender
+  [nrepl {:keys [framework appender]}]
+  (e.p.nrepl/notify nrepl {:op e.c.nrepl/log-clear-appender
+                           :framework framework
+                           :appender appender}))
+
+(defn log-remove-appender!
+  [nrepl {:keys [framework appender]}]
+  (e.p.nrepl/request nrepl {:op e.c.nrepl/log-remove-appender
+                            :framework framework
+                            :appender appender}))
+
+(defn log-search!
+  [nrepl {:keys [framework appender]}]
+  (e.p.nrepl/request nrepl {:op e.c.nrepl/log-search
+                            :framework framework
+                            :appender appender}))

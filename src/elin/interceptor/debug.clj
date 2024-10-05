@@ -18,7 +18,9 @@
    [taoensso.timbre :as timbre]))
 
 (def ^:private do-not-log-ops
-  #{"completions" "complete"})
+  #{e.c.nrepl/completions-op
+    e.c.nrepl/complete-op
+    e.c.nrepl/log-search})
 
 (def nrepl-debug-interceptor
   {:kind e.c.interceptor/nrepl

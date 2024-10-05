@@ -27,6 +27,11 @@
 (def test-var-query-op "test-var-query")
 (def undef-all-op "undef-all")
 (def undef-op "undef")
+(def log-frameworks "cider/log-frameworks")
+(def log-add-appender "cider/log-add-appender")
+(def log-clear-appender "cider/log-clear-appender")
+(def log-remove-appender "cider/log-remove-appender")
+(def log-search "cider/log-search")
 
 ;; refactor-nrepl ops
 
