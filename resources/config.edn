@@ -53,9 +53,10 @@
                   elin.handler.internal/status {:log {:min-level :error}
                                                 :label {:disconnected ""
                                                         :connected "🍏"}}
-                  elin.handler.lookup/lookup {}
-                  elin.handler.lookup/show-source {}
-                  elin.handler.lookup/show-clojuredocs {:export-edn-url "https://github.com/clojure-emacs/clojuredocs-export-edn/raw/master/exports/export.compact.edn"}
+                  elin.handler.lookup/lookup {:interceptor {:uses [elin.interceptor.handler/show-result-as-popup {:moved "current-line"}]}}
+                  elin.handler.lookup/show-source {:interceptor {:includes [elin.interceptor.handler/show-result-as-popup]}}
+                  elin.handler.lookup/show-clojuredocs {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}
+                                                        :export-edn-url "https://github.com/clojure-emacs/clojuredocs-export-edn/raw/master/exports/export.compact.edn"}
                   elin.handler.namespace/add-libspec {:favorites #include "favorite_aliases.edn"
                                                       :java-classes #include "java_classes.edn"
                                                       :interceptor #ref [:interceptor :preset :code-change]}

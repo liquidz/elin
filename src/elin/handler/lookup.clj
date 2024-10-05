@@ -74,33 +74,18 @@
           ns-str (e.f.sexpr/get-namespace elin)
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           resp (e.f.lookup/lookup elin ns-str code)]
-    (async/<!!
-     (e.p.host/open-popup!
-      host
-      (generate-doc resp)
-      {:line "near-cursor"
-       :border []
-       :filetype "help"
-       :moved "current-line"}))))
+    (generate-doc resp)))
 
 (defn show-source
   [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e.f.sexpr/get-namespace elin)
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          resp (e.f.lookup/lookup elin ns-str code)
-          source (e.u.sexpr/extract-form-by-position
-                  (slurp (:file resp))
-                  (:line resp)
-                  (:column resp))]
-    (async/<!!
-     (e.p.host/open-popup!
-      host
-      source
-      {:line "near-cursor"
-       :border []
-       :filetype "clojure"
-       :moved "any"}))))
+          resp (e.f.lookup/lookup elin ns-str code)]
+    (e.u.sexpr/extract-form-by-position
+     (slurp (:file resp))
+     (:line resp)
+     (:column resp))))
 
 (defn- generate-clojuredocs-content
   [{:as doc :keys [examples see-alsos notes]}]
@@ -148,8 +133,7 @@
        (str/join "\n")))
 
 (defn show-clojuredocs
-  [{:as elin :component/keys [host]}]
+  [elin]
   (e/let [export-edn-url (:export-edn-url (e.u.handler/config elin #'show-clojuredocs))
-          doc (e.f.lookup/clojuredocs-lookup elin export-edn-url)
-          content (generate-clojuredocs-content doc)]
-    (e.p.host/append-to-info-buffer host content {:show-temporarily? true})))
+          doc (e.f.lookup/clojuredocs-lookup elin export-edn-url)]
+    (generate-clojuredocs-content doc)))
