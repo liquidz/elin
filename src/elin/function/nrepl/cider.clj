@@ -131,3 +131,13 @@
   (e.p.nrepl/request nrepl {:op e.c.nrepl/log-search
                             :framework framework
                             :appender appender}))
+
+(defn clojuredocs-lookup!!
+  [nrepl ns-str sym-str export-edn-url]
+  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/clojuredocs-lookup
+                                  :ns ns-str
+                                  :sym sym-str
+                                  :export-edn-url export-edn-url})
+        (async/<!!)
+        (e.u.nrepl/merge-messages)
+        (:clojuredocs)))

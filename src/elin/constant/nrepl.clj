@@ -32,6 +32,7 @@
 (def log-clear-appender "cider/log-clear-appender")
 (def log-remove-appender "cider/log-remove-appender")
 (def log-search "cider/log-search")
+(def clojuredocs-lookup "clojuredocs-lookup")
 
 ;; refactor-nrepl ops
 
