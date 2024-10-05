@@ -53,9 +53,11 @@
 
 (def location-function-hook-interceptor
   "Interceptor to call any function on host side when location list is updated.
-  Required to config like below.
-
-  {:function [\"luaeval\" [\"require('telescope.builtin').loclist()\"]]}"
+  Required to config like below:
+  ```
+  {:interceptor {:config-map {elin.interceptor.quickfix/location-function-hook-interceptor
+                              {:function [\"luaeval\" [\"require('telescope.builtin').loclist()\"]]}}}}
+  ```"
   {:kind e.c.interceptor/quickfix
    :leave (-> (fn [{:as ctx :component/keys [host]}]
                 (let [{:keys [function]} (e.u.interceptor/config ctx #'location-function-hook-interceptor)]

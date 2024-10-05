@@ -14,6 +14,7 @@
    [exoscale.interceptor :as ix]))
 
 (def eval-ns-interceptor
+  "Interceptor to delete ns keyword from nREPL request on evaluating ns form."
   {:kind e.c.interceptor/nrepl
    :enter (-> (fn [{:as ctx :keys [request]}]
                 (let [{:keys [code]} request]
@@ -23,6 +24,7 @@
               (ix/when #(= e.c.nrepl/eval-op (get-in % [:request :op]))))})
 
 (def normalize-path-interceptor
+  "Interceptor to normalize path on nREPL response."
   {:kind e.c.interceptor/nrepl
    :leave (fn [{:as ctx :keys [request response]}]
             (cond
@@ -41,6 +43,7 @@
               ctx))})
 
 (def output-result-to-cmdline-interceptor
+  "Interceptor to output nREPL result as message."
   {:kind e.c.interceptor/nrepl
    :leave (-> (fn [{:component/keys [host] :keys [request response]}]
                 (let [msg (e.u.nrepl/merge-messages response)
@@ -60,6 +63,7 @@
               (ix/discard))})
 
 (def progress-interceptor
+  "Interceptor to show progress popup on nREPL request."
   (let [target-ops #{e.c.nrepl/eval-op
                      e.c.nrepl/load-file-op
                      e.c.nrepl/test-var-query-op
@@ -115,6 +119,8 @@
                 (ix/discard))}))
 
 (def nrepl-output-interceptor
+  "Interceptor to intercept nREPL output.
+  This interceptor executes interceptors with e.c.interceptor/output kind."
   {:kind e.c.interceptor/raw-nrepl
    :leave (-> (fn [{:as ctx :component/keys [interceptor] :keys [message]}]
                 (let [output (cond
