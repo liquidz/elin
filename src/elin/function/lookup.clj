@@ -75,3 +75,15 @@
 
     (catch Exception e
       (e/fault {:message (pr-str e)}))))
+
+(defn clojuredocs-lookup
+  [{:as elin :component/keys [host nrepl]} export-edn-url]
+  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
+          {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
+          [ns-str name-str] (e/error-or
+                             (e/let [ns-str (e.f.sexpr/get-namespace elin)
+                                     resp (lookup elin ns-str code)]
+                               [(:ns resp) (:name resp)])
+                             (str/split code #"/" 2))]
+    (or (e.f.n.cider/clojuredocs-lookup!! nrepl ns-str name-str export-edn-url)
+        (e/not-found))))

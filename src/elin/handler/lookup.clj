@@ -8,6 +8,7 @@
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
+   [elin.util.handler :as e.u.handler]
    [elin.util.sexpr :as e.u.sexpr]
    [malli.core :as m]))
 
@@ -100,3 +101,55 @@
        :border []
        :filetype "clojure"
        :moved "any"}))))
+
+(defn- generate-clojuredocs-content
+  [{:as doc :keys [examples see-alsos notes]}]
+  (->> [(format "# %s/%s" (:ns doc) (:name doc))
+        (->> (:arglists doc)
+             (map #(format "(%s %s)" (:name doc) %))
+             (str/join " ")
+             (format "`%s`"))
+        ""
+        (format "  %s" (:doc doc))
+
+        ;; Examples
+        (when (seq examples)
+          [""
+           (format "## %d %s" (count examples) (if (= 1 (count examples)) "example" "examples"))
+           ""
+           (->> examples
+                (map-indexed (fn [idx eg]
+                               (format "### Example %d\n```\n%s\n```"
+                                       (inc idx)
+                                       (str/trim eg))))
+                (str/join "\n\n"))])
+
+        ;; See also
+        (when (seq see-alsos)
+          [""
+           "## See also"
+           ""
+           (->> see-alsos
+                (map #(format "* %s" %))
+                (str/join "\n"))])
+
+        ;; Notes
+        (when (seq notes)
+          [""
+           (format "## %d %s" (count notes) (if (= 1 (count notes)) "note" "notes"))
+           ""
+           (->> notes
+                (map-indexed (fn [idx note]
+                               (format "### Note %d\n  %s" (inc idx) (str/trim note))))
+                (str/join "\n\n"))])]
+
+       (flatten)
+       (remove nil?)
+       (str/join "\n")))
+
+(defn show-clojuredocs
+  [{:as elin :component/keys [host]}]
+  (e/let [export-edn-url (:export-edn-url (e.u.handler/config elin #'show-clojuredocs))
+          doc (e.f.lookup/clojuredocs-lookup elin export-edn-url)
+          content (generate-clojuredocs-content doc)]
+    (e.p.host/append-to-info-buffer host content {:show-temporarily? true})))
