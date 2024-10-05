@@ -165,12 +165,7 @@
                                                                                               :leave :fn},
                                                                                         :req {:name :symbol,
                                                                                               :kind :keyword},
-                                                                                        :nilable true}}}},
-                                                               parse {:arities {1 {:args [:any],
-                                                                                   :ret {:op :keys,
-                                                                                         :req {:symbol :symbol,
-                                                                                               :params :sequential},
-                                                                                         :nilable true}}}}},
+                                                                                        :nilable true}}}}},
                                         elin.function.nrepl.refactor {resolve-missing!! {:arities {2 {:args [:any
                                                                                                              :string],
                                                                                                       :ret :sequential}}}},
