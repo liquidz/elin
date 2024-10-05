@@ -46,3 +46,15 @@
                     (async/<!!
                      (e.p.host/open-popup! host response options)))))
               (ix/discard))})
+
+(def append-result-to-info-buffer
+  "Interceptor to show handler result temporarily."
+  {:kind e.c.interceptor/handler
+   :leave (-> (fn [{:as ctx :component/keys [host] :keys [response]}]
+                (when (and (string? response)
+                           (seq response))
+                  (let [config (or (e.u.interceptor/config ctx #'append-result-to-info-buffer)
+                                   {})]
+                    (e.p.host/append-to-info-buffer host response config))))
+              ;; (e.p.host/append-to-info-buffer host response {:show-temporarily? true})))
+              (ix/discard))})
