@@ -5,7 +5,7 @@
 
  :interceptor {:uses [elin.interceptor.autocmd/deinitialize {}
                       elin.interceptor.autocmd/ns-load {}
-                      elin.interceptor.autocmd/skeleton {}
+                      elin.interceptor.autocmd/skeleton #include "skeleton.edn"
                       elin.interceptor.autocmd/clj-kondo-analyzing {}
                       elin.interceptor.connect/connected {}
                       elin.interceptor.connect/raw-message-channel {}

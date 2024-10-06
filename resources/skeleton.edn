@@ -1,0 +1,3 @@
+;; NOTE {lang {:src "skeleton for source" :test "skeleton for test"}}
+{:clojure {:src "(ns {{ns}})"
+           :test "(ns {{ns}}\n  (:require\n   [clojure.test :as t]\n   [{{source-ns}} :as sut]))"}}

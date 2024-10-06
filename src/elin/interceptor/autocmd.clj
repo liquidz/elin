@@ -61,23 +61,6 @@
                              (ns-not-created? %)))
               (ix/discard))})
 
-(defmulti generate-skeleton
-  (fn [{:keys [lang test?]}]
-    [lang test?]))
-
-(defmethod generate-skeleton :default [_] nil)
-
-(defmethod generate-skeleton ["clojure" false]
-  [{:keys [ns-str]}]
-  (format "(ns %s)" ns-str))
-
-(defmethod generate-skeleton ["clojure" true]
-  [{:keys [ns-str]}]
-  (let [src-ns (str/replace ns-str #"-test$" "")]
-    (format "(ns %s\n  (:require\n   [clojure.test :as t]\n   [%s :as sut]))"
-            ns-str
-            src-ns)))
-
 (defn- empty-buffer?
   [{:component/keys [host] :keys [autocmd-type]}]
   (or (= "BufNewFile" autocmd-type)
@@ -93,17 +76,26 @@
 
 (def skeleton
   {:kind e.c.interceptor/autocmd
-   :enter (-> (fn [{:component/keys [host]}]
-                (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
+   :enter (-> (fn [{:as ctx :component/keys [host]}]
+
+                (e/let [config (e.u.interceptor/config ctx #'skeleton)
+                        path (async/<!! (e.p.host/get-current-file-path! host))
                         ns-str (or (e.f.n.namespace/guess-namespace-from-path path)
                                    ;; TODO fallback to another process
                                    (e/fault))
-                        param {:path path
-                               :ns-str ns-str
-                               ;; TODO cljs, cljc support
-                               :lang "clojure"
-                               :test? (str/ends-with? ns-str "-test")}
-                        ns-form-lines (->> (generate-skeleton param)
+                        ;; TODO cljs, cljc support
+                        lang "clojure"
+                        test? (str/ends-with? ns-str "-test")
+                        template (or (get-in config [(keyword lang) (if test? :test :src)])
+                                     (e/not-found))
+                        params (cond-> {:path path
+                                        :ns ns-str
+                                        :lang lang
+                                        :test? test?}
+                                 test?
+                                 (assoc :source-ns (str/replace ns-str #"-test$" "")))
+                        ns-form-lines (->> params
+                                           (e.u.string/render template)
                                            (str/split-lines))]
                   (e.p.host/set-to-current-buffer host ns-form-lines)))
               (ix/when empty-buffer?)
