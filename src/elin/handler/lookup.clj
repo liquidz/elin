@@ -67,23 +67,36 @@
     (generate-javadoc lookup-resp)
     (generate-cljdoc lookup-resp)))
 
+(defn- parse-code-to-ns-and-name
+  [code]
+  (let [[head tail] (str/split code #"/" 2)]
+    (if tail
+      [head tail]
+      ["user" head])))
+
 (m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
   "Look up symbol at cursor position."
   [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
-          ns-str (e.f.sexpr/get-namespace elin)
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          resp (e.f.lookup/lookup elin ns-str code)]
+          ns-str (e/error-or (e.f.sexpr/get-namespace elin))
+          resp (if ns-str
+                 (e.f.lookup/lookup elin ns-str code)
+                 (->> (parse-code-to-ns-and-name code)
+                      (apply e.f.lookup/lookup elin)))]
     (generate-doc resp)))
 
 (defn show-source
   "Show source code of symbol at cursor position."
   [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
-          ns-str (e.f.sexpr/get-namespace elin)
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
-          resp (e.f.lookup/lookup elin ns-str code)]
+          ns-str (e/error-or (e.f.sexpr/get-namespace elin))
+          resp (if ns-str
+                 (e.f.lookup/lookup elin ns-str code)
+                 (->> (parse-code-to-ns-and-name code)
+                      (apply e.f.lookup/lookup elin)))]
     (e.u.sexpr/extract-form-by-position
      (slurp (:file resp))
      (:line resp)

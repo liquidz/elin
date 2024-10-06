@@ -45,48 +45,52 @@
    (evaluate-current-top-list elin {}))
   ([{:as elin :component/keys [nrepl host]} options]
    (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
-           ns-str (e.f.sexpr/get-namespace elin)
+           ns-str (e/error-or (e.f.sexpr/get-namespace elin))
            path (async/<!! (e.p.host/get-current-file-path! host))
-           {:keys [code lnum col]} (e.f.sexpr/get-top-list elin cur-lnum cur-col)]
-     (eval!! nrepl code (merge options
-                               {:line lnum
-                                :column col
-                                :cursor-line cur-lnum
-                                :cursor-column cur-col
-                                :ns ns-str
-                                :file path})))))
+           {:keys [code lnum col]} (e.f.sexpr/get-top-list elin cur-lnum cur-col)
+           params (cond-> {:line lnum
+                           :column col
+                           :cursor-line cur-lnum
+                           :cursor-column cur-col
+                           :file path}
+                    ns-str
+                    (assoc :ns ns-str))]
+     (eval!! nrepl code (merge options params)))))
+
 
 (defn evaluate-current-list
   ([elin]
    (evaluate-current-list elin {}))
   ([{:as elin :component/keys [nrepl host]} options]
    (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
-           ns-str (e.f.sexpr/get-namespace elin)
+           ns-str (e/error-or (e.f.sexpr/get-namespace elin))
            path (async/<!! (e.p.host/get-current-file-path! host))
-           {:keys [code lnum col]} (e.f.sexpr/get-list elin cur-lnum cur-col)]
-     (eval!! nrepl code (merge options
-                               {:line lnum
-                                :column col
-                                :cursor-line cur-lnum
-                                :cursor-column cur-col
-                                :ns ns-str
-                                :file path})))))
+           {:keys [code lnum col]} (e.f.sexpr/get-list elin cur-lnum cur-col)
+           params (cond-> {:line lnum
+                           :column col
+                           :cursor-line cur-lnum
+                           :cursor-column cur-col
+                           :file path}
+                    ns-str
+                    (assoc :ns ns-str))]
+     (eval!! nrepl code (merge options params)))))
 
 (defn evaluate-current-expr
   ([elin]
    (evaluate-current-expr elin {}))
   ([{:as elin :component/keys [nrepl host]} options]
    (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
-           ns-str (e.f.sexpr/get-namespace elin)
+           ns-str (e/error-or (e.f.sexpr/get-namespace elin))
            path (async/<!! (e.p.host/get-current-file-path! host))
-           {:keys [code lnum col]} (e.f.sexpr/get-expr elin cur-lnum cur-col)]
-     (eval!! nrepl code (merge options
-                               {:line lnum
-                                :column col
-                                :cursor-line cur-lnum
-                                :cursor-column cur-col
-                                :ns ns-str
-                                :file path})))))
+           {:keys [code lnum col]} (e.f.sexpr/get-expr elin cur-lnum cur-col)
+           params (cond-> {:line lnum
+                           :column col
+                           :cursor-line cur-lnum
+                           :cursor-column cur-col
+                           :file path}
+                    ns-str
+                    (assoc :ns ns-str))]
+     (eval!! nrepl code (merge options params)))))
 
 (defn evaluate-namespace-form
   ([elin]
