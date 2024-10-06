@@ -8,20 +8,20 @@
    [elin.util.interceptor :as e.u.interceptor]
    [exoscale.interceptor :as ix]))
 
-(def handling-error-interceptor
+(def handling-error
   {:kind e.c.interceptor/handler
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (e.message/error host (ex-message response)))
               (ix/when (comp e/error? :response))
               (ix/discard))})
 
-(def setting-nrepl-connection-status-interceptor
+(def setting-nrepl-connection-status
   "Interceptor for setting nREPL connection status to variable."
   (let [status-handler? #(= :elin.handler.internal/status
                             (get-in % [:message :method]))]
     {:kind e.c.interceptor/handler
      :leave (-> (fn [{:as ctx :component/keys [host] :keys [response]}]
-                  (let [config (e.u.interceptor/config ctx #'setting-nrepl-connection-status-interceptor)
+                  (let [config (e.u.interceptor/config ctx #'setting-nrepl-connection-status)
                         {:keys [variable]} config]
                     (when (and (string? variable)
                                (string? response)

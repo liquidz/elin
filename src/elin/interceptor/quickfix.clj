@@ -12,7 +12,7 @@
   [context]
   (= :location (:type context)))
 
-(def auto-toggling-vim-quickfix-window-interceptor
+(def auto-toggling-vim-quickfix-window
   {:kind e.c.interceptor/quickfix
    :leave (-> (fn [{:as ctx :component/keys [host]}]
                 (when (and (satisfies? e.p.rpc/IFunction host)
@@ -25,7 +25,7 @@
                       (e.p.rpc/notify-function host "elin#internal#execute" ["cclose"])))))
               (ix/discard))})
 
-(def auto-toggling-vim-location-window-interceptor
+(def auto-toggling-vim-location-window
   {:kind e.c.interceptor/quickfix
    :leave (-> (fn [{:as ctx :component/keys [host]}]
                 (when (and (satisfies? e.p.rpc/IFunction host)
@@ -38,7 +38,7 @@
                       (e.p.rpc/notify-function host "elin#internal#execute" ["lclose"])))))
               (ix/discard))})
 
-(def use-selector-for-location-interceptor
+(def use-selector-for-location
   {:kind e.c.interceptor/quickfix
    :leave (-> (fn [{:as ctx :component/keys [host]}]
                 (let [candidates (->> (:list ctx)
@@ -51,16 +51,16 @@
               (ix/when location-list?)
               (ix/discard))})
 
-(def location-function-hook-interceptor
+(def location-function-hook
   "Interceptor to call any function on host side when location list is updated.
   Required to config like below:
   ```
-  {:interceptor {:config-map {elin.interceptor.quickfix/location-function-hook-interceptor
+  {:interceptor {:config-map {elin.interceptor.quickfix/location-function-hook
                               {:function [\"luaeval\" [\"require('telescope.builtin').loclist()\"]]}}}}
   ```"
   {:kind e.c.interceptor/quickfix
    :leave (-> (fn [{:as ctx :component/keys [host]}]
-                (let [{:keys [function]} (e.u.interceptor/config ctx #'location-function-hook-interceptor)]
+                (let [{:keys [function]} (e.u.interceptor/config ctx #'location-function-hook)]
                   (when (and (seq function)
                              (satisfies? e.p.rpc/IFunction host))
                     (apply e.p.rpc/notify-function host function))))

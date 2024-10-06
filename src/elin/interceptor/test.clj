@@ -55,7 +55,7 @@
       (catch Exception _
         s))))
 
-(def done-test-interceptor
+(def done-test
   {:kind e.c.interceptor/test
    :leave (-> (fn [{:as ctx :component/keys [host nrepl session-storage] :keys [response]}]
                 (let [{:keys [passed failed]} (->> (e.f.n.c.test/collect-results nrepl response)

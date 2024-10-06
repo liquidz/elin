@@ -8,8 +8,8 @@
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 
-(t/deftest malli-lookup-interceptor-test
-  (let [leave-malli-lookup-interceptor (:leave sut/malli-lookup-interceptor)
+(t/deftest malli-lookup-test
+  (let [leave-malli-lookup (:leave sut/malli-lookup)
         base-ctx {:request {:op e.c.nrepl/info-op}}
         generate-context (fn [function-schema]
                            (-> (h/nrepl-eval-config (constantly (pr-str function-schema)))
@@ -23,28 +23,28 @@
     (t/testing "Not found"
       (t/is (nil? (-> (generate-context nil)
                       (dissoc :response)
-                      (leave-malli-lookup-interceptor)
+                      (leave-malli-lookup)
                       (:response)))))
 
 
     (t/testing "No function schema"
       (let [ctx (generate-context {})
             res (with-redefs [sut/document-str pr-str]
-                  (leave-malli-lookup-interceptor ctx))]
+                  (leave-malli-lookup ctx))]
         (t/is (nil? (get-document-expr res)))))
 
     (t/testing "Function schema"
       (t/testing "=>"
         (let [ctx (generate-context '[:=> [:cat string?] int?])
               res (with-redefs [sut/document-str pr-str]
-                    (leave-malli-lookup-interceptor ctx))]
+                    (leave-malli-lookup ctx))]
           (t/is (= '[{:input [string?] :output int?}]
                    (get-document-expr res)))))
 
       (t/testing "->"
         (let [ctx (generate-context '[:-> string? int?])
               res (with-redefs [sut/document-str pr-str]
-                    (leave-malli-lookup-interceptor ctx))]
+                    (leave-malli-lookup ctx))]
           (t/is (= '[{:input [string?] :output int?}]
                    (get-document-expr res)))))
 
@@ -53,7 +53,7 @@
                                       [:=> [:cat string?] int?]
                                       [:-> string? int?]])
               res (with-redefs [sut/document-str pr-str]
-                    (leave-malli-lookup-interceptor ctx))]
+                    (leave-malli-lookup ctx))]
           (t/is (= '[{:input [string?] :output int?}
                      {:input [string?] :output int?}]
                    (get-document-expr res))))))
@@ -62,7 +62,7 @@
       (t/testing ":map"
         (let [ctx (generate-context '[:-> [:map [:s string?] [:nested [:map [:k keyword?]]]] :nil])
               res (with-redefs [sut/document-str pr-str]
-                    (leave-malli-lookup-interceptor ctx))]
+                    (leave-malli-lookup ctx))]
           (t/is (= '[{:input [{:s string? :nested {:k keyword?}}]
                       :output :nil}]
                    (get-document-expr res)))))
@@ -70,7 +70,7 @@
       (t/testing ":sequential"
         (let [ctx (generate-context '[:-> [:sequential string?] :nil])
               res (with-redefs [sut/document-str pr-str]
-                    (leave-malli-lookup-interceptor ctx))]
+                    (leave-malli-lookup ctx))]
           (t/is (= '[{:input [[string?]]
                       :output :nil}]
                    (get-document-expr res)))))
@@ -78,7 +78,7 @@
       (t/testing ":or"
         (let [ctx (generate-context '[:-> [:or string? keyword?] :nil])
               res (with-redefs [sut/document-str pr-str]
-                    (leave-malli-lookup-interceptor ctx))]
+                    (leave-malli-lookup ctx))]
           (t/is (= '[{:input [(or string? keyword?)]
                       :output :nil}]
                    (get-document-expr res))))))))

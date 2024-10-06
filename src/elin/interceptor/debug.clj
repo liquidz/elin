@@ -22,7 +22,7 @@
     e.c.nrepl/complete-op
     e.c.nrepl/log-search})
 
-(def nrepl-debug-interceptor
+(def nrepl-debug
   {:kind e.c.interceptor/nrepl
    :enter (-> (fn [{:keys [request]}]
                 (timbre/debug "Nrepl >>>" (pr-str request)))
@@ -47,7 +47,7 @@
    e.c.interceptor/quickfix e.s.interceptor/?QuickfixContext
    e.c.interceptor/code-change e.s.interceptor/?CodeChangeContext})
 
-(def interceptor-context-checking-interceptor
+(def interceptor-context-checking
   {:kind e.c.interceptor/all
    :enter (fn [{:as ctx :interceptor/keys [kind]}]
             (if-let [schema (get kind-schema-map kind)]
@@ -62,14 +62,14 @@
                 ctx)
               (throw (ex-info "Unknown kind" {:kind kind :context ctx}))))})
 
-(def tap-interceptor
+(def tap
   "TODO remove-tap"
   {:kind e.c.interceptor/connect
    :leave (-> (fn [_]
                 (add-tap #(timbre/error "Debug tap:" %)))
               (ix/discard))})
 
-(def initialize-debugger-interceptor
+(def initialize-debugger
   {:kind e.c.interceptor/connect
    :leave (-> (fn [{:component/keys [nrepl]}]
                 (when (e.p.nrepl/supported-op? nrepl e.c.nrepl/init-debugger-op)
@@ -134,7 +134,7 @@
 ;;  :code "(defn- foo [a]\n  #dbg (+ a 1))",
 ;;  :original-id 15,
 ;;  :session "c64e3734-5813-47da-af8b-a1af053db19d"))
-(def process-debugger-interceptor
+(def process-debugger
   {:kind e.c.interceptor/raw-nrepl
    :enter (-> (fn [{:as ctx :component/keys [nrepl host] :keys [message]}]
                 (when (e.u.nrepl/has-status? message "need-debug-input")

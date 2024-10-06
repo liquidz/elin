@@ -6,21 +6,16 @@
    [elin.protocol.storage :as e.p.storage]
    [elin.util.interceptor :as e.u.interceptor]))
 
-(def wrap-eval-code-interceptor
-  {:name ::wrap-eval-code-interceptor
-   :kind e.c.interceptor/evaluate
-   :optional true
-   :params ["identity"]
+(def wrap-eval-code
+  {:kind e.c.interceptor/evaluate
    :enter (fn [{:as ctx :keys [code]}]
-            (let [config (e.u.interceptor/config ctx #'wrap-eval-code-interceptor)]
+            (let [config (e.u.interceptor/config ctx #'wrap-eval-code)]
               (if (seq (:code config))
                 (assoc ctx :code (format "(%s %s)" (:code config) code))
                 ctx)))})
 
-(def eval-with-context-interceptor
-  {:name ::eval-with-context-interceptor
-   :kind e.c.interceptor/evaluate
-   :optional true
+(def eval-with-context
+  {:kind e.c.interceptor/evaluate
    :enter (fn [{:as ctx :interceptor/keys [kind] :component/keys [host session-storage] :keys [code]}]
             (let [last-context (or (e.p.storage/get session-storage kind)
                                    "")

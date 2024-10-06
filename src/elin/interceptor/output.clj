@@ -6,12 +6,12 @@
    [elin.util.string :as e.u.string]
    [exoscale.interceptor :as ix]))
 
-(def print-output-interceptor
+(def print-output
   "Interceptor to print output on nREPL to InfoBuffer.
 
   Output format can be configured like below:
   ```
-  {:interceptor {:config-map {elin.interceptor.output/print-output-interceptor
+  {:interceptor {:config-map {elin.interceptor.output/print-output
                               {:format \"{{text}}\"}}}}
   ```
 
@@ -20,7 +20,7 @@
   - text: Output text"
   {:kind e.c.interceptor/output
    :enter (-> (fn [{:as ctx :component/keys [host] :keys [output]}]
-                (let [config (e.u.interceptor/config ctx #'print-output-interceptor)
+                (let [config (e.u.interceptor/config ctx #'print-output)
                       format-str (or (:format config)
                                      "{{text}}")]
                   (->> (e.u.string/render format-str output)

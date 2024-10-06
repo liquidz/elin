@@ -5,7 +5,7 @@
    [elin.protocol.host :as e.p.host]
    [exoscale.interceptor :as ix]))
 
-(def code-changed-result-interceptor
+(def code-changed-result
   {:kind e.c.interceptor/code-change
    :leave (-> (fn [{:as ctx :component/keys [host] :keys [target response]}]
                 (condp contains? (:type ctx)
@@ -25,7 +25,7 @@
                   nil))
               (ix/discard))})
 
-(def yank-added-alias-interceptor
+(def yank-added-alias
   {:kind e.c.interceptor/code-change
    :leave (-> (fn [{:component/keys [host] :keys [target]}]
                 (e.p.host/yank host (str (:alias-symbol target))))

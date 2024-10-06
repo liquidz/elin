@@ -122,9 +122,8 @@
             (add-indent 9)
             (str/trim))))
 
-(def malli-lookup-interceptor
-  {:name ::malli-lookup-interceptor
-   :kind e.c.interceptor/nrepl
+(def malli-lookup
+  {:kind e.c.interceptor/nrepl
    :optional true
    :leave (-> (fn [{:as ctx :component/keys [nrepl] :keys [response]}]
                 (try
@@ -145,7 +144,7 @@
                   (catch ExceptionInfo _
                     ctx)
                   (catch Exception ex
-                    (timbre/error "Failed to execute malli-lookup-interceptor" ex)
+                    (timbre/error "Failed to execute malli-lookup" ex)
                     ctx)))
               (ix/when #(= e.c.nrepl/info-op
                            (get-in % [:request :op]))))})

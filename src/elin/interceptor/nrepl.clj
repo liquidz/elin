@@ -13,7 +13,7 @@
    [elin.util.nrepl :as e.u.nrepl]
    [exoscale.interceptor :as ix]))
 
-(def eval-ns-interceptor
+(def eval-ns
   "Interceptor to delete ns keyword from nREPL request on evaluating ns form."
   {:kind e.c.interceptor/nrepl
    :enter (-> (fn [{:as ctx :keys [request]}]
@@ -23,7 +23,7 @@
                     ctx)))
               (ix/when #(= e.c.nrepl/eval-op (get-in % [:request :op]))))})
 
-(def normalize-path-interceptor
+(def normalize-path
   "Interceptor to normalize path on nREPL response."
   {:kind e.c.interceptor/nrepl
    :leave (fn [{:as ctx :keys [request response]}]
@@ -42,7 +42,7 @@
               :else
               ctx))})
 
-(def output-result-to-cmdline-interceptor
+(def output-result-to-cmdline
   "Interceptor to output nREPL result as message."
   {:kind e.c.interceptor/nrepl
    :leave (-> (fn [{:component/keys [host] :keys [request response]}]
@@ -62,7 +62,7 @@
                     (e.message/info host text))))
               (ix/discard))})
 
-(def progress-interceptor
+(def progress
   "Interceptor to show progress popup on nREPL request."
   (let [target-ops #{e.c.nrepl/eval-op
                      e.c.nrepl/load-file-op
@@ -118,7 +118,7 @@
                 (ix/when #(contains? target-ops (get-in % [:request :op])))
                 (ix/discard))}))
 
-(def nrepl-output-interceptor
+(def nrepl-output
   "Interceptor to intercept nREPL output.
   This interceptor executes interceptors with e.c.interceptor/output kind."
   {:kind e.c.interceptor/raw-nrepl

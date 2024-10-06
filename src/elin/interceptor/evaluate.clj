@@ -6,14 +6,14 @@
    [exoscale.interceptor :as ix]
    [rewrite-clj.zip :as r.zip]))
 
-(def output-eval-result-to-cmdline-interceptor
+(def output-eval-result-to-cmdline
   {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (when-let [v (:value response)]
                   (e.p.host/echo-text host (str/trim (str v)))))
               (ix/discard))})
 
-(def set-eval-result-to-virtual-text-interceptor
+(def set-eval-result-to-virtual-text
   {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response options]}]
                 (when-let [v (:value response)]
@@ -24,7 +24,7 @@
                                               :close-after 3000})))
               (ix/discard))})
 
-(def store-eval-result-to-clipboard-interceptor
+(def store-eval-result-to-clipboard
   {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (some->> (:value response)
@@ -41,7 +41,7 @@
         zloc
         (recur up-zloc)))))
 
-(def eval-in-comment-interceptor
+(def eval-in-comment
   {:kind e.c.interceptor/evaluate
    :enter (-> (fn [{:as ctx :keys [code options]}]
                 (let [{:keys [line column cursor-line cursor-column]} options

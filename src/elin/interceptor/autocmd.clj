@@ -16,14 +16,14 @@
 (def ^:priavte ns-created-var-name
   "b:elin_ns_created")
 
-(def deinitialize-interceptor
+(def deinitialize
   {:kind e.c.interceptor/autocmd
    :enter (-> (fn [{:component/keys [nrepl]}]
                 (e.p.nrepl/remove-all! nrepl))
               (ix/when #(= "VimLeave" (:autocmd-type %)))
               (ix/discard))})
 
-(def ns-create-interceptor
+(def ns-create
   {:kind e.c.interceptor/autocmd
    :enter (-> (fn [{:as ctx :component/keys [host nrepl] :keys [autocmd-type]}]
                 (when (and (contains? #{"BufRead" "BufEnter"} autocmd-type)
@@ -71,7 +71,7 @@
                (timbre/debug "Failed to fetch buffer lines" ex)
                false)))))
 
-(def skeleton-interceptor
+(def skeleton
   {:kind e.c.interceptor/autocmd
    :enter (-> (fn [{:component/keys [host]}]
                 (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
@@ -89,7 +89,7 @@
               (ix/when empty-buffer?)
               (ix/discard))})
 
-(def clj-kondo-analyzing-interceptor
+(def clj-kondo-analyzing
   {:kind e.c.interceptor/autocmd
    :leave (-> (fn [{:component/keys [clj-kondo]}]
                 (e.p.clj-kondo/analyze clj-kondo))

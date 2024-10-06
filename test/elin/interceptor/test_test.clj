@@ -9,10 +9,10 @@
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.test-helper :as h]))
 
-(def ^:private done-test-interceptor-leave
-  (:leave sut/done-test-interceptor))
+(def ^:private done-test-leave
+  (:leave sut/done-test))
 
-(t/deftest done-test-interceptor-test
+(t/deftest done-test-test
   (let [unplaced-sign-args (atom [])
         placed-sign-args (atom [])
         set-quickfix-args (atom [])
@@ -35,7 +35,7 @@
                                                                  :lnum 1
                                                                  :ns "foo"
                                                                  :var "bar"}])]
-          (done-test-interceptor-leave h/test-elin)
+          (done-test-leave h/test-elin)
           (t/is (= [{:name "error" :group "*"}]
                    @unplaced-sign-args))
           (t/is (= [{:name "error" :lnum 1 :file "dummy.clj" :group "bar"}]
@@ -48,7 +48,7 @@
                                                                  :lnum 1
                                                                  :ns "foo"
                                                                  :var "bar"}])]
-          (done-test-interceptor-leave h/test-elin)
+          (done-test-leave h/test-elin)
           (t/is (= [{:name "error" :group "bar"}]
                    @unplaced-sign-args))
           (t/is (empty? @placed-sign-args))))
@@ -60,7 +60,7 @@
                                                                  :lnum 1
                                                                  :ns "foo"
                                                                  :var "bar"}])]
-          (done-test-interceptor-leave h/test-elin)
+          (done-test-leave h/test-elin)
           (t/is (= 1 (count @set-quickfix-args)))
           (t/is (= [{:type "Error" :lnum 1 :filename "dummy.clj" :text "foo/bar"}]
                    (first @set-quickfix-args)))))
@@ -82,7 +82,7 @@
                                                                    :filename "dummy.clj"
                                                                    :lnum 10
                                                                    :text "bar/baz"}])]
-          (done-test-interceptor-leave h/test-elin)
+          (done-test-leave h/test-elin)
           (t/is (= 1 (count @set-quickfix-args)))
           (t/is (= (->> [{:type "Error" :lnum 1 :filename "dummy.clj" :text "foo/bar"}
                          {:type "Error" :lnum 10 :filename "dummy.clj" :text "bar/baz"}]
@@ -107,7 +107,7 @@
                                                                    :filename "dummy.clj"
                                                                    :lnum 10
                                                                    :text "bar/baz"}])]
-          (done-test-interceptor-leave h/test-elin)
+          (done-test-leave h/test-elin)
           (t/is (= 1 (count @set-quickfix-args)))
           (t/is (= [{:type "Error" :lnum 10 :filename "dummy.clj" :text "bar/baz"}]
                    (first @set-quickfix-args)))))
@@ -123,6 +123,6 @@
                                                                    :filename "dummy.clj"
                                                                    :lnum 1
                                                                    :text "foo/bar"}])]
-          (done-test-interceptor-leave h/test-elin)
+          (done-test-leave h/test-elin)
           (t/is (= 1 (count @set-quickfix-args)))
           (t/is (empty? (first @set-quickfix-args))))))))

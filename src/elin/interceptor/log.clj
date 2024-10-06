@@ -16,11 +16,11 @@
 (def ^:private last-framework
   (atom nil))
 
-(def setting-log-appender-interceptor
+(def setting-log-appender
   "Interceptor to set log appender on nREPL."
   {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:as ctx :component/keys [nrepl]}]
-                (let [{:keys [framework]} (e.u.interceptor/config ctx #'setting-log-appender-interceptor)]
+                (let [{:keys [framework]} (e.u.interceptor/config ctx #'setting-log-appender)]
                   (when (seq framework)
                     (reset! last-framework framework)
                     (async/go
@@ -40,12 +40,12 @@
                                                            :threshold 100})))))
               (ix/discard))})
 
-(def append-logs-to-info-buffer-interceptor
+(def append-logs-to-info-buffer
   "Interceptor to append logs to InfoBuffer.
 
   Output format can be configured like below:
   ```
-  {:interceptor {:config-map {elin.interceptor.log/append-logs-to-info-buffer-interceptor
+  {:interceptor {:config-map {elin.interceptor.log/append-logs-to-info-buffer
                               {:format \"{{message}}\"}}}}
   ```
 
@@ -58,7 +58,7 @@
   (let [last-stop-signal (atom nil)]
     {:kind e.c.interceptor/connect
      :leave (-> (fn [{:as ctx :component/keys [host nrepl]}]
-                  (let [config (e.u.interceptor/config ctx #'append-logs-to-info-buffer-interceptor)
+                  (let [config (e.u.interceptor/config ctx #'append-logs-to-info-buffer)
                         format-str (or (:format config)
                                        "{{level}} [{{timestamp}}] {{thread}} - {{logger}} {{message}}")]
                     (when-let [ch @last-stop-signal]
