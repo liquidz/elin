@@ -19,8 +19,13 @@ function! s:init() abort
   let g:initialized_vim_elin = 1
 
   " Initialize internal buffers
-  call elin#internal#buffer#info#ready()
-  call elin#internal#buffer#temp#ready()
+  try
+    let &eventignore = 'WinEnter,WinLeave,BufEnter,BufLeave'
+    call elin#internal#buffer#info#ready()
+    call elin#internal#buffer#temp#ready()
+  finally
+    let &eventignore = ''
+  endtry
 
   if g:elin_server_port is v:null
     call elin#server#start()
