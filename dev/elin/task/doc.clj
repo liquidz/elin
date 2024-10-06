@@ -14,7 +14,7 @@
   (io/file "doc" "pages" "generated"))
 
 (def ^:private github-base-url
-  "https://github.com/liquidz/vim-elin/blob/main")
+  "https://github.com/liquidz/elin/blob/main")
 
 (defn- find-first
   [pred coll]
@@ -36,7 +36,7 @@
 
 (defn- github-link
   [{:keys [file line]}]
-  (when-let [idx (str/index-of file "/liquidz/vim-elin/src/")]
+  (when-let [idx (str/index-of file "/liquidz/elin/src/")]
     (format "%s%s#L%d"
             github-base-url
             (subs file (str/index-of file "/src/" idx))
@@ -213,12 +213,6 @@
           (first)
           (second)))
 
-(defn- normalize-interceptor
-  [interceptor-sym]
-  (-> interceptor-sym
-      (e.u.interceptor/parse)
-      (:symbol)))
-
 (defn- generate-interceptor-document
   [interceptor-sym]
   (let [title (interceptor-title interceptor-sym)
@@ -235,8 +229,8 @@
 
 (defn- generate-interceptor-documents
   []
-  (let [global-interceptor-syms (->> (get-in config [:interceptor :includes])
-                                     (map normalize-interceptor))
+  (let [global-interceptor-syms (get-in config [:interceptor :includes])
+
         handler-using-interceptor-syms (->> (get-in config [:handler :config-map])
                                             (vals)
                                             (keep (comp seq :includes :interceptor))
@@ -268,7 +262,6 @@
                            {})
         using-interceptor-syms (concat (or (some->> (get-in handler-config [:interceptor :includes])
                                                     (seq)
-                                                    (map normalize-interceptor)
                                                     (sort))
                                            [])
                                        (or (some->> handler-sym
@@ -278,9 +271,9 @@
     (to-s
      [(str "==== " title)
       (when link
-        (str "link:" link "[source]"))
+        [(str "[.text-right]\n[small]#link:" link "[source]#")
+         ""])
 
-      ""
       (or (:doc m) "TODO")
 
       (when (get handler-key-mapping-dict handler-sym)
@@ -368,3 +361,8 @@
   (generate-interceptor-documents)
   (generate-default-key-mapping-variables)
   (println "Generated asciidoc files."))
+
+
+(comment
+  (with-redefs [spit println]
+    (generate-interceptor-documents)))
