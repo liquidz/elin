@@ -28,6 +28,7 @@
 
 (m/=> evaluate [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate
+  "Evaluate specified code."
   [{:as elin :keys [message]}]
   (let [code (->> message
                   (:params)
@@ -39,6 +40,7 @@
 
 (m/=> evaluate-current-top-list [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-top-list
+  "Evaludate current top list."
   [elin]
   (e/->> {:middleware (evaluate-interceptor-middleware elin)}
          (e.f.evaluate/evaluate-current-top-list elin)
@@ -46,6 +48,7 @@
 
 (m/=> evaluate-current-list [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-list
+  "Evaludate current list."
   [elin]
   (e/->> {:middleware (evaluate-interceptor-middleware elin)}
          (e.f.evaluate/evaluate-current-list elin)
@@ -53,6 +56,7 @@
 
 (m/=> evaluate-current-expr [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-expr
+  "Evaluate current expression."
   [elin]
   (e/->> {:middleware (evaluate-interceptor-middleware elin)}
          (e.f.evaluate/evaluate-current-expr elin)
@@ -60,12 +64,14 @@
 
 (m/=> evaluate-namespace-form [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-namespace-form
+  "Evaluate ns form in current buffer."
   [elin]
   (e/->> {:middleware (evaluate-interceptor-middleware elin)}
          (e.f.evaluate/evaluate-namespace-form elin)
          (:response)))
 
 (defn evaluate-at-mark
+  "Evaluate top list at mark."
   [{:as elin :keys [message]}]
   (let [[mark-id] (:params message)]
     (e/->> {:middleware (evaluate-interceptor-middleware elin)}
@@ -74,6 +80,7 @@
 
 (m/=> evaluate-current-buffer [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-buffer
+  "Evaluate current buffer."
   [{:component/keys [nrepl host]}]
   (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
           contents (async/<!! (e.p.host/get-lines host))]
@@ -81,23 +88,28 @@
     true))
 
 (defn print-last-result
+  "Print last evaluation result to InfoBuffer."
   [{:component/keys [host nrepl]}]
   (let [resp (e.f.nrepl/eval!! nrepl "(with-out-str (clojure.pprint/pprint *1))")]
     (e.p.host/append-to-info-buffer host (read-string (:value resp)))))
 
 (defn reload
+  "Reload all changed files with tonsky/clj-reload."
   [{:component/keys [nrepl]}]
   (e.f.n.cider/reload!! nrepl))
 
 (defn reload-all
+  "Reload all files."
   [{:component/keys [nrepl]}]
   (e.f.n.cider/reload-all!! nrepl))
 
 (defn interrupt
+  "Interrupt running evaluation."
   [{:component/keys [nrepl]}]
   (e.f.nrepl/interrupt!! nrepl))
 
 (defn undef
+  "Undefine symbol at cursor position."
   [{:as elin :component/keys [host nrepl]}]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e.f.sexpr/get-namespace elin)
@@ -105,11 +117,13 @@
     (e.f.n.cider/undef!! nrepl ns-str code)))
 
 (defn undef-all
+  "Undefine all symbols in current namespace."
   [{:as elin :component/keys [nrepl]}]
   (e/let [ns-str (e.f.sexpr/get-namespace elin)]
     (e.f.n.cider/undef-all!! nrepl ns-str)))
 
 (defn expand-1-current-list
+  "Expand macro once."
   [{:as elin :component/keys [host]}]
   (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
           {:keys [code]} (e.f.sexpr/get-list elin cur-lnum cur-col)

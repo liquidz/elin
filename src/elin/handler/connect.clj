@@ -37,6 +37,7 @@
 
 (m/=> connect [:=> [:cat e.s.handler/?Elin] any?])
 (defn connect
+  "Connect to nREPL server."
   [{:as elin :component/keys [host] :keys [message]}]
   (let [[{:keys [hostname port]} error] (e.u.param/parse ?ConnectParams (:params message))]
     (if error
@@ -44,6 +45,7 @@
       (connect* elin {:hostname hostname :port port}))))
 
 (defn disconnect
+  "Disconnect from nREPL server."
   [{:as elin :component/keys [host nrepl]}]
   (if-let [client (e.p.nrepl/current-client nrepl)]
     (let [{:keys [error hostname port]} (e.f.connect/disconnect elin client)]
@@ -60,6 +62,7 @@
     (e.message/warning host "Not connected.")))
 
 (defn jack-in
+  "Launch nREPL server according to the project detected from the current file and connect to it."
   [{:as elin :component/keys [host]}]
   (let [port (e.f.jack-in/launch-process elin)]
     (e.message/info host (format "Wainting to connect to localhost:%s" port))
@@ -72,6 +75,7 @@
            (map name e.c.jack-in/supported-project-types))]])
 
 (defn instant
+  "Launch nREPL server of the specified project and connect to it."
   [{:as elin :component/keys [host] :keys [message]}]
   (let [[{:keys [project]} error] (e.u.param/parse ?InstantParams (:params message))
         port (when-not error

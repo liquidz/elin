@@ -69,6 +69,7 @@
 
 (m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
+  "Look up symbol at cursor position."
   [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e.f.sexpr/get-namespace elin)
@@ -77,6 +78,7 @@
     (generate-doc resp)))
 
 (defn show-source
+  "Show source code of symbol at cursor position."
   [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e.f.sexpr/get-namespace elin)
@@ -133,6 +135,7 @@
        (str/join "\n")))
 
 (defn show-clojuredocs
+  "Show clojuredocs of symbol at cursor position."
   [elin]
   (e/let [export-edn-url (:export-edn-url (e.u.handler/config elin #'show-clojuredocs))
           doc (e.f.lookup/clojuredocs-lookup elin export-edn-url)]

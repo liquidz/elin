@@ -32,6 +32,7 @@
 
 (m/=> run-test-under-cursor [:=> [:cat e.s.handler/?Elin] any?])
 (defn run-test-under-cursor
+  "Run test under cursor."
   [{:as elin :component/keys [interceptor session-storage]}]
   (e/let [{:keys [code response options]} (e.f.evaluate/evaluate-current-top-list elin)
           {ns-str :ns} options
@@ -68,6 +69,7 @@
            (assoc ctx :response (e.f.n.test/test-var-query!! nrepl query))))))))
 
 (defn run-tests-in-ns
+  "Run test in current namespace."
   [{:as elin :component/keys [host interceptor session-storage]}]
   (e/let [ns-str (e.f.sexpr/get-namespace elin)
           path (async/<!! (e.p.host/get-current-file-path! host))
@@ -129,12 +131,14 @@
          (assoc ctx :response resp))))))
 
 (defn rerun-last-tests
+  "Rerun last tests."
   [{:as elin :component/keys [session-storage]}]
   (->> (e.f.s.test/get-last-test-query session-storage)
        (run-tests-by-query elin)))
 
 (m/=> rerun-last-failed-tests [:=> [:cat e.s.handler/?Elin] any?])
 (defn rerun-last-failed-tests
+  "Rerun last failed tests."
   [{:as elin :component/keys [host session-storage]}]
   (let [query (e.f.s.test/get-last-failed-tests-query session-storage)]
     (if (and query

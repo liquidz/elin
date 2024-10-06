@@ -8,6 +8,8 @@
    [taoensso.timbre :as timbre]))
 
 (defn nrepl-request
+  "Request any message to nREPL server.
+  This handler is for debugging."
   [{:component/keys [host nrepl] :keys [message]}]
   (when-let [request (try
                        (some->> message

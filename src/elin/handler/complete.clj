@@ -60,6 +60,7 @@
 
 (m/=> complete [:=> [:cat e.s.handler/?Elin] any?])
 (defn complete
+  "Returns comletion candidates."
   [{:as elin :component/keys [nrepl] :keys [message]}]
   (let [prefix (first (:params message))]
     (if (e.p.nrepl/disconnected? nrepl)

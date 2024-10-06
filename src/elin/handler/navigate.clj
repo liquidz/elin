@@ -30,6 +30,7 @@
 
 (m/=> jump [:=> [:cat e.s.handler/?Elin] any?])
 (defn jump
+  "Jump to the specified location."
   [{:component/keys [host] :keys [message]}]
   (let [{:keys [path lnum col]} (->> message
                                      (:params)
@@ -40,6 +41,7 @@
 
 (m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
 (defn jump-to-definition
+  "Jump to the definition of the symbol under the cursor."
   [{:as elin :component/keys [host]}]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e/error-or (e.f.sexpr/get-namespace elin)
@@ -75,6 +77,7 @@
 
 (m/=> cycle-source-and-test [:=> [:cat e.s.handler/?Elin] any?])
 (defn cycle-source-and-test
+  "Cycle source code and test code."
   [{:as elin :component/keys [host]}]
   (let [ns-path (async/<!! (e.p.host/get-current-file-path! host))
         ns-str (e.f.sexpr/get-namespace elin)
@@ -84,6 +87,8 @@
     (e.f.file/open-as elin cycled-path)))
 
 (defn references
+  "Find the places where the symbol under the cursor is used, and jump if there is only one.
+  If there are multiple, add them to the location list."
   [{:as elin :component/keys [host clj-kondo]}]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e/error-or (e.f.sexpr/get-namespace elin)

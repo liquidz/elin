@@ -56,6 +56,7 @@
              (assoc ctx :response true))))))))
 
 (defn add-libspec
+  "Add libspec to namespace form."
   [{:as elin :component/keys [host]}]
   (let [coll (e.f.namespace/get-namespaces elin)]
     (e.p.host/select-from-candidates host coll (symbol #'add-libspec*))))
@@ -114,6 +115,7 @@
       (add-missing-require* elin alias-sym ns-sym))))
 
 (defn add-missing-libspec
+  "Add missing libspec to namespace form."
   [{:as elin :component/keys [handler host]}]
   (e/let [{:keys [favorites java-classes]} (get-in handler [:config-map (symbol #'add-missing-libspec)])
           {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
