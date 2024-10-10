@@ -5,6 +5,7 @@
    [clojure.java.io :as io]
    [clojure.string :as str]
    [com.stuartsierra.component :as component]
+   [elin.config :as e.config]
    [elin.message :as e.message]
    [elin.schema.component :as e.s.component]
    [elin.schema.plugin :as e.s.plugin]
@@ -34,14 +35,12 @@
       (e.message/warning lazy-host "Invalid plugin.edn: " (pr-str err))
       content)))
 
-(m/=> load-plugins [:=> [:cat e.s.component/?LazyHost [:sequential string?]] e.s.plugin/?Plugin])
-(defn- load-plugins
+(m/=> read-plugins [:=> [:cat e.s.component/?LazyHost [:sequential string?]] [:sequential e.s.plugin/?Plugin]])
+(defn- read-plugins
   [lazy-host edn-files]
   (loop [[edn-file & rest-edn-files] edn-files
          loaded-files #{}
-         result {:name (str ::plugin)
-                 :handlers []
-                 :interceptors []}]
+         result []]
     (cond
       (not edn-file)
       result
@@ -50,16 +49,23 @@
       (recur rest-edn-files loaded-files result)
 
       :else
-      (let [{:as content :keys [handlers interceptors]} (load-plugin lazy-host edn-file)
+      (let [content (load-plugin lazy-host edn-file)
             loaded-files' (cond-> loaded-files
                             content
                             (conj edn-file))
-            result' (if content
-                      (-> result
-                          (update :handlers concat (or handlers []))
-                          (update :interceptors concat (or interceptors [])))
-                      result)]
+            result' (conj result content)]
         (recur rest-edn-files loaded-files' result')))))
+
+(m/=> unify-plugins [:-> [:sequential e.s.plugin/?Plugin] e.s.plugin/?Plugin])
+(defn- unify-plugins
+  [plugins]
+  (reduce
+   (fn [accm {:keys [export]}]
+     (cond-> accm
+       export
+       (update :export e.config/merge-configs export)))
+   {:name (str ::plugin)}
+   plugins))
 
 (defrecord Plugin
   [;; COMPONENTS
@@ -73,7 +79,9 @@
   (start [this]
     (add-classpaths! edn-files)
     (timbre/info "Plugin component: Started")
-    (assoc this :loaded-plugin (load-plugins lazy-host (or edn-files []))))
+    (let [loaded-plugin (-> (read-plugins lazy-host (or edn-files []))
+                            (unify-plugins))]
+      (assoc this :loaded-plugin loaded-plugin)))
 
   (stop [this]
     (timbre/info "Plugin component: Stopped")
