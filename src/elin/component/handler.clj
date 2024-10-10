@@ -22,6 +22,8 @@
    [malli.core :as m]
    [taoensso.timbre :as timbre]))
 
+(def ^:private config-key :handler)
+
 (m/=> resolve-handler [:=> [:cat e.s.component/?LazyHost qualified-symbol?]
                        [:or :nil [:cat qualified-keyword? fn?]]])
 (defn- resolve-handler [lazy-host sym]
@@ -98,6 +100,7 @@
    plugin
    session-storage
    ;; CONFIGS
+   base-config
    includes
    excludes
    config-map
@@ -106,19 +109,25 @@
    handler-map]
   component/Lifecycle
   (start [this]
-    (let [components {:component/nrepl nrepl
-                      :component/interceptor interceptor
-                      :component/host lazy-host
-                      :component/handler this
-                      :component/session-storage session-storage
-                      :component/clj-kondo clj-kondo}
+    (let [exported-config (get-in plugin [:loaded-plugin :export config-key])
+          {:keys [includes excludes config-map initialize]} (e.config/configure-handler base-config exported-config)
           handler-map (->> (or includes [])
                            (build-handler-map lazy-host))
+          this' (assoc this
+                       :includes includes
+                       :excludes excludes
+                       :config-map config-map
+                       :initialize initialize
+                       :handler-map handler-map)
+          components {:component/nrepl nrepl
+                      :component/interceptor interceptor
+                      :component/host lazy-host
+                      :component/handler this'
+                      :component/session-storage session-storage
+                      :component/clj-kondo clj-kondo}
           handler (partial handler components config-map handler-map)]
       (timbre/info "Handler component: Started")
-      (assoc this
-             :handler-map handler-map
-             :handler handler)))
+      (assoc this' :handler handler)))
 
   (stop [this]
     (timbre/info "Handler component: Stopped")
@@ -126,4 +135,4 @@
 
 (defn new-handler
   [config]
-  (map->Handler (or (:handler config) {})))
+  (map->Handler {:base-config (or (get config config-key) {})}))
