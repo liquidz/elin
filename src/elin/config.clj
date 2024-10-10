@@ -57,7 +57,7 @@
    (reduce merge-configs (or c1 {}) (cons c2 more-configs))))
 
 
-(defn configure-handler
+(defn- configure-handler*
   [base-handler-config target-handler-config]
   (let [{:keys [includes excludes]} target-handler-config
         exclude-set (set/union (set (or excludes []))
@@ -69,7 +69,7 @@
         (update :includes #(-> (remove exclude-set %)
                                (concat includes))))))
 
-(defn configure-interceptor
+(defn- configure-interceptor*
   [base-interceptor-config target-interceptor-config]
   (let [{:keys [includes excludes]} target-interceptor-config
         exclude-set (set/union (set (or excludes []))
@@ -94,6 +94,24 @@
             (update :config-map assoc k v)))
         {:includes [] :config-map {}})))
 
+(defn configure-handler
+  [base-handler-config target-handler-config]
+  (configure-handler*
+   base-handler-config
+   (if-let [expanded (some-> (:uses target-handler-config)
+                             (expand-uses))]
+     (configure-handler* expanded (dissoc target-handler-config :uses))
+     target-handler-config)))
+
+(defn configure-interceptor
+  [base-interceptor-config target-interceptor-config]
+  (configure-interceptor*
+   base-interceptor-config
+   (if-let [expanded (some-> (:uses target-interceptor-config)
+                             (expand-uses))]
+     (configure-interceptor* expanded (dissoc target-interceptor-config :uses))
+     target-interceptor-config)))
+
 (defn expand-config
   [{:as config :keys [handler interceptor]}]
   (assoc config
@@ -108,16 +126,10 @@
 
 (defn configure
   [base-config target-config]
-  (let [target-config' (expand-config target-config)]
-    (-> base-config
-        (merge-configs (dissoc target-config' :handler :interceptor))
-        (update :handler #(configure-handler % (:handler target-config')))
-        (update :interceptor #(configure-interceptor % (:interceptor target-config'))))))
-
-
-(comment
-  (configure {:handler {:includes ['foo]}}
-             {:handler {:uses ['foo {:a 1}]}}))
+  (-> base-config
+      (merge-configs (dissoc target-config :handler :interceptor))
+      (update :handler #(configure-handler % (:handler target-config)))
+      (update :interceptor #(configure-interceptor % (:interceptor target-config)))))
 
 (defn- load-default-config
   []
