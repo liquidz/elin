@@ -17,8 +17,8 @@
                                      (component/start-system))]
     (try
       (t/is (= {:name (str ::sut/plugin)
-                :handlers '[elin-example.core/hello]
-                :interceptors '[elin-example.core/interceptor]}
+                :export {:handler {:includes '[elin-example.core/hello]}
+                         :interceptor {:includes '[elin-example.core/interceptor]}}}
                (:loaded-plugin plugin)))
       (finally
         (component/stop-system sys)))))
@@ -28,9 +28,7 @@
                                      (select-keys [:lazy-host :plugin])
                                      (component/start-system))]
     (try
-      (t/is (= {:name (str ::sut/plugin)
-                :handlers []
-                :interceptors []}
+      (t/is (= {:name (str ::sut/plugin)}
                (:loaded-plugin plugin)))
       (finally
         (component/stop-system sys)))))
