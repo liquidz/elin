@@ -4,6 +4,7 @@
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
+   [elin.function.connect :as e.f.connect]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.sexpr :as e.f.sexpr]
@@ -21,8 +22,13 @@
 
 (def deinitialize
   {:kind e.c.interceptor/autocmd
-   :enter (-> (fn [{:component/keys [nrepl]}]
-                (e.p.nrepl/remove-all! nrepl))
+   :enter (-> (fn [{:as ctx :component/keys [nrepl]}]
+                ;; NOTE
+                ;; Use `e.f.connect/disconnect` to execute `disconnect` interceptors
+                ;; instead of `e.p.nrepl/remove-all!`
+                (doseq [client (e.p.nrepl/all-clients nrepl)]
+                  (e.f.connect/disconnect ctx client)))
+
               (ix/when #(= "VimLeave" (:autocmd-type %)))
               (ix/discard))})
 
