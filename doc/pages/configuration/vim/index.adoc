@@ -21,17 +21,6 @@ let g:elin_default_key_mapping_leader = '<LocalLeader>'
 
 include::./selector.adoc[]
 
-==== Examples
-
-===== Status line
-
-Enable `elin#status()` to return the nREPL connection status
-This is useful to show the status on statusline.
-
-[source,clojure]
-----
-{:handler {:config-map {elin.handler.internal/status {:interceptor {:includes [[elin.interceptor.handler/setting-nrepl-connection-status-interceptor "g:elin#status_text"]]}}}}}
-----
 
 ===== Telescope
 

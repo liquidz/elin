@@ -15,22 +15,6 @@
               (ix/when (comp e/error? :response))
               (ix/discard))})
 
-(def setting-nrepl-connection-status
-  "Interceptor for setting nREPL connection status to variable."
-  (let [status-handler? #(= :elin.handler.internal/status
-                            (get-in % [:message :method]))]
-    {:kind e.c.interceptor/handler
-     :leave (-> (fn [{:as ctx :component/keys [host] :keys [response]}]
-                  (let [config (e.u.interceptor/config ctx #'setting-nrepl-connection-status)
-                        {:keys [variable]} config]
-                    (when (and (string? variable)
-                               (string? response)
-                               (seq variable)
-                               (seq response))
-                      (e.p.host/set-variable! host variable response))))
-                (ix/when status-handler?)
-                (ix/discard))}))
-
 (def show-result-as-popup
   "Interceptor to show handler result as popup."
   {:kind e.c.interceptor/handler

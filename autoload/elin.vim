@@ -45,18 +45,3 @@ function! elin#intercept_request(...) abort
   endif
   return elin#request('elin.handler.internal/intercept', a:000)
 endfunction
-
-" NOTE: Requires elin.interceptor.handler/setting-nrepl-connection-status-interceptor
-function! elin#status() abort
-  try
-    if elin#server#connection() is# v:null
-      return ''
-    endif
-
-    call elin#util#start_lazily('status', 500, {-> elin#notify('elin.handler.internal/status', [])})
-
-    return g:elin#status_text
-  catch
-    return ''
-  endtry
-endfunction
