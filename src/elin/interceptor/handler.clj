@@ -40,5 +40,4 @@
                   (let [config (or (e.u.interceptor/config ctx #'append-result-to-info-buffer)
                                    {})]
                     (e.p.host/append-to-info-buffer host response config))))
-              ;; (e.p.host/append-to-info-buffer host response {:show-temporarily? true})))
               (ix/discard))})
