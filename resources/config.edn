@@ -38,7 +38,7 @@
                   elin.handler.connect/jack-in {}
                   elin.handler.debug/nrepl-request {}
                   elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline]}}
-                  elin.handler.evaluate/evaluate-at-mark {}
+                  elin.handler.evaluate/evaluate-at-mark {:interceptor #ref [:interceptor :preset :evaluation]}
                   elin.handler.evaluate/evaluate-current-buffer {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
                   elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
                   elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
