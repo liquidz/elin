@@ -3,7 +3,9 @@
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.protocol.host :as e.p.host]
+   [elin.util.interceptor :as e.u.interceptor]
    [exoscale.interceptor :as ix]
+   [pogonos.core :as pogonos]
    [rewrite-clj.zip :as r.zip]))
 
 (def output-eval-result-to-cmdline
@@ -15,13 +17,13 @@
 
 (def set-eval-result-to-virtual-text
   {:kind e.c.interceptor/evaluate
-   :leave (-> (fn [{:component/keys [host] :keys [response options]}]
-                (when-let [v (:value response)]
-                  (e.p.host/set-virtual-text host
-                                             (str "=> " v)
-                                             {:lnum (:cursor-line options)
-                                              :highlight "DiffText"
-                                              :close-after 3000})))
+   :leave (-> (fn [{:as ctx :component/keys [host] :keys [response options]}]
+                (let [config (e.u.interceptor/config ctx #'set-eval-result-to-virtual-text)]
+                  (when-let [v (:value response)]
+                    (e.p.host/set-virtual-text host
+                                               (pogonos/render-string (:format config) {:result v})
+                                               (assoc (dissoc config :format)
+                                                      :lnum (:cursor-line options))))))
               (ix/discard))})
 
 (def store-eval-result-to-clipboard
