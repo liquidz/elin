@@ -74,6 +74,7 @@
                        "BufRead"
                        "BufWritePost"
                        "BufWritePre"
+                       "CursorMovedI"
                        "VimLeave"]]]
       (m.util/merge e.s.handler/?Components)))
 
