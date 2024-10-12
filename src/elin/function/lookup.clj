@@ -53,7 +53,9 @@
           protocol-var-str (when-not error?
                              (:protocol res))
           proto-def (when (and (not error?)
-                               (not protocol-var-str))
+                               (not protocol-var-str)
+                               (:ns res)
+                               (:name res))
                       (e.f.clj-kondo/protocol-definition clj-kondo (:ns res) (:name res)))]
       (cond
         protocol-var-str
@@ -87,3 +89,74 @@
                              (str/split code #"/" 2))]
     (or (e.f.n.cider/clojuredocs-lookup!! nrepl ns-str name-str export-edn-url)
         (e/not-found))))
+
+(m/=> get-java-rendering-data [:-> e.s.nrepl/?Lookup e.s.nrepl/?LookupJavaRenderingData])
+(defn- get-java-rendering-data
+  [lookup-resp]
+  {:format-type :java
+   :name (if-let [member-str (:member lookup-resp)]
+           (format "%s/%s" (:class lookup-resp) member-str)
+           (:class lookup-resp))
+   :arglists (or (some->> (:arglists-str lookup-resp)
+                          (str/split-lines))
+                 [])
+   :document (:doc lookup-resp)
+   :return (:returns lookup-resp)
+   :javadoc (:javadoc lookup-resp)})
+
+(m/=> get-clojure-rendering-data [:-> e.s.nrepl/?Lookup e.s.nrepl/?LookupClojureRenderingData])
+(defn- get-clojure-rendering-data
+  [{:as lookup-resp :keys [see-also]}]
+  {:format-type :clojure
+   :name (if-let [ns-str (:ns lookup-resp)]
+           (format "%s/%s" ns-str (:name lookup-resp))
+           (:name lookup-resp))
+   :arglists (or (some->> (:arglists-str lookup-resp)
+                          (str/split-lines))
+                 [])
+   :document (:doc lookup-resp)
+   :has-see-alsos (some? (seq see-also))
+   :see-also-count (or (some-> see-also count)
+                       0)
+   :see-alsos (->> see-also
+                   (map-indexed (fn [idx v]
+                                  {:index idx
+                                   :content v})))})
+
+(m/=> get-lookup-rendering-data [:-> e.s.nrepl/?Lookup e.s.nrepl/?RenderingData])
+(defn get-lookup-rendering-data
+  [lookup-resp]
+  (if (contains? lookup-resp :javadoc)
+    (get-java-rendering-data lookup-resp)
+    (get-clojure-rendering-data lookup-resp)))
+
+(m/=> get-clojuredocs-rendering-data [:-> map? e.s.nrepl/?RenderingData])
+(defn get-clojuredocs-rendering-data
+  [{:as cljdocs-resp :keys [examples see-alsos notes]}]
+  {:format-type :clojuredocs
+   :name (format "%s/%s" (:ns cljdocs-resp) (:name cljdocs-resp))
+   :arglists (or (some->> (:arglists cljdocs-resp)
+                          (map str/trim))
+                 [])
+   :document (:doc cljdocs-resp)
+   :has-examples (some? (seq examples))
+   :example-count (or (some-> examples count)
+                      0)
+   :examples (->> examples
+                  (map-indexed (fn [idx v]
+                                 {:index idx
+                                  :content v})))
+   :has-see-alsos (some? (seq see-alsos))
+   :see-also-count (or (some-> see-alsos count)
+                       0)
+   :see-alsos (->> see-alsos
+                   (map-indexed (fn [idx v]
+                                  {:index idx
+                                   :content v})))
+   :has-notes (some? (seq notes))
+   :note-count (or (some-> notes count)
+                   0)
+   :notes (->> notes
+               (map-indexed (fn [idx v]
+                              {:index idx
+                               :content v})))})

@@ -50,3 +50,44 @@
    [:doc {:optional true} string?]
    ;; cider-nrepl's info op
    [:arglists {:optional true} [:maybe string?]]])
+
+(def ?LookupJavaRenderingData
+  [:map {:closed? true}
+   [:format-type keyword?]
+   [:name string?]
+   [:arglists [:sequential string?]]
+   [:document [:maybe string?]]
+   [:return [:maybe string?]]
+   [:javadoc [:maybe string?]]])
+
+(def ?LookupClojureRenderingData
+  [:map {:closed? true}
+   [:format-type keyword?]
+   [:name string?]
+   [:arglists [:sequential string?]]
+   [:document [:maybe string?]]
+   [:has-see-alsos boolean?]
+   [:see-alsos [:sequential string?]]])
+
+(def ?ClojuredocsRenderingData
+  (let [?indexed-content [:map
+                          [:index int?]
+                          [:content string?]]]
+    [:map {:closed? true}
+     [:format-type keyword?]
+     [:name string?]
+     [:arglists [:sequential string?]]
+     [:document [:maybe string?]]
+     [:has-examples boolean?]
+     [:example-count int?]
+     [:examples [:sequential ?indexed-content]]
+     [:has-see-alsos boolean?]
+     [:see-also-count int?]
+     [:see-alsos [:sequential ?indexed-content]]
+     [:has-notes boolean?]
+     [:note-count int?]
+     [:notes [:sequential ?indexed-content]]]))
+
+(def ?RenderingData
+  [:map
+   [:format-type keyword?]])

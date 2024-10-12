@@ -4,6 +4,7 @@
         com.stuartsierra/component {:mvn/version "1.1.0"}
         exoscale/interceptor {:mvn/version "0.1.17"}
         metosin/malli {:mvn/version "0.16.4"}
+        pogonos/pogonos {:mvn/version "0.2.1"}
         rewrite-clj/rewrite-clj {:mvn/version "1.1.48"}}
 
  :__elin_internal__

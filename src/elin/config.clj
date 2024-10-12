@@ -22,6 +22,10 @@
   #_{:clj-kondo/ignore [:unresolved-var]}
   (timbre/spit-appender value))
 
+(defmethod aero/reader 'resource
+  [_opts _tag value]
+  (slurp (io/resource value)))
+
 (def ^:private config-transformer
   (mt/transformer
    mt/default-value-transformer))

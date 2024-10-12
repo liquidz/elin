@@ -1,0 +1,43 @@
+# {{{name}}}*
+{{#arglists}}
+  ({{{name}}} {{{.}}})
+{{/arglists}}
+
+{{#document}}
+  {{{document}}}
+{{/document}}
+{{^document}}
+  No document
+{{/document}}
+{{! ---------- Examples ---------- }}
+{{#has-examples}}
+
+## {{example-count}} examples
+
+{{/has-examples}}
+{{#examples}}
+### Example {{index}}
+```
+{{{content}}}
+```
+
+{{/examples}}
+{{! ---------- See also ---------- }}
+{{#has-see-alsos}}
+
+## See also
+{{/has-see-alsos}}
+{{#see-alsos}}
+ * {{{content}}}
+{{/see-alsos}}
+{{! ---------- Notes ---------- }}
+{{#has-notes}}
+
+## {{note-count}} notes
+
+{{/has-notes}}
+{{#notes}}
+### Note {{index}}
+  {{{content}}}
+
+{{/notes}}
