@@ -88,9 +88,9 @@
 
 (defn- fetch-schema-code
   [ns-sym var-sym]
-  `(-> (malli.core/function-schemas)
-       (get-in ['~ns-sym '~var-sym :schema])
-       (malli.core/-form)))
+  `(some-> (malli.core/function-schemas)
+           (get-in ['~ns-sym '~var-sym :schema])
+           (malli.core/-form)))
 
 (defn- pp-str
   [v]
@@ -135,11 +135,13 @@
                         doc (some-> (e.f.nrepl/eval!! nrepl code)
                                     (:value)
                                     (edn/read-string))
-                        doc' (-> (m/parse ?FunctionSchema doc)
-                                 (convert-parsed-function-schema-to-sexpr)
-                                 (document-str))
-                        response' (->> response
-                                       (e.u.nrepl/update-messages :doc #(str % (when % "\n") "\n" doc')))]
+                        doc' (when doc
+                               (-> (m/parse ?FunctionSchema doc)
+                                   (convert-parsed-function-schema-to-sexpr)
+                                   (document-str)))
+                        response' (cond->> response
+                                    doc'
+                                    (e.u.nrepl/update-messages :doc #(str % (when % "\n") "\n" doc')))]
                     (assoc ctx :response response'))
                   (catch ExceptionInfo _
                     ctx)
