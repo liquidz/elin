@@ -17,4 +17,5 @@
   (remove-all! [this])
   (get-client [this host port] [this client-key])
   (switch-client! [this client])
-  (current-client [this]))
+  (current-client [this])
+  (all-clients [this]))

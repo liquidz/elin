@@ -57,7 +57,7 @@
 
   (remove-all!
     [this]
-    (doseq [c (vals @clients-store)]
+    (doseq [c (e.p.nrepl/all-clients this)]
       (e.p.nrepl/remove-client! this c)))
 
   (get-client
@@ -78,6 +78,9 @@
 
   (current-client [this]
     (e.p.nrepl/get-client this @current-client-key-store))
+
+  (all-clients [_]
+    (vals @clients-store))
 
   e.p.nrepl/IClient
   (supported-op?
