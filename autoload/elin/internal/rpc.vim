@@ -54,7 +54,7 @@ if has('nvim')
 
   function! s:disconnect(conn) abort
     call timer_stop(a:conn.healthcheck_timer)
-    call sockclose(a:conn.id)
+    call chanclose(a:conn.id)
     call a:conn.on_close(a:conn)
   endfunction
 
