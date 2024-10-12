@@ -48,6 +48,7 @@
    :leave (-> (fn [{:component/keys [host] :keys [request response]}]
                 (let [msg (e.u.nrepl/merge-messages response)
                       text (condp = (:op request)
+                             e.c.nrepl/interrupt-op "Interrupted."
                              e.c.nrepl/load-file-op "Required."
                              e.c.nrepl/reload-op "Reloaded."
                              e.c.nrepl/reload-all-op "Reloaded all."

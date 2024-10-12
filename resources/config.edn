@@ -45,7 +45,7 @@
                   elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}
                   elin.handler.evaluate/evaluate-namespace-form {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline]}}
                   elin.handler.evaluate/expand-1-current-list {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
-                  elin.handler.evaluate/interrupt {}
+                  elin.handler.evaluate/interrupt {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
                   elin.handler.evaluate/print-last-result {}
                   elin.handler.evaluate/reload {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
                   elin.handler.evaluate/reload-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
