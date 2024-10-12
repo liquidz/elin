@@ -29,7 +29,7 @@
                                                 elin.interceptor.evaluate/set-eval-result-to-virtual-text
                                                 elin.interceptor.evaluate/eval-in-comment
                                                 elin.interceptor.evaluate/store-eval-result-to-clipboard]}
-                        :code-change {:includes [elin.interceptor.code-change/code-changed-result]}}}
+                        :code-change {:includes [elin.interceptor.code-change/show-code-changed-result]}}}
 
  :handler {:uses [elin.handler.complete/complete {:log {:min-level :error}}
                   elin.handler.connect/connect {}

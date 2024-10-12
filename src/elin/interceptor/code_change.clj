@@ -5,7 +5,7 @@
    [elin.protocol.host :as e.p.host]
    [exoscale.interceptor :as ix]))
 
-(def code-changed-result
+(def show-code-changed-result
   {:kind e.c.interceptor/code-change
    :leave (-> (fn [{:as ctx :component/keys [host] :keys [target response]}]
                 (condp contains? (:type ctx)
