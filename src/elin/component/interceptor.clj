@@ -70,6 +70,7 @@
    lazy-host
    plugin
    ;; CONFIGS
+   base-config
    includes
    excludes
    config-map
@@ -78,7 +79,9 @@
    interceptor-map]
   component/Lifecycle
   (start [this]
-    (let [resolved-interceptors (->> (or includes [])
+    (let [exported-config (get-in plugin [:loaded-plugin :export config-key])
+          {:keys [includes excludes config-map]} (e.config/configure-interceptor base-config exported-config)
+          resolved-interceptors (->> (or includes [])
                                      (distinct)
                                      (keep #(when-let [i (resolve-interceptor lazy-host %)]
                                               [% i])))
@@ -94,6 +97,9 @@
         (e.message/warning "Invalid interceptors:" invalid-interceptors))
       (timbre/debug "Interceptor component: Started")
       (assoc this
+             :includes includes
+             :excludes excludes
+             :config-map config-map
              :name-to-symbol-dict name-to-symbol-dict
              :interceptor-map interceptor-map)))
   (stop [this]
@@ -154,4 +160,4 @@
 
 (defn new-interceptor
   [config]
-  (map->Interceptor (or (get config config-key) {})))
+  (map->Interceptor {:base-config (or (get config config-key) {})}))

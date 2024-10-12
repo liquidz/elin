@@ -3,5 +3,4 @@
 (def ?Plugin
   [:map
    [:name string?]
-   [:handlers {:optional true} [:sequential qualified-symbol?]]
-   [:interceptors {:optional true} [:sequential qualified-symbol?]]])
+   [:export {:optional true} [:maybe map?]]])
