@@ -23,6 +23,7 @@
 
                :config-map {elin.interceptor.evaluate/set-eval-result-to-virtual-text {:format "=> {{{result}}}"
                                                                                        :highlight "DiffText"
+                                                                                       :align "after"
                                                                                        :close-after 3000}}
 
                :preset {:evaluation {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline
