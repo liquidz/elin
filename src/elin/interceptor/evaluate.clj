@@ -16,6 +16,18 @@
               (ix/discard))})
 
 (def set-eval-result-to-virtual-text
+  "Set evaluated result to virtual text.
+
+  .Configuration
+  [%autowidth.stretch]
+  |===
+  | key | type | description
+
+  | format | string | Format of virtual text. It can contain the following placeholders: `result`.
+  | highlight | string | Highlight group for virtual text.
+  | align | string | Alignment of virtual text. Possible values are: `after`, `right`.
+  | close-after | integer | Close virtual text after the specified number of milliseconds.
+  |==="
   {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:as ctx :component/keys [host] :keys [response options]}]
                 (let [config (e.u.interceptor/config ctx #'set-eval-result-to-virtual-text)]
