@@ -19,7 +19,7 @@ jobs:
 
       - name: Build static files
         id: build
-        run: bb generate-generate-document-html
+        run: bb generate-document-html
 
       - name: Upload static files as artifact
         id: deployment
