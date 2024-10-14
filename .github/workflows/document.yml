@@ -1,0 +1,39 @@
+name: document
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeLaGuardo/setup-clojure@master
+        with:
+          bb: latest
+          clj-kondo: latest
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: test-m2-${{ hashFiles('bb.edn') }}
+
+      - name: Build static files
+        id: build
+        run: bb generate-generate-document-html
+
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: target/html
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
