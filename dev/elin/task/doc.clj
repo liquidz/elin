@@ -4,10 +4,8 @@
    [clojure.java.io :as io]
    [clojure.string :as str]
    [elin.config :as e.config]
+   [elin.constant.interceptor :as e.c.interceptor]
    [elin.task.help :as help]
-   [elin.util.interceptor :as e.u.interceptor]
-   [rewrite-clj.node :as r.node]
-   [rewrite-clj.parser :as r.parser]
    [rewrite-clj.zip :as r.zip]))
 
 (def ^:private page-dir
@@ -50,7 +48,9 @@
 
 (defn- format-handler-to-key-map
   [handler-symbol]
-  (str/replace (str handler-symbol) #"[./]" "-"))
+  (-> (str handler-symbol)
+      (str/replace #"[()]" "")
+      (str/replace #"[./#]" "-")))
 
 (defn- into-hash-map
   [key-fn val-fn coll]
@@ -58,12 +58,27 @@
             (assoc accm (key-fn x) (val-fn x)))
           {} coll))
 
+(defn- format-docstring
+  [meta-data]
+  (if-let [doc (:doc meta-data)]
+    (->> (str/split-lines doc)
+         (map #(str/replace % #"^\s{2}?" ""))
+         (str/join "\n"))
+    "No document."))
+
+(def ^:private commands
+  (-> (help/get-grouped-lines)
+      (help/parse-grouped-lines)
+      (:commands)))
+
 (def ^:private handler-key-mapping-dict
   (let [grouped-lines (help/get-grouped-lines)
         {:keys [commands mappings default-mappings]} (help/parse-grouped-lines grouped-lines)
-        command-to-mapping-dict (into-hash-map :command :mapping mappings)
-        mapping-to-key-dict (into-hash-map :mapping :mapping-key default-mappings)]
-    (-> (into-hash-map :handler :command commands)
+        command-to-mapping-dict (->> (reverse mappings)
+                                     (into-hash-map :command :mapping))
+        mapping-to-key-dict (->> (reverse default-mappings)
+                                 (into-hash-map :mapping :mapping-key))]
+    (-> (into-hash-map :handler :command (reverse commands))
         (update-vals #(some->> %
                                (get command-to-mapping-dict)
                                (get mapping-to-key-dict)))
@@ -136,14 +151,24 @@
             (str/join "\n"))
        "\n\n"))
 
+(defn- convert-title
+  [title]
+  (-> (str "_" title)
+      (str/replace "/" "")
+      (str/replace "-" "_")
+      (str/replace "." "_")))
+
 (defn- anchor
   [title]
-  (str "<<_"
-       (-> title
-           (str/replace "/" "")
-           (str/replace "-" "_")
-           (str/replace "." "_"))
-       ">>"))
+  (str "<<" (convert-title title) ">>"))
+
+(defn- source-link
+  [meta-data]
+  (when-let [link (github-link meta-data)]
+    (when-let [idx (str/index-of  link "main/src")]
+      (format "\n[.text-right]\n[.small]#link:%s[%s]#"
+              link
+              (subs link (inc (str/index-of link "/src/" idx)))))))
 ;; }}}
 
 ;; Interceptors {{{
@@ -209,30 +234,47 @@
 
 (defn- interceptor-title
   [interceptor-sym]
-  (some-> (re-seq #"\.interceptor\.(.+?)$" (str interceptor-sym))
+  (some-> (re-seq #"\.(interceptor\..+?)$" (str interceptor-sym))
           (first)
           (second)))
+
+(defn- format-interceptor-kind
+  [v]
+  (condp = (:kind @v)
+    e.c.interceptor/all "always executed"
+    e.c.interceptor/autocmd "executed on autocmd fired"
+    e.c.interceptor/connect "executed on connection"
+    e.c.interceptor/disconnect "executed on disconnection"
+    e.c.interceptor/evaluate "executed on evaluation"
+    e.c.interceptor/handler "executed on calling handler"
+    e.c.interceptor/nrepl "executed on requesting to nREPL server"
+    e.c.interceptor/output "executed on output from nREPL server"
+    e.c.interceptor/raw-nrepl "executed on communicating with nREPL server"
+    e.c.interceptor/test "executed on testing"
+    e.c.interceptor/quickfix "executed on setting quickfix"
+    e.c.interceptor/debug "executed on debugging"
+    e.c.interceptor/code-change "executed on changing code"
+    nil))
 
 (defn- generate-interceptor-document
   [interceptor-sym]
   (let [title (interceptor-title interceptor-sym)
-        m (meta (requiring-resolve interceptor-sym))
-        link (github-link m)]
+        v (requiring-resolve interceptor-sym)
+        m (meta v)]
     (to-s
      [(str "==== " title)
+      (->> (format-interceptor-kind v)
+           (format "Executed on %s."))
       ""
-      (when link
-        [(str "[.text-right]\n[small]#link:" link "[source]#")
-         ""])
-
-      (or (:doc m) "TODO?")])))
+      (format-docstring m)
+      (source-link m)])))
 
 (defn- generate-interceptor-documents
   []
   (let [global-interceptor-syms (get-in config [:interceptor :includes])
-
         handler-using-interceptor-syms (->> (get-in config [:handler :config-map])
                                             (vals)
+                                            (map e.config/expand-config)
                                             (keep (comp seq :includes :interceptor))
                                             (flatten)
                                             (distinct))
@@ -251,15 +293,19 @@
 ;; }}}
 
 ;; Handlers {{{
+(defn- handler-title
+  [handler-sym]
+  (some-> (re-seq #"\.(handler\..+?)$" (str handler-sym))
+          (first)
+          (second)))
+
 (defn- generate-handler-document
   [handler-sym]
-  (let [title (some-> (re-seq #"\.handler\.(.+?)$" (str handler-sym))
-                      (first)
-                      (second))
+  (let [title (handler-title handler-sym)
         m (meta (requiring-resolve handler-sym))
-        link (github-link m)
-        handler-config (or (get-in config [:handler :config-map handler-sym])
-                           {})
+        handler-config (-> (get-in config [:handler :config-map handler-sym])
+                           (or {})
+                           (e.config/expand-config))
         using-interceptor-syms (concat (or (some->> (get-in handler-config [:interceptor :includes])
                                                     (seq)
                                                     (sort))
@@ -270,11 +316,7 @@
                                            []))]
     (to-s
      [(str "==== " title)
-      (when link
-        [(str "[.text-right]\n[small]#link:" link "[source]#")
-         ""])
-
-      (or (:doc m) "TODO")
+      (format-docstring m)
 
       (when (get handler-key-mapping-dict handler-sym)
         [""
@@ -286,11 +328,9 @@
          "===== Using interceptors"
          (for [interceptor-sym using-interceptor-syms]
            (str "* " (anchor (interceptor-title interceptor-sym))))
-         ""])])))
+         ""])
 
-(some->> 'elin.handler.navigate/references
-         (get handler-using-interceptor-kind-dict)
-         (get kind-to-interceptor-symbol-dict))
+      (source-link m)])))
 
 (defn- excluded-handler?
   [handler-sym]
@@ -316,8 +356,6 @@
 
 
 ;; ====================================================
-
-
 
 (def sample-interceptor-execute-usages
   (filter #(= "src/elin/function/quickfix.clj"
@@ -354,14 +392,27 @@
        (str/join "\n")
        (spit (io/file page-dir "variables.adoc"))))
 
+(defn- generate-command-documents
+  []
+  (->> commands
+       (keep (fn [{:keys [command handler]}]
+               (when-let [title (handler-title (symbol handler))]
+                 [(format "===== %s" command)
+                  ""
+                  (format "Calls %s handler." (anchor title))
+                  ""])))
+       (flatten)
+       (str/join "\n")
+       (spit (io/file page-dir "commands.adoc"))))
+
 (defn -main
   [& _]
   (.mkdir page-dir)
   (generate-handler-documents)
   (generate-interceptor-documents)
   (generate-default-key-mapping-variables)
+  (generate-command-documents)
   (println "Generated asciidoc files."))
-
 
 (comment
   (with-redefs [spit println]
