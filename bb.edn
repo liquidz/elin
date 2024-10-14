@@ -73,10 +73,14 @@
                                     (exec 'elin.task.doc/-main))}
 
   generate-document-html {:doc "Generate document HTMLs"
-                          :requires ([clojure.java.io :as io])
-                          #_#_:depends [generate-document-adoc]
-                          :task (let [pwd (.getAbsolutePath (io/file "."))]
-                                  (shell (str "docker run --rm -v " pwd ":/documents/ asciidoctor/docker-asciidoctor asciidoctor -o target/html/index.html doc/pages/index.adoc")))}
+                          :depends [generate-document-adoc]
+                          :task (clojure {:dir "doc/pages"}
+                                         "-Sdeps '{:paths [\"src\"] :deps {org.asciidoctor/asciidoctorj {:mvn/version \"RELEASE\"}}}' -M -m convert")}
+
+  watch-document-html {:doc "Generate document HTMLs"
+                       :depends [generate-document-adoc]
+                       :task (clojure {:dir "doc/pages"}
+                                      "-Sdeps '{:paths [\"src\"] :deps {org.asciidoctor/asciidoctorj {:mvn/version \"RELEASE\"} com.nextjournal/beholder {:mvn/version \"RELEASE\"}}}' -M -m watch")}
 
   check {:doc "Check all"
          :depends [clj-kondo-emit generate-test-analysis generate-deps-edn generate-vim-help
