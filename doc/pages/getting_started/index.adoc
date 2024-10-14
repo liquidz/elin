@@ -1,0 +1,60 @@
+=== Requirements
+
+* https://github.com/vim/vim[Vim] v9.1 or later, https://github.com/neovim/neovim[Neovim] v0.9.5 or later
+* https://github.com/babashka/babashka[Babashka] v1.3.189 or later
+* https://github.com/clj-kondo/clj-kondo[Clj-kondo] (Optional but highly recommended)
+
+=== Installation
+
+This is an example of installation using https://github.com/junegunn/vim-plug[vim-plug].
+
+.vim-plug
+[source,vim]
+----
+Plug 'liquidz/elin'
+----
+
+.dein
+[source,vim]
+----
+call dein#add('liquidz/elin')
+----
+
+Elin does not map any keys by default.
+If you want to use the default key mappings, see <<Key mappings>>.
+
+
+=== Quick start
+
+For quick start, you don't need to create any project!
+Just open a Clojure file and run the following command.
+
+[source,shell]
+----
+$ vim foo.clj
+
+# Execute the following command in Vim/Neovim
+# :ElinInstantConnect babashka
+----
+
+You will to connect REPL, so let’s execute the next command.
+
+[source,vim]
+----
+:ElinEval (+ 1 2 3 4 5)
+----
+
+
+==== Start in your project
+
+In the example above, we used a simple case with Babashka, but if you already have a Clojure project, you can get started by following the steps below.
+
+First, start the REPL with the following command.
+Alternatively, you can also start the REPL within the Elin server using the <<ElinJackIn>> command.
+
+[source,shell]
+----
+$ clj -Sdeps '{:deps {nrepl/nrepl {:mvn/version "1.3.0"} cider/cider-nrepl {:mvn/version "0.49.0"}}}' -M -m nrepl.cmdline --middleware "[cider.nrepl/cider-middleware]" --interactive
+----
+
+Once the REPL is running, connect to the REPL using the <<ElinConnect>> command.

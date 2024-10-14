@@ -1,7 +1,7 @@
-[[top, Back to top]]
 = 🍏 elin
 :sectnums:
 :toc: left
+:table-caption!:
 :source-highlighter: rouge
 :icons: font
 
@@ -22,6 +22,24 @@
 </style>
 +++
 // }}}
+// custom css {{{
++++
+<style>
+.xsmall { font-size: 0.7em; }
+</style>
++++
+// }}}
+// variables {{{
+
+:elin-config-edn: https://github.com/liquidz/elin/blob/main/resources/config.edn
+:elin-format: https://github.com/liquidz/elin-format[elin-format]
+:vim-iced: https://github.com/liquidz/vim-iced[vim-iced]
+:cider: https://github.com/clojure-emacs/cider[CIDER]
+:cljfmt: https://github.com/weavejester/cljfmt[cljfmt]
+:cljstyle: https://github.com/greglook/cljstyle[cljstyle]
+:clojure-lsp: https://clojure-lsp.io[clojure-lsp]
+
+// }}}
 
 include::./generated/variables.adoc[]
 
@@ -29,42 +47,71 @@ include::./generated/variables.adoc[]
 
 https://github.com/liquidz/elin[elin] is a Clojure development environment, primarily written in https://babashka.org[Babashka].
 
-This project is being developed as the successor to https://github.com/liquidz/vim-iced[vim-iced] and, like vim-iced, is heavily inspired by https://github.com/clojure-emacs/cider[CIDER].
+This project is being developed as the successor to {vim-iced} and, as same as vim-iced, is heavily inspired by {CIDER}.
 
 The goal of this project is to provide a server program that serves as the foundation for a Clojure development environment and its interface, enabling it to theoretically offer a Clojure development environment to any editor.
 
-// ==================================================
-
 == Getting Started
 
-=== Requirements
+include::./getting_started/index.adoc[]
 
-* https://github.com/vim/vim[Vim] v9.1 or later, https://github.com/neovim/neovim[Neovim] v0.9.5 or later
-* https://github.com/babashka/babashka[Babashka] v1.3.189 or later
-* https://github.com/clj-kondo/clj-kondo[Clj-kondo] (Optional but highly recommended)
+== Evaluation
 
-=== Installation
+TODO
 
-This is an example of installation using https://github.com/junegunn/vim-plug[vim-plug].
+== Completion
 
-[source,vim]
-----
-" Specify a directory for plugins
-call plug#begin('~/.vim/plugged')
+TODO
 
-Plug 'liquidz/elin', {'for': 'clojure'}
+== Formatting
 
-call plug#end()
-----
+Elin does not provide a default formatter for now.
+The reason is that for format checks in CI, external tools such as {cljfmt}, {cljstyle}, or {clojure-lsp} are commonly used, and a formatter that only works within the editor is often unnecessary.
 
-See also <<Configuration>>.
+However, if you blocked when saving files in namespaces with large amounts of code due to the formatting entire buffer, you can use the {elin-format} plugin to format only the current form.
 
-// ==================================================
+== Navigation
+
+TODO
+
+== Reference
+
+TODO
+
+== Macro
+
+TODO
+
+== Namespace
+
+TODO
+
+== Testing
+
+TODO
+
+
+== Buffer
+
+=== Information buffer
+
+TODO
+
+=== Temporal buffer
+
+TODO
+
 
 == Configuration
 include::./configuration/index.adoc[]
 
-// ==================================================
+
+== Plugin
+
+The plugins are tagged with the `elin-clj-plugin` topic on GitHub, so you can view the list from the following link.
+
+https://github.com/topics/elin-clj-plugin
+
 
 == Handlers
 
@@ -73,10 +120,7 @@ Handlers process requests from the host editor.
 === Built-in Handlers
 
 include::./generated/handlers.adoc[]
-[.text-right]
-[small]#<<top>>#
 
-// ==================================================
 
 == Interceptors
 
@@ -84,6 +128,19 @@ Interceptors intercept various processes and change their behavior.
 
 === Built-in Interceptors
 include::./generated/interceptors.adoc[]
-[.text-right]
-[small]#<<top>>#
 
+
+== Host
+
+=== Vim/Neovim
+
+==== Commands
+
+include::./generated/commands.adoc[]
+
+
+== Cheatsheet
+
+include::./cheatsheet.adoc[]
+
+// vim:fdl=0:

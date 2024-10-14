@@ -1,0 +1,97 @@
+
+[NOTE]
+====
+Based on default key mappings. +
+See https://github.com/liquidz/elin/blob/main/doc/elin-mapping.txt[elin-mapping.txt] for whole default key mappings.
+====
+
+[cols="33a,33a,33a"]
+|===
+
+| *Connection*
+[cols="30,70"]
+!===
+! {elin-handler-connect-connect}
+! Make connection to nREPL
+!===
+
+| *<<Evaluation>>*
+[cols="30,70"]
+!===
+! {elin-handler-evaluate-evaluate-current-list}
+! Evaluate current list
+! {elin-handler-evaluate-evaluate-current-top-list}
+! Evaluate current top list
+! {elin-handler-evaluate-evaluate-current-buffer}
+! Evaluate current buffer
+! {elin-handler-evaluate-interrupt}
+! Interrupt code evaluation
+! {elin-handler-evaluate-reload}
+! Reload all changed files
+!===
+
+| *<<Macro>>*
+[cols="30,70"]
+!===
+! {elin-handler-evaluate-expand-1-current-list}
+! Evaluate `macroexpand-1` for current list
+!===
+
+| *<<Testing>>*
+[cols="30,70"]
+!===
+! {elin-handler-test-run-test-under-cursor}
+! Run test under cursor
+! {elin-handler-test-run-tests-in-ns}
+! Run tests in current namespace
+! {elin-handler-test-rerun-last-tests}
+! Re run last test
+! {elin-handler-test-rerun-last-failed-tests}
+! Re run last failed tests
+!===
+
+| *<<Navigation>>*
+[cols="30,70"]
+!===
+! {elin-handler-navigate-jump-to-definition}
+! Jump cursor to the definition of symbol under cursor
+! {elin-handler-navigate-cycle-source-and-test}
+! Cycle between source file and test file
+! {elin-handler-navigate-references}
+! Jump to references of symbol under cursor
+!===
+
+| *<<Reference>>*
+[cols="30,70"]
+!===
+! {elin-handler-lookup-lookup}
+! Show documents for the symbol under cursor
+! {elin-handler-lookup-show-source}
+! Show source for the symbol under cursor
+! {elin-handler-lookup-show-clojuredocs}
+! Show ClojureDocs for the symbol under cursor
+!===
+
+| *<<Namespace>>*
+[cols="30,70"]
+!===
+! {elin-handler-namespace-add-libspec}
+! Add libspec to current https://clojuredocs.org/clojure.core/ns[`ns`] form
+! {elin-handler-namespace-add-missing-libspec}
+! Add missing libspec to current https://clojuredocs.org/clojure.core/ns[`ns`] form
+!===
+
+| *Others*
+[cols="30,70"]
+!===
+! {elin-internal-buffer-info-toggle}
+! Show/close information buffer
+! {elin-internal-buffer-info-clear}
+! Clear contents in information buffer
+!===
+
+|
+
+// End of cheatsheet
+|===
+
