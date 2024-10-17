@@ -62,6 +62,7 @@ if has('vim_starting')
   aug elin_starting_group
     au!
     au VimEnter * call s:init()
+    au FileType clojure call s:init()
   aug END
 else
   if &ft ==# 'clojure'
