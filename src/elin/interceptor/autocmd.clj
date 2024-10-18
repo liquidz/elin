@@ -5,6 +5,7 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
    [elin.function.connect :as e.f.connect]
+   [elin.function.evaluate :as e.f.evaluate]
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.sexpr :as e.f.sexpr]
@@ -15,6 +16,7 @@
    [elin.util.interceptor :as e.u.interceptor]
    [elin.util.string :as e.u.string]
    [exoscale.interceptor :as ix]
+   [pogonos.core :as pogonos]
    [taoensso.timbre :as timbre]))
 
 (def ^:priavte ns-created-var-name
@@ -83,7 +85,6 @@
 (def skeleton
   {:kind e.c.interceptor/autocmd
    :enter (-> (fn [{:as ctx :component/keys [host]}]
-
                 (e/let [config (e.u.interceptor/config ctx #'skeleton)
                         path (async/<!! (e.p.host/get-current-file-path! host))
                         ns-str (or (e.f.n.namespace/guess-namespace-from-path path)
@@ -100,10 +101,9 @@
                                         :test? test?}
                                  test?
                                  (assoc :source-ns (str/replace ns-str #"-test$" "")))
-                        ns-form-lines (->> params
-                                           (e.u.string/render template)
-                                           (str/split-lines))]
-                  (e.p.host/set-to-current-buffer host ns-form-lines)))
+                        ns-form (pogonos/render-string template params)]
+                  (e.p.host/set-to-current-buffer host (str/split-lines ns-form))
+                  (e.f.evaluate/evaluate-code ctx ns-form {:file path})))
               (ix/when empty-buffer?)
               (ix/discard))})
 
