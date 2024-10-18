@@ -24,7 +24,7 @@ if has('nvim')
          \ ])
   endfunction
 else
-  let g:elin#internal#select#selector = get(g: 'elin#internal#select#selector', 'default')
+  let g:elin#internal#select#selector = get(g:, 'elin#internal#select#selector', 'default')
   let s:selector = function(printf('elin#internal#select#%s#run', g:elin#internal#select#selector))
 
   function! s:select(candidates, callback) abort
