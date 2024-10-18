@@ -87,7 +87,7 @@ command! ElinEvalCurrentTopList call elin#notify('elin.handler.evaluate/evaluate
 command! ElinEvalCurrentBuffer call elin#notify('elin.handler.evaluate/evaluate-current-buffer', [])
 command! ElinEvalNsForm call elin#notify('elin.handler.evaluate/evaluate-namespace-form', [])
 command! ElinEvalAtMark call elin#notify('elin.handler.evaluate/evaluate-at-mark', [nr2char(getchar())])
-command! ElinEvalInContext call elin#notify('elin.handler.evaluate/evaluate-current-list', [], {"config": "{:interceptor {:includes [elin.interceptor.optional.evaluate/eval-with-context-interceptor]}}"})
+command! ElinEvalInContext call elin#notify('elin.handler.evaluate/evaluate-current-list', [], {"config": "{:interceptor {:includes [elin.interceptor.evaluate/eval-with-context-interceptor]}}"})
 command! ElinPrintLastResult call elin#notify('elin.handler.evaluate/print-last-result', [])
 
 command! ElinInterrupt call elin#notify('elin.handler.evaluate/interrupt', [])
