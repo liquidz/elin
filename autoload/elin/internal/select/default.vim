@@ -4,5 +4,7 @@ function! elin#internal#select#default#run(candidates, callback) abort
 
   if choice > 0 && choice <= len(a:candidates)
     call a:callback(a:candidates[choice - 1])
+  else
+    call a:callback(v:null)
   endif
 endfunction

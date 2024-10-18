@@ -7,8 +7,11 @@ function! elin#internal#select#run(candidates, callback_handler, ...) abort
 endfunction
 
 function! elin#internal#select#_callback(args) abort
+  " NOTE
+  " Must call elin#callback#call if there is no choices
+  " It is required for syncronous request
   if len(a:args) == 1
-    call elin#callback#unregister(a:args[0])
+    call elin#callback#call(a:args[0], v:null)
   else
     call elin#callback#call(a:args[0], a:args[1])
   end
