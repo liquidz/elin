@@ -2,6 +2,8 @@
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
+   [elin.error :as e]
+   [elin.schema :as e.schema]
    [elin.util.file :as e.u.file]
    [elin.util.sexpr :as e.u.sexpr]
    [malli.core :as m]))
@@ -33,25 +35,34 @@
               (str/reverse)
               (str relative-name "_test" ext)))))
 
+(m/=> guess-namespace-from-path [:=> [:cat string?] (e.schema/error-or string?)])
 (defn guess-namespace-from-path
   [path]
-  (let [sep (e.u.file/guess-file-separator path)
-        recent-file (e.u.file/find-file-in-parent-directories
-                     (.getAbsolutePath (.getParentFile (io/file path)))
-                     #"\.clj[csd]?$")
-        recent-file-path (.getAbsolutePath recent-file)
-        ext (e.u.file/get-file-extension recent-file-path)
-        recent-namespace (-> (slurp recent-file)
-                             (e.u.sexpr/extract-ns-form)
-                             (e.u.sexpr/extract-namespace))
-        recent-relative-name (-> recent-namespace
-                                 (str/replace "." sep)
-                                 (str/replace "-" "_"))
-        base-dir (when-let [idx (str/index-of recent-file-path
-                                              (str recent-relative-name ext))]
-                   (subs recent-file-path 0 idx))]
-    (when (str/starts-with? path base-dir)
-      (-> (subs path (count base-dir))
-          (str/replace #"\.\w+$" "")
-          (str/replace sep ".")
-          (str/replace "_" "-")))))
+  (e/let [sep (e.u.file/guess-file-separator path)
+          file (io/file path)
+          find-regexp (if (.isDirectory file)
+                        #"\.clj[csd]?$"
+                        (let [filename (.getName file)
+                              only-name (some->> (str/last-index-of filename ".")
+                                                 (subs filename 0))]
+                          (re-pattern (str "(?<!" only-name ")\\.clj[csd]?$"))))
+          recent-file (e.u.file/find-file-in-parent-directories
+                       (.getAbsolutePath (.getParentFile file))
+                       find-regexp)
+          recent-file-path (.getAbsolutePath recent-file)
+          ext (e.u.file/get-file-extension recent-file-path)
+          recent-namespace (e/-> (slurp recent-file)
+                                 (e.u.sexpr/extract-ns-form)
+                                 (e.u.sexpr/extract-namespace))
+          recent-relative-name (-> recent-namespace
+                                   (str/replace "." sep)
+                                   (str/replace "-" "_"))
+          base-dir (when-let [idx (str/index-of recent-file-path
+                                                (str recent-relative-name ext))]
+                     (subs recent-file-path 0 idx))
+          _ (when-not (str/starts-with? path base-dir)
+              (e/not-found))]
+    (-> (subs path (count base-dir))
+        (str/replace #"\.\w+$" "")
+        (str/replace sep ".")
+        (str/replace "_" "-"))))
