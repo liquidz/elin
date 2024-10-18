@@ -32,7 +32,8 @@
                                                 elin.interceptor.evaluate/yank-eval-result]}
                         :code-change {:includes [elin.interceptor.code-change/show-code-changed-result]}}}
 
- :handler {:uses [elin.handler.complete/complete {:log {:min-level :error}}
+ :handler {:uses [elin.handler.callback/callback {}
+                  elin.handler.complete/complete {:log {:min-level :error}}
                   elin.handler.connect/connect {}
                   elin.handler.connect/disconnect {}
                   elin.handler.connect/instant {}
