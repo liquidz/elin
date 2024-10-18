@@ -11,6 +11,7 @@
    [rewrite-clj.zip :as r.zip]))
 
 (def output-eval-result-to-cmdline
+  "Output evaluated result to cmdline."
   {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (when-let [v (:value response)]
@@ -41,6 +42,7 @@
               (ix/discard))})
 
 (def yank-eval-result
+  "Yank evaluated result."
   {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (some->> (:value response)
