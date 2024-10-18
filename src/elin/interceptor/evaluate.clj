@@ -40,7 +40,7 @@
                                                       :lnum (:cursor-line options))))))
               (ix/discard))})
 
-(def store-eval-result-to-clipboard
+(def yank-eval-result
   {:kind e.c.interceptor/evaluate
    :leave (-> (fn [{:component/keys [host] :keys [response]}]
                 (some->> (:value response)
