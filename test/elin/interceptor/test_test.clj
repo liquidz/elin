@@ -9,6 +9,8 @@
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.test-helper :as h]))
 
+(t/use-fixtures :once h/malli-instrument-fixture)
+
 (def ^:private done-test-leave
   (:leave sut/done-test))
 
@@ -35,7 +37,7 @@
                                                                  :lnum 1
                                                                  :ns "foo"
                                                                  :var "bar"}])]
-          (done-test-leave h/test-elin)
+          (done-test-leave (h/test-elin))
           (t/is (= [{:name "error" :group "*"}]
                    @unplaced-sign-args))
           (t/is (= [{:name "error" :lnum 1 :file "dummy.clj" :group "bar"}]
