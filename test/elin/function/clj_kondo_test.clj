@@ -43,7 +43,7 @@
       (t/is (= {:ns "elin.error"
                 :name "not-found"
                 :file "src/elin/error.clj"
-                :arglists-str "[& [m]]"}
+                :arglists-str "[& [m cause]]"}
                (-> (sut/lookup c "elin.function.clj-kondo" "e/not-found")
                    (dissoc :line :column)))))
 
@@ -51,7 +51,7 @@
       (t/is (= {:ns "elin.error"
                 :name "not-found"
                 :file "src/elin/error.clj"
-                :arglists-str "[& [m]]"}
+                :arglists-str "[& [m cause]]"}
                (-> (sut/lookup c "elin.function.clj-kondo" "elin.error/not-found")
                    (dissoc :line :column)))))
 
