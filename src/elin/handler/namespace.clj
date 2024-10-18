@@ -91,10 +91,9 @@
              (e.f.evaluate/evaluate-namespace-form ctx)
              (assoc ctx :response true))))))))
 
-(defn add-missing-libspec*
-  [{:as elin :keys [message]}]
-  (let [[alias-str ns-str] (:params message)
-        alias-sym (some-> alias-str
+(defn- add-missing-libspec*
+  [elin ns-str alias-str]
+  (let [alias-sym (some-> alias-str
                           (symbol))
         ns-sym (some-> ns-str
                        (symbol))]
@@ -125,9 +124,12 @@
       (e.message/warning host "There are no candidates.")
 
       1
-      (add-missing-libspec*
-       (assoc elin :message {:params [alias-str (str (:name (first candidates)))]}))
+      (add-missing-libspec* elin
+                            (str (:name (first candidates)))
+                            alias-str)
 
       ;; else
-      (e.p.host/select-from-candidates
-       host (map :name candidates) (symbol #'add-missing-libspec*) [alias-str]))))
+      (when-let [ns-str (e.f.select/select-from-candidates elin (map :name candidates))]
+        (add-missing-libspec* elin
+                              ns-str
+                              alias-str)))))

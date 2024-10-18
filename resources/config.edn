@@ -73,7 +73,6 @@
                   elin.handler.namespace/add-missing-libspec {:favorites #include "favorite_aliases.edn"
                                                               :java-classes #include "java_classes.edn"
                                                               :interceptor #ref [:interceptor :preset :code-change]}
-                  elin.handler.namespace/add-missing-libspec* {:interceptor #ref [:interceptor :preset :code-change]}
                   elin.handler.navigate/cycle-source-and-test {}
                   elin.handler.navigate/jump {}
                   elin.handler.navigate/jump-to-definition {}
