@@ -6,6 +6,7 @@
    [elin.error :as e]
    [elin.function.evaluate :as e.f.evaluate]
    [elin.function.namespace :as e.f.namespace]
+   [elin.function.select :as e.f.select]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
@@ -24,13 +25,14 @@
       (re-seq form)
       (some?)))
 
-(defn add-libspec*
-  [{:as elin :component/keys [handler host interceptor] :keys [message]}]
-  (e/let [favorites (get-in handler [:config-map (symbol #'add-libspec) :favorites])
-          ns-sym (-> (:params message)
-                     (first)
-                     (symbol)
-                     (or (e/not-found)))
+(defn add-libspec
+  "Add libspec to namespace form."
+  [{:as elin :component/keys [handler host interceptor]}]
+  (e/let [candidates (e.f.namespace/get-namespaces elin)
+          ns-sym (or (some-> (e.f.select/select-from-candidates elin candidates)
+                             (symbol))
+                     (e/interrupted))
+          favorites (get-in handler [:config-map (symbol #'add-libspec) :favorites])
           default-alias-sym (or (get favorites ns-sym)
                                 (e.f.namespace/most-used-namespace-alias elin ns-sym))
           alias-str (async/<!! (e.p.host/input! host
@@ -54,12 +56,6 @@
              (e.f.sexpr/replace-list-sexpr ctx lnum col ns-form')
              (e.f.evaluate/evaluate-namespace-form ctx)
              (assoc ctx :response true))))))))
-
-(defn add-libspec
-  "Add libspec to namespace form."
-  [{:as elin :component/keys [host]}]
-  (let [coll (e.f.namespace/get-namespaces elin)]
-    (e.p.host/select-from-candidates host coll (symbol #'add-libspec*))))
 
 (defn- add-missing-import*
   [{:as elin :component/keys [interceptor]} class-name-sym]
