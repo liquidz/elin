@@ -13,41 +13,50 @@
 (def ^:private fault-type ::fault)
 (def ^:private busy-type ::busy)
 
-(defn unavailable [& [m]]
+(defn unavailable [& [m cause]]
   (ex-info (or (:message m) "Unavailable")
-           (merge m {:type unavailable-type})))
+           (merge m {:type unavailable-type})
+           cause))
 
-(defn interrupted [& [m]]
+(defn interrupted [& [m cause]]
   (ex-info (or (:message m) "Interrupted")
-           (merge m {:type interrupted-type})))
+           (merge m {:type interrupted-type})
+           cause))
 
-(defn incorrect [& [m]]
+(defn incorrect [& [m cause]]
   (ex-info (or (:message m) "Incorrect")
-           (merge m {:type incorrect-type})))
+           (merge m {:type incorrect-type})
+           cause))
 
-(defn forbidden [& [m]]
+(defn forbidden [& [m cause]]
   (ex-info (or (:message m) "Forbidden")
-           (merge m {:type forbidden-type})))
+           (merge m {:type forbidden-type})
+           cause))
 
-(defn unsupported [& [m]]
+(defn unsupported [& [m cause]]
   (ex-info (or (:message m) "Unsupported")
-           (merge m {:type unsupported-type})))
+           (merge m {:type unsupported-type})
+           cause))
 
-(defn not-found [& [m]]
+(defn not-found [& [m cause]]
   (ex-info (or (:message m) "Not found")
-           (merge m {:type not-found-type})))
+           (merge m {:type not-found-type})
+           cause))
 
-(defn conflict [& [m]]
+(defn conflict [& [m cause]]
   (ex-info (or (:message m) "Conflict")
-           (merge m {:type conflict-type})))
+           (merge m {:type conflict-type})
+           cause))
 
-(defn fault [& [m]]
+(defn fault [& [m cause]]
   (ex-info (or (:message m) "Fault")
-           (merge m {:type fault-type})))
+           (merge m {:type fault-type})
+           cause))
 
-(defn busy [& [m]]
+(defn busy [& [m cause]]
   (ex-info (or (:message m) "Busy")
-           (merge m {:type busy-type})))
+           (merge m {:type busy-type})
+           cause))
 
 (defn error? [x]
   (instance? clojure.lang.ExceptionInfo x))
