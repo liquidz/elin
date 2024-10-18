@@ -18,10 +18,12 @@
   component/Lifecycle
   (start [this]
     (timbre/info "SessionStorage component: Started")
-    (assoc this :memory (atom {})))
+    (reset! memory {})
+    this)
   (stop [this]
     (timbre/info "SessionStorage component: Stopped")
-    (dissoc this :memory))
+    (reset! memory {})
+    this)
 
   e.p.storage/IStorage
   (set [this k v]
@@ -56,4 +58,4 @@
 
 (defn new-session-storage
   [_]
-  (map->SessionStorage {}))
+  (map->SessionStorage {:memory (atom {})}))
