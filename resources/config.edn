@@ -77,6 +77,7 @@
                   elin.handler.navigate/jump {}
                   elin.handler.navigate/jump-to-definition {}
                   elin.handler.navigate/references {}
+                  elin.handler.navigate/local-references {}
                   elin.handler.test/rerun-last-failed-tests {}
                   elin.handler.test/rerun-last-tests {}
                   elin.handler.test/run-test-under-cursor {}

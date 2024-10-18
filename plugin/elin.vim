@@ -106,6 +106,7 @@ command! ElinAddMissingLibspec call elin#notify('elin.handler.namespace/add-miss
 " Navigation
 command! ElinJumpToDefinition call elin#notify('elin.handler.navigate/jump-to-definition', [])
 command! ElinReferences call elin#notify('elin.handler.navigate/references', [])
+command! ElinLocalReferences call elin#notify('elin.handler.navigate/local-references', [])
 
 " Documentation
 command! ElinLookup call elin#notify('elin.handler.lookup/lookup', [])
@@ -157,6 +158,7 @@ nnoremap <silent> <Plug>(elin_add_missing_libspec) <Cmd>ElinAddMissingLibspec<CR
 " Navigation
 nnoremap <silent> <Plug>(elin_jump_to_definition) <Cmd>ElinJumpToDefinition<CR>
 nnoremap <silent> <Plug>(elin_references) <Cmd>ElinReferences<CR>
+nnoremap <silent> <Plug>(elin_local_references) <Cmd>ElinLocalReferences<CR>
 
 " Documentation
 nnoremap <silent> <Plug>(elin_lookup) <Cmd>ElinLookup<CR>
@@ -234,6 +236,7 @@ function! s:default_key_mappings() abort
   " Navigation
   call s:define_mapping('nmap', '<C-]>', '<Plug>(elin_jump_to_definition)')
   call s:define_mapping('nmap', '<Leader>br', '<Plug>(elin_references)')
+  call s:define_mapping('nmap', '<Leader>blr', '<Plug>(elin_local_references)')
 
   " Documentation
   call s:define_mapping('nmap', 'K', '<Plug>(elin_lookup)')

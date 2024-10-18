@@ -9,6 +9,7 @@
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.quickfix :as e.f.quickfix]
    [elin.function.sexpr :as e.f.sexpr]
+   [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
    [elin.util.file :as e.u.file]
@@ -112,5 +113,39 @@
                                :lnum (:lnum %)
                                :col (:col %)
                                :text (str (:ns %))
+                               :type "Reference"))
+               (e.f.quickfix/set-location-list elin))))))
+
+(defn local-references
+  [{:as elin :component/keys [host clj-kondo]}]
+  (e/let [path (async/<!! (e.p.host/get-current-file-path! host))
+          {cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
+          {expr :code} (e.f.sexpr/get-expr elin cur-lnum cur-col)
+          expr (normalize-var-code expr)
+          {ns-code :code} (e.f.sexpr/get-namespace-sexpr elin)
+          ns-code-line-count (count (str/split-lines ns-code))
+          {code :code base-lnum :lnum base-col :col} (e.f.sexpr/get-top-list elin cur-lnum cur-col)
+          ;; NOTE ns-code is required for clj-kondo to analyze correctly if you use plumatic/schema etc.
+          code' (str ns-code "\n" code)
+          resp (e.p.clj-kondo/analyze-code!! clj-kondo code')
+          local-usages (some->> (get-in resp [:analysis :local-usages])
+                                (filter #(= expr (str (:name %)))))
+          calc-lnum #(+ base-lnum (- % ns-code-line-count 1))
+          calc-col #(+ base-col % -1)]
+    (cond
+      (empty? local-usages)
+      (e/not-found)
+
+      (= 1 (count local-usages))
+      (let [{:keys [row col]} (first local-usages)]
+        (async/<!! (e.p.host/jump! host path (calc-lnum row) (calc-col col))))
+
+      :else
+      (do (e.p.host/echo-text host "Multiple references found. See location list.")
+          (->> local-usages
+               (map #(hash-map :filename path
+                               :lnum (calc-lnum (:row %))
+                               :col (calc-col (:col %))
+                               :text (str (:name %))
                                :type "Reference"))
                (e.f.quickfix/set-location-list elin))))))
