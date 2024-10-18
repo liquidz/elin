@@ -14,7 +14,7 @@
    [elin.protocol.config :as e.p.config]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.interceptor :as e.s.interceptor]
-   [exoscale.interceptor :as interceptor]
+   [exoscale.interceptor :as ix]
    [malli.core :as m]
    [msgpack.clojure-extensions]
    [taoensso.timbre :as timbre]))
@@ -123,7 +123,7 @@
       (try
         #_(timbre/debug (format "Start to intercept %s with [%s]" kind (->> (map :name interceptors)
                                                                             (str/join ", "))))
-        (interceptor/execute context' (concat interceptors [terminator']))
+        (ix/execute context' (concat interceptors [terminator']))
         (catch Exception ex
           (e.message/error lazy-host (format "Failed to intercept for %s: %s"
                                              kind
