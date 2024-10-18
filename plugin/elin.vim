@@ -58,15 +58,22 @@ function! s:deinit() abort
   endif
 endfunction
 
+function! s:startup() abort
+  call s:init()
+  aug elin_initializing_group
+    au!
+    au FileType clojure call s:init()
+  aug END
+endfunction
+
 if has('vim_starting')
   aug elin_starting_group
     au!
-    au VimEnter * call s:init()
-    au FileType clojure call s:init()
+    au VimEnter * call s:startup()
   aug END
 else
   if &ft ==# 'clojure'
-    call s:init()
+    call s:startup()
   endif
 endif
 " }}}
