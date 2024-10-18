@@ -1,5 +1,4 @@
 function! elin#internal#register#yank_and_slide(text) abort
-  echom printf('FIXME kiteruyo? %s', a:text)
   let @9 = @8
   let @8 = @7
   let @7 = @6
