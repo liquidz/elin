@@ -57,7 +57,7 @@
         zloc
         (recur up-zloc)))))
 
-(def eval-in-comment
+(def unwrap-comment-form
   {:kind e.c.interceptor/evaluate
    :enter (-> (fn [{:as ctx :keys [code options]}]
                 (let [{:keys [line column cursor-line cursor-column]} options

@@ -28,7 +28,7 @@
 
                :preset {:evaluation {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline
                                                 elin.interceptor.evaluate/set-eval-result-to-virtual-text
-                                                elin.interceptor.evaluate/eval-in-comment
+                                                elin.interceptor.evaluate/unwrap-comment-form
                                                 elin.interceptor.evaluate/yank-eval-result]}
                         :code-change {:includes [elin.interceptor.code-change/show-code-changed-result]}}}
 
