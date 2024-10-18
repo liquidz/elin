@@ -14,7 +14,6 @@
    [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.util.interceptor :as e.u.interceptor]
-   [elin.util.string :as e.u.string]
    [exoscale.interceptor :as ix]
    [pogonos.core :as pogonos]
    [taoensso.timbre :as timbre]))
