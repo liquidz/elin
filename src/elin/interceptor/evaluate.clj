@@ -49,7 +49,7 @@
 
 (defn- up-until-top [zloc]
   (loop [zloc zloc]
-    (let [up-zloc (r.zip/up zloc)]
+    (when-let [up-zloc (r.zip/up zloc)]
       (if (-> up-zloc
               (r.zip/down)
               (r.zip/sexpr)
