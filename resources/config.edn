@@ -8,7 +8,9 @@
 
  :interceptor {:uses [elin.interceptor.autocmd/deinitialize {}
                       elin.interceptor.autocmd/ns-load {}
-                      elin.interceptor.autocmd/skeleton #include "skeleton.edn"
+                      elin.interceptor.autocmd/skeleton {;; NOTE {lang {:src "skeleton for source" :test "skeleton for test"}}
+                                                         :clojure {:src #resource "template/clojure_src_skeleton.mustache"
+                                                                   :test #resource "template/clojure_test_skeleton.mustache"}}
                       elin.interceptor.autocmd/clj-kondo-analyzing {}
                       elin.interceptor.connect/connected {}
                       elin.interceptor.connect/raw-message-channel {}
