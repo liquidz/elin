@@ -34,7 +34,7 @@
 (defn- clj-kondo-available?
   [command]
   (try
-    (zero? (:exit (b.process/shell command "--version")))
+    (zero? (:exit (b.process/shell {:out :string} command "--version")))
     (catch Exception _ false)))
 
 (defn- clj-kondo-run!
