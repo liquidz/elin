@@ -486,6 +486,8 @@
                                                                                                      :initial-namespace :nilable/string,
                                                                                                      :version :map}}],
                                                                                        :ret :string}}}},
+                                        elin.component.clj-kondo {clj-kondo-available? {:arities {1 {:args [:string],
+                                                                                                     :ret :boolean}}}},
                                         elin.test-helper.nrepl {test-nrepl {:arities {1 {:args [:map], :ret :any}}}},
                                         elin.handler.test {run-test-under-cursor {:arities {1 {:args [{:op :keys,
                                                                                                        :req {:message {:op :keys,
