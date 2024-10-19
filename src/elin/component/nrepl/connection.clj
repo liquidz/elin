@@ -117,30 +117,33 @@
              (b/write-bencode write-stream))
         (get-in @response-manager [id :channel])))))
 
-(m/=> connect [:=> [:cat string? int?] e.s.nrepl/?Connection])
+(m/=> connect [:=> [:cat string? int?] (e.schema/error-or e.s.nrepl/?Connection)])
 (defn connect
   [host port]
-  (let [sock (Socket. host port)
-        raw-message-channel (async/chan)
-        read-stream (PushbackInputStream. (.getInputStream sock))
-        write-stream (.getOutputStream sock)
-        response-manager (atom {})]
+  (try
+    (let [sock (Socket. host port)
+          raw-message-channel (async/chan)
+          read-stream (PushbackInputStream. (.getInputStream sock))
+          write-stream (.getOutputStream sock)
+          response-manager (atom {})]
 
-    (async/go-loop []
-      (try
-        (let [v (b/read-bencode read-stream)
-              msg (format-message v)]
-          (swap! response-manager process-message msg)
-          (async/put! raw-message-channel msg))
-        (catch SocketException _ nil))
-      (when-not (.isClosed sock)
-        (recur)))
+      (async/go-loop []
+        (try
+          (let [v (b/read-bencode read-stream)
+                msg (format-message v)]
+            (swap! response-manager process-message msg)
+            (async/put! raw-message-channel msg))
+          (catch SocketException _ nil))
+        (when-not (.isClosed sock)
+          (recur)))
 
-    (map->Connection
-     {:host host
-      :port port
-      :socket sock
-      :read-stream read-stream
-      :write-stream write-stream
-      :raw-message-channel raw-message-channel
-      :response-manager response-manager})))
+      (map->Connection
+       {:host host
+        :port port
+        :socket sock
+        :read-stream read-stream
+        :write-stream write-stream
+        :raw-message-channel raw-message-channel
+        :response-manager response-manager}))
+    (catch Exception ex
+      (e/fault {:message (ex-message ex)} ex))))
