@@ -16,9 +16,6 @@
    [elin.component.server.impl.sign]
    [elin.component.server.impl.variable]
    [elin.component.server.impl.virtual-text]
-   [elin.component.server.nvim :as e.c.s.nvim]
-   [elin.component.server.vim :as e.c.s.vim]
-   [elin.constant.host :as e.c.host]
    [elin.error :as e]
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [elin.protocol.lazy-host :as e.p.lazy-host]
@@ -58,6 +55,7 @@
    handler
    lazy-host
    ;; CONFIGS
+   entrypoints
    host
    port
    ;; PARAMS
@@ -75,10 +73,11 @@
                         :server-socket server-socket
                         :on-accept (partial on-accept handler' lazy-host)
                         :stop-signal stop-signal}
+            entrypoint-sym (get entrypoints host)
+            _ (when-not entrypoint-sym
+                (throw (e/unsupported {:message (format "Unknown host: %s" host)})))
             server (future
-                     (if (= e.c.host/nvim host)
-                       (e.c.s.nvim/start-server server-arg)
-                       (e.c.s.vim/start-server server-arg)))]
+                     ((requiring-resolve entrypoint-sym) server-arg))]
         (timbre/info "Server component: Started" host port)
         (assoc this
                :stop-signal stop-signal

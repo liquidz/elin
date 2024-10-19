@@ -1,6 +1,9 @@
 {:log {;; cf. https://taoensso.github.io/timbre/taoensso.timbre.html#var-default-config
        :min-level :info}
 
+ :server {:entrypoints {"nvim" elin.component.server.nvim/start-server
+                        "vim" elin.component.server.vim/start-server}}
+
  :http-server {:port #empty-port []}
 
  :interceptor {:uses [elin.interceptor.autocmd/deinitialize {}
