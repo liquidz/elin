@@ -26,6 +26,10 @@
   [_opts _tag value]
   (slurp (io/resource value)))
 
+(defmethod aero/reader 'slurp
+  [_opts _tag value]
+  (slurp value))
+
 (def ^:private config-transformer
   (mt/transformer
    mt/default-value-transformer))

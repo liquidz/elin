@@ -1,0 +1,8 @@
+(ns {{ns}}
+  (:require
+   [clojure.test :as t]
+   [elin.test-helper :as h]
+   [{{source-ns}} :as sut]))
+
+(t/use-fixtures :once h/malli-instrument-fixture)
+(t/use-fixtures :once h/warn-log-level-fixture)
