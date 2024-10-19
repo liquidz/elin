@@ -9,6 +9,15 @@
 (m/=> select-from-candidates [:=> [:cat e.s.handler/?Elin [:sequential any?]] any?])
 (defn select-from-candidates
   [{:as elin :component/keys [host]} candidates]
-  (let [[id ch] (e.f.callback/register elin)]
-    (e.p.host/select-from-candidates host candidates 'elin.handler.callback/callback [id])
-    (async/<!! ch)))
+
+  (cond
+    (empty? candidates)
+    nil
+
+    (= 1 (count candidates))
+    (first candidates)
+
+    :else
+    (let [[id ch] (e.f.callback/register elin)]
+      (e.p.host/select-from-candidates host candidates 'elin.handler.callback/callback [id])
+      (async/<!! ch))))
