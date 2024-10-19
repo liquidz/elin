@@ -2,17 +2,25 @@
   (:require
    [clojure.core.async :as async]
    [elin.component.nrepl.connection :as e.c.n.connection]
+   [elin.error :as e]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.schema :as e.schema]
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.nrepl :as e.u.nrepl]
-   [malli.core :as m]))
+   [malli.core :as m]
+   [malli.util :as m.util]
+   [taoensso.timbre :as timbre]))
+
+(def default-hostname "localhost")
 
 (defrecord Client
   [connection
    session
    supported-ops
    initial-namespace
-   version]
+   version
+   language
+   port-file]
 
   e.p.nrepl/IConnection
   (disconnect [_]
@@ -42,8 +50,17 @@
   (version [_]
     version))
 
+(def ^:private ?ConnectArgumentMap
+  (m.util/merge
+   [:map
+    [:host [:maybe string?]]
+    [:port [:maybe int?]]]
+   (-> e.s.nrepl/?Client
+       (m.util/select-keys  [:port-file :language]))))
+
+(m/=> new-client [:=> [:cat e.s.nrepl/?Connection ?ConnectArgumentMap] e.s.nrepl/?Client])
 (defn new-client
-  [conn]
+  [conn {:keys [language port-file]}]
   (let [clone-resp (e.u.nrepl/merge-messages
                     (async/<!! (e.p.nrepl/request conn {:op "clone"})))
         describe-resp (e.u.nrepl/merge-messages
@@ -55,9 +72,17 @@
       :session (:new-session clone-resp)
       :supported-ops (set (keys (:ops describe-resp)))
       :initial-namespace (:value ns-eval-resp)
-      :version (:versions describe-resp)})))
+      :version (:versions describe-resp)
+      :language language
+      :port-file port-file})))
 
-(m/=> connect [:=> [:cat string? int?] e.s.nrepl/?Client])
+(m/=> connect [:=> [:cat ?ConnectArgumentMap] (e.schema/error-or e.s.nrepl/?Client)])
 (defn connect
-  [host port]
-  (new-client (e.c.n.connection/connect host port)))
+  [{:as arg :keys [host port port-file]}]
+  (let [host' (or host default-hostname)
+        port' (or port
+                  (some-> port-file
+                          (slurp)
+                          (Long/parseLong)))]
+    (e/-> (e.c.n.connection/connect host' port')
+          (new-client arg))))

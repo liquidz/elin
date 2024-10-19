@@ -32,7 +32,9 @@
    [:session string?]
    [:supported-ops [:set keyword?]]
    [:initial-namespace [:maybe string?]]
-   [:version [:map-of keyword? any?]]])
+   [:version [:map-of keyword? any?]]
+   [:port-file [:maybe string?]]
+   [:language [:maybe [:enum "clojure" "clojurescript"]]]])
 
 (def ?Manager
   [:map-of int? [:map
