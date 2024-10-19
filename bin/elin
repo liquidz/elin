@@ -20,7 +20,7 @@
   {:deps {'liquidz/elin {:local/root project-root}}})
 
 (require
-  '[babashka.process :as proc]
+  '[babashka.process :as b.process]
   '[elin.function.jack-in :as e.f.jack-in]
   '[elin.util.nrepl :as e.u.nrepl])
 
@@ -60,7 +60,7 @@
         commands (e.f.jack-in/generate-command project-type port rest-args)]
     (if (:dry-run options)
       (println (str/join " " commands))
-      (apply proc/shell {:out :inherit :in :inherit} commands))))
+      (apply b.process/shell {:out :inherit :in :inherit} commands))))
 
 (defn -main [& args]
   (try
