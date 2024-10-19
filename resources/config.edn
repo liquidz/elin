@@ -85,5 +85,6 @@
 
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 
- :clj-kondo {:config {:output {:analysis {:protocol-impls true
+ :clj-kondo {:command "clj-kondo"
+             :config {:output {:analysis {:protocol-impls true
                                           :arglists true}}}}}
