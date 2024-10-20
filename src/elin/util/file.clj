@@ -7,6 +7,8 @@
    [elin.util.os :as e.u.os]
    [malli.core :as m]))
 
+(m/=> find-file-in-parent-directories-by-string
+      [:=> [:cat string? string?] [:maybe e.schema/?File]])
 (defn- find-file-in-parent-directories-by-string
   [cwd file-name]
   (loop [dir (.getAbsoluteFile (io/file cwd))]
