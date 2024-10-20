@@ -28,9 +28,14 @@
       (e.message/warning host (format "Host or port is not specified: %s"
                                       {:hostname hostname :port port}))
 
-      (e/conflict? error)
+      (and (e/conflict? error)
+           hostname
+           port)
       (e.message/warning host (format "Already connected to %s:%s"
                                       hostname port))
+
+      (e/error? error)
+      (e.message/warning host (ex-message error))
 
       (contains? result :client)
       (e.message/info host (format "Connected to %s:%s" hostname port)))))
