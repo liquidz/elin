@@ -20,7 +20,6 @@
 
 (defprotocol IClientManager
   (add-client!
-    [this host port]
     [this client])
   (remove-client!
     [this client])

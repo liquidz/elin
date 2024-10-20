@@ -11,7 +11,8 @@
 (t/use-fixtures :each h/test-nrepl-server-port-fixture)
 
 (t/deftest connect-test
-  (let [client (sut/connect "localhost" h/*nrepl-server-port*)
+  (let [client (sut/connect {:host "localhost"
+                             :port h/*nrepl-server-port*})
         raw-message-channel (get-in client [:connection :raw-message-channel])]
     (t/is (false? (e.p.nrepl/disconnected? client)))
 

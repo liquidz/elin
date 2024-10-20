@@ -20,7 +20,7 @@
                                     (dissoc :handler :http-server :server)
                                     (component/start-system))]
     (try
-      (let [client (e.p.nrepl/add-client! nrepl "localhost" h/*nrepl-server-port*)]
+      (let [client (e.p.nrepl/add-client! nrepl {:host "localhost" :port h/*nrepl-server-port*})]
         (e.p.nrepl/switch-client! nrepl client))
 
       (let [{:as info :keys [user-dir file-separator project-name]} (sut/get-system-info nrepl)]

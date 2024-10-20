@@ -19,7 +19,7 @@
     (try
       (t/is (nil? (e.p.nrepl/current-client nrepl)))
 
-      (let [client (e.p.nrepl/add-client! nrepl "localhost" h/*nrepl-server-port*)]
+      (let [client (e.p.nrepl/add-client! nrepl {:host "localhost" :port h/*nrepl-server-port*})]
         (t/is (true? (e.p.nrepl/switch-client! nrepl client)))
         (t/is (= client (e.p.nrepl/current-client nrepl)))
         (t/is (false? (e.p.nrepl/disconnected? nrepl)))

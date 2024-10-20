@@ -43,12 +43,17 @@
 
   e.p.nrepl/IClientManager
   (add-client!
-    [_ client]
-    (swap! clients-store assoc (client-key client) client)
-    client)
-  (add-client!
-    [this host port]
-    (e.p.nrepl/add-client! this (e.c.n.client/connect host port)))
+    [this client]
+    (cond
+      (satisfies? e.p.nrepl/IClient client)
+      (do (swap! clients-store assoc (client-key client) client)
+          client)
+
+      (map? client)
+      (e.p.nrepl/add-client! this (e.c.n.client/connect client))
+
+      :else
+      nil))
 
   (remove-client!
     [_ client]
@@ -57,8 +62,8 @@
 
   (remove-all!
     [this]
-    (doseq [c (e.p.nrepl/all-clients this)]
-      (e.p.nrepl/remove-client! this c)))
+    (doseq [client (e.p.nrepl/all-clients this)]
+      (e.p.nrepl/remove-client! this client)))
 
   (get-client
     [this host port]

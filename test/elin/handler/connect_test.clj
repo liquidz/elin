@@ -15,13 +15,13 @@
                                                    (assoc-in [:message :params] ["localhost" 1234]))
           connected (atom [])]
       (with-redefs [e.p.nrepl/get-client (constantly nil)
-                    e.p.nrepl/add-client! (fn [_ hostname port]
-                                            (swap! connected conj {:hostname hostname :port port})
+                    e.p.nrepl/add-client! (fn [_ {:keys [host port]}]
+                                            (swap! connected conj {:host host :port port})
                                             nil)
                     e.p.nrepl/switch-client! (constantly true)]
         (sut/connect context))
 
-      (t/is (= [{:hostname "localhost" :port 1234}]
+      (t/is (= [{:host "localhost" :port 1234}]
                @connected))
       (t/is (= ["Connected to localhost:1234"]
                (h/get-outputs host)))))

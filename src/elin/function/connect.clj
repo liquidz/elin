@@ -26,8 +26,12 @@
                     (assoc :hostname hostname
                            :port port
                            :wait? wait?))
-        connect-fn (fn [{:as ctx :component/keys [nrepl] :keys [hostname port wait?]}]
+        connect-fn (fn [{:as ctx :component/keys [nrepl]
+                         :keys [error hostname port language port-file wait?]}]
                      (cond
+                       error
+                       ctx
+
                        (or (not hostname) (not port))
                        (assoc ctx :error (e/fault))
 
@@ -36,7 +40,10 @@
 
                        :else
                        (try
-                         (let [add-client! #(e.p.nrepl/add-client! nrepl hostname port)
+                         (let [add-client! #(e.p.nrepl/add-client! nrepl {:host hostname
+                                                                          :port port
+                                                                          :language language
+                                                                          :port-file port-file})
                                client (if wait?
                                         (retry-on-connect-failure add-client!)
                                         (add-client!))]
