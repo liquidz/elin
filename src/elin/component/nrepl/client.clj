@@ -8,8 +8,7 @@
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.nrepl :as e.u.nrepl]
    [malli.core :as m]
-   [malli.util :as m.util]
-   [taoensso.timbre :as timbre]))
+   [malli.util :as m.util]))
 
 (def default-hostname "localhost")
 
@@ -56,25 +55,31 @@
     [:host [:maybe string?]]
     [:port [:maybe int?]]]
    (-> e.s.nrepl/?Client
-       (m.util/select-keys  [:port-file :language]))))
+       (m.util/select-keys [:port-file :language])
+       (m.util/optional-keys [:port-file :language]))))
 
-(m/=> new-client [:=> [:cat e.s.nrepl/?Connection ?ConnectArgumentMap] e.s.nrepl/?Client])
+(m/=> new-client [:function
+                  [:=> [:cat e.s.nrepl/?Connection] e.s.nrepl/?Client]
+                  [:=> [:cat e.s.nrepl/?Connection ?ConnectArgumentMap] e.s.nrepl/?Client]])
 (defn new-client
-  [conn {:keys [language port-file]}]
-  (let [clone-resp (e.u.nrepl/merge-messages
-                    (async/<!! (e.p.nrepl/request conn {:op "clone"})))
-        describe-resp (e.u.nrepl/merge-messages
-                       (async/<!! (e.p.nrepl/request conn {:op "describe"})))
-        ns-eval-resp (e.u.nrepl/merge-messages
-                      (async/<!! (e.p.nrepl/request conn {:op "eval" :code (str '(ns-name *ns*))})))]
-    (map->Client
-     {:connection conn
-      :session (:new-session clone-resp)
-      :supported-ops (set (keys (:ops describe-resp)))
-      :initial-namespace (:value ns-eval-resp)
-      :version (:versions describe-resp)
-      :language language
-      :port-file port-file})))
+  ([conn]
+   (new-client conn {:host nil
+                     :port nil}))
+  ([conn {:keys [language port-file]}]
+   (let [clone-resp (e.u.nrepl/merge-messages
+                     (async/<!! (e.p.nrepl/request conn {:op "clone"})))
+         describe-resp (e.u.nrepl/merge-messages
+                        (async/<!! (e.p.nrepl/request conn {:op "describe"})))
+         ns-eval-resp (e.u.nrepl/merge-messages
+                       (async/<!! (e.p.nrepl/request conn {:op "eval" :code (str '(ns-name *ns*))})))]
+     (map->Client
+      {:connection conn
+       :session (:new-session clone-resp)
+       :supported-ops (set (keys (:ops describe-resp)))
+       :initial-namespace (:value ns-eval-resp)
+       :version (:versions describe-resp)
+       :language language
+       :port-file port-file}))))
 
 (m/=> connect [:=> [:cat ?ConnectArgumentMap] (e.schema/error-or e.s.nrepl/?Client)])
 (defn connect
