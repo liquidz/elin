@@ -1,6 +1,7 @@
 (ns elin.schema.nrepl
   (:require
-   [elin.schema :as e.schema])
+   [elin.schema :as e.schema]
+   [malli.util :as m.util])
   (:import
    clojure.lang.Atom
    (java.io
@@ -40,6 +41,12 @@
   [:map-of int? [:map
                  [:responses [:sequential ?Message]]
                  [:channel e.schema/?ManyToManyChannel]]])
+
+(def ?PortFile
+  (m.util/merge
+   [:map [:port int?]]
+   (-> ?Client
+       (m.util/select-keys [:port-file :language]))))
 
 (def ?Lookup
   [:map

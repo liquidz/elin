@@ -14,7 +14,7 @@
                       elin.interceptor.autocmd/clj-kondo-analyzing {}
                       elin.interceptor.connect/connected {}
                       elin.interceptor.connect/raw-message-channel {}
-                      elin.interceptor.connect/port-auto-detecting {}
+                      elin.interceptor.connect/detect-clojure-port {}
                       elin.interceptor.connect/cleanup-jacked-in-process {}
                       elin.interceptor.debug/initialize-debugger {}
                       elin.interceptor.debug/process-debugger {}

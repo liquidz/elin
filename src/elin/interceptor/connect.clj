@@ -5,14 +5,24 @@
    [elin.function.jack-in :as e.f.jack-in]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
+   [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.file :as e.u.file]
    [elin.util.map :as e.u.map]
    [elin.util.process :as e.u.process]
-   [exoscale.interceptor :as ix]))
+   [exoscale.interceptor :as ix]
+   [malli.core :as m]))
 
 (def ^:private default-hostname "localhost")
 
-(def port-auto-detecting
+(m/=> find-clojure-port-file [:-> string? [:maybe e.s.nrepl/?PortFile]])
+(defn- find-clojure-port-file
+  [cwd]
+  (when-let [file (e.u.file/find-file-in-parent-directories cwd ".nrepl-port")]
+    {:language "clojure"
+     :port-file (.getAbsolutePath file)
+     :port (some->> file slurp Long/parseLong)}))
+
+(def detect-clojure-port
   {:kind e.c.interceptor/connect
    :enter (fn [{:as ctx :component/keys [host] :keys [hostname port]}]
             (cond
@@ -23,16 +33,16 @@
               (assoc ctx :hostname default-hostname)
 
               :else
-              (if (and hostname port)
-                ctx
-                (let [;; TODO error handling
-                      cwd (async/<!! (e.p.host/get-current-working-directory! host))
-                      nrepl-port-file (e.u.file/find-file-in-parent-directories cwd ".nrepl-port")
-                      hostname' (or hostname default-hostname)
-                      port' (some-> nrepl-port-file
-                                    (slurp)
-                                    (Long/parseLong))]
-                  (assoc ctx :hostname hostname' :port port')))))})
+              (let [;; TODO error handling
+                    cwd (async/<!! (e.p.host/get-current-working-directory! host))
+                    clojure-port-file (find-clojure-port-file cwd)]
+                (if clojure-port-file
+                  (assoc ctx
+                         :hostname (or hostname default-hostname)
+                         :port (:port clojure-port-file)
+                         :language (:language clojure-port-file)
+                         :port-file (:port-file clojure-port-file))
+                  ctx))))})
 
 (def raw-message-channel
   {:kind e.c.interceptor/connect
