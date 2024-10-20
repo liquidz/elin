@@ -1,0 +1,14 @@
+Elin only supports {shadow-cljs} for now.
+
+=== shadow-cljs
+
+To start CLJS REPL with shadow-cljs, you need following steps.
+
+. Start to watch
+** `$ npx shadow-cljs watch YOUR-BUILD-ID`
+. Access shadow-cljs’s HTTP server in your browser
+** E.g. http://localhost:8080
+. Connect to the nREPL
+** Execute <<ElinConnect>> command to connect to the nREPL.
+** For shadow-cljs, cljs-repl will be started automatically after connection.
+** You don’t need to specify your build ID anymore.
