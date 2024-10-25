@@ -2,7 +2,8 @@
   (:require
    [clojure.test :as t]
    [elin.error :as e]
-   [elin.util.sexpr :as sut]))
+   [elin.util.sexpr :as sut]
+   [rewrite-clj.zip :as r.zip]))
 
 (t/deftest extract-ns-form-test
   (t/is (= "(ns bar)"
@@ -88,3 +89,47 @@
     (let [code "(dotimes [i 10] #dbg ^{:break/when (= i 7)} (prn i))"]
       (t/is (= {:code "i" :position [0 49]}
                (sut/apply-cider-coordination code [2 1]))))))
+
+(t/deftest convert-code-to-testing-focused-code-test
+  (let [code (str '(do (testing "foo"
+                         (foo))
+                       (testing "bar"
+                         (bar)
+                         (testing "baz"
+                           (baz)))))
+        zloc (r.zip/of-string code {:track-position? true})
+        foo-pos (-> zloc
+                    (r.zip/find-next-value r.zip/next 'foo)
+                    (r.zip/position))
+        bar-pos (-> zloc
+                    (r.zip/find-next-value r.zip/next 'bar)
+                    (r.zip/position))
+        baz-pos (-> zloc
+                    (r.zip/find-next-value r.zip/next 'baz)
+                    (r.zip/position))]
+    (t/is (= "(foo)"
+             (sut/convert-code-to-testing-focused-code "(foo)" 1 1)))
+
+    (t/is (= (str '(do (testing "foo"
+                         (foo))
+                       (comment (testing "bar"
+                                  (bar)
+                                  (comment (testing "baz"
+                                             (baz)))))))
+             (apply sut/convert-code-to-testing-focused-code code foo-pos)))
+
+    (t/is (= (str '(do (comment (testing "foo"
+                                  (foo)))
+                       (testing "bar"
+                         (bar)
+                         (comment (testing "baz"
+                                    (baz))))))
+             (apply sut/convert-code-to-testing-focused-code code bar-pos)))
+
+    (t/is (= (str '(do (comment (testing "foo"
+                                  (foo)))
+                       (testing "bar"
+                         (bar)
+                         (testing "baz"
+                           (baz)))))
+             (apply sut/convert-code-to-testing-focused-code code baz-pos)))))

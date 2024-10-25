@@ -1,5 +1,6 @@
 (ns elin.util.sexpr
   (:require
+   [clj-commons.digest :as digest]
    [clojure.string :as str]
    [elin.error :as e]
    [elin.schema :as e.schema]
@@ -167,3 +168,53 @@
         [lnum col] (r.zip/position zloc)]
     {:code (r.zip/string zloc)
      :position [(dec lnum) (dec col)]}))
+
+(defn- testing-form?
+  [zloc]
+  (let [sym (-> zloc
+                (r.zip/down)
+                (r.zip/sexpr))]
+    (boolean
+     (when (symbol? sym)
+       (= "testing" (name sym))))))
+
+(defn- sexpr-digest
+  [zloc]
+  #_{:clj-kondo/ignore [:unresolved-var]}
+  (digest/md5 (r.zip/string zloc)))
+
+(defn- parent-testing-form-digests
+  [zloc]
+  (loop [zloc zloc
+         result []]
+    (if-let [up-zloc (r.zip/up zloc)]
+      (if (testing-form? up-zloc)
+        (recur up-zloc (conj result (sexpr-digest up-zloc)))
+        (recur up-zloc result))
+      result)))
+
+(defn- wrap-by-comment-form
+  [node]
+  (r.node/list-node [(r.node/token-node 'comment)
+                     (r.node/whitespace-node " ")
+                     node]))
+
+(defn convert-code-to-testing-focused-code
+  [test-code current-lnum current-column]
+  (let [zloc (r.zip/of-string test-code {:track-position? true})
+        current-zloc (r.zip/find-last-by-pos zloc [current-lnum current-column])
+        parent-testing-form-digest-set (-> current-zloc
+                                           (parent-testing-form-digests)
+                                           (set))]
+    (r.zip/root-string
+     (loop [zloc zloc]
+       (if-let [zloc (r.zip/find-next zloc r.zip/next testing-form?)]
+         (if (contains? parent-testing-form-digest-set
+                        (sexpr-digest zloc))
+           (recur zloc)
+           (recur (-> zloc
+                      (r.zip/edit* wrap-by-comment-form)
+                      (r.zip/next) ; comment symbol
+                      (r.zip/next) ; testing form
+                      (r.zip/next))))
+         zloc)))))
