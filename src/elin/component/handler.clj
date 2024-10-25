@@ -63,18 +63,18 @@
              :component/nrepl (assoc nrepl :interceptor interceptor')))))
 
 (defn- handler* [handler-map context]
-  (:response
-   (e.p.interceptor/execute
-    (:component/interceptor context) e.c.interceptor/handler context
-    (fn [{:as context :component/keys [host]}]
-      (let [handler-key (get-in context [:message :method])
-            resp (if-let [handler-fn (get handler-map handler-key)]
-                   (handler-fn context)
-                   (let [msg (format "Unknown handler: %s" handler-key)]
-                     (e.message/error host msg)
-                     msg))
-            resp' (e.u.server/format resp)]
-        (assoc context :response resp'))))))
+  (-> (e.p.interceptor/execute
+       (:component/interceptor context) e.c.interceptor/handler context
+       (fn [{:as context :component/keys [host]}]
+         (let [handler-key (get-in context [:message :method])
+               resp (if-let [handler-fn (get handler-map handler-key)]
+                      (handler-fn context)
+                      (let [msg (format "Unknown handler: %s" handler-key)]
+                        (e.message/error host msg)
+                        msg))]
+           (assoc context :response resp))))
+      (:response)
+      (e.u.server/format)))
 
 (m/=> handler [:=> [:cat e.s.handler/?Components map? e.s.handler/?HandlerMap e.s.server/?Message]
                any?])
