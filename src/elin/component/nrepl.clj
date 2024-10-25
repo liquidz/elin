@@ -50,10 +50,11 @@
           client)
 
       (map? client)
-      (e.p.nrepl/add-client! this (e.c.n.client/connect client))
+      (e/->> (e.c.n.client/connect client)
+             (e.p.nrepl/add-client! this))
 
       :else
-      nil))
+      (e/incorrect {:message "Bad request"})))
 
   (remove-client!
     [_ client]

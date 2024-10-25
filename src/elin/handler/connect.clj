@@ -37,8 +37,11 @@
       (e/error? error)
       (e.message/warning host (ex-message error))
 
-      (contains? result :client)
-      (e.message/info host (format "Connected to %s:%s" hostname port)))))
+      (some? (:client result))
+      (e.message/info host (format "Connected to %s:%s" hostname port))
+
+      :else
+      (e.message/warning host "Unexpected error."))))
 
 (m/=> connect [:=> [:cat e.s.handler/?Elin] any?])
 (defn connect

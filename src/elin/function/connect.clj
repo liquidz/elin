@@ -9,13 +9,12 @@
 (defn- retry-on-connect-failure
   [f]
   (loop []
-    (let [res (try
-                (f)
-                (catch java.net.ConnectException _
-                  (Thread/sleep 200)
-                  ::retry))]
-      (if (= ::retry res)
-        (recur)
+    (let [res (try (f)
+                   (catch Exception ex
+                     (e/fault {:message (ex-message ex)})))]
+      (if (e/error? res)
+        (do (Thread/sleep 200)
+            (recur))
         res))))
 
 (defn connect

@@ -17,7 +17,7 @@
       (with-redefs [e.p.nrepl/get-client (constantly nil)
                     e.p.nrepl/add-client! (fn [_ {:keys [host port]}]
                                             (swap! connected conj {:host host :port port})
-                                            nil)
+                                            true)
                     e.p.nrepl/switch-client! (constantly true)]
         (sut/connect context))
 
