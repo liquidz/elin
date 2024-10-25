@@ -7,6 +7,7 @@
  :http-server {:port #empty-port []}
 
  :interceptor {:uses [elin.interceptor.autocmd/deinitialize {}
+                      elin.interceptor.autocmd/switch-connection {}
                       elin.interceptor.autocmd/ns-load {}
                       elin.interceptor.autocmd/skeleton {;; NOTE {lang {:src "skeleton for source" :test "skeleton for test"}}
                                                          :clojure {:src #resource "template/clojure_src_skeleton.mustache"

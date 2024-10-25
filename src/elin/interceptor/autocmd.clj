@@ -10,9 +10,11 @@
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.handler.evaluate :as e.h.evaluate]
+   [elin.message :as e.message]
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.util.file :as e.u.file]
    [elin.util.interceptor :as e.u.interceptor]
    [exoscale.interceptor :as ix]
    [pogonos.core :as pogonos]
@@ -111,4 +113,45 @@
    :leave (-> (fn [{:component/keys [clj-kondo]}]
                 (e.p.clj-kondo/analyze clj-kondo))
               (ix/when #(= "BufWritePost" (:autocmd-type %)))
+              (ix/discard))})
+
+(def switch-connection
+  {:kind e.c.interceptor/autocmd
+   :enter (-> (fn [{:component/keys [host nrepl]}]
+                (let [clients (e.p.nrepl/all-clients nrepl)
+                      ext (some-> (e.p.host/get-current-file-path! host)
+                                  (async/<!!)
+                                  (e.u.file/get-file-extension))
+                      lang (:language (e.p.nrepl/current-client nrepl))]
+                  (cond
+                    (and (= "clojure" lang)
+                         (contains? #{".clj" ".cljc" ".cljd"} ext))
+                    nil
+
+                    (and (= "clojurescript" lang)
+                         (contains? #{".cljs" ".cljc"} ext))
+                    nil
+
+                    ;; Switch to clojure connection
+                    (= ".clj" ext)
+                    (when-let [client (some->> clients
+                                               (filter #(= "clojure" (:language %)))
+                                               (first))]
+                      (e.p.nrepl/switch-client! nrepl client)
+                      (e.message/info host (format "Switched to %s connection."
+                                                   (:language client))))
+
+                    ;; Switch to clojurescript connection
+                    (= ".cljs" ext)
+                    (when-let [client (some->> clients
+                                               (filter #(= "clojurescript" (:language %)))
+                                               (first))]
+                      (e.p.nrepl/switch-client! nrepl client)
+                      (e.message/info host (format "Switched to %s connection."
+                                                   (:language client))))
+
+                    :else
+                    nil)))
+              (ix/when #(and (bufread-or-bufenter? %)
+                             (> (count (e.p.nrepl/all-clients (:component/nrepl %))) 1)))
               (ix/discard))})
