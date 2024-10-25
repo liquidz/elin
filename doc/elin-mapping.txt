@@ -21,6 +21,11 @@ ElinJackIn
   Calls `elin.handler.connect/jack-in` handler.
   Key is mapped to |<Plug>(elin_jack_in)|.
 
+                                                          *ElinSwitchConnection*
+ElinSwitchConnection
+  Calls `elin.handler.connect/switch` handler.
+  Key is mapped to |<Plug>(elin_switch_connection)|.
+
                                                                       *ElinEval*
 ElinEval
   Calls `elin.handler.evaluate/evaluate` handler.
@@ -141,6 +146,11 @@ ElinTestUnderCursor
   Calls `elin.handler.test/run-test-under-cursor` handler.
   Key is mapped to |<Plug>(elin_test_under_cursor)|.
 
+                                                 *ElinTestFocusedCurrentTesting*
+ElinTestFocusedCurrentTesting
+  Calls `elin.handler.test/run-test-under-cursor` handler.
+  Key is mapped to |<Plug>(elin_test_focused_current_testing)|.
+
                                                                   *ElinTestInNs*
 ElinTestInNs
   Calls `elin.handler.test/run-tests-in-ns` handler.
@@ -186,6 +196,10 @@ MAPPINGS                                                         *elin-mappings*
                                                           *<Plug>(elin_jack_in)*
 <Plug>(elin_jack_in)
   Same as |ElinJackIn|.
+
+                                                *<Plug>(elin_switch_connection)*
+<Plug>(elin_switch_connection)
+  Same as |ElinSwitchConnection|.
 
                                                 *<Plug>(elin_eval_current_expr)*
 <Plug>(elin_eval_current_expr)
@@ -279,6 +293,10 @@ MAPPINGS                                                         *elin-mappings*
 <Plug>(elin_test_under_cursor)
   Same as |ElinTestUnderCursor|.
 
+                                     *<Plug>(elin_test_focused_current_testing)*
+<Plug>(elin_test_focused_current_testing)
+  Same as |ElinTestFocusedCurrentTesting|.
+
                                                        *<Plug>(elin_test_in_ns)*
 <Plug>(elin_test_in_ns)
   Same as |ElinTestInNs|.
@@ -336,6 +354,7 @@ n      K             <Plug>(elin_lookup)
 n      <Leader>hs    <Plug>(elin_show_source)
 n      <Leader>hc    <Plug>(elin_show_clojuredocs)
 n      <Leader>tt    <Plug>(elin_test_under_cursor)
+n      <Leader>tf    <Plug>(elin_test_focused_current_testing)
 n      <Leader>tn    <Plug>(elin_test_in_ns)
 n      <Leader>tl    <Plug>(elin_test_last)
 n      <Leader>tr    <Plug>(elin_test_last_failed)
