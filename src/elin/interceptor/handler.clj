@@ -1,6 +1,7 @@
 (ns elin.interceptor.handler
   (:require
    [clojure.core.async :as async]
+   [clojure.java.io :as io]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
    [elin.message :as e.message]
@@ -40,4 +41,26 @@
                   (let [config (or (e.u.interceptor/config ctx #'append-result-to-info-buffer)
                                    {})]
                     (e.p.host/append-to-info-buffer host response config))))
+              (ix/discard))})
+
+(def jump-to-file
+  "Interceptor to jump to specified file."
+  {:kind e.c.interceptor/handler
+   :leave (-> (fn [{:component/keys [host] :keys [response]}]
+                ;; response should satisfies elin.schema.handler/?JumpToFile
+                (let [{:keys [path lnum col]} (when (map? response)
+                                                response)]
+                  (cond
+                    (or (not path) (not lnum) (not col))
+                    nil
+
+                    (.exists (io/file path))
+                    (async/<!! (e.p.host/jump! host path lnum col))
+
+                    :else
+                    (let [path' (async/<!! (e.p.host/input! host "Open this file?: " path))]
+                      (when (and (not (e/fault? path'))
+                                 (seq path'))
+                        (.mkdirs (.getParentFile (io/file path')))
+                        (async/<!! (e.p.host/jump! host path' lnum col)))))))
               (ix/discard))})

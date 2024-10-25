@@ -23,3 +23,9 @@
 
 (def ?HandlerMap
   [:map-of qualified-keyword? fn?])
+
+(def ?JumpToFile
+  [:map
+   [:path string?]
+   [:lnum int?]
+   [:col int?]])
