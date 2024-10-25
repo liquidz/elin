@@ -3,6 +3,7 @@
    [aero.core :as aero]
    [clojure.java.io :as io]
    [clojure.set :as set]
+   [clojure.string :as str]
    [elin.constant.project :as e.c.project]
    [elin.schema.config :as e.s.config]
    [elin.util.file :as e.u.file]
@@ -27,8 +28,15 @@
   (slurp (io/resource value)))
 
 (defmethod aero/reader 'slurp
-  [_opts _tag value]
-  (slurp value))
+  [{::keys [base-dir]} _tag value]
+  (let [absolute-path? (boolean (some->> base-dir
+                                         (e.u.file/guess-file-separator)
+                                         (str/starts-with? value)))]
+    (try
+      (cond->> value
+        (not absolute-path?) (io/file base-dir)
+        :always (slurp))
+      (catch Exception _ nil))))
 
 (def ^:private config-transformer
   (mt/transformer
@@ -141,16 +149,20 @@
 
 (defn- load-default-config
   []
-  (-> (io/resource "config.edn")
-      (aero/read-config)
-      (expand-config)))
+  (let [file (io/file (io/resource "config.edn"))
+        base-dir (-> file
+                     (.getParentFile)
+                     (.getAbsolutePath))]
+    (-> (aero/read-config file {::base-dir base-dir})
+        (expand-config))))
 
 (m/=> load-user-config [:-> map?])
 (defn- load-user-config
   []
-  (let [file (io/file (e.u.file/get-config-directory) "config.edn")]
+  (let [base-dir (e.u.file/get-config-directory)
+        file (io/file base-dir "config.edn")]
     (or (when (.exists file)
-          (-> (aero/read-config file)
+          (-> (aero/read-config file {::base-dir base-dir})
               (expand-config)))
         {})))
 
@@ -161,8 +173,11 @@
         file (some-> (e.u.file/find-file-in-parent-directories dir config-dir-name)
                      (io/file "config.edn"))]
     (or (when (and file (.exists file))
-          (-> (aero/read-config file)
-              (expand-config)))
+          (let [base-dir (-> file
+                             (.getParentFile)
+                             (.getAbsolutePath))]
+            (-> (aero/read-config file {::base-dir base-dir})
+                (expand-config))))
         {})))
 
 (m/=> load-config [:-> string? map? e.s.config/?Config])
