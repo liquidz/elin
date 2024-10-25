@@ -1,12 +1,17 @@
 (ns elin.handler.connect
   (:require
+   [clojure.core.async :as async]
+   [clojure.string :as str]
    [elin.constant.jack-in :as e.c.jack-in]
    [elin.error :as e]
    [elin.function.connect :as e.f.connect]
    [elin.function.jack-in :as e.f.jack-in]
+   [elin.function.select :as e.f.select]
    [elin.message :as e.message]
+   [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
+   [elin.util.file :as e.u.file]
    [elin.util.param :as e.u.param]
    [malli.core :as m]))
 
@@ -92,3 +97,25 @@
       (e.message/error host "Invalid parameter" error)
       (do (e.message/info host (format "Wainting to connect to localhost:%s" port))
           (connect* elin {:hostname "localhost" :port port :wait? true})))))
+
+(defn switch
+  "Switch the current nREPL connection to another connected one."
+  [{:as elin :component/keys [host nrepl]}]
+  (let [cwd (async/<!! (e.p.host/get-current-working-directory! host))
+        project-root (str (.getAbsolutePath (e.u.file/get-project-root-directory cwd))
+                          (e.u.file/guess-file-separator cwd))
+        clients (e.p.nrepl/all-clients nrepl)
+        client-dict (->> clients
+                         (map #(vector (-> (e.f.connect/client-identifier %)
+                                           (str/replace-first project-root ""))
+                                       %))
+                         (into {}))]
+    (if (or (empty? client-dict)
+            (= 1 (count client-dict)))
+      (e/unavailable {:message "No connections to switch."})
+      (when-let [selected-client (some->> (keys client-dict)
+                                          (e.f.select/select-from-candidates elin)
+                                          (get client-dict))]
+        (e.p.nrepl/switch-client! nrepl selected-client)
+        (e.message/info host (format "Switched to %s connection."
+                                     (:language selected-client)))))))

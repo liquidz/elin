@@ -4,7 +4,9 @@
    [elin.error :as e]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
-   [elin.util.map :as e.u.map]))
+   [elin.schema.nrepl :as e.s.nrepl]
+   [elin.util.map :as e.u.map]
+   [malli.core :as m]))
 
 (defn- retry-on-connect-failure
   [f]
@@ -70,3 +72,11 @@
            (assoc ctx :responce true)
            (assoc ctx :error (e/fault)))
          (assoc ctx :error (e/not-found)))))))
+
+(m/=> client-identifier [:=> [:cat e.s.nrepl/?Client] string?])
+(defn client-identifier
+  [client]
+  (or (:port-file client)
+      (str (get-in client [:connection :host])
+           ":"
+           (get-in client [:connection :port]))))
