@@ -85,6 +85,7 @@ command! -nargs=? ElinConnect call elin#notify('elin.handler.connect/connect', <
 command! -nargs=1 ElinInstantConnect call elin#notify('elin.handler.connect/instant', [<q-args>])
 command! ElinDisconnect call elin#notify('elin.handler.connect/disconnect', [])
 command! ElinJackIn call elin#notify('elin.handler.connect/jack-in', [])
+command! ElinSwitchConnection call elin#notify('elin.handler.connect/switch', [])
 
 " Evaluation
 command! -nargs=1 ElinEval call elin#notify('elin.handler.evaluate/evaluate', [<q-args>])
@@ -138,6 +139,7 @@ command! ElinClearVirtualTexts call elin#internal#virtual_text#clear()
 " Connection
 nnoremap <silent> <Plug>(elin_connect) <Cmd>ElinConnect<CR>
 nnoremap <silent> <Plug>(elin_jack_in) <Cmd>ElinJackIn<CR>
+nnoremap <silent> <Plug>(elin_switch_connection) <Cmd>ElinSwitchConnection<CR>
 
 " Evaluation
 nnoremap <silent> <Plug>(elin_eval_current_expr) <Cmd>ElinEvalCurrentExpr<CR>
