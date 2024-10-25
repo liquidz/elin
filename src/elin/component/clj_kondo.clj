@@ -117,8 +117,10 @@
                       analyzed (with-open [r (io/reader cache-file)]
                                  (edn/read (java.io.PushbackReader. r)))]
                 (reset! analyzed-atom analyzed))
-              (catch java.io.FileNotFoundException  ex
+              (catch java.io.FileNotFoundException ex
                 (e/not-found {:message (ex-message ex)}))
+              (catch Exception ex
+                (e/fault {:message (ex-message ex)}))
               (finally
                 (reset! analyzing?-atom false)))))))
 
