@@ -2,9 +2,7 @@
   (:require
    [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.protocol.host :as e.p.host]
    [elin.protocol.rpc :as e.p.rpc]
-   [elin.util.file :as e.u.file]
    [elin.util.interceptor :as e.u.interceptor]
    [exoscale.interceptor :as ix]))
 
@@ -36,19 +34,6 @@
                     (if (seq (:list ctx))
                       (e.p.rpc/notify-function host "elin#internal#execute" ["lwindow"])
                       (e.p.rpc/notify-function host "elin#internal#execute" ["lclose"])))))
-              (ix/discard))})
-
-(def use-selector-for-location
-  {:kind e.c.interceptor/quickfix
-   :leave (-> (fn [{:as ctx :component/keys [host]}]
-                (let [candidates (->> (:list ctx)
-                                      (keep (fn [{:keys [filename lnum col]}]
-                                              (some-> filename
-                                                      (e.u.file/encode-path lnum col)))))]
-                  (when (seq candidates)
-                    (e.p.host/select-from-candidates
-                     host candidates 'elin.handler.navigate/jump))))
-              (ix/when location-list?)
               (ix/discard))})
 
 (def location-function-hook
