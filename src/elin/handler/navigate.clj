@@ -4,7 +4,6 @@
    [clojure.string :as str]
    [elin.error :as e]
    [elin.function.clj-kondo :as e.f.clj-kondo]
-   [elin.function.file :as e.f.file]
    [elin.function.lookup :as e.f.lookup]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.quickfix :as e.f.quickfix]
@@ -13,6 +12,7 @@
    [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
    [elin.util.file :as e.u.file]
+   [elin.util.handler :as e.u.handler]
    [malli.core :as m]))
 
 (defn- select-ns-and-sym-str [ns-str sym-str]
@@ -40,7 +40,7 @@
     (when path
       (async/<!! (e.p.host/jump! host path lnum col)))))
 
-(m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] any?])
+(m/=> jump-to-definition [:=> [:cat e.s.handler/?Elin] [:alt e.s.handler/?JumpToFile boolean?]])
 (defn jump-to-definition
   "Jump to the definition of the symbol under the cursor."
   [{:as elin :component/keys [host]}]
@@ -69,14 +69,13 @@
                       :col column
                       :text (str ns-str "/" sym-str)
                       :type "Definition"})
-               (e.f.quickfix/set-location-list elin)))
+               (e.f.quickfix/set-location-list elin))
+          true)
 
       (and file line)
-      (async/<!! (e.p.host/jump! host file line (or column 1))))
+      (e.u.handler/jump-to-file-response file lnum (or column 1)))))
 
-    true))
-
-(m/=> cycle-source-and-test [:=> [:cat e.s.handler/?Elin] any?])
+(m/=> cycle-source-and-test [:=> [:cat e.s.handler/?Elin] e.s.handler/?JumpToFile])
 (defn cycle-source-and-test
   "Cycle source code and test code."
   [{:as elin :component/keys [host]}]
@@ -85,8 +84,9 @@
         file-sep (e.u.file/guess-file-separator ns-path)
         cycled-path (e.f.n.namespace/get-cycled-namespace-path
                      {:ns ns-str :path ns-path :file-separator file-sep})]
-    (e.f.file/open-as elin cycled-path)))
+    (e.u.handler/jump-to-file-response cycled-path)))
 
+;; (m/=> references [:=> [:cat e.s.handler/?Elin] (e.schema/error-or e.s.handler/?JumpToFile)])
 (defn references
   "Find the places where the symbol under the cursor is used, and jump if there is only one.
   If there are multiple, add them to the location list."
@@ -104,7 +104,7 @@
 
       (= 1 (count refs))
       (let [{:keys [filename lnum col]} (first refs)]
-        (async/<!! (e.p.host/jump! host filename lnum col)))
+        (e.u.handler/jump-to-file-response filename lnum col))
 
       :else
       (do (e.p.host/echo-text host "Multiple references found. See location list.")
@@ -138,7 +138,7 @@
 
       (= 1 (count local-usages))
       (let [{:keys [row col]} (first local-usages)]
-        (async/<!! (e.p.host/jump! host path (calc-lnum row) (calc-col col))))
+        (e.u.handler/jump-to-file-response path (calc-lnum row) (calc-col col)))
 
       :else
       (do (e.p.host/echo-text host "Multiple references found. See location list.")

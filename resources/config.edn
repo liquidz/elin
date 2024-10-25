@@ -81,11 +81,10 @@
                   elin.handler.namespace/add-missing-libspec {:favorites #include "favorite_aliases.edn"
                                                               :java-classes #include "java_classes.edn"
                                                               :interceptor #ref [:interceptor :preset :code-change]}
-                  elin.handler.navigate/cycle-source-and-test {}
-                  elin.handler.navigate/jump {}
-                  elin.handler.navigate/jump-to-definition {}
-                  elin.handler.navigate/references {}
-                  elin.handler.navigate/local-references {}
+                  elin.handler.navigate/cycle-source-and-test {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
+                  elin.handler.navigate/jump-to-definition {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
+                  elin.handler.navigate/references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
+                  elin.handler.navigate/local-references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.test/rerun-last-failed-tests {}
                   elin.handler.test/rerun-last-tests {}
                   elin.handler.test/run-test-under-cursor {}
