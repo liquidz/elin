@@ -24,6 +24,7 @@
   org.babashka/cli {:mvn/version "0.8.59"},
   org.babashka/http-client {:mvn/version "0.4.21"},
   org.babashka/sci.impl.types {:mvn/version "0.0.2"},
+  org.clj-commons/digest {:mvn/version "1.4.100"},
   org.clojure/clojure {:mvn/version "1.12.0"},
   org.clojure/core.async {:mvn/version "1.6.673"},
   org.clojure/core.match {:mvn/version "1.0.0"},
