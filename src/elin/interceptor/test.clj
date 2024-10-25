@@ -1,16 +1,20 @@
 (ns elin.interceptor.test
   (:require
+   [clojure.core.async :as async]
    [clojure.pprint :as pp]
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
+   [elin.function.evaluate :as e.f.evaluate]
    [elin.function.nrepl.cider.test :as e.f.n.c.test]
    [elin.function.quickfix :as e.f.quickfix]
+   [elin.function.sexpr :as e.f.sexpr]
    [elin.function.storage.test :as e.f.s.test]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.util.map :as e.u.map]
+   [elin.util.sexpr :as e.u.sexpr]
    [exoscale.interceptor :as ix]))
 
 (def ^:private sign-name "error")
@@ -111,4 +115,17 @@
                   (if succeeded?
                     (e.message/info host summary)
                     (e.message/error host summary))))
+              (ix/discard))})
+
+(def focus-current-testing
+  "Re evaluate the current top list with focusing on the current testing form."
+  {:kind e.c.interceptor/test
+   :enter (-> (fn [{:as ctx :component/keys [host] :keys [line]}]
+                (let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
+                      {:keys [code]} (e.f.sexpr/get-top-list ctx cur-lnum cur-col)
+                      code' (e.u.sexpr/convert-code-to-testing-focused-code code (- cur-lnum line -1) cur-col)]
+                  (e.f.evaluate/evaluate-code ctx code' {:line line
+                                                         :column (:column ctx)
+                                                         :ns (:ns ctx)
+                                                         :file (:file ctx)})))
               (ix/discard))})
