@@ -17,6 +17,7 @@ function! elin#internal#buffer#info#open(...) abort
 
   let option = get(a:, 1, {})
   call elin#internal#buffer#open(s:buf_name, option)
+  call elin#internal#buffer#scroll_to_bottom(bufnr(s:buf_name))
 endfunction
 
 function! elin#internal#buffer#info#close() abort

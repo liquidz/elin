@@ -37,7 +37,7 @@ function! s:delete_color_code(s) abort
   return substitute(a:s, '\[[0-9;]*m', '', 'g')
 endfunction
 
-function! s:scroll_to_bottom(nr) abort
+function! elin#internal#buffer#scroll_to_bottom(nr) abort
   let current_window = winnr()
   let last_window = winnr('#')
   try
@@ -70,7 +70,7 @@ function! s:append(buf_name, option) abort
   if get(a:option, 'scroll_to_bottom', v:false)
         \ && elin#internal#buffer#is_visible(a:buf_name)
         \ && bufnr('%') != nr
-    call elin#util#start_lazily('scroll_to_bottom', 500, funcref('s:scroll_to_bottom', [nr]))
+    call elin#util#start_lazily('scroll_to_bottom', 500, funcref('elin#internal#buffer#scroll_to_bottom', [nr]))
   endif
 endfunction
 
