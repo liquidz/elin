@@ -33,12 +33,18 @@
   {:kind e.c.interceptor/connect
    :enter (-> (fn [{:as ctx :component/keys [host] :keys [port-file]}]
                 (let [cwd (async/<!! (e.p.host/get-current-working-directory! host))
+                      project-root (str (.getAbsolutePath (e.u.file/get-project-root-directory cwd))
+                                        (e.u.file/guess-file-separator cwd))
                       shadow-cljs-port-file (find-shadow-cljs-port-file cwd)
-                      selected-port-file (->> [port-file
-                                               (:port-file shadow-cljs-port-file)]
-                                              (remove nil?)
-                                              (e.f.select/select-from-candidates ctx))]
-                  (if (= (:port-file shadow-cljs-port-file) selected-port-file)
+                      selected-port-file (when shadow-cljs-port-file
+                                           (->> [port-file
+                                                 (:port-file shadow-cljs-port-file)]
+                                                (map #(str/replace-first % project-root ""))
+                                                (remove nil?)
+                                                (e.f.select/select-from-candidates ctx)))]
+                  (if (and selected-port-file
+                           (str/ends-with? (:port-file shadow-cljs-port-file)
+                                           selected-port-file))
                     (assoc ctx
                            :port (:port shadow-cljs-port-file)
                            :language (:language shadow-cljs-port-file)
