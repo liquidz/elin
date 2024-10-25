@@ -123,6 +123,7 @@ command! ElinShowClojureDocs call elin#notify('elin.handler.lookup/show-clojured
 
 " Testing
 command! ElinTestUnderCursor call elin#notify('elin.handler.test/run-test-under-cursor', [])
+command! ElinTestFocusedCurrentTesting call elin#notify('elin.handler.test/run-test-under-cursor', [], {"config": "{:interceptor {:includes [elin.interceptor.test/focus-current-testing]}}"})
 command! ElinTestInNs call elin#notify('elin.handler.test/run-tests-in-ns', [])
 command! ElinTestLast call elin#notify('elin.handler.test/rerun-last-tests', [])
 command! ElinTestLastFailed call elin#notify('elin.handler.test/rerun-last-failed-tests', [])
@@ -176,6 +177,7 @@ nnoremap <silent> <Plug>(elin_show_clojuredocs) <Cmd>ElinShowClojureDocs<CR>
 
 " Testing
 nnoremap <silent> <Plug>(elin_test_under_cursor) <Cmd>ElinTestUnderCursor<CR>
+nnoremap <silent> <Plug>(elin_test_focused_current_testing) <Cmd>ElinTestFocusedCurrentTesting<CR>
 nnoremap <silent> <Plug>(elin_test_in_ns) <Cmd>ElinTestInNs<CR>
 nnoremap <silent> <Plug>(elin_test_last) <Cmd>ElinTestLast<CR>
 nnoremap <silent> <Plug>(elin_test_last_failed) <Cmd>ElinTestLastFailed<CR>
@@ -254,6 +256,7 @@ function! s:default_key_mappings() abort
 
   " Testing
   call s:define_mapping('nmap', '<Leader>tt', '<Plug>(elin_test_under_cursor)')
+  call s:define_mapping('nmap', '<Leader>tf', '<Plug>(elin_test_focused_current_testing)')
   call s:define_mapping('nmap', '<Leader>tn', '<Plug>(elin_test_in_ns)')
   call s:define_mapping('nmap', '<Leader>tl', '<Plug>(elin_test_last)')
   call s:define_mapping('nmap', '<Leader>tr', '<Plug>(elin_test_last_failed)')
