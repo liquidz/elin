@@ -90,6 +90,12 @@
                   elin.handler.test/run-test-under-cursor {}
                   elin.handler.test/run-tests-in-ns {}]
 
+           :aliases {elin-alias-evaluate-current-list-in-context {:handler elin.handler.evaluate/evaluate-current-list
+                                                                  :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}
+                     elin-alias-run-test-focused-current-testing {:handler elin.handler.test/run-test-under-cursor
+                                                                  :config {:interceptor {:includes [elin.interceptor.test/focus-current-testing]}}}}
+
+
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 
  :clj-kondo {:command "clj-kondo"

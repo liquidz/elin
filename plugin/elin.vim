@@ -95,7 +95,7 @@ command! ElinEvalCurrentTopList call elin#notify('elin.handler.evaluate/evaluate
 command! ElinEvalCurrentBuffer call elin#notify('elin.handler.evaluate/evaluate-current-buffer', [])
 command! ElinEvalNsForm call elin#notify('elin.handler.evaluate/evaluate-namespace-form', [])
 command! ElinEvalAtMark call elin#notify('elin.handler.evaluate/evaluate-at-mark', [nr2char(getchar())])
-command! ElinEvalInContext call elin#notify('elin.handler.evaluate/evaluate-current-list', [], {"config": "{:interceptor {:includes [elin.interceptor.evaluate/eval-with-context-interceptor]}}"})
+command! ElinEvalInContext call elin#notify('elin-alias-evaluate-current-list-in-context', [])
 command! ElinPrintLastResult call elin#notify('elin.handler.evaluate/print-last-result', [])
 
 command! ElinInterrupt call elin#notify('elin.handler.evaluate/interrupt', [])
@@ -123,7 +123,7 @@ command! ElinShowClojureDocs call elin#notify('elin.handler.lookup/show-clojured
 
 " Testing
 command! ElinTestUnderCursor call elin#notify('elin.handler.test/run-test-under-cursor', [])
-command! ElinTestFocusedCurrentTesting call elin#notify('elin.handler.test/run-test-under-cursor', [], {"config": "{:interceptor {:includes [elin.interceptor.test/focus-current-testing]}}"})
+command! ElinTestFocusedCurrentTesting call elin#notify('elin-alias-run-test-focused-current-testing', [])
 command! ElinTestInNs call elin#notify('elin.handler.test/run-tests-in-ns', [])
 command! ElinTestLast call elin#notify('elin.handler.test/rerun-last-tests', [])
 command! ElinTestLastFailed call elin#notify('elin.handler.test/rerun-last-failed-tests', [])
