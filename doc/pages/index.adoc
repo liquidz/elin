@@ -52,101 +52,118 @@ This project is being developed as the successor to {vim-iced} and, as same as v
 
 The goal of this project is to provide a server program that serves as the foundation for a Clojure development environment and its interface, enabling it to theoretically offer a Clojure development environment to any editor.
 
-== Getting Started
 
+
+== Getting Started
 include::./getting_started/index.adoc[]
 
-== Evaluation
 
-TODO
+
+== Evaluation
+include::./evaluation/index.adoc[]
+
+
 
 == Completion
-
 TODO
 
-== Formatting
 
+
+== Formatting
 Elin does not provide a default formatter for now.
 The reason is that for format checks in CI, external tools such as {cljfmt}, {cljstyle}, or {clojure-lsp} are commonly used, and a formatter that only works within the editor is often unnecessary.
 
 However, if you blocked when saving files in namespaces with large amounts of code due to the formatting entire buffer, you can use the {elin-format} plugin to format only the current form.
 
-== Navigation
 
+
+== Navigation
 TODO
+
+
 
 == Reference
-
 TODO
+
+
 
 == Macro
-
 TODO
+
+
 
 == Namespace
-
 TODO
+
+
 
 == Testing
-
 TODO
+
 
 
 == ClojureScript
-
 include::./clojurescript/index.adoc[]
 
 
+
+== Skeleton
+TODO
+
+
+
 == Buffer
-
 === Information buffer
-
 TODO
 
 === Temporal buffer
-
 TODO
+
 
 
 == Configuration
 include::./configuration/index.adoc[]
 
 
-== Plugin
 
+== Plugin
 The plugins are tagged with the `elin-clj-plugin` topic on GitHub, so you can view the list from the following link.
 
 https://github.com/topics/elin-clj-plugin
 
 
-== Handlers
 
+== Handlers
 Handlers process requests from the host editor.
 
 === Built-in Handlers
-
 include::./generated/handlers.adoc[]
 
 
-== Interceptors
 
+== Interceptors
 Interceptors intercept various processes and change their behavior.
 
 === Built-in Interceptors
 include::./generated/interceptors.adoc[]
 
 
-== Host
 
+== Host
 === Vim/Neovim
 
 ==== Commands
-
 include::./generated/commands.adoc[]
 
 
-== Cheatsheet
 
+== Tips
+* TODO
+** Output the clojure.tools.logging contents to information buffer
+
+
+
+== Cheatsheet
 include::./cheatsheet.adoc[]
 
 // vim:fdl=0:

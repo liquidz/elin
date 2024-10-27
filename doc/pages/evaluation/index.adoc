@@ -1,0 +1,47 @@
+The evaluation of S-expression is the most important element in REPL driven development.
+
+=== Ranges
+There are 3 main ranges to evaluation in elin.
+
+. current expression
+. current list
+. current top list
+
+See the following figure for the concrete ranges.
+
+[source,clojure]
+----
+  (defn plus [foo bar]
+    (+ foo bar))       ; When the cursor is on foo
+;      <->               Current expression
+;   <--------->          Current list
+; <------------------>   Current top list
+----
+
+If you enable default key mappings, following key mappings are available.
+
+[%autowidth]
+|===
+| Evaluate current expression | {elin-handler-evaluate-evaluate-current-expr}
+| Evaluate current list | {elin-handler-evaluate-evaluate-current-list}
+| Evaluate current top list | {elin-handler-evaluate-evaluate-current-top-list}
+|===
+
+=== Results
+
+For example, in <<ElinEvalCurrentTopList>>, the <<_handler_evaluateevaluate_current_top_list>> handler is called, so the following interceptors are executed.
+
+* <<_interceptor_evaluateoutput_eval_result_to_cmdline>>
+* <<_interceptor_evaluateset_eval_result_to_virtual_text>>
+* <<_interceptor_evaluateyank_eval_result>>
+
+<<_interceptor_evaluateoutput_eval_result_to_cmdline>> will output the evaluated result to command-line.
+<<_interceptor_evaluateset_eval_result_to_virtual_text>> will show the evaluated result as a popup at the end of line.
+However, the displayed result is only the returned value, so for example, the contents output by println are not displayed.
+
+The contents output to standard output are displayed on the <<Information buffer>>.
+
+==== Yank
+
+<<_interceptor_evaluateyank_eval_result>> will yank the evaluated result to https://vim-jp.org/vimdoc-en/change.html#quote_number[numbered registers].
+Like vim’s behavior, elin shifts the previous result of register 1 into register 2, 2 into 3, and so forth.
