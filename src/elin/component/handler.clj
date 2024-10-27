@@ -76,14 +76,33 @@
       (:response)
       (e.u.server/format)))
 
-(m/=> handler [:=> [:cat e.s.handler/?Components map? e.s.handler/?HandlerMap e.s.server/?Message]
+(defn- expand-aliass
+  [{:as parsed-message :keys [method]} aliases]
+  (if-let [alias-definition (get aliases (symbol method))]
+    (let [original-config (some-> parsed-message
+                                  (get-in [:options :config])
+                                  (edn/read-string))
+          new-config (e.config/merge-configs (:config alias-definition)
+                                             original-config)]
+      (-> parsed-message
+          (assoc :method (keyword (:handler alias-definition)))
+          (assoc-in [:options :config] (pr-str new-config))))
+    parsed-message))
+
+(m/=> handler [:=> [:cat
+                    [:map
+                     [:components e.s.handler/?Components]
+                     [:config-map map?]
+                     [:handler-map e.s.handler/?HandlerMap]
+                     [:aliases [:maybe map?]]]
+                    e.s.server/?Message]
                any?])
 (defn- handler
-  [components
-   config-map
-   handler-map
+  [{:keys [components config-map handler-map aliases]}
    message]
-  (let [{:as message' :keys [method]} (e.p.h.rpc/parse-message message)
+  (let [{:as message' :keys [method]} (-> message
+                                          (e.p.h.rpc/parse-message)
+                                          (expand-aliass aliases))
         context (-> components
                     (assoc :message message' :config-map config-map)
                     (construct-handler-parameter))]
@@ -101,16 +120,12 @@
    session-storage
    ;; CONFIGS
    base-config
-   includes
-   excludes
-   config-map
-   initialize
    ;; PARAMS
    handler-map]
   component/Lifecycle
   (start [this]
     (let [exported-config (get-in plugin [:loaded-plugin :export config-key])
-          {:keys [includes excludes config-map initialize]} (e.config/configure-handler base-config exported-config)
+          {:keys [includes excludes config-map initialize aliases]} (e.config/configure-handler base-config exported-config)
           handler-map (->> (or includes [])
                            (build-handler-map lazy-host))
           this' (assoc this
@@ -125,7 +140,10 @@
                       :component/handler this'
                       :component/session-storage session-storage
                       :component/clj-kondo clj-kondo}
-          handler (partial handler components config-map handler-map)]
+          handler (partial handler {:components components
+                                    :config-map config-map
+                                    :handler-map handler-map
+                                    :aliases aliases})]
       (timbre/info "Handler component: Started")
       (assoc this' :handler handler)))
 
@@ -135,4 +153,5 @@
 
 (defn new-handler
   [config]
-  (map->Handler {:base-config (or (get config config-key) {})}))
+  (map->Handler {:base-config (or (get config config-key)
+                                  {})}))
