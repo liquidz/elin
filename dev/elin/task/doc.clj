@@ -241,19 +241,19 @@
 (defn- format-interceptor-kind
   [v]
   (condp = (:kind @v)
-    e.c.interceptor/all "always executed"
-    e.c.interceptor/autocmd "executed on autocmd fired"
-    e.c.interceptor/connect "executed on connection"
-    e.c.interceptor/disconnect "executed on disconnection"
-    e.c.interceptor/evaluate "executed on evaluation"
-    e.c.interceptor/handler "executed on calling handler"
-    e.c.interceptor/nrepl "executed on requesting to nREPL server"
-    e.c.interceptor/output "executed on output from nREPL server"
-    e.c.interceptor/raw-nrepl "executed on communicating with nREPL server"
-    e.c.interceptor/test "executed on testing"
-    e.c.interceptor/quickfix "executed on setting quickfix"
-    e.c.interceptor/debug "executed on debugging"
-    e.c.interceptor/code-change "executed on changing code"
+    e.c.interceptor/all "Always executed."
+    e.c.interceptor/autocmd "Executed on autocmd fired."
+    e.c.interceptor/connect "Executed on connection."
+    e.c.interceptor/disconnect "Executed on disconnection."
+    e.c.interceptor/evaluate "Executed on evaluation."
+    e.c.interceptor/handler "Executed on calling handler."
+    e.c.interceptor/nrepl "Executed on requesting to nREPL server."
+    e.c.interceptor/output "Executed on output from nREPL server."
+    e.c.interceptor/raw-nrepl "Executed on communicating with nREPL server."
+    e.c.interceptor/test "Executed on testing."
+    e.c.interceptor/quickfix "Executed on setting quickfix."
+    e.c.interceptor/debug "Executed on debugging."
+    e.c.interceptor/code-change "Executed on changing code."
     nil))
 
 (defn- generate-interceptor-document
@@ -263,8 +263,7 @@
         m (meta v)]
     (to-s
      [(str "==== " title)
-      (->> (format-interceptor-kind v)
-           (format "Executed on %s."))
+      (format-interceptor-kind v)
       ""
       (format-docstring m)
       (source-link m)])))
@@ -278,7 +277,14 @@
                                             (keep (comp seq :includes :interceptor))
                                             (flatten)
                                             (distinct))
-        interceptor-syms (->> (concat global-interceptor-syms handler-using-interceptor-syms)
+        alias-interceptor-syms  (->> (get-in config [:handler :aliases])
+                                     (vals)
+                                     (mapcat #(-> (:config %)
+                                                  (e.config/expand-config)
+                                                  (get-in [:interceptor :includes]))))
+        interceptor-syms (->> (concat global-interceptor-syms
+                                      handler-using-interceptor-syms
+                                      alias-interceptor-syms)
                               (distinct)
                               (sort))]
     (doseq [interceptor-sym interceptor-syms]
@@ -395,12 +401,18 @@
 (defn- generate-command-documents
   []
   (->> commands
-       (keep (fn [{:keys [command handler]}]
+       (keep (fn [{:keys [command handler interceptor]}]
                (when-let [title (handler-title (symbol handler))]
-                 [(format "===== %s" command)
-                  ""
-                  (format "Calls %s handler." (anchor title))
-                  ""])))
+                 (let [body (if (seq interceptor)
+                              [(format "Calls %s handler with the following interceptors:" (anchor title))
+                               ""
+                               (->> interceptor
+                                    (map #(format "* %s" (anchor (interceptor-title %)))))]
+                              (format "Calls %s handler." (anchor title)))]
+                   [(format "===== %s" command)
+                    ""
+                    body
+                    ""]))))
        (flatten)
        (str/join "\n")
        (spit (io/file page-dir "commands.adoc"))))
