@@ -63,7 +63,10 @@ ElinEvalAtMark
 
                                                              *ElinEvalInContext*
 ElinEvalInContext
-  Calls `elin.handler.evaluate/evaluate-current-list` handler.
+  Calls `elin.handler.evaluate/evaluate-current-list` handler
+  with the following interceptors:
+  - `elin.interceptor.evaluate/eval-with-context-interceptor`
+
   Key is mapped to |<Plug>(elin_eval_in_context)|.
 
                                                            *ElinPrintLastResult*
@@ -148,7 +151,10 @@ ElinTestUnderCursor
 
                                                  *ElinTestFocusedCurrentTesting*
 ElinTestFocusedCurrentTesting
-  Calls `elin.handler.test/run-test-under-cursor` handler.
+  Calls `elin.handler.test/run-test-under-cursor` handler
+  with the following interceptors:
+  - `elin.interceptor.test/focus-current-testing`
+
   Key is mapped to |<Plug>(elin_test_focused_current_testing)|.
 
                                                                   *ElinTestInNs*

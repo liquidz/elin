@@ -3,7 +3,8 @@
    [cheshire.core :as json]
    [clojure.edn :as edn]
    [clojure.java.io :as io]
-   [clojure.string :as str]))
+   [clojure.string :as str]
+   [elin.config :as e.config]))
 
 (def ^:private width 78)
 
@@ -12,6 +13,12 @@
 
 (def ^:private help-file
   (io/file "doc" "elin-mapping.txt"))
+
+(def ^:private elin-config
+  (with-redefs [e.config/load-user-config (constantly {})
+                e.config/load-project-local-config (constantly {})]
+    (e.config/load-config "." {:server {:host "" :port 0}
+                               :env {:cwd "."}})))
 
 (defn- into-hash-map
   [key-fn val-fn coll]
@@ -60,15 +67,28 @@
                                        (subs (inc (str/index-of func "(")))
                                        (str/split #",\s*" 3))
                                    [func nil nil])
+        handler (str/replace handler #"['\"]" "")
         config (-> config
                    (json/parse-string keyword)
                    (:config)
-                   (edn/read-string))]
+                   (edn/read-string))
+        alias-definition (get-in elin-config [:handler :aliases (symbol handler)])]
     {:command command
-     :handler (-> handler
-                  (str/replace #"['\"]" ""))
-     :interceptor (->> (get-in config [:interceptor :includes])
-                       (mapv str))}))
+     :handler (if alias-definition
+                (str (:handler alias-definition))
+                handler)
+     :interceptor (let [interceptor (-> (if alias-definition
+                                          (e.config/merge-configs (:config alias-definition)
+                                                                  config)
+                                          config)
+                                        (get-in [:interceptor]))]
+                    (->> (:uses interceptor)
+                         (partition 2)
+                         (map first)
+                         (concat (:includes interceptor))
+                         (distinct)
+                         (sort)
+                         (mapv str)))}))
 
 (defn- parse-mapping-line
   [line]
@@ -108,15 +128,22 @@
 (defn- generate-command-help-contents
   [{:keys [commands mappings]}]
   (let [command-to-mapping-dict (into-hash-map :command :mapping mappings)]
-    (->> (for [{:keys [command handler]} commands]
+    (->> (for [{:keys [command handler interceptor]} commands]
            (let [tag (format "%s*%s*"
                              (repeat-char (- width (count command)) " ")
-                             command)]
+                             command)
+                 tail (if (seq interceptor)
+                        (str "\n  with the following interceptors:\n"
+                             (->> interceptor
+                                  (map #(format "  - `%s`" %))
+                                  (str/join "\n"))
+                             "\n")
+                        ".")]
              (->> [tag
                    command
                    (if (str/includes? handler "#")
-                     (format "  Calls `%s`." handler)
-                     (format "  Calls `%s` handler." handler))
+                     (format "  Calls `%s`%s" handler tail)
+                     (format "  Calls `%s` handler%s" handler tail))
                    (format "  Key is mapped to |%s|." (get command-to-mapping-dict command))]
                   (str/join "\n"))))
          (str/join "\n\n"))))
