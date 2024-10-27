@@ -49,15 +49,17 @@
                                                                                                                                        :req {:host-store :any}},
                                                                                                                       :component/session-storage :any,
                                                                                                                       :component/clj-kondo :any}}}}},
-                                                                handler {:arities {4 {:args [{:op :keys,
-                                                                                              :req {:component/nrepl :any,
-                                                                                                    :component/interceptor :any,
-                                                                                                    :component/host {:op :keys,
-                                                                                                                     :req {:host-store :any}},
-                                                                                                    :component/session-storage :any,
-                                                                                                    :component/clj-kondo :any}}
-                                                                                             :map
-                                                                                             :map
+                                                                handler {:arities {2 {:args [{:op :keys,
+                                                                                              :req {:components {:op :keys,
+                                                                                                                 :req {:component/nrepl :any,
+                                                                                                                       :component/interceptor :any,
+                                                                                                                       :component/host {:op :keys,
+                                                                                                                                        :req {:host-store :any}},
+                                                                                                                       :component/session-storage :any,
+                                                                                                                       :component/clj-kondo :any}},
+                                                                                                    :config-map :map,
+                                                                                                    :handler-map :map,
+                                                                                                    :aliases :nilable/map}}
                                                                                              {:op :keys,
                                                                                               :req {:host :string,
                                                                                                     :message :sequential}}],

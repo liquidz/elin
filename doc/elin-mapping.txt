@@ -65,7 +65,7 @@ ElinEvalAtMark
 ElinEvalInContext
   Calls `elin.handler.evaluate/evaluate-current-list` handler
   with the following interceptors:
-  - `elin.interceptor.evaluate/eval-with-context-interceptor`
+  - `elin.interceptor.evaluate/eval-with-context`
 
   Key is mapped to |<Plug>(elin_eval_in_context)|.
 
