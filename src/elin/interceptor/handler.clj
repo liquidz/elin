@@ -2,6 +2,7 @@
   (:require
    [clojure.core.async :as async]
    [clojure.java.io :as io]
+   [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
    [elin.message :as e.message]
@@ -54,7 +55,8 @@
                     (or (not path) (not lnum) (not col))
                     nil
 
-                    (.exists (io/file path))
+                    (or (str/starts-with? path "zipfile://")
+                        (.exists (io/file path)))
                     (async/<!! (e.p.host/jump! host path lnum col))
 
                     :else
