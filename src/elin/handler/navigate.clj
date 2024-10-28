@@ -73,7 +73,7 @@
           true)
 
       (and file line)
-      (e.u.handler/jump-to-file-response file lnum (or column 1)))))
+      (e.u.handler/jump-to-file-response file line (or column 1)))))
 
 (m/=> cycle-source-and-test [:=> [:cat e.s.handler/?Elin] e.s.handler/?JumpToFile])
 (defn cycle-source-and-test
