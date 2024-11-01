@@ -1,22 +1,16 @@
 (ns elin.task.doc
   (:require
-   [clojure.edn :as edn]
    [clojure.java.io :as io]
    [clojure.string :as str]
    [elin.config :as e.config]
    [elin.constant.interceptor :as e.c.interceptor]
-   [elin.task.help :as help]
-   [rewrite-clj.zip :as r.zip]))
+   [elin.task.doc.analysis :as analysis]
+   [elin.task.doc.asciidoc :as asciidoc]
+   [elin.task.help :as help]))
 
+;; Utils {{{
 (def ^:private page-dir
   (io/file "doc" "pages" "generated"))
-
-(def ^:private github-base-url
-  "https://github.com/liquidz/elin/blob/main")
-
-(defn- find-first
-  [pred coll]
-  (some #(and (pred %) %) coll))
 
 (defn- page-file
   [target-sym]
@@ -31,14 +25,6 @@
   (str "."
        (subs (.getPath (page-file target-sym))
              (count (.getPath page-dir)))))
-
-(defn- github-link
-  [{:keys [file line]}]
-  (when-let [idx (str/index-of file "/liquidz/elin/src/")]
-    (format "%s%s#L%d"
-            github-base-url
-            (subs file (str/index-of file "/src/" idx))
-            line)))
 
 (def ^:private config
   (with-redefs [e.config/load-user-config (constantly {})
@@ -84,154 +70,15 @@
                                (get mapping-to-key-dict)))
         (update-keys symbol))))
 
-;; Analysis {{{
-(def ^:private analysis
-  (some-> "dev/analysis.edn"
-          (slurp)
-          (edn/read-string)
-          (:analysis)))
-
-(def ^:private var-usages
-  "[{:fixed-arities #{1 3 2}
-     :end-row 20
-     :name-end-col 5
-     :name-end-row 20
-     :name-row 20
-     :name def
-     :filename \"src/elin/component/interceptor.clj\"
-     :from elin.component.interceptor
-     :macro true
-     :col 1
-     :name-col 2
-     :end-col 40
-     :arity 2
-     :row 20
-     :to clojure.core}]"
-  (:var-usages analysis))
-
-(defn- using?
-  ([qualified-symbol usage]
-   (if (qualified-symbol? qualified-symbol)
-     (using? (symbol (namespace qualified-symbol))
-             (symbol (name qualified-symbol))
-             usage)
-     false))
-  ([ns-sym name-sym usage]
-   (and (= ns-sym (:to usage))
-        (= name-sym (:name usage)))))
-
-(defn- used?
-  ([qualified-symbol usage]
-   (if (qualified-symbol? qualified-symbol)
-     (used? (symbol (namespace qualified-symbol))
-            (symbol (name qualified-symbol))
-            usage)
-     false))
-  ([ns-sym name-sym usage]
-   (and (= ns-sym (:from usage))
-        (= name-sym (:from-var usage)))))
-
-(defn- recursive-usage?
-  [usage]
-  (and (= (:from usage) (:to usage))
-       (= (:from-var usage) (:name usage))))
-
-(defn- usage->qualified-symbol
-  [usage]
-  (when-let [from-var (:from-var usage)]
-    (symbol (str (:from usage))
-            (str from-var))))
-;; }}}
-
-;; AsciiDoc {{{
 (defn- to-s
   [arr]
   (str (->> arr
             (flatten)
             (str/join "\n"))
        "\n\n"))
-
-(defn- convert-title
-  [title]
-  (-> (str "_" title)
-      (str/replace "/" "")
-      (str/replace "-" "_")
-      (str/replace "." "_")))
-
-(defn- anchor
-  [title]
-  (str "<<" (convert-title title) ">>"))
-
-(defn- source-link
-  [meta-data]
-  (when-let [link (github-link meta-data)]
-    (when-let [idx (str/index-of  link "main/src")]
-      (format "\n[.text-right]\n[.small]#link:%s[%s]#"
-              link
-              (subs link (inc (str/index-of link "/src/" idx)))))))
 ;; }}}
 
 ;; Interceptors {{{
-(def interceptor-execute-usages
-  (filter (partial using? 'elin.protocol.interceptor/execute)
-          var-usages))
-
-(defn- dest-usage?
-  [usage]
-  (some?
-   (when-let [from (:from usage)]
-     (re-seq #"^elin\.(handler|interceptor)\."
-             (name from)))))
-
-(defn traverse-dest-usage
-  [base-usages]
-  (loop [base-usages base-usages
-         dest-usages []]
-    (let [next-usages (->> base-usages
-                           (mapcat (fn [base-usage]
-                                     (filter #(using? (:from base-usage) (:from-var base-usage) %)
-                                             var-usages)))
-                           (distinct)
-                           (remove recursive-usage?))
-          {next-dest-usages true next-usages false} (group-by dest-usage? next-usages)]
-      (if (seq next-usages)
-        (recur next-usages (concat dest-usages next-dest-usages))
-        (concat dest-usages next-dest-usages)))))
-
-(defn- interceptor-execute-usage->interceptor-kind
-  [{:keys [filename row col]}]
-  (let [content (slurp filename)
-        zloc (-> (r.zip/of-string content {:track-position? true})
-                 (r.zip/find-last-by-pos [row col]))]
-
-    (some-> (if (qualified-symbol? (r.zip/sexpr zloc))
-              zloc
-              (r.zip/down zloc))
-            (r.zip/next)
-            (r.zip/next)
-            (r.zip/sexpr)
-            (name))))
-
-(def ^:private handler-using-interceptor-kind-dict
-  (->> interceptor-execute-usages
-       (mapcat (fn [usage]
-                 (if (usage->qualified-symbol usage)
-                   (let [kind (interceptor-execute-usage->interceptor-kind usage)]
-                     (->> [usage]
-                          (traverse-dest-usage)
-                          (keep #(some-> %
-                                         (usage->qualified-symbol)
-                                         (vector kind)))))
-                   [])))
-       (into {})))
-
-(def ^:private kind-to-interceptor-symbol-dict
-  (->> (get-in config [:interceptor :includes])
-       (group-by #(-> (requiring-resolve %)
-                      (deref)
-                      (:kind)
-                      (name)))))
-
 (defn- interceptor-title
   [interceptor-sym]
   (some-> (re-seq #"\.(interceptor\..+?)$" (str interceptor-sym))
@@ -266,7 +113,7 @@
       (format-interceptor-kind v)
       ""
       (format-docstring m)
-      (source-link m)])))
+      (asciidoc/source-link m)])))
 
 (defn- generate-interceptor-documents
   []
@@ -317,8 +164,8 @@
                                                     (sort))
                                            [])
                                        (or (some->> handler-sym
-                                                    (get handler-using-interceptor-kind-dict)
-                                                    (get kind-to-interceptor-symbol-dict))
+                                                    (get analysis/handler-using-interceptor-kind-dict)
+                                                    (get analysis/kind-to-interceptor-symbol-dict))
                                            []))]
     (to-s
      [(str "==== " title)
@@ -333,10 +180,10 @@
         [""
          "===== Using interceptors"
          (for [interceptor-sym using-interceptor-syms]
-           (str "* " (anchor (interceptor-title interceptor-sym))))
+           (str "* " (asciidoc/anchor (interceptor-title interceptor-sym))))
          ""])
 
-      (source-link m)])))
+      (asciidoc/source-link m)])))
 
 (defn- excluded-handler?
   [handler-sym]
@@ -359,37 +206,6 @@
                (str/join "\n")))))
 ;; }}}
 
-
-
-;; ====================================================
-
-(def sample-interceptor-execute-usages
-  (filter #(= "src/elin/function/quickfix.clj"
-              (:filename %))
-          interceptor-execute-usages))
-
-
-(comment
-  (traverse-dest-usage sample-interceptor-execute-usages)
-
-  (->> (traverse-dest-usage sample-interceptor-execute-usages)
-       (map usage->qualified-symbol))
-  (let [target (first sample-interceptor-execute-usages)
-        kind-usage (find-first
-                    #(and (used? (:from target) (:from-var target) %)
-                          (= 'elin.constant.interceptor (:to %)))
-                    var-usages)]
-    {:kind (:name kind-usage)
-     :dest (->> [target]
-                (traverse-dest-usage)
-                (map #(symbol (str (:from %)) (str (:from-var %)))))}))
-
-(defn detect-interceptor-kind [usage]
-  (some->> var-usages
-           (find-first #(and (used? (:from usage) (:from-var usage) %)
-                             (= 'elin.constant.interceptor (:to %))))
-           (:name)))
-
 (defn- generate-default-key-mapping-variables
   []
   (->> handler-key-mapping-dict
@@ -404,11 +220,11 @@
        (keep (fn [{:keys [command handler interceptor]}]
                (when-let [title (handler-title (symbol handler))]
                  (let [body (if (seq interceptor)
-                              [(format "Calls %s handler with the following interceptors:" (anchor title))
+                              [(format "Calls %s handler with the following interceptors:" (asciidoc/anchor title))
                                ""
                                (->> interceptor
-                                    (map #(format "* %s" (anchor (interceptor-title %)))))]
-                              (format "Calls %s handler." (anchor title)))]
+                                    (map #(format "* %s" (asciidoc/anchor (interceptor-title %)))))]
+                              (format "Calls %s handler." (asciidoc/anchor title)))]
                    [(format "===== %s" command)
                     ""
                     body
