@@ -6,15 +6,10 @@
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.component :as e.s.component]
-   [malli.core :as m]
-   [malli.util :as m.util]))
+   [elin.schema.nrepl :as e.s.nrepl]
+   [malli.core :as m]))
 
-(def ?Summary
-  [:map
-   [:summary string?]
-   [:succeeded? boolean?]])
-
-(m/=> summary [:=> [:cat map?] ?Summary])
+(m/=> summary [:=> [:cat map?] e.s.nrepl/?TestSummary])
 (defn summary
   [test-resp]
   (let [{:keys [summary]} test-resp]
@@ -53,12 +48,7 @@
       :else
       "")))
 
-(def ?ActualValue
-  [:map
-   [:actual string?]
-   [:diffs {:optional true} string?]])
-
-(m/=> test-actual-values [:=> [:cat map?] [:sequential ?ActualValue]])
+(m/=> test-actual-values [:=> [:cat map?] [:sequential e.s.nrepl/?TestActualValue]])
 (defn- test-actual-values
   [{:keys [diffs actual]}]
   (cond
@@ -72,24 +62,7 @@
     :else
     [{:actual (str/trim actual)}]))
 
-(def ?TestResult
-  [:or
-   [:map
-    [:result [:enum :passed]]
-    [:ns string?]
-    [:var string?]]
-   (m.util/merge
-    [:map
-     [:result [:enum :failed]]
-     [:ns string?]
-     [:var string?]
-     [:filename string?]
-     [:text string?]
-     [:expected string?]
-     [:lnum {:optional true} int?]]
-    ?ActualValue)])
-
-(m/=> collect-results [:=> [:cat e.s.component/?Nrepl map?] [:sequential ?TestResult]])
+(m/=> collect-results [:=> [:cat e.s.component/?Nrepl map?] [:sequential e.s.nrepl/?TestResult]])
 (defn collect-results
   [nrepl test-resp]
   (let [ns-path-op-supported? (e.p.nrepl/supported-op? nrepl e.c.nrepl/ns-path-op)]

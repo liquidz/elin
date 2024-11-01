@@ -100,3 +100,30 @@
 (def ?RenderingData
   [:map
    [:format-type keyword?]])
+
+(def ?TestSummary
+  [:map
+   [:summary string?]
+   [:succeeded? boolean?]])
+
+(def ?TestActualValue
+  [:map
+   [:actual string?]
+   [:diffs {:optional true} string?]])
+
+(def ?TestResult
+  [:or
+   [:map
+    [:result [:enum :passed]]
+    [:ns string?]
+    [:var string?]]
+   (m.util/merge
+    [:map
+     [:result [:enum :failed]]
+     [:ns string?]
+     [:var string?]
+     [:filename string?]
+     [:text string?]
+     [:expected string?]
+     [:lnum {:optional true} int?]]
+    ?TestActualValue)])
