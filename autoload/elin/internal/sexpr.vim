@@ -101,6 +101,7 @@ function! elin#internal#sexpr#replace_list_sexpr(lnum, col, new_sexpr) abort
   let after_line_count = 0
   let reg_save = @@
   let is_cancelled = v:false
+  let signs = elin#internal#sign#list_in_buffer()
 
   try
     if getline(a:lnum)[0] !=# '('
@@ -124,6 +125,8 @@ function! elin#internal#sexpr#replace_list_sexpr(lnum, col, new_sexpr) abort
     let @@ = reg_save
 
     if ! is_cancelled
+      call elin#internal#sign#refresh({'signs': signs})
+
       let new_line_count = len(split(trim(a:new_sexpr), '\r\?\n'))
       let context['view']['lnum'] = context['view']['lnum'] + (new_line_count - before_line_count)
     endif
