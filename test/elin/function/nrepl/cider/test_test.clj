@@ -53,17 +53,17 @@
    :testing-ns "foo.bar-test"})
 
 (t/deftest collect-results-test
-  (t/is (= [{:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}
-            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}
-            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}
-            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}]
+  (t/is (= [{:result :passed :ns "antq.util.file-test" :var "normalize-path-test" :text "normalize-path-test: HOME"}
+            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test" :text "normalize-path-test: HOME"}
+            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test" :text "normalize-path-test: Redundant path"}
+            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test" :text "normalize-path-test: HOME and Redundant path"}]
            (sut/collect-results (h/test-nrepl {}) dummy-success-resp)))
 
-  (t/is (= [{:filename "NO_SOURCE_FILE" :text "normalize-path-test: HOME" :expected "\"//path/to/bar\"" :ns "antq.util.file-test" :var "normalize-path-test" :lnum 11 :actual "\"/path/to/bar\"" :result :failed}
-            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}
-            {:ns "antq.util.file-test" :diffs "- {:a 1}\n+ {:a 2}" :lnum 15 :filename "NO_SOURCE_FILE" :var "normalize-path-test" :result :failed :expected "{:a 1}" :actual "{:a 2}" :text "normalize-path-test: Redundant path"}
-            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}
-            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test"}]
+  (t/is (= [{:result :failed :ns "antq.util.file-test" :var "normalize-path-test" :text "normalize-path-test: HOME" :filename "NO_SOURCE_FILE" :expected "\"//path/to/bar\"" :lnum 11 :actual "\"/path/to/bar\""}
+            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test" :text "normalize-path-test: HOME"}
+            {:result :failed :ns "antq.util.file-test" :var "normalize-path-test" :text "normalize-path-test: Redundant path" :filename "NO_SOURCE_FILE" :expected "{:a 1}" :lnum 15 :actual "{:a 2}" :diffs "- {:a 1}\n+ {:a 2}"}
+            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test" :text "normalize-path-test: Redundant path"}
+            {:result :passed :ns "antq.util.file-test" :var "normalize-path-test" :text "normalize-path-test: HOME and Redundant path"}]
            (sut/collect-results (h/test-nrepl {}) dummy-error-resp)))
 
   (t/is (= [{:filename "AFn.java" :text "baz-test: Uncaught exception not in assertion" :expected "" :ns "foo.bar-test" :var "baz-test" :lnum 69 :result :failed

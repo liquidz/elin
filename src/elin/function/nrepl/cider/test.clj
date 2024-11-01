@@ -30,8 +30,8 @@
              (.exists (io/file filename)))
     filename))
 
-(m/=> test-error-message [:=> [:cat map?] string?])
-(defn- test-error-message
+(m/=> test-message [:=> [:cat map?] string?])
+(defn- test-message
   [test-result]
   (let [var' (:var test-result)
         {:keys [context message]} test-result]
@@ -75,14 +75,15 @@
                     (not= test-type "error"))
              {:result :passed
               :ns ns-str
-              :var var-str}
+              :var var-str
+              :text (test-message test-result)}
 
              (let [filename (or (readable-filename (:file test-result))
                                 (when ns-path-op-supported?
                                   (e.f.n.cider/ns-path!! nrepl ns-str))
                                 (:file test-result))
                    error (cond-> {:filename filename
-                                  :text (test-error-message test-result)
+                                  :text (test-message test-result)
                                   :expected (or (some-> (:expected test-result)
                                                         (str/trim))
                                                 "")
