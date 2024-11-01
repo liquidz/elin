@@ -104,3 +104,7 @@ endfunction
 function! elin#server#connection() abort
   return s:conn
 endfunction
+
+function! elin#server#is_connected() abort
+  return (elin#server#connection() isnot# v:null)
+endfunction
