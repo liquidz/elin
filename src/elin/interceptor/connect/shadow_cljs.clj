@@ -41,8 +41,8 @@
                       selected-port-file (when shadow-cljs-port-file
                                            (->> [port-file
                                                  (:port-file shadow-cljs-port-file)]
-                                                (map #(str/replace-first % project-root ""))
                                                 (remove nil?)
+                                                (map #(str/replace-first % project-root ""))
                                                 (e.f.select/select-from-candidates ctx)))]
                   (if (and selected-port-file
                            (str/ends-with? (:port-file shadow-cljs-port-file)
