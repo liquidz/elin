@@ -128,6 +128,10 @@ function! elin#internal#sign#refresh(...) abort
   let signs = get(opt, 'signs', elin#internal#sign#list_in_buffer())
 
   for sign in signs
+    if empty(sign['name']) || empty(sign['group'])
+      continue
+    endif
+
     call elin#internal#sign#unplace_by({'id': sign['id'], 'group': sign['group']})
     call elin#internal#sign#place(sign['name'], sign['lnum'], file, sign['group'])
   endfor
