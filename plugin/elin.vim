@@ -40,6 +40,7 @@ function! s:init() abort
 
   aug elin_autocmd_group
     au!
+    au FileType clojure setl omnifunc=elin#complete#omni
     au BufEnter *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufEnter')
     au BufNewFile *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufNewFile')
     au BufRead *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufRead')
