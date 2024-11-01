@@ -11,6 +11,7 @@
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.file :as e.u.file]
+   [elin.util.interceptor :as e.u.interceptor]
    [exoscale.interceptor :as ix]
    [malli.core :as m]))
 
@@ -31,8 +32,9 @@
 
 (def detect-shadow-cljs-port
   {:kind e.c.interceptor/connect
-   :enter (-> (fn [{:as ctx :component/keys [host] :keys [port-file]}]
-                (let [cwd (async/<!! (e.p.host/get-current-working-directory! host))
+   :enter (-> (fn [{:as ctx :component/keys [host] :keys [hostname port-file]}]
+                (let [{:keys [default-hostname]} (e.u.interceptor/config ctx #'detect-shadow-cljs-port)
+                      cwd (async/<!! (e.p.host/get-current-working-directory! host))
                       project-root (str (.getAbsolutePath (e.u.file/get-project-root-directory cwd))
                                         (e.u.file/guess-file-separator cwd))
                       shadow-cljs-port-file (find-shadow-cljs-port-file cwd)
@@ -46,6 +48,7 @@
                            (str/ends-with? (:port-file shadow-cljs-port-file)
                                            selected-port-file))
                     (assoc ctx
+                           :hostname (or hostname default-hostname)
                            :port (:port shadow-cljs-port-file)
                            :language (:language shadow-cljs-port-file)
                            :port-file (:port-file shadow-cljs-port-file))
