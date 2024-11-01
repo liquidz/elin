@@ -148,11 +148,15 @@
   "Re evaluate the current top list with focusing on the current testing form."
   {:kind e.c.interceptor/test
    :enter (-> (fn [{:as ctx :component/keys [host] :keys [line]}]
-                (let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
-                      {:keys [code]} (e.f.sexpr/get-top-list ctx cur-lnum cur-col)
-                      code' (e.u.sexpr/convert-code-to-testing-focused-code code (- cur-lnum line -1) cur-col)]
-                  (e.f.evaluate/evaluate-code ctx code' {:line line
-                                                         :column (:column ctx)
-                                                         :ns (:ns ctx)
-                                                         :file (:file ctx)})))
+                (try
+                  (let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
+                        {:keys [code]} (e.f.sexpr/get-top-list ctx cur-lnum cur-col)
+                        code' (e.u.sexpr/convert-code-to-testing-focused-code code (- cur-lnum line -1) cur-col)]
+                    (e.f.evaluate/evaluate-code ctx code' {:line line
+                                                           :column (:column ctx)
+                                                           :ns (:ns ctx)
+                                                           :file (:file ctx)}))
+                  (catch Exception ex
+                    (timbre/debug "Failed to focus on the current testing form" ex)
+                    (e.message/error host (format "Failed to focus on the current testing form: %s" (ex-message ex))))))
               (ix/discard))})
