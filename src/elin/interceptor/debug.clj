@@ -56,6 +56,15 @@
                 (when-let [err (some->> ctx
                                         (m/explain schema)
                                         (m.error/humanize))]
+                  (timbre/error "Invalid context" {:kind kind
+                                                   :error err
+                                                   :context (->> ctx
+                                                                 (reduce-kv
+                                                                  (fn [accm k v]
+                                                                    (if (namespace k)
+                                                                      accm
+                                                                      (assoc accm k v)))
+                                                                  {}))})
                   (throw (ex-info (format "Invalid context for %s: %s"
                                           kind
                                           err)
