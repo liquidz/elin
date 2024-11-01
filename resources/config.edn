@@ -25,8 +25,7 @@
                       elin.interceptor.nrepl/eval-ns {}
                       elin.interceptor.nrepl/normalize-path {}
                       elin.interceptor.nrepl/progress {}
-                      elin.interceptor.output/print-output {}
-                      elin.interceptor.test/done-test {}]
+                      elin.interceptor.output/print-output {}]
 
                :config-map {elin.interceptor.evaluate/set-eval-result-to-virtual-text {:format "=> {{{result}}}"
                                                                                        :highlight "DiffText"
@@ -37,6 +36,13 @@
                                                 elin.interceptor.evaluate/set-eval-result-to-virtual-text
                                                 elin.interceptor.evaluate/unwrap-comment-form
                                                 elin.interceptor.evaluate/yank-eval-result]}
+
+                        :test {:includes [elin.interceptor.test/parse-test-result
+                                          elin.interceptor.test/update-test-result-sign
+                                          elin.interceptor.test/append-test-result-to-info-buffer
+                                          elin.interceptor.test/apply-test-result-to-quickfix
+                                          elin.interceptor.test/store-last-failed-test-query
+                                          elin.interceptor.test/output-test-result-to-cmdline]}
                         :code-change {:includes [elin.interceptor.code-change/show-code-changed-result]}}}
 
  :handler {:uses [elin.handler.callback/callback {}
@@ -85,10 +91,10 @@
                   elin.handler.navigate/jump-to-definition {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/local-references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
-                  elin.handler.test/rerun-last-failed-tests {}
-                  elin.handler.test/rerun-last-tests {}
-                  elin.handler.test/run-test-under-cursor {}
-                  elin.handler.test/run-tests-in-ns {}]
+                  elin.handler.test/rerun-last-failed-tests {:interceptor #ref [:interceptor :preset :test]}
+                  elin.handler.test/rerun-last-tests {:interceptor #ref [:interceptor :preset :test]}
+                  elin.handler.test/run-test-under-cursor {:interceptor #ref [:interceptor :preset :test]}
+                  elin.handler.test/run-tests-in-ns {:interceptor #ref [:interceptor :preset :test]}]
 
            :aliases {elin-alias-evaluate-current-list-in-context {:handler elin.handler.evaluate/evaluate-current-list
                                                                   :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}

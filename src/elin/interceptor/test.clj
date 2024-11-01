@@ -12,10 +12,12 @@
    [elin.function.storage.test :as e.f.s.test]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
+   [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.util.map :as e.u.map]
    [elin.util.sexpr :as e.u.sexpr]
-   [exoscale.interceptor :as ix]))
+   [exoscale.interceptor :as ix]
+   [taoensso.timbre :as timbre]))
 
 (def ^:private sign-name "error")
 
@@ -59,62 +61,87 @@
       (catch Exception _
         s))))
 
-(def done-test
+(def parse-test-result
   {:kind e.c.interceptor/test
-   :leave (-> (fn [{:as ctx :component/keys [host nrepl session-storage] :keys [response]}]
-                (let [{:keys [passed failed]} (->> (e.f.n.c.test/collect-results nrepl response)
-                                                   (group-by :result))
-                      {:keys [succeeded? summary]} (e.f.n.c.test/summary response)]
-                  ;; unsign
-                  (if (seq passed)
-                    (doseq [var-str (distinct (map :var passed))]
-                      (e.p.host/unplace-signs-by host {:name sign-name :group var-str}))
-                    (e.p.host/unplace-signs-by host {:name sign-name :group "*"}))
-                  ;; sign
-                  (doseq [{:as result :keys [lnum]} failed
-                          :when lnum]
-                    (e.p.host/place-sign host {:name sign-name
-                                               :lnum lnum
-                                               :file (:filename result)
-                                               :group (:var result)}))
-                  ;; append results to info buffer
-                  (let [s (->> failed
-                               (mapcat (fn [{:as failed-result :keys [text lnum expected actual]}]
-                                         (if (empty? actual)
-                                           []
-                                           [(format ";; %s%s" text lnum)
-                                            (if (seq expected)
-                                              (-> failed-result
-                                                  (update :expected pprint-str)
-                                                  (update :actual pprint-str)
-                                                  (e.u.map/map->str [:expected :actual :diffs]))
-                                              actual)
-                                            ""])))
-                               (str/join "\n"))]
-                    (e.p.host/append-to-info-buffer host s {:show-temporarily? true}))
-                  ;; set errors to quickfix list
-                  (let [tested-texts (->> (concat passed failed)
-                                          (map generate-quickfix-text)
-                                          (set))
-                        current-list (->> (e.f.quickfix/get-quickfix-list ctx)
-                                          (remove #(contains? tested-texts (:text %))))]
-                    (->> failed
-                         (map #(hash-map :filename (:filename %)
-                                         :lnum (:lnum %)
-                                         :text (generate-quickfix-text %)
-                                         :type "Error"))
-                         (concat current-list)
-                         (e.f.quickfix/set-quickfix-list ctx)))
+   :leave (fn [{:as ctx :component/keys [nrepl interceptor] :keys [response]}]
+            (let [{:keys [passed failed]} (->> (e.f.n.c.test/collect-results nrepl response)
+                                               (group-by :result))
+                  {:keys [succeeded? summary]} (e.f.n.c.test/summary response)]
+              (-> ctx
+                  (assoc :passed passed
+                         :failed failed
+                         :succeeded? succeeded?
+                         :summary summary)
+                  (->> (e.p.interceptor/execute interceptor e.c.interceptor/test-result)))))})
 
-                  ;; store last failed tests as test query
-                  (some->> (get-failed-tests-query nrepl failed)
-                           (e.f.s.test/set-last-failed-tests-query session-storage))
+(def update-test-result-sign
+  {:kind e.c.interceptor/test-result
+   :enter (-> (fn [{:component/keys [host] :keys [passed failed]}]
+                ;; unsign
+                (if (seq passed)
+                  (doseq [var-str (distinct (map :var passed))]
+                    (e.p.host/unplace-signs-by host {:name sign-name :group var-str}))
+                  (e.p.host/unplace-signs-by host {:name sign-name :group "*"}))
+                ;; sign
+                (doseq [{:as result :keys [lnum]} failed
+                        :when lnum]
+                  (e.p.host/place-sign host {:name sign-name
+                                             :lnum lnum
+                                             :file (:filename result)
+                                             :group (:var result)})))
+              (ix/discard))})
 
-                  ;; show summary
-                  (e.p.host/append-to-info-buffer host summary)
-                  (if succeeded?
-                    (e.message/info host summary)
-                    (e.message/error host summary))))
+(def append-test-result-to-info-buffer
+  {:kind e.c.interceptor/test-result
+   :enter (-> (fn [{:component/keys [host] :keys [failed summary]}]
+                (let [s (->> failed
+                             (mapcat (fn [{:as failed-result :keys [text lnum expected actual]}]
+                                       (if (empty? actual)
+                                         []
+                                         [(format ";; %s%s" text lnum)
+                                          (if (seq expected)
+                                            (-> failed-result
+                                                (update :expected pprint-str)
+                                                (update :actual pprint-str)
+                                                (e.u.map/map->str [:expected :actual :diffs]))
+                                            actual)
+                                          ""])))
+                             (str/join "\n"))]
+                  (e.p.host/append-to-info-buffer host s {:show-temporarily? true})
+                  (e.p.host/append-to-info-buffer host summary)))
+              (ix/discard))})
+
+(def apply-test-result-to-quickfix
+  {:kind e.c.interceptor/test-result
+   :enter (-> (fn [{:as ctx :keys [passed failed]}]
+                (let [tested-texts (->> (concat passed failed)
+                                        (map generate-quickfix-text)
+                                        (set))
+                      current-list (->> (e.f.quickfix/get-quickfix-list ctx)
+                                        (remove #(contains? tested-texts (:text %))))]
+                  (->> failed
+                       (map #(hash-map :filename (:filename %)
+                                       :lnum (:lnum %)
+                                       :text (generate-quickfix-text %)
+                                       :type "Error"))
+                       (concat current-list)
+                       (e.f.quickfix/set-quickfix-list ctx))))
+              (ix/discard))})
+
+(def store-last-failed-test-query
+  {:kind e.c.interceptor/test-result
+   :enter (-> (fn [{:component/keys [nrepl session-storage] :keys [failed]}]
+                (some->> failed
+                         (get-failed-tests-query nrepl)
+                         (e.f.s.test/set-last-failed-tests-query session-storage)))
+              (ix/discard))})
+
+(def output-test-result-to-cmdline
+  {:kind e.c.interceptor/test-result
+   :enter (-> (fn [{:component/keys [host] :keys [succeeded? summary]}]
+                (if succeeded?
+                  (e.message/info host summary)
+                  (e.message/error host summary)))
               (ix/discard))})
 
 (def focus-current-testing

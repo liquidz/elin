@@ -44,6 +44,7 @@
    e.c.interceptor/raw-nrepl e.s.interceptor/?RawNreplContext
    e.c.interceptor/output e.s.interceptor/?OutputContext
    e.c.interceptor/test e.s.interceptor/?TestContext
+   e.c.interceptor/test-result e.s.interceptor/?TestResultContext
    e.c.interceptor/quickfix e.s.interceptor/?QuickfixContext
    e.c.interceptor/code-change e.s.interceptor/?CodeChangeContext})
 

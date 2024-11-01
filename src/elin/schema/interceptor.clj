@@ -17,6 +17,7 @@
    e.c.interceptor/raw-nrepl
    e.c.interceptor/output
    e.c.interceptor/test
+   e.c.interceptor/test-result
    e.c.interceptor/quickfix
    e.c.interceptor/code-change])
 
@@ -86,6 +87,14 @@
        ;; LEAVE
        [:response {:optional true} map?]]
       (m.util/merge e.s.handler/?Components)))
+
+(def ?TestResultContext
+  (-> [:map
+       ;; ENTER
+       [:passed [:maybe [:sequential e.s.nrepl/?TestResult]]]
+       [:failed [:maybe [:sequential e.s.nrepl/?TestResult]]]]
+      (m.util/merge e.s.nrepl/?TestSummary)
+      (m.util/merge ?TestContext)))
 
 (def ?EvaluateContext
   (-> [:map
