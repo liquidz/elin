@@ -41,7 +41,7 @@ function! elin#internal#buffer#temp#set(s) abort
     call elin#internal#buffer#temp#close()
   else
     call elin#internal#buffer#temp#clear()
-    call elin#internal#buffer#append(s:buf_name, a:s)
+    call elin#internal#buffer#append(s:buf_name, a:s, {'scroll_to_top': v:true})
     call deletebufline(s:buf_name, 1)
 
     " Open aotumatically when info buffer is not opened

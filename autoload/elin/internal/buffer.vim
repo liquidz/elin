@@ -52,6 +52,21 @@ function! elin#internal#buffer#scroll_to_bottom(nr) abort
   endtry
 endfunction
 
+function! elin#internal#buffer#scroll_to_top(nr) abort
+  let current_window = winnr()
+  let last_window = winnr('#')
+  try
+    let &eventignore = 'WinEnter,WinLeave,BufEnter,BufLeave'
+    call elin#internal#buffer#focus_by_win_nr(bufwinnr(a:nr))
+    silent normal! gg
+  finally
+    " Preserve the user's last visited window by focusing to it first (PR #187)
+    call elin#internal#buffer#focus_by_win_nr(last_window)
+    call elin#internal#buffer#focus_by_win_nr(current_window)
+    let &eventignore = ''
+  endtry
+endfunction
+
 let s:append_buffer = {}
 
 function! s:append(buf_name, option) abort
@@ -71,6 +86,10 @@ function! s:append(buf_name, option) abort
         \ && elin#internal#buffer#is_visible(a:buf_name)
         \ && bufnr('%') != nr
     call elin#util#start_lazily('scroll_to_bottom', 500, funcref('elin#internal#buffer#scroll_to_bottom', [nr]))
+  elseif get(a:option, 'scroll_to_top', v:false)
+        \ && elin#internal#buffer#is_visible(a:buf_name)
+        \ && bufnr('%') != nr
+    call elin#util#start_lazily('scroll_to_bottom', 500, funcref('elin#internal#buffer#scroll_to_top', [nr]))
   endif
 endfunction
 
