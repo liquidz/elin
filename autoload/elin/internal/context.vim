@@ -8,7 +8,9 @@ function! elin#internal#context#save() abort
 endfunction
 
 function! elin#internal#context#restore(saved_context) abort
-  silent exe printf('b %d', a:saved_context.bufnr)
+  if bufnr('%') != a:saved_context.bufnr
+    silent exe printf('b %d', a:saved_context.bufnr)
+  endif
   silent call winrestview(a:saved_context.view)
   call s:__restore_local_marks(a:saved_context.marks)
   let @@ = a:saved_context.reg
