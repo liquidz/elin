@@ -20,11 +20,18 @@ See the following figure for the concrete ranges.
 
 If you enable default key mappings, following key mappings are available.
 
-[%autowidth]
+[%autowidth,cols="a,a"]
 |===
-| Evaluate current expression | {elin-handler-evaluate-evaluate-current-expr}
-| Evaluate current list | {elin-handler-evaluate-evaluate-current-list}
-| Evaluate current top list | {elin-handler-evaluate-evaluate-current-top-list}
+| Feature | Default key mapping
+
+| Evaluate current expression
+| `{elin-handler-evaluate-evaluate-current-expr}`
+
+| Evaluate current list
+| `{elin-handler-evaluate-evaluate-current-list}`
+
+| Evaluate current top list
+| `{elin-handler-evaluate-evaluate-current-top-list}`
 |===
 
 === Results

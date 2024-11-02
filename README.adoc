@@ -26,7 +26,9 @@ See link:./doc/elin.txt[help] for example configurations.
 == 🍃 Related works
 
 * https://github.com/liquidz/elin-coc-source[elin-coc-source] - Completion source for coc.nvim
+* https://github.com/liquidz/elin-cmp-source[elin-cmp-source] - Completion source for nvim-cmp
 * https://github.com/liquidz/elin-format[elin-format] - Formatting plugin for elin
+* You can find other plugins with the https://github.com/topics/elin-clj-plugin[#elin-clj-plugin] topic.
 
 == 💚 Support
 

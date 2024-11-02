@@ -1,0 +1,32 @@
+Elin provides code skeleton when you open new clojure files.
+
+Currently, following extensions are supported.
+
+* `*.clj`
+* `*.cljs`
+* `*.cljc`
+
+=== Skeleton template
+
+Skeleton feature is provided by the <<_interceptor_autocmdskeleton>> interceptor,
+and the template is defined by configuration file as a https://mustache.github.io[mustache] format.
+
+The default templates are as follows:
+
+[%autowidth, cols="a,a"]
+|===
+| File extension | Template
+
+| *.clj
+| * https://github.com/liquidz/elin/blob/main/resources/template/clj_src_skeleton.mustache[Source template]
+* https://github.com/liquidz/elin/blob/main/resources/template/clj_test_skeleton.mustache[Test template]
+
+| *.cljs
+| * https://github.com/liquidz/elin/blob/main/resources/template/clj_src_skeleton.mustache[Source template]
+* https://github.com/liquidz/elin/blob/main/resources/template/cljs_test_skeleton.mustache[Test template]
+
+| *.cljc
+| * https://github.com/liquidz/elin/blob/main/resources/template/clj_src_skeleton.mustache[Source template]
+* https://github.com/liquidz/elin/blob/main/resources/template/cljc_test_skeleton.mustache[Test template]
+
+|===

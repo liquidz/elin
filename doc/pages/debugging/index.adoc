@@ -1,0 +1,31 @@
+=== Macro
+Expanding macro is important for writing/debugging macros. Elin provides following commands.
+
+[%autowidth,cols="a,a"]
+|===
+| Command | Default key mapping
+
+| <<ElinMacroExpand1CurrentList>>
+| `{elin-handler-evaluate-expand-1-current-list}`
+|===
+
+Expanding results are shown in the <<Temporal buffer>> and <<Information buffer>>.
+
+
+=== #dbg and #break
+
+Elin supports CIDER’s `#dbg` and `#break` reader literals.
+The easiest way is to put `#dbg` to your code, and evaluate it.
+
+[source,clojure]
+----
+(defn fib [n]
+  #dbg (loop [a 0 b 1 n n]
+         (if (<= n 0)
+           a
+           (recur b (+ a b) (dec n)))))
+----
+
+Once you evaluate `(fib 10)`, debugger will launch.
+
+This feature is implemented by the <<_interceptor_debugprocess_debugger>> interceptor.

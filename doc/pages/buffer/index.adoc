@@ -1,0 +1,22 @@
+=== Information buffer
+
+All information on Elin, such as the content of standard output during evaluation and test results, is recorded in this buffer.
+To show/clear the information buffer, use the following commands.
+
+[%autowidth,cols="a,a"]
+|===
+| Command | Default key mapping
+
+| ElinToggleInfoBuffer
+| `{elin-internal-buffer-info-toggle}`
+
+| ElinClearInfoBuffer
+| `{elin-internal-buffer-info-clear}`
+|===
+
+=== Temporal buffer
+
+This buffer temporarily displays content that is newly recorded in the <<Information buffer>> when the <<Information buffer>> is not currently visible.
+It is used, for example, to display <<Testing,test results>> or <<Macro,macro expansion results>>.
+
+This buffer automatically closes when the <<Information buffer>> is displayed.

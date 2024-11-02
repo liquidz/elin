@@ -1,0 +1,21 @@
+Elin provides only omni completion by default.
+It is set to https://vim-jp.org/vimdoc-en/options.html#'omnifunc'[omnifunc] for `clojure` filetype automatically.
+
+Vim has a https://vim-jp.org/vimdoc-en/insert.html#i_CTRL-X_CTRL-O[<C-x><C-o>] key mapping for omni completion.
+
+
+=== Auto completion
+
+Auto completion feature is provided as external <<Plugin,elin plugins>> like follows.
+
+[%autowidth,cols="a,a",]
+|===
+| Plugin | Description
+
+| https://github.com/liquidz/elin-coc-source[liquidz/elin-coc-source]
+| Completion source for https://github.com/neoclide/coc.nvim[neoclide/coc.nvim]
+
+| https://github.com/liquidz/elin-cmp-source[liquidz/elin-cmp-source]
+| Completion source for https://github.com/hrsh7th/nvim-cmp[hrsh7th/nvim-cmp]
+
+|===

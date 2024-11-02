@@ -1,0 +1,52 @@
+=== Jump to definition
+
+Elin provides the following command to jump to the definition of the symbol under the cursor.
+
+[%autowidth,cols="a,a"]
+|===
+| Command | Default key mapping
+
+| <<ElinJumpToDefinition>>
+| `{elin-handler-navigate-jump-to-definition}`
+|===
+
+This command supports jumping to:
+
+* Qualified symbols
+* Local bindings
+* Protocol implementations
+
+=== Refer usages
+
+For browsing locations that refers to the symbol under the cursor, the following commannds are useful.
+
+[%autowidth,cols="a,a"]
+|===
+| Command | Default key mapping
+
+| <<ElinReferences>>
+| `{elin-handler-navigate-references}`
+
+| <<ElinLocalReferences>>
+| `{elin-handler-navigate-local-references}`
+|===
+
+When only one location is found, the cursor will jump to the location immediately.
+Otherwise, the locations will be added to the https://vim-jp.org/vimdoc-en/quickfix.html#location-list[location list].
+
+=== Other navigations
+
+==== Cycle source and test code
+
+You can cycle source file and test file for current namespace.
+
+[%autowidth,cols="a,a"]
+|===
+| Command | Default key mapping
+
+| <<ElinCycleSourceAndTest>>
+| `{elin-handler-navigate-cycle-source-and-test}`
+|===
+
+For example, when you are in `foo.core`, <<ElinCycleSourceAndTest>> command will open the file which has `foo.core-test` namespace.
+If there is no corresponding file, elin suggests pseudo file path to create new namespace.

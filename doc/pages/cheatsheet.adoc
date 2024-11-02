@@ -61,7 +61,7 @@ See https://github.com/liquidz/elin/blob/main/doc/elin-mapping.txt[elin-mapping.
 ! Jump to references of symbol under cursor
 !===
 
-| *<<Reference>>*
+| *<<Lookup>>*
 [cols="30,70"]
 !===
 ! {elin-handler-lookup-lookup}

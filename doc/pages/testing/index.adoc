@@ -1,0 +1,58 @@
+
+Elin can integrate with https://clojure.github.io/clojure/clojure.test-api.html[clojure.test], and provides following test commands.
+
+[%autowidth,cols="a,a,a"]
+|===
+| Command | Default key mapping | Description
+
+| <<ElinTestUnderCursor>>
+| `{ElinTestUnderCursor-default-mapping}`
+| Run a test under cursor
+
+| <<ElinTestFocusedCurrentTesting>>
+| `{ElinTestFocusedCurrentTesting-default-mapping}`
+| Run a test under cursor with focusing current `testing` form
+
+| <<ElinTestInNs>>
+| `{ElinTestInNs-default-mapping}`
+| Run all tests in current namespace
+
+| <<ElinTestLast>>
+| `{ElinTestLast-default-mapping}`
+| Rerun the last tests
+
+| <<ElinTestLastFailed>>
+| `{ElinTestLastFailed-default-mapping}`
+| Rerun the last failed tests
+
+|===
+
+
+=== Testing results
+
+Elin operates testing results with the following interceptors by default.
+
+[%autowidth,cols="a,a"]
+|===
+| Interceptor | Operation
+
+| <<_interceptor_testoutput_test_result_to_cmdline>>
+| Show results in command line
+
+| <<_interceptor_testappend_test_result_to_info_buffer>>
+| Record results in <<Temporal buffer>> and <<Information buffer>>
+
+| <<_interceptor_testapply_test_result_to_quickfix>>
+| Set error positions to https://vim-jp.org/vimdoc-en/quickfix.html[quickfix]
+
+| <<_interceptor_testupdate_test_result_sign>>
+| Place signs to the error positions
+
+|===
+
+=== Testing on plain nREPL
+
+Elin will use https://docs.cider.mx/cider-nrepl[cider-nrepl]'s testing feature if it is enabled, but it can provide equivalent test integration even if cider-nrepl is not enabled.
+
+Therefore, when running tests, you don’t need to be concerned about whether cider-nrepl is enabled on the connected nREPL server.
+You can run tests and view the results using the same keymap.

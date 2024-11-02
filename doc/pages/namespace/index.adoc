@@ -1,0 +1,19 @@
+Elin provides the following commands for namespace operations.
+
+[%autowidth,cols="a,a,a"]
+|===
+| Command | Default key mapping | Description
+
+| <<ElinEvalNsForm>>
+| `{elin-handler-evaluate-evaluate-namespace-form}`
+| Evaluate `ns` form in the current buffer
+
+| <<ElinAddLibspec>>
+| `{elin-handler-namespace-add-libspec}`
+| Allow selection of the available namespaces in <<Selectors>>, and add the selected one to the `ns` form.
+
+| <<ElinAddMissingLibspec>>
+| `{elin-handler-namespace-add-missing-libspec}`
+| Add the missing libspec for the symbol under the cursor to the `ns` form.
+
+|===

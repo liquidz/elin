@@ -1,0 +1,23 @@
+The plugins are tagged with the `elin-clj-plugin` topic on GitHub, so you can view the list from the following link.
+
+https://github.com/topics/elin-clj-plugin
+
+
+=== Your plugin
+
+For Vim/Neovim, it searches for `elin/plugin.edn` in the runtime path and handle the directory containing the `plugin.edn` file as a plugin.
+
+.elin/plugin.edn
+[source,clojure]
+----
+{:name "YOUR PLUGIN NAME"
+
+ ;; OPTIONAL: Your plugin configuration
+ :export {:handler { ... }
+          :interceptor { ... }}}
+----
+
+The Elin server adds to the classpath the directory containing `plugin.edn` and <<Server configuration files,applies the configurations>> defined under the `:export` key in `plugin.edn`.
+If `:export` is not defined, the Elin server only adds the directory to the classpath and takes no further action.
+
+For the actual processing, please refer to the code for handlers/interceptors in the Elin core or existing plugins.

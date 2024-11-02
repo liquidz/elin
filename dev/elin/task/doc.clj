@@ -38,6 +38,10 @@
       (str/replace #"[()]" "")
       (str/replace #"[./#]" "-")))
 
+(defn- format-command-to-key-map
+  [command-str]
+  (str command-str "-default-mapping"))
+
 (defn- into-hash-map
   [key-fn val-fn coll]
   (reduce (fn [accm x]
@@ -56,6 +60,16 @@
   (-> (help/get-grouped-lines)
       (help/parse-grouped-lines)
       (:commands)))
+
+(def ^:private command-key-mapping-dict
+  (let [grouped-lines (help/get-grouped-lines)
+        {:keys [mappings default-mappings]} (help/parse-grouped-lines grouped-lines)
+        command-to-mapping-dict (->> (reverse mappings)
+                                     (into-hash-map :command :mapping))
+        mapping-to-key-dict (->> (reverse default-mappings)
+                                 (into-hash-map :mapping :mapping-key))]
+    (update-vals command-to-mapping-dict
+                 #(get mapping-to-key-dict %))))
 
 (def ^:private handler-key-mapping-dict
   (let [grouped-lines (help/get-grouped-lines)
@@ -208,11 +222,17 @@
 
 (defn- generate-default-key-mapping-variables
   []
-  (->> handler-key-mapping-dict
-       (map (fn [[handler-symbol mapping-key]]
-              (format ":%s: %s" (format-handler-to-key-map handler-symbol) mapping-key)))
-       (str/join "\n")
-       (spit (io/file page-dir "variables.adoc"))))
+  (let [handler-to-mapping (map (fn [[handler-symbol mapping-key]]
+                                  (format ":%s: %s" (format-handler-to-key-map handler-symbol) mapping-key))
+                                handler-key-mapping-dict)
+        command-to-mapping (map (fn [[command mapping-key]]
+                                  (format ":%s: %s" (format-command-to-key-map command) mapping-key))
+                                command-key-mapping-dict)]
+
+    (->> (concat handler-to-mapping
+                 command-to-mapping)
+         (str/join "\n")
+         (spit (io/file page-dir "variables.adoc")))))
 
 (defn- generate-command-documents
   []

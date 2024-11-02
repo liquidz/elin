@@ -1,0 +1,20 @@
+There are some commands to lookup the documentation of the symbol under the cursor.
+
+[%autowidth,cols="a,a,a"]
+|===
+| Command | Default key mapping | Description
+
+| <<ElinLookup>>
+| `{elin-handler-lookup-lookup}`
+| Lookup docstring
+
+| <<ElinShowSource>>
+| `{elin-handler-lookup-show-source}`
+| Lookup source code
+
+| <<ElinShowClojureDocs>>
+| `{elin-handler-lookup-show-clojuredocs}`
+| Lookup https://clojuredocs.org/[ClojureDocs]
+
+|===
+

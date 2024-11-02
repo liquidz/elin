@@ -53,20 +53,16 @@ This project is being developed as the successor to {vim-iced} and, as same as v
 The goal of this project is to provide a server program that serves as the foundation for a Clojure development environment and its interface, enabling it to theoretically offer a Clojure development environment to any editor.
 
 
-
 == Getting Started
 include::./getting_started/index.adoc[]
-
 
 
 == Evaluation
 include::./evaluation/index.adoc[]
 
 
-
 == Completion
-TODO
-
+include::./completion/index.adoc[]
 
 
 == Formatting
@@ -76,61 +72,44 @@ The reason is that for format checks in CI, external tools such as {cljfmt}, {cl
 However, if you blocked when saving files in namespaces with large amounts of code due to the formatting entire buffer, you can use the {elin-format} plugin to format only the current form.
 
 
-
 == Navigation
-TODO
+include::./navigation/index.adoc[]
 
 
-
-== Reference
-TODO
-
-
-
-== Macro
-TODO
-
+== Lookup
+include::./lookup/index.adoc[]
 
 
 == Namespace
-TODO
-
+include::./namespace/index.adoc[]
 
 
 == Testing
-TODO
-
+include::./testing/index.adoc[]
 
 
 == ClojureScript
 include::./clojurescript/index.adoc[]
 
 
-
 == Skeleton
-TODO
+include::./skeleton/index.adoc[]
 
+
+== Debugging
+include::./debugging/index.adoc[]
 
 
 == Buffer
-=== Information buffer
-TODO
-
-=== Temporal buffer
-TODO
-
+include::./buffer/index.adoc[]
 
 
 == Configuration
 include::./configuration/index.adoc[]
 
 
-
 == Plugin
-The plugins are tagged with the `elin-clj-plugin` topic on GitHub, so you can view the list from the following link.
-
-https://github.com/topics/elin-clj-plugin
-
+include::./plugin/index.adoc[]
 
 
 == Handlers
@@ -139,8 +118,6 @@ Handlers process requests from the host editor.
 === Built-in Handlers
 include::./generated/handlers.adoc[]
 
-
-
 == Interceptors
 Interceptors intercept various processes and change their behavior.
 
@@ -148,19 +125,14 @@ Interceptors intercept various processes and change their behavior.
 include::./generated/interceptors.adoc[]
 
 
-
 == Host
 === Vim/Neovim
-
 ==== Commands
 include::./generated/commands.adoc[]
 
 
-
-== Tips
-* TODO
-** Output the clojure.tools.logging contents to information buffer
-
+// == Tips
+// include::./tips/index.adoc[]
 
 
 == Cheatsheet
