@@ -84,6 +84,25 @@
                false)))))
 
 (def skeleton
+  "Set skeleton to current new buffer.
+
+  .Mustache template variables
+  [%autowidth, cols=\"a,a\"]
+  |===
+  | Variable | Description
+
+  | `{{path}}`
+  | File path
+
+  | `{{ns}}`
+  | Inferred namespace
+
+  | `{{source-ns}}`
+  | Source file namespace (only available on test file )
+
+  | `{{test?}}`
+  | `true` if the file is test file
+  |==="
   {:kind e.c.interceptor/autocmd
    :enter (-> (fn [{:as ctx :component/keys [host]}]
                 (e/let [config (e.u.interceptor/config ctx #'skeleton)

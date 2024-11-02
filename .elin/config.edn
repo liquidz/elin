@@ -2,6 +2,6 @@
        :appenders {:spit #spit-appender {:fname "./elin-debug.log"}}}
  :interceptor {:includes [elin.interceptor.debug/interceptor-context-checking
                           elin.interceptor.debug/nrepl-debug]
-               :config-map {elin.interceptor.autocmd/skeleton {:clojure {:test #slurp "./test_template.mustache"}}}}
+               :config-map {elin.interceptor.autocmd/skeleton {:.clj {:test #slurp "./test_template.mustache"}}}}
  :handler {:config-map {elin.handler.lookup/lookup {:interceptor {:includes [elin.interceptor.optional.nrepl/malli-lookup]}}}}
  :env {:cwd "."}}
