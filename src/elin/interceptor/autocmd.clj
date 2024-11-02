@@ -88,17 +88,15 @@
    :enter (-> (fn [{:as ctx :component/keys [host]}]
                 (e/let [config (e.u.interceptor/config ctx #'skeleton)
                         path (async/<!! (e.p.host/get-current-file-path! host))
+                        ext (e.u.file/get-file-extension path)
                         ns-str (or (e.f.n.namespace/guess-namespace-from-path path)
                                    ;; TODO fallback to another process
                                    (e/fault))
-                        ;; TODO cljs, cljc support
-                        lang "clojure"
                         test? (str/ends-with? ns-str "-test")
-                        template (or (get-in config [(keyword lang) (if test? :test :src)])
+                        template (or (get-in config [(keyword ext) (if test? :test :src)])
                                      (e/not-found))
                         params (cond-> {:path path
                                         :ns ns-str
-                                        :lang lang
                                         :test? test?}
                                  test?
                                  (assoc :source-ns (str/replace ns-str #"-test$" "")))
