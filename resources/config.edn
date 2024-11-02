@@ -9,9 +9,13 @@
  :interceptor {:uses [elin.interceptor.autocmd/deinitialize {}
                       elin.interceptor.autocmd/switch-connection {}
                       elin.interceptor.autocmd/ns-load {}
-                      elin.interceptor.autocmd/skeleton {;; NOTE {lang {:src "skeleton for source" :test "skeleton for test"}}
-                                                         :clojure {:src #resource "template/clojure_src_skeleton.mustache"
-                                                                   :test #resource "template/clojure_test_skeleton.mustache"}}
+                      elin.interceptor.autocmd/skeleton {;; NOTE {extension {:src "skeleton for source" :test "skeleton for test"}}
+                                                         :.clj {:src #resource "template/clj_src_skeleton.mustache"
+                                                                :test #resource "template/clj_test_skeleton.mustache"}
+                                                         :.cljs {:src #resource "template/clj_src_skeleton.mustache"
+                                                                 :test #resource "template/cljs_test_skeleton.mustache"}
+                                                         :.cljc {:src #resource "template/clj_src_skeleton.mustache"
+                                                                 :test #resource "template/cljc_test_skeleton.mustache"}}
                       elin.interceptor.autocmd/clj-kondo-analyzing {}
                       elin.interceptor.connect/connected {}
                       elin.interceptor.connect/raw-message-channel {}
