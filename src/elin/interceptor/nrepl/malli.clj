@@ -1,4 +1,4 @@
-(ns elin.interceptor.optional.nrepl
+(ns elin.interceptor.nrepl.malli
   (:require
    [clojure.edn :as edn]
    [clojure.pprint :as pp]
@@ -122,9 +122,8 @@
             (add-indent 9)
             (str/trim))))
 
-(def malli-lookup
+(def lookup-schema
   {:kind e.c.interceptor/nrepl
-   :optional true
    :leave (-> (fn [{:as ctx :component/keys [nrepl] :keys [response]}]
                 (try
                   (let [{ns-str :ns var-str :name} (first response)

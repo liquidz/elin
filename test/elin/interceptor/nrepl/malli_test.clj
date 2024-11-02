@@ -1,15 +1,15 @@
-(ns elin.interceptor.optional.nrepl-test
+(ns elin.interceptor.nrepl.malli-test
   (:require
    [clojure.string :as str]
    [clojure.test :as t]
    [elin.constant.nrepl :as e.c.nrepl]
-   [elin.interceptor.optional.nrepl :as sut]
+   [elin.interceptor.nrepl.malli :as sut]
    [elin.test-helper :as h]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 
 (t/deftest malli-lookup-test
-  (let [leave-malli-lookup (:leave sut/malli-lookup)
+  (let [leave-malli-lookup (:leave sut/lookup-schema)
         base-ctx {:request {:op e.c.nrepl/info-op}}
         generate-context (fn [function-schema]
                            (-> (h/nrepl-eval-config (constantly (pr-str function-schema)))
