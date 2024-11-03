@@ -15,5 +15,6 @@ Elin provides the following commands for namespace operations.
 | <<ElinAddMissingLibspec>>
 | `{elin-handler-namespace-add-missing-libspec}`
 | Add the missing libspec for the symbol under the cursor to the `ns` form.
+If there are multiple candidates, <<Selectors,selectors>> will be used to select one.
 
 |===

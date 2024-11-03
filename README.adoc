@@ -3,7 +3,7 @@
 +++
 <blockquote>
   <p>Joeun smiled. “Elin, the wild apple that grows in the mountains. What a nice name.”</p>
-  <footer>—Nahoko Uehashi, <cite>The Beast Player</cite></footer>
+  <footer>—Nahoko Uehashi, <cite><a href="https://en.wikipedia.org/wiki/The_Beast_Player" target="_blank">The Beast Player</a></footer>
 </blockquote>
 +++
 

@@ -5,16 +5,35 @@ There are some commands to lookup the documentation of the symbol under the curs
 | Command | Default key mapping | Description
 
 | <<ElinLookup>>
-| `{elin-handler-lookup-lookup}`
+| `{ElinLookup-default-mapping}`
 | Lookup docstring
 
 | <<ElinShowSource>>
-| `{elin-handler-lookup-show-source}`
+| `{ElinShowSource-default-mapping}`
 | Lookup source code
 
 | <<ElinShowClojureDocs>>
-| `{elin-handler-lookup-show-clojuredocs}`
+| `{ElinShowClojureDocs-default-mapping}`
 | Lookup https://clojuredocs.org/[ClojureDocs]
 
 |===
 
+=== Lookup results
+
+By default, the results of <<ElinLookup>> and <<ElinShowSource>> are shown in a <<_interceptor_handlershow_result_as_popup,popup>>,
+and  the results of <<ElinShowClojureDocs>> are shown in <<_interceptor_handlerappend_result_to_info_buffer,information buffer and temporal buffer>>.
+
+The result format is defined by configuration file as a https://mustache.github.io[mustache] format.
+
+[%autowidth, cols="a,a"]
+|===
+| Command | Template
+
+| <<ElinLookup>>
+| * https://github.com/liquidz/elin/blob/main/resources/template/lookup_clojure.mustache[Clojure docstring]
+* https://github.com/liquidz/elin/blob/main/resources/template/lookup_java.mustache[Java document]
+
+| <<ElinShowClojureDocs>>
+| * https://github.com/liquidz/elin/blob/main/resources/template/clojuredocs.mustache[ClojureDocs]
+
+|===

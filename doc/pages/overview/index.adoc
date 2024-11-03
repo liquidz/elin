@@ -1,0 +1,12 @@
+https://github.com/liquidz/elin[Elin] is a Clojure development environment, primarily written in https://babashka.org[Babashka].
+
+This project is being developed as the successor to {vim-iced} and, as same as vim-iced, is heavily inspired by {CIDER}.
+
+The goal of this project is to provide a server program that serves as the foundation for a Clojure development environment and its interface, enabling it to theoretically offer a Clojure development environment to any editor.
+
++++
+<blockquote>
+  <p>Joeun smiled. “Elin, the wild apple that grows in the mountains. What a nice name.”</p>
+  <footer>—Nahoko Uehashi, <cite><a href="https://en.wikipedia.org/wiki/The_Beast_Player" target="_blank">The Beast Player</a></cite></footer>
+</blockquote>
++++
