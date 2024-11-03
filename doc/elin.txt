@@ -5,44 +5,11 @@ Author : Masashi Iizuka <liquidz.uo+vim@gmail.com>
 License: MIT LICENSE
 
 ==============================================================================
+CONTENTS                                                         *elin-contents*
 
-
-Configuration file
-
-User configuration
-
-- $XDG_CONFIG_HOME/elin/config.edn
-- $HOME/.config/elin/config.edn
-  
-Project local configuration
-
-- .elin/config.edn
-
-
-Example configuration
->
-  nnoremap <buffer> <Leader>'     <Cmd>call elin#notify('elin.handler.connect/connect', [])<CR>
-  nnoremap <buffer> <Leader>et    <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-top-list', [])<CR>
-  nnoremap <buffer> <Leader>ee    <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-list', [])<CR>
-  nnoremap <buffer> <Leader>ei    <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-expr', [])<CR>
-  nnoremap <buffer> <Leader>en    <Cmd>call elin#notify('elin.handler.evaluate/evaluate-namespace-form', [])<CR>
-  nnoremap <buffer> <Leader>eb    <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-buffer', [])<CR>
-  
-  nnoremap <buffer> <Leader>epe   <Cmd>call elin#notify('elin.handler.evaluate/evaluate-current-list', [], {'config': '{:interceptor {:includes [[elin.interceptor.optional.evaluate/wrap-eval-code-interceptor "println"]]}}'})<CR>
-  
-  nnoremap <buffer> <Leader>ran   <Cmd>call elin#notify('elin.handler.namespace/add-libspec', [])<CR>
-  nnoremap <buffer> <Leader>ram   <Cmd>call elin#notify('elin.handler.namespace/add-missing-libspec', [])<CR>
-  
-  nnoremap <buffer> <C-]>         <Cmd>call elin#notify('elin.handler.navigate/jump-to-definition', [])<CR>
-  nnoremap <buffer> K             <Cmd>call elin#notify('elin.handler.lookup/lookup', [])<CR>
-  nnoremap <buffer> <Leader>hs    <Cmd>call elin#notify('elin.handler.lookup/show-source', [])<CR>
-  nnoremap <buffer> <Leader>tt    <Cmd>call elin#notify('elin.handler.test/run-test-under-cursor', [])<CR>
-  nnoremap <buffer> tt            <Cmd>call elin#notify('elin.handler.navigate/cycle-source-and-test', [])<CR>
-  nnoremap <buffer> <Leader>ss    <Cmd>call elin#internal#buffer#info#toggle()<CR>
-  nnoremap <buffer> <Leader>sl    <Cmd>call elin#internal#buffer#info#clear()<CR>
-  nnoremap <buffer> <Leader><Esc> <Cmd>call elin#internal#virtual_text#clear()<CR>
-  nnoremap <buffer> <Leader>go    <Cmd>echo elin#notify('elin.handler.evaluate/evaluate', ['(elin.dev/go)'])<CR>
-<
+  Commands                                                       |elin-commands|
+  Mappings                                                       |elin-mappings|
+  Default mappings                                       |elin-default-mappings|
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:
