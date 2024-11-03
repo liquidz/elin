@@ -11,17 +11,19 @@ A Clojure development environment for Vim/Neovim and more!, primarily written in
 
 image:https://github.com/liquidz/elin/workflows/test/badge.svg["GitHub Actions for test workflow", link="https://github.com/liquidz/elin/actions?query=workflow%3Atest"]
 
-== 🌱 Requirements
-
-* https://github.com/vim/vim[Vim] v9.1 or later, https://github.com/neovim/neovim[Neovim] v0.9.5 or later
-* https://github.com/babashka/babashka[Babashka] v1.3.189 or later
-* https://github.com/clj-kondo/clj-kondo[Clj-kondo] (Optional but highly recommended)
-
 == 🤖 Work in progress
 
 This project is a work in progress. The APIs and behaviors are not stable and may change in the future.
 
-See link:./doc/elin.txt[help] for example configurations.
+== 🌱 Requirements
+
+* https://github.com/vim/vim[Vim] v9.1 or later, https://github.com/neovim/neovim[Neovim] v0.10.0 or later
+* https://github.com/babashka/babashka[Babashka] v1.12.194 or later
+* https://github.com/clj-kondo/clj-kondo[Clj-kondo] (Optional but highly recommended)
+
+== 📗 Documentation
+
+* https://liquidz.github.io/elin/
 
 == 🍃 Related works
 
