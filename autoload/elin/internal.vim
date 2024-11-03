@@ -33,6 +33,9 @@ function! elin#internal#jump(path, lnum, col, jump_cmd) abort
     call cursor(a:lnum, a:col)
     normal! zz
   endif
+  if ! has('nvim')
+    redraw
+  endif
   return v:true
 endfunction
 
