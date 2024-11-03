@@ -83,10 +83,13 @@
                        :task (clojure {:dir "doc/pages"}
                                       "-Sdeps '{:paths [\"src\"] :deps {org.asciidoctor/asciidoctorj {:mvn/version \"RELEASE\"} com.nextjournal/beholder {:mvn/version \"RELEASE\"}}}' -M -m watch")}
 
+  check-documents {:doc "Check documents"
+                   :extra-paths ["dev"]
+                   :task (exec 'elin.task.check-documents/-main)}
+
   check {:doc "Check all"
          :depends [clj-kondo-emit generate-test-analysis generate-deps-edn generate-vim-help
-                   lint format-check test]}
-
+                   check-documents lint format-check test]}
 
   outdated {:doc "Check outdated dependencies"
             :task (clojure "-Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -M -m antq.core --upgrade --skip=clojure-cli")}}}
