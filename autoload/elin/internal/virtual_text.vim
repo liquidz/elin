@@ -10,7 +10,7 @@ function! elin#internal#virtual_text#set(text, ...) abort
   let id = s:set(bufnr, a:text, lnum, hl, align)
 
   if close_after > 0
-    call timer_start(close_after, {-> elin#internal#virtual_text#clear({'bufnr': bufnr, 'lnum': lnum})})
+    call timer_start(close_after, {-> elin#internal#virtual_text#clear({'bufnr': bufnr, 'id': id})})
   endif
 
   return id
@@ -26,9 +26,12 @@ function! elin#internal#virtual_text#clear(...) abort
   let opt = get(a:, 1, {})
   let bufnr = get(opt, 'bufnr', bufnr('%'))
   let lnum = get(opt, 'lnum', v:null)
+  let id = get(opt, 'id', v:null)
 
-  if lnum is# v:null
+  if lnum is# v:null && id is# v:null
     return s:clear(bufnr, 1, line('$'))
+  elseif id isnot# v:null
+    return s:clear_by_id(bufnr, id)
   else
     return s:clear(bufnr, lnum, lnum + 1)
   endif
@@ -55,6 +58,10 @@ if has('nvim')
 
   function! s:clear(bufnr, start_lnum, end_lnum) abort
     return nvim_buf_clear_namespace(a:bufnr, s:namespace, a:start_lnum - 1, a:end_lnum - 1)
+  endfunction
+
+  function! s:clear_by_id(bufnr, id) abort
+    return nvim_buf_del_extmark(a:bufnr, s:namespace, a:id)
   endfunction
 
 
@@ -90,4 +97,12 @@ else
           \ }, a:start_lnum, a:end_lnum)
   endfunction
 
+  function! s:clear_by_id(bufnr, id) abort
+    return prop_remove({
+          \ 'type': s:textprop_type,
+          \ 'bufnr': a:bufnr,
+          \ 'all': v:true,
+          \ 'id': a:id,
+          \ })
+  endfunction
 endif
