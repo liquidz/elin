@@ -44,7 +44,8 @@
   [elin]
   (e/->> {:middleware (evaluate-interceptor-middleware elin)}
          (e.f.evaluate/evaluate-current-top-list elin)
-         (:response)))
+         (:response)
+         (:value)))
 
 (m/=> evaluate-current-list [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-list
@@ -52,7 +53,8 @@
   [elin]
   (e/->> {:middleware (evaluate-interceptor-middleware elin)}
          (e.f.evaluate/evaluate-current-list elin)
-         (:response)))
+         (:response)
+         (:value)))
 
 (m/=> evaluate-current-expr [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-expr
@@ -60,7 +62,8 @@
   [elin]
   (e/->> {:middleware (evaluate-interceptor-middleware elin)}
          (e.f.evaluate/evaluate-current-expr elin)
-         (:response)))
+         (:response)
+         (:value)))
 
 (m/=> evaluate-namespace-form [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-namespace-form
@@ -68,7 +71,8 @@
   [elin]
   (e/->> {:middleware (evaluate-interceptor-middleware elin)}
          (e.f.evaluate/evaluate-namespace-form elin)
-         (:response)))
+         (:response)
+         (:value)))
 
 (defn evaluate-at-mark
   "Evaluate top list at mark."
@@ -76,7 +80,8 @@
   (let [[mark-id] (:params message)]
     (e/->> {:middleware (evaluate-interceptor-middleware elin)}
            (e.f.evaluate/evaluate-at-mark elin mark-id)
-           (:response))))
+           (:response)
+           (:value))))
 
 (m/=> evaluate-current-buffer [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate-current-buffer
