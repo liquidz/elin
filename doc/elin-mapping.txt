@@ -192,6 +192,16 @@ ElinClearVirtualTexts
   Calls `elin#internal#virtual_text#clear()`.
   Key is mapped to |<Plug>(elin_clear_virtual_texts)|.
 
+                                                            *ElinEnableDebugLog*
+ElinEnableDebugLog
+  Calls `elin.handler.debug/enable-debug-log` handler.
+  Key is mapped to |null|.
+
+                                                           *ElinDisableDebugLog*
+ElinDisableDebugLog
+  Calls `elin.handler.debug/disable-debug-log` handler.
+  Key is mapped to |null|.
+
 ------------------------------------------------------------------------------
 MAPPINGS                                                         *elin-mappings*
 
