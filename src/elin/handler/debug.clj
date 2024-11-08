@@ -24,3 +24,19 @@
           (e.u.nrepl/merge-messages)
           (pr-str)
           (->> (e.p.host/echo-message host)))))
+
+(defn- information-buffer-appender
+  [{:component/keys [host]}]
+  {:enabled? true
+   :fn (fn [{:keys [output_]}]
+         (spit "/tmp/foo.txt" (str (pr-str (force output_) "\n\n"))
+               :append true)
+         (e.p.host/append-to-info-buffer host (force output_)))})
+
+(defn enable-debug-log
+  [elin]
+  (timbre/swap-config! #(update % :appenders assoc :information-buffer (information-buffer-appender elin))))
+
+(defn disable-debug-log
+  [_]
+  (timbre/swap-config! #(update % :appenders dissoc :information-buffer)))
