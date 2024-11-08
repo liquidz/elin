@@ -134,6 +134,10 @@ command! ElinCycleSourceAndTest call elin#notify('elin.handler.navigate/cycle-so
 command! ElinToggleInfoBuffer call elin#internal#buffer#info#toggle()
 command! ElinClearInfoBuffer call elin#internal#buffer#info#clear()
 command! ElinClearVirtualTexts call elin#internal#virtual_text#clear()
+
+" Develop
+command! ElinEnableDebugLog call elin#notify('elin.handler.debug/enable-debug-log', [])
+command! ElinDisableDebugLog call elin#notify('elin.handler.debug/disable-debug-log', [])
 " }}}
 
 " Mappings {{{
