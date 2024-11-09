@@ -21,6 +21,12 @@ function! elin#request(...) abort
   return call(function('elin#internal#rpc#request'), [conn] + a:000)
 endfunction
 
+function! elin#request_async(handler_name, args, callback) abort
+  let id = elin#callback#register(a:callback)
+  let config = printf('{:interceptor {:uses [elin.interceptor.handler/callback {:id "%s"}]}}', id)
+  return elin#notify(a:handler_name, a:args, {'config': config})
+endfunction
+
 function! elin#ready() abort
   for q in s:queue
     if q.type ==# 'notify'
