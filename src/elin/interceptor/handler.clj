@@ -66,3 +66,11 @@
                         (.mkdirs (.getParentFile (io/file path')))
                         (async/<!! (e.p.host/jump! host path' lnum col)))))))
               (ix/discard))})
+
+(def callback
+  "Interceptor to callback handler result."
+  {:kind e.c.interceptor/handler
+   :leave (-> (fn [{:as ctx :component/keys [host] :keys [response]}]
+                (let [{:keys [id]} (e.u.interceptor/config ctx #'callback)]
+                  (e.p.host/on-callback host id [response])))
+              (ix/discard))})
