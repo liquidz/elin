@@ -3,7 +3,8 @@
   Notify functions should not be suffixed with `!`.")
 
 (defprotocol IEvent
-  (on-connect [this]))
+  (on-connect [this])
+  (on-callback [this id args]))
 
 (defprotocol IIo
   (echo-text

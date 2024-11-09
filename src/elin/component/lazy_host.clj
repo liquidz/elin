@@ -87,6 +87,12 @@
               :method e.p.host/on-connect
               :args []
               :queue host-channel}))
+  (on-callback [_ id args]
+    (execute {:host @host-store
+              :protocol e.p.host/IEvent
+              :method e.p.host/on-callback
+              :args [id args]
+              :queue host-channel}))
   ;; }}}
 
   e.p.host/ISign ; {{{
