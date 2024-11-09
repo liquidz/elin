@@ -116,37 +116,41 @@
       true))
 
   (notify [this msg]
-    (if-let [client (e.p.nrepl/current-client this)]
-      (async/go
-        (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
-          (-> {:component/host lazy-host
-               :component/interceptor interceptor
-               :component/session-storage session-storage
-               :component/clj-kondo clj-kondo
-               :component/nrepl this
-               :request msg}
-              (intercept
-               (fn [{:as ctx :keys [request]}]
-                 (assoc ctx :response (e.p.nrepl/notify client request))))
-              (:response))))
-      (e/unavailable {:message "Not connected"})))
+    (let [client (e.p.nrepl/current-client this)]
+      (if (and client
+               (not (e.p.nrepl/disconnected? client)))
+        (async/go
+          (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
+            (-> {:component/host lazy-host
+                 :component/interceptor interceptor
+                 :component/session-storage session-storage
+                 :component/clj-kondo clj-kondo
+                 :component/nrepl this
+                 :request msg}
+                (intercept
+                 (fn [{:as ctx :keys [request]}]
+                   (assoc ctx :response (e.p.nrepl/notify client request))))
+                (:response))))
+        (e/unavailable {:message "Not connected"}))))
 
   (request [this msg]
-    (if-let [client (e.p.nrepl/current-client this)]
-      (async/go
-        (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
-          (-> {:component/host lazy-host
-               :component/interceptor interceptor
-               :component/session-storage session-storage
-               :component/clj-kondo clj-kondo
-               :component/nrepl this
-               :request msg}
-              (intercept
-               (fn [{:as ctx :keys [request]}]
-                 (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
-              (:response))))
-      (async/go
-        (e/unavailable {:message "Not connected"})))))
+    (let [client (e.p.nrepl/current-client this)]
+      (if (and client
+               (not (e.p.nrepl/disconnected? client)))
+        (async/go
+          (let [intercept #(apply e.p.interceptor/execute interceptor e.c.interceptor/nrepl %&)]
+            (-> {:component/host lazy-host
+                 :component/interceptor interceptor
+                 :component/session-storage session-storage
+                 :component/clj-kondo clj-kondo
+                 :component/nrepl this
+                 :request msg}
+                (intercept
+                 (fn [{:as ctx :keys [request]}]
+                   (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
+                (:response))))
+        (async/go
+          (e/unavailable {:message "Not connected"}))))))
 
 (defn new-nrepl
   [config]
