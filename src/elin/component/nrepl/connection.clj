@@ -8,12 +8,11 @@
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.id :as e.u.id]
    [elin.util.nrepl :as e.u.nrepl]
-   [malli.core :as m])
+   [malli.core :as m]
+   [taoensso.timbre :as timbre])
   (:import
    java.io.PushbackInputStream
-   (java.net
-    Socket
-    SocketException)))
+   java.net.Socket))
 
 (m/=> bytes->str [:=> [:cat any?] e.schema/?NotBytes])
 (defn- bytes->str
@@ -133,7 +132,9 @@
                 msg (format-message v)]
             (swap! response-manager process-message msg)
             (async/put! raw-message-channel msg))
-          (catch SocketException _ nil))
+          (catch Exception ex
+            (timbre/debug "Error occured on bencode reading loop" (ex-message ex))
+            (.close sock)))
         (when-not (.isClosed sock)
           (recur)))
 
