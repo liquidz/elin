@@ -39,15 +39,32 @@ function! elin#ready() abort
 endfunction
 
 function! elin#intercept_notify(...) abort
-  if elin#server#connection() is# v:null
+  if !elin#server#is_connected()
     return v:null
   endif
   return elin#notify('elin.handler.internal/intercept', a:000)
 endfunction
 
 function! elin#intercept_request(...) abort
-  if elin#server#connection() is# v:null
+  if !elin#server#is_connected()
     return v:null
   endif
   return elin#request('elin.handler.internal/intercept', a:000)
+endfunction
+
+function! s:update_status_text(resp) abort
+  let g:elin#status_text = a:resp
+endfunction
+
+function! elin#status() abort
+  try
+    if !elin#server#is_connected()
+      return ''
+    endif
+
+    call elin#request_async('elin.handler.internal/status', [], funcref('s:update_status_text'))
+    return g:elin#status_text
+  catch
+    return ''
+  endtry
 endfunction
