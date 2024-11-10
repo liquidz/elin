@@ -54,6 +54,10 @@ There are some <<Plugin>> that can be used with Elin.
 | Completion source
 | https://github.com/liquidz/elin-coc-source
 
+| nvim-cmp
+| Completion source
+| https://github.com/liquidz/elin-cmp-source
+
 | telescope.nvim
 | File selector
 | https://github.com/liquidz/elin-telescope.nvim
