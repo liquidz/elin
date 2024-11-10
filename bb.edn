@@ -87,6 +87,9 @@
                    :extra-paths ["dev"]
                    :task (exec 'elin.task.check-documents/-main)}
 
+  update-changelog {:doc "Update CHANGELOG.adoc"
+                    :task (shell "git cliff -o CHANGELOG.adoc")}
+
   check {:doc "Check all"
          :depends [clj-kondo-emit generate-test-analysis generate-deps-edn generate-vim-help
                    check-documents lint format-check test]}
