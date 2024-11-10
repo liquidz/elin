@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This change
 - Add on-callback method to IEvent protocol
 - Add elin.interceptor.handler/callback
 - Add elin#request_async vim function
+- Add elin#status function for vim
 
 === Changed
 
