@@ -63,3 +63,4 @@ jobs:
           git config --global user.name "github-actions"
           git add CHANGELOG.adoc
           git commit -m "Update CHANGELOG" || exit 0
+          git push
