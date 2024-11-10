@@ -61,5 +61,5 @@ jobs:
           git diff
           git config --global user.email "github-actions@example.com"
           git config --global user.name "github-actions"
-          git add -A
+          git add CHANGELOG.adoc
           git commit -m "Update CHANGELOG" || exit 0
