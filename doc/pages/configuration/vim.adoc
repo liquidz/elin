@@ -42,6 +42,24 @@ Therefore, you can use your preferred plugin to modify the behavior of `vim.ui.s
 * https://github.com/nvim-telescope/telescope-ui-select.nvim
 ====
 
+
+==== Status line
+
+`elin#status` function returns the nREPL connection status text, and you can use it in the https://vim-jp.org/vimdoc-en/windows.html#status-line[status line].
+
+.e.g. https://github.com/itchyny/lightline.vim[lightline.vim]
+[source,vim]
+----
+let g:lightline = {
+      \   'tabline': {
+      \     'right': [['filetype', 'bufnum' ], ['elin'] ]
+      \   },
+      \   'component_function': {
+      \     'elin': 'elin#status#get',
+      \   },
+      \ }
+----
+
 ==== Integration with other plugins
 
 There are some <<Plugin>> that can be used with Elin.
