@@ -55,7 +55,7 @@ let g:lightline = {
       \     'right': [['filetype', 'bufnum' ], ['elin'] ]
       \   },
       \   'component_function': {
-      \     'elin': 'elin#status#get',
+      \     'elin': 'elin#status',
       \   },
       \ }
 ----
