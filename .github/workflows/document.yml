@@ -40,3 +40,26 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  changelog:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: orhun/git-cliff-action@v3
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.adoc
+          GITHUB_REPO: ${{ github.repository }}
+
+      - run: |
+          git diff
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "github-actions"
+          git add -A
+          git commit -m "Update CHANGELOG" || exit 0
