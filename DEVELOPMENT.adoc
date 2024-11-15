@@ -16,3 +16,7 @@
 == Type checking
 
 * Type checking with https://github.com/metosin/malli[malli] is enabled by default.
+
+== Code formatting
+
+* https://github.com/oakmac/standard-clojure-style-js[Standard Clojure Style] is used for code formatting.
