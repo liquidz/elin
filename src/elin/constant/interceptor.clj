@@ -15,4 +15,4 @@
 (def test-result ::test-result)
 (def quickfix ::quickfix)
 (def debug ::debug)
-(def code-change ::code-change)
+(def modify-code ::modify-code)
