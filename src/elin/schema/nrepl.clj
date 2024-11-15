@@ -3,11 +3,9 @@
    [elin.schema :as e.schema]
    [malli.util :as m.util])
   (:import
-   clojure.lang.Atom
-   (java.io
-    OutputStream
-    PushbackInputStream)
-   java.net.Socket))
+   (clojure.lang Atom)
+   (java.io OutputStream PushbackInputStream)
+   (java.net Socket)))
 
 (def ?Message
   [:map-of keyword? any?])
@@ -44,9 +42,9 @@
 
 (def ?PortFile
   (m.util/merge
-   [:map [:port int?]]
-   (-> ?Client
-       (m.util/select-keys [:port-file :language]))))
+    [:map [:port int?]]
+    (-> ?Client
+        (m.util/select-keys [:port-file :language]))))
 
 (def ?Lookup
   [:map
@@ -118,12 +116,12 @@
     [:ns string?]
     [:var string?]]
    (m.util/merge
-    [:map
-     [:result [:enum :failed]]
-     [:ns string?]
-     [:var string?]
-     [:filename string?]
-     [:text string?]
-     [:expected string?]
-     [:lnum {:optional true} int?]]
-    ?TestActualValue)])
+     [:map
+      [:result [:enum :failed]]
+      [:ns string?]
+      [:var string?]
+      [:filename string?]
+      [:text string?]
+      [:expected string?]
+      [:lnum {:optional true} int?]]
+     ?TestActualValue)])

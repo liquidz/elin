@@ -29,6 +29,6 @@
 
   (t/testing "no namespace"
     (t/is (e/not-found?
-           (sut/get-namespace (get-namespace-elin "(foo)"))))
+            (sut/get-namespace (get-namespace-elin "(foo)"))))
     (t/is (e/not-found?
-           (sut/get-namespace (get-namespace-elin ""))))))
+            (sut/get-namespace (get-namespace-elin ""))))))

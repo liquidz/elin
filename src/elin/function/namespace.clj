@@ -86,11 +86,11 @@
   (let [class-name-sym (symbol sym-str)]
     (->> java-classes
          (reduce-kv
-          (fn [res pkg class-set]
-            (if (contains? class-set class-name-sym)
-              (conj res (symbol (str (name pkg) "." class-name-sym)))
-              res))
-          [])
+           (fn [res pkg class-set]
+             (if (contains? class-set class-name-sym)
+               (conj res (symbol (str (name pkg) "." class-name-sym)))
+               res))
+           [])
          (distinct)
          (map #(hash-map :name % :type :class)))))
 

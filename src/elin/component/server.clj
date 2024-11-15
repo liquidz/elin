@@ -21,7 +21,7 @@
    [elin.protocol.lazy-host :as e.p.lazy-host]
    [taoensso.timbre :as timbre])
   (:import
-   java.net.ServerSocket))
+   (java.net ServerSocket)))
 
 (defn on-accept
   [handler lazy-host {:keys [message host]}]

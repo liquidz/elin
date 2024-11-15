@@ -65,13 +65,13 @@
                     (assoc :hostname host
                            :port port))]
     (e.p.interceptor/execute
-     interceptor e.c.interceptor/disconnect context
-     (fn [{:as ctx :component/keys [nrepl] :keys [hostname port]}]
-       (if-let [client' (e.p.nrepl/get-client nrepl hostname port)]
-         (if (e.p.nrepl/remove-client! nrepl client')
-           (assoc ctx :responce true)
-           (assoc ctx :error (e/fault)))
-         (assoc ctx :error (e/not-found)))))))
+      interceptor e.c.interceptor/disconnect context
+      (fn [{:as ctx :component/keys [nrepl] :keys [hostname port]}]
+        (if-let [client' (e.p.nrepl/get-client nrepl hostname port)]
+          (if (e.p.nrepl/remove-client! nrepl client')
+            (assoc ctx :responce true)
+            (assoc ctx :error (e/fault)))
+          (assoc ctx :error (e/not-found)))))))
 
 (m/=> client-identifier [:=> [:cat e.s.nrepl/?Client] string?])
 (defn client-identifier

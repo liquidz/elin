@@ -11,29 +11,29 @@
   (t/testing "src"
     (t/is (= "/path/to/test/foo/bar/baz_test.clj"
              (sut/get-cycled-namespace-path
-              {:ns "foo.bar.baz"
-               :path "/path/to/src/foo/bar/baz.clj"
-               :file-separator "/"}))))
+               {:ns "foo.bar.baz"
+                :path "/path/to/src/foo/bar/baz.clj"
+                :file-separator "/"}))))
 
   (t/testing "test"
     (t/is (= "/path/to/src/foo/bar/baz.clj"
              (sut/get-cycled-namespace-path
-              {:ns "foo.bar.baz-test"
-               :path "/path/to/test/foo/bar/baz_test.clj"
-               :file-separator "/"}))))
+               {:ns "foo.bar.baz-test"
+                :path "/path/to/test/foo/bar/baz_test.clj"
+                :file-separator "/"}))))
 
   (t/testing "another dir"
     (t/is (= "/path/to/foo/bar/baz_test.clj"
              (sut/get-cycled-namespace-path
-              {:ns "foo.bar.baz"
-               :path "/path/to/foo/bar/baz.clj"
-               :file-separator "/"})))
+               {:ns "foo.bar.baz"
+                :path "/path/to/foo/bar/baz.clj"
+                :file-separator "/"})))
 
     (t/is (= "/path/to/foo/bar/baz.clj"
              (sut/get-cycled-namespace-path
-              {:ns "foo.bar.baz-test"
-               :path "/path/to/foo/bar/baz_test.clj"
-               :file-separator "/"})))))
+               {:ns "foo.bar.baz-test"
+                :path "/path/to/foo/bar/baz_test.clj"
+                :file-separator "/"})))))
 
 (t/deftest guess-namespace-from-path-test
   (t/testing "src"

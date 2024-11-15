@@ -60,12 +60,12 @@
 (defn- unify-plugins
   [plugins]
   (reduce
-   (fn [accm {:keys [export]}]
-     (cond-> accm
-       export
-       (update :export e.config/merge-configs export)))
-   {:name (str ::plugin)}
-   plugins))
+    (fn [accm {:keys [export]}]
+      (cond-> accm
+        export
+        (update :export e.config/merge-configs export)))
+    {:name (str ::plugin)}
+    plugins))
 
 (defrecord Plugin
   [;; COMPONENTS

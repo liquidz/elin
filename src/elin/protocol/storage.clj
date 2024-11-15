@@ -1,5 +1,5 @@
 (ns elin.protocol.storage
-  (:refer-clojure :exclude [set get contains?]))
+  (:refer-clojure :exclude [contains? get set]))
 
 (defprotocol IStorage
   (set [this k v] [this k v expire-seconds])

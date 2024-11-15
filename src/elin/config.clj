@@ -11,7 +11,7 @@
    [malli.transform :as mt]
    [taoensso.timbre :as timbre])
   (:import
-   java.net.ServerSocket))
+   (java.net ServerSocket)))
 
 (defmethod aero/reader 'empty-port
   [_opts _tag _value]
@@ -40,7 +40,7 @@
 
 (def ^:private config-transformer
   (mt/transformer
-   mt/default-value-transformer))
+    mt/default-value-transformer))
 
 (m/=> merge-configs [:function
                      [:=> [:cat [:maybe map?] [:maybe map?]] map?]
@@ -71,7 +71,6 @@
                 c2)))
   ([c1 c2 & more-configs]
    (reduce merge-configs (or c1 {}) (cons c2 more-configs))))
-
 
 (defn- configure-handler*
   [base-handler-config target-handler-config]
@@ -104,29 +103,29 @@
   [uses]
   (->> (partition 2 uses)
        (reduce
-        (fn [accm [k v]]
-          (cond-> (update accm :includes conj k)
-            (seq v)
-            (update :config-map assoc k v)))
-        {:includes [] :config-map {}})))
+         (fn [accm [k v]]
+           (cond-> (update accm :includes conj k)
+             (seq v)
+             (update :config-map assoc k v)))
+         {:includes [] :config-map {}})))
 
 (defn configure-handler
   [base-handler-config target-handler-config]
   (configure-handler*
-   base-handler-config
-   (if-let [expanded (some-> (:uses target-handler-config)
-                             (expand-uses))]
-     (configure-handler* expanded (dissoc target-handler-config :uses))
-     target-handler-config)))
+    base-handler-config
+    (if-let [expanded (some-> (:uses target-handler-config)
+                              (expand-uses))]
+      (configure-handler* expanded (dissoc target-handler-config :uses))
+      target-handler-config)))
 
 (defn configure-interceptor
   [base-interceptor-config target-interceptor-config]
   (configure-interceptor*
-   base-interceptor-config
-   (if-let [expanded (some-> (:uses target-interceptor-config)
-                             (expand-uses))]
-     (configure-interceptor* expanded (dissoc target-interceptor-config :uses))
-     target-interceptor-config)))
+    base-interceptor-config
+    (if-let [expanded (some-> (:uses target-interceptor-config)
+                              (expand-uses))]
+      (configure-interceptor* expanded (dissoc target-interceptor-config :uses))
+      target-interceptor-config)))
 
 (defn expand-config
   [{:as config :keys [handler interceptor]}]

@@ -1,7 +1,5 @@
 (ns elin.error
-  (:refer-clojure :exclude [let
-                            ->
-                            ->>]))
+  (:refer-clojure :exclude [-> ->> let]))
 
 (def ^:private unavailable-type ::unavailable)
 (def ^:private interrupted-type ::interrupted)
@@ -152,7 +150,7 @@
 
 (defn error-or [& vs]
   (some
-   #(when (and %
-               (not (error? %)))
-      %)
-   vs))
+    #(when (and %
+                (not (error? %)))
+       %)
+    vs))

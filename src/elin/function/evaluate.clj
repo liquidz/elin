@@ -57,7 +57,6 @@
                     (assoc :ns ns-str))]
      (eval!! nrepl code (merge options params)))))
 
-
 (defn evaluate-current-list
   ([elin]
    (evaluate-current-list elin {}))

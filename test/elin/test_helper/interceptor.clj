@@ -8,6 +8,6 @@
   (let [host (h.host/test-host (merge {:handler identity}
                                       (or (:lazy-host option) {})))]
     (e.c.interceptor/new-interceptor
-     {:interceptor (merge {:lazy-host host
-                           :interceptor-map {}}
-                          (or (:interceptor option) {}))})))
+      {:interceptor (merge {:lazy-host host
+                            :interceptor-map {}}
+                           (or (:interceptor option) {}))})))

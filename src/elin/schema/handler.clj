@@ -17,9 +17,9 @@
 
 (def ?Elin
   (m.util/merge
-   [:map
-    [:message ?ParsedMessage]]
-   ?Components))
+    [:map
+     [:message ?ParsedMessage]]
+    ?Components))
 
 (def ?HandlerMap
   [:map-of qualified-keyword? fn?])

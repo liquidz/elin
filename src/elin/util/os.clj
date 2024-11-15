@@ -4,7 +4,7 @@
 
 (def ^:private os-name
   (str/lower-case
-   (System/getProperty "os.name")))
+    (System/getProperty "os.name")))
 
 (def mac?
   (str/includes? os-name "mac"))

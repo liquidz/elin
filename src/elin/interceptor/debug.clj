@@ -60,11 +60,11 @@
                                                    :error err
                                                    :context (->> ctx
                                                                  (reduce-kv
-                                                                  (fn [accm k v]
-                                                                    (if (namespace k)
-                                                                      accm
-                                                                      (assoc accm k v)))
-                                                                  {}))})
+                                                                   (fn [accm k v]
+                                                                     (if (namespace k)
+                                                                       accm
+                                                                       (assoc accm k v)))
+                                                                   {}))})
                   (throw (ex-info (format "Invalid context for %s: %s"
                                           kind
                                           err)

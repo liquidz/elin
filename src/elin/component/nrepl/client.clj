@@ -51,12 +51,12 @@
 
 (def ^:private ?ConnectArgumentMap
   (m.util/merge
-   [:map
-    [:host [:maybe string?]]
-    [:port [:maybe int?]]]
-   (-> e.s.nrepl/?Client
-       (m.util/select-keys [:port-file :language])
-       (m.util/optional-keys [:port-file :language]))))
+    [:map
+     [:host [:maybe string?]]
+     [:port [:maybe int?]]]
+    (-> e.s.nrepl/?Client
+        (m.util/select-keys [:port-file :language])
+        (m.util/optional-keys [:port-file :language]))))
 
 (m/=> new-client [:function
                   [:=> [:cat e.s.nrepl/?Connection] e.s.nrepl/?Client]
@@ -67,19 +67,19 @@
                      :port nil}))
   ([conn {:keys [language port-file]}]
    (let [clone-resp (e.u.nrepl/merge-messages
-                     (async/<!! (e.p.nrepl/request conn {:op "clone"})))
+                      (async/<!! (e.p.nrepl/request conn {:op "clone"})))
          describe-resp (e.u.nrepl/merge-messages
-                        (async/<!! (e.p.nrepl/request conn {:op "describe"})))
+                         (async/<!! (e.p.nrepl/request conn {:op "describe"})))
          ns-eval-resp (e.u.nrepl/merge-messages
-                       (async/<!! (e.p.nrepl/request conn {:op "eval" :code (str '(ns-name *ns*))})))]
+                        (async/<!! (e.p.nrepl/request conn {:op "eval" :code (str '(ns-name *ns*))})))]
      (map->Client
-      {:connection conn
-       :session (:new-session clone-resp)
-       :supported-ops (set (keys (:ops describe-resp)))
-       :initial-namespace (:value ns-eval-resp)
-       :version (:versions describe-resp)
-       :language language
-       :port-file port-file}))))
+       {:connection conn
+        :session (:new-session clone-resp)
+        :supported-ops (set (keys (:ops describe-resp)))
+        :initial-namespace (:value ns-eval-resp)
+        :version (:versions describe-resp)
+        :language language
+        :port-file port-file}))))
 
 (m/=> connect [:=> [:cat ?ConnectArgumentMap] (e.schema/error-or e.s.nrepl/?Client)])
 (defn connect

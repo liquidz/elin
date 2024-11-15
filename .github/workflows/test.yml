@@ -10,7 +10,6 @@ jobs:
         with:
           bb: latest
           clj-kondo: latest
-          cljstyle: latest
       - uses: actions/cache@v4
         with:
           path: ~/.m2

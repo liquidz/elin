@@ -13,22 +13,22 @@
    [malli.core :as m]
    [taoensso.timbre :as timbre])
   (:import
-   clojure.lang.ExceptionInfo))
+   (clojure.lang ExceptionInfo)))
 
 (def ^:private ?=>
   (m/-simple-schema
-   {:type ::=>
-    :pred #(= :=> %)}))
+    {:type ::=>
+     :pred #(= :=> %)}))
 
 (def ^:private ?->
   (m/-simple-schema
-   {:type ::->
-    :pred #(= :-> %)}))
+    {:type ::->
+     :pred #(= :-> %)}))
 
 (def ^:private ?function
   (m/-simple-schema
-   {:type ::function
-    :pred #(= :function %)}))
+    {:type ::function
+     :pred #(= :function %)}))
 
 (def ^:private ?FunctionSchema
   [:schema {:registry {::fn [:or

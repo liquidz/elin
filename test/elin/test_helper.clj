@@ -17,7 +17,7 @@
 (defn malli-instrument-fixture
   [f]
   (m.inst/instrument!
-   {:report (m.d.pretty/reporter)})
+    {:report (m.d.pretty/reporter)})
   (f))
 
 (defn test-nrepl-server-port-fixture
@@ -36,8 +36,8 @@
 
 (defn call-function? [msg fn-name]
   (and
-   (= "test_call_function" (nth msg 2))
-   (= fn-name (first (nth msg 3)))))
+    (= "test_call_function" (nth msg 2))
+    (= fn-name (first (nth msg 3)))))
 
 (def test-config
   (e.config/load-config "." {:server {:host "vim" :port 0}}))

@@ -6,7 +6,7 @@
    [elin.protocol.host.rpc :as e.p.h.rpc]
    [org.httpkit.server :as h.server])
   (:import
-   java.net.URLDecoder))
+   (java.net URLDecoder)))
 
 (defn- valid-request?
   [{:keys [request-method headers]}]
@@ -46,8 +46,8 @@
   component/Lifecycle
   (start [this]
     (assoc this :stop-server (h.server/run-server
-                              #(handle this %)
-                              {:port port})))
+                               #(handle this %)
+                               {:port port})))
   (stop [this]
     (stop-server)
     (dissoc this :stop-server))

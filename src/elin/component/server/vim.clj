@@ -11,7 +11,7 @@
    [msgpack.clojure-extensions]
    [taoensso.timbre :as timbre])
   (:import
-   java.io.EOFException))
+   (java.io EOFException)))
 
 (defrecord VimMessage
   [host message response-manager]

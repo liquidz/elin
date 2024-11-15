@@ -10,9 +10,7 @@
    [msgpack.core :as msg]
    [taoensso.timbre :as timbre])
   (:import
-   (java.io
-    DataInputStream
-    EOFException)))
+   (java.io DataInputStream EOFException)))
 
 (defrecord NvimMessage
   [host message response-manager]

@@ -278,21 +278,21 @@
 
   (clojure.pprint/pprint
     (filter #(= 'references (:name %)) (var-definitions (elin.dev/$ :clj-kondo))))
-    ;(first (var-definitions (elin.dev/$ :clj-kondo))))
+    ; (first (var-definitions (elin.dev/$ :clj-kondo))))
   (clojure.pprint/pprint
     (first (namespace-usages (elin.dev/$ :clj-kondo))))
 
   (let [ns-str "elin.handler.lookup"
         sym-str "e.p.host/get-cursor-position!!"
         sym-str "generate-cljdocc"]
-      (clojure.pprint/pprint
-        (lookup clj-kondo ns-str sym-str)))
+    (clojure.pprint/pprint
+      (lookup clj-kondo ns-str sym-str)))
 
   (def code-analysis
     (e.p.clj-kondo/analyze-code!! (elin.dev/$ :clj-kondo) (str '(defn foo [x]
                                                                   (let [y (+ x 1)]
                                                                     y)))))
   (clojure.pprint/pprint
-   (:var-definitions (:analysis code-analysis)))
+    (:var-definitions (:analysis code-analysis)))
   (clojure.pprint/pprint
     (:locals (:analysis code-analysis))))

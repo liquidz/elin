@@ -22,9 +22,9 @@
                         (assoc :code code
                                :options options))]
         (:response
-         (e.p.interceptor/execute interceptor e.c.interceptor/evaluate context
-                                  (fn [{:as ctx :keys [code options]}]
-                                    (assoc ctx :response (eval-fn code options)))))))))
+          (e.p.interceptor/execute interceptor e.c.interceptor/evaluate context
+                                   (fn [{:as ctx :keys [code options]}]
+                                     (assoc ctx :response (eval-fn code options)))))))))
 
 (m/=> evaluate [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate

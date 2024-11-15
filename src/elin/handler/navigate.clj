@@ -83,7 +83,7 @@
         ns-str (e.f.sexpr/get-namespace elin)
         file-sep (e.u.file/guess-file-separator ns-path)
         cycled-path (e.f.n.namespace/get-cycled-namespace-path
-                     {:ns ns-str :path ns-path :file-separator file-sep})]
+                      {:ns ns-str :path ns-path :file-separator file-sep})]
     (e.u.handler/jump-to-file-response cycled-path)))
 
 ;; (m/=> references [:=> [:cat e.s.handler/?Elin] (e.schema/error-or e.s.handler/?JumpToFile)])

@@ -26,9 +26,9 @@
 (defn- get-cache-file-path
   [user-dir]
   (.getAbsolutePath
-   (io/file (e.u.file/get-cache-directory)
-            (str (str/replace user-dir "/" "_")
-                 ".edn"))))
+    (io/file (e.u.file/get-cache-directory)
+             (str (str/replace user-dir "/" "_")
+                  ".edn"))))
 
 (m/=> clj-kondo-available? [:=> [:cat string?] boolean?])
 (defn- clj-kondo-available?

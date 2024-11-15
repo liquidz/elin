@@ -28,8 +28,11 @@
   lint {:doc "Clj-kondo linting"
         :task (shell "clj-kondo --lint src:test")}
 
-  format-check {:doc "Cljstyle check"
-                :task (shell "cljstyle check")}
+  format-check {:doc "Check code formats"
+                :task (shell "npx @chrisoakman/standard-clojure-style check src test")}
+
+  format-fix {:doc "Fix code formats"
+              :task (shell "npx @chrisoakman/standard-clojure-style fix src test")}
 
   test {:doc "Run unit tests"
         :extra-paths ["dev" "test"]

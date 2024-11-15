@@ -128,8 +128,8 @@
                  :component/nrepl this
                  :request msg}
                 (intercept
-                 (fn [{:as ctx :keys [request]}]
-                   (assoc ctx :response (e.p.nrepl/notify client request))))
+                  (fn [{:as ctx :keys [request]}]
+                    (assoc ctx :response (e.p.nrepl/notify client request))))
                 (:response))))
         (e/unavailable {:message "Not connected"}))))
 
@@ -146,8 +146,8 @@
                  :component/nrepl this
                  :request msg}
                 (intercept
-                 (fn [{:as ctx :keys [request]}]
-                   (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
+                  (fn [{:as ctx :keys [request]}]
+                    (assoc ctx :response (async/<! (e.p.nrepl/request client request)))))
                 (:response))))
         (async/go
           (e/unavailable {:message "Not connected"}))))))
@@ -155,6 +155,6 @@
 (defn new-nrepl
   [config]
   (map->Nrepl (merge
-               (:nrepl config)
-               {:clients-store (atom {})
-                :current-client-key-store (atom nil)})))
+                (:nrepl config)
+                {:clients-store (atom {})
+                 :current-client-key-store (atom nil)})))
