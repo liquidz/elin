@@ -5,7 +5,6 @@
    [elin.config :as e.config]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.interceptor.autocmd]
-   [elin.interceptor.code-change]
    [elin.interceptor.connect]
    [elin.interceptor.nrepl]
    [elin.interceptor.output]
