@@ -114,7 +114,7 @@
     e.c.interceptor/test "Executed on testing."
     e.c.interceptor/quickfix "Executed on setting quickfix."
     e.c.interceptor/debug "Executed on debugging."
-    e.c.interceptor/code-change "Executed on changing code."
+    e.c.interceptor/modify-code "Executed on modifying code."
     nil))
 
 (defn- generate-interceptor-document
@@ -123,11 +123,11 @@
         v (requiring-resolve interceptor-sym)
         m (meta v)]
     (to-s
-     [(str "==== " title)
-      (format-interceptor-kind v)
-      ""
-      (format-docstring m)
-      (asciidoc/source-link m)])))
+      [(str "==== " title)
+       (format-interceptor-kind v)
+       ""
+       (format-docstring m)
+       (asciidoc/source-link m)])))
 
 (defn- generate-interceptor-documents
   []
@@ -182,22 +182,22 @@
                                                     (get analysis/kind-to-interceptor-symbol-dict))
                                            []))]
     (to-s
-     [(str "==== " title)
-      (format-docstring m)
+      [(str "==== " title)
+       (format-docstring m)
 
-      (when (get handler-key-mapping-dict handler-sym)
-        [""
-         (format "Default key mapping: `{%s}`"
-                 (format-handler-to-key-map handler-sym))])
+       (when (get handler-key-mapping-dict handler-sym)
+         [""
+          (format "Default key mapping: `{%s}`"
+                  (format-handler-to-key-map handler-sym))])
 
-      (when (seq using-interceptor-syms)
-        [""
-         "===== Using interceptors"
-         (for [interceptor-sym using-interceptor-syms]
-           (str "* " (asciidoc/anchor (interceptor-title interceptor-sym))))
-         ""])
+       (when (seq using-interceptor-syms)
+         [""
+          "===== Using interceptors"
+          (for [interceptor-sym using-interceptor-syms]
+            (str "* " (asciidoc/anchor (interceptor-title interceptor-sym))))
+          ""])
 
-      (asciidoc/source-link m)])))
+       (asciidoc/source-link m)])))
 
 (defn- excluded-handler?
   [handler-sym]
