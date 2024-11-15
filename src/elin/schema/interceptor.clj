@@ -19,7 +19,7 @@
    e.c.interceptor/test
    e.c.interceptor/test-result
    e.c.interceptor/quickfix
-   e.c.interceptor/code-change])
+   e.c.interceptor/modify-code])
 
 (def ?Interceptor
   [:map
@@ -112,12 +112,10 @@
        [:list sequential?]]
       (m.util/merge e.s.handler/?Components)))
 
-(def ?CodeChangeContext
+(def ?ModifyCodeContext
   (-> [:map
        ;; ENTER
-       [:type [:enum :add-libspec :add-missing-import :add-missing-require]]
        [:code string?]
-       [:target map?]
        ;; LEAVE
-       [:response {:optional true} boolean?]]
+       [:result {:optional true} boolean?]]
       (m.util/merge e.s.handler/?Components)))

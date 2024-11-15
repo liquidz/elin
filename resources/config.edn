@@ -46,8 +46,7 @@
                                           elin.interceptor.test/append-test-result-to-info-buffer
                                           elin.interceptor.test/apply-test-result-to-quickfix
                                           elin.interceptor.test/store-last-failed-test-query
-                                          elin.interceptor.test/output-test-result-to-cmdline]}
-                        :code-change {:includes [elin.interceptor.code-change/show-code-changed-result]}}}
+                                          elin.interceptor.test/output-test-result-to-cmdline]}}}
 
  :handler {:uses [elin.handler.callback/callback {}
                   elin.handler.complete/complete {:log {:min-level :error}}
@@ -89,10 +88,11 @@
                                                         :interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.namespace/add-libspec {:favorites #include "favorite_aliases.edn"
                                                       :java-classes #include "java_classes.edn"
-                                                      :interceptor #ref [:interceptor :preset :code-change]}
+                                                      :interceptor {:includes [elin.interceptor.handler.namespace/show-result
+                                                                               elin.interceptor.handler.namespace/yank-alias]}}
                   elin.handler.namespace/add-missing-libspec {:favorites #include "favorite_aliases.edn"
                                                               :java-classes #include "java_classes.edn"
-                                                              :interceptor #ref [:interceptor :preset :code-change]}
+                                                              :interceptor {:includes [elin.interceptor.handler.namespace/show-result]}}
                   elin.handler.navigate/cycle-source-and-test {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/jump-to-definition {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
@@ -106,7 +106,6 @@
                                                                   :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}
                      elin-alias-run-test-focused-current-testing {:handler elin.handler.test/run-test-under-cursor
                                                                   :config {:interceptor {:includes [elin.interceptor.test/focus-current-testing]}}}}
-
 
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 
