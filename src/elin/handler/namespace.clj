@@ -45,17 +45,20 @@
                       (assoc :code ns-form
                              :type :add-libspec
                              :target {:namespace-symbol ns-sym
-                                      :alias-symbol alias-sym}))]
-    (e.p.interceptor/execute
-      interceptor e.c.interceptor/code-change context
-      (fn [{:as ctx :keys [code target]}]
-        (let [{:keys [namespace-symbol alias-symbol]} target]
-          (if (has-namespace? code namespace-symbol)
-            (assoc ctx :response false)
-            (e/let [ns-form' (e.u.sexpr/add-require code namespace-symbol alias-symbol)]
-              (e.f.sexpr/replace-list-sexpr ctx lnum col ns-form')
-              (e.f.evaluate/evaluate-namespace-form ctx)
-              (assoc ctx :response true))))))))
+                                      :alias-symbol alias-sym}))
+          {:keys [response]} (e.p.interceptor/execute
+                               interceptor e.c.interceptor/code-change context
+                               (fn [{:as ctx :keys [code target]}]
+                                 (let [{:keys [namespace-symbol alias-symbol]} target]
+                                   (if (has-namespace? code namespace-symbol)
+                                     (assoc ctx :response false)
+                                     (e/let [ns-form' (e.u.sexpr/add-require code namespace-symbol alias-symbol)]
+                                       (e.f.sexpr/replace-list-sexpr ctx lnum col ns-form')
+                                       (e.f.evaluate/evaluate-namespace-form ctx)
+                                       (assoc ctx :response true))))))]
+    {:result response
+     :target ns-sym
+     :alias alias-sym}))
 
 (defn- add-missing-import*
   [{:as elin :component/keys [interceptor]} class-name-sym]
@@ -63,14 +66,16 @@
           context (-> (e.u.map/select-keys-by-namespace elin :component)
                       (assoc :code ns-form
                              :type :add-missing-import
-                             :target {:class-name-symbol class-name-sym}))]
-    (e.p.interceptor/execute
-      interceptor e.c.interceptor/code-change context
-      (fn [{:as ctx :keys [code target]}]
-        (let [ns-form' (e.u.sexpr/add-import code (:class-name-symbol target))]
-          (e.f.sexpr/replace-list-sexpr ctx lnum col ns-form')
-          (e.f.evaluate/evaluate-namespace-form ctx)
-          (assoc ctx :response true))))))
+                             :target {:class-name-symbol class-name-sym}))
+          {:keys [response]} (e.p.interceptor/execute
+                               interceptor e.c.interceptor/code-change context
+                               (fn [{:as ctx :keys [code target]}]
+                                 (let [ns-form' (e.u.sexpr/add-import code (:class-name-symbol target))]
+                                   (e.f.sexpr/replace-list-sexpr ctx lnum col ns-form')
+                                   (e.f.evaluate/evaluate-namespace-form ctx)
+                                   (assoc ctx :response true))))]
+    {:result response
+     :target class-name-sym}))
 
 (defn- add-missing-require*
   [{:as elin :component/keys [interceptor]} alias-sym ns-sym]
@@ -79,17 +84,20 @@
                       (assoc :code ns-form
                              :type :add-missing-require
                              :target {:namespace-symbol ns-sym
-                                      :alias-symbol alias-sym}))]
-    (e.p.interceptor/execute
-      interceptor e.c.interceptor/code-change context
-      (fn [{:as ctx :keys [code target]}]
-        (let [{:keys [namespace-symbol alias-symbol]} target]
-          (if (has-namespace? code namespace-symbol)
-            (assoc ctx :response false)
-            (let [ns-form' (e.u.sexpr/add-require code namespace-symbol alias-symbol)]
-              (e.f.sexpr/replace-list-sexpr elin lnum col ns-form')
-              (e.f.evaluate/evaluate-namespace-form ctx)
-              (assoc ctx :response true))))))))
+                                      :alias-symbol alias-sym}))
+          {:keys [response]} (e.p.interceptor/execute
+                               interceptor e.c.interceptor/code-change context
+                               (fn [{:as ctx :keys [code target]}]
+                                 (let [{:keys [namespace-symbol alias-symbol]} target]
+                                   (if (has-namespace? code namespace-symbol)
+                                     (assoc ctx :response false)
+                                     (let [ns-form' (e.u.sexpr/add-require code namespace-symbol alias-symbol)]
+                                       (e.f.sexpr/replace-list-sexpr elin lnum col ns-form')
+                                       (e.f.evaluate/evaluate-namespace-form ctx)
+                                       (assoc ctx :response true))))))]
+    {:result response
+     :target ns-sym
+     :alias alias-sym}))
 
 (defn- add-missing-libspec*
   [elin ns-str alias-str]
