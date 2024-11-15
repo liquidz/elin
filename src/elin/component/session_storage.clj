@@ -43,11 +43,11 @@
 
   (contains? [this k]
     (boolean
-     (when-let [expires (get-in @memory [k :expires])]
-       (if (< (now) expires)
-         true
-         (do (e.p.storage/delete this k)
-             false)))))
+      (when-let [expires (get-in @memory [k :expires])]
+        (if (< (now) expires)
+          true
+          (do (e.p.storage/delete this k)
+              false)))))
 
   (delete [_ k]
     (swap! memory dissoc k)

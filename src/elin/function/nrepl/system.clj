@@ -32,8 +32,8 @@
 
 (def get-system-info
   (e.u.function/memoize-by
-   (comp e.p.nrepl/current-session first)
-   get-system-info*))
+    (comp e.p.nrepl/current-session first)
+    get-system-info*))
 
 (m/=> get-user-dir [:=> [:cat e.s.component/?Nrepl] [:or e.schema/?Error string?]])
 (defn get-user-dir

@@ -26,7 +26,6 @@
                       (leave-malli-lookup)
                       (:response)))))
 
-
     (t/testing "No function schema"
       (let [ctx (generate-context {})
             res (with-redefs [sut/document-str pr-str]

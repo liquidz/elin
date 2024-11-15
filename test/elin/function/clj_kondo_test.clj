@@ -69,5 +69,5 @@
                :filename "src/elin/component/clj_kondo.clj"
                :defined-by 'clojure.core/defrecord}]
              (->> (sut/protocol-implementations
-                   c 'elin.protocol.clj-kondo 'ICljKondo 'analyze)
+                    c 'elin.protocol.clj-kondo 'ICljKondo 'analyze)
                   (map #(select-keys % [:impl-ns :filename :defined-by])))))))

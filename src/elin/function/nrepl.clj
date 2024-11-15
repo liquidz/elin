@@ -28,15 +28,15 @@
 
 (def ^:private eval-option-keys
   (set/union
-   #{:column :eval :file :line :ns :read-cond}
-   middleware-caught-keys
-   middleware-print-keys))
+    #{:column :eval :file :line :ns :read-cond}
+    middleware-caught-keys
+    middleware-print-keys))
 
 (def ^:private load-file-option-keys
   (set/union
-   #{:file-name :file-path}
-   middleware-caught-keys
-   middleware-print-keys))
+    #{:file-name :file-path}
+    middleware-caught-keys
+    middleware-print-keys))
 
 (m/=> close!! [:function
                [:=> [:cat e.s.component/?Nrepl] any?]

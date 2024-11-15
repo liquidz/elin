@@ -18,6 +18,6 @@
 
 (defn render [s m]
   (reduce-kv
-   (fn [accm k v]
-     (str/replace accm (str "{{" (subs (str k) 1) "}}") (str v)))
-   s m))
+    (fn [accm k v]
+      (str/replace accm (str "{{" (subs (str k) 1) "}}") (str v)))
+    s m))

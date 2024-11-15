@@ -113,8 +113,8 @@
     (e.p.interceptor/execute this kind context identity))
   (execute [this kind context terminator]
     (let [interceptors (concat
-                        (or (get interceptor-map e.c.interceptor/all) [])
-                        (or (get interceptor-map kind) []))
+                         (or (get interceptor-map e.c.interceptor/all) [])
+                         (or (get interceptor-map kind) []))
           terminator' {:name ::terminator
                        :enter terminator}
           context' (assoc context
@@ -150,10 +150,10 @@
                                                   interceptors)))
           ;; NOTE includes should be prioritized over excludes
           interceptor-map' (reduce-kv
-                            (fn [accm kind interceptors]
-                              (assoc accm kind (concat (or (get accm kind) [])
-                                                       interceptors)))
-                            interceptor-map' include-map)]
+                             (fn [accm kind interceptors]
+                               (assoc accm kind (concat (or (get accm kind) [])
+                                                        interceptors)))
+                             interceptor-map' include-map)]
       (assoc this
              :config-map config-map'
              :interceptor-map interceptor-map'))))

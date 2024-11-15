@@ -292,7 +292,6 @@
           (with-redefs [sut/load-user-config (constantly {:interceptor {:excludes [sample-interceptor]}})]
             (t/is (nil? (find-included-interceptor (test-load-config) sample-interceptor))))))
 
-
       (t/testing "project-local-config should exclude handlers/interceptors in default-config"
         (t/testing "handler"
           (with-redefs [sut/load-project-local-config (constantly {:handler {:excludes [sample-handler]}})]

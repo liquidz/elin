@@ -67,38 +67,38 @@
   [nrepl test-resp]
   (let [ns-path-op-supported? (e.p.nrepl/supported-op? nrepl e.c.nrepl/ns-path-op)]
     (flatten
-     (for [[_ns-kw var-map] (or (:results test-resp) {})]
-       (for [[_var-kw test-results] (or var-map {})]
-         (for [test-result test-results
-               :let [{test-type :type ns-str :ns var-str :var lnum :line} test-result]]
-           (if (and (not= test-type "fail")
-                    (not= test-type "error"))
-             {:result :passed
-              :ns ns-str
-              :var var-str
-              :text (test-message test-result)}
+      (for [[_ns-kw var-map] (or (:results test-resp) {})]
+        (for [[_var-kw test-results] (or var-map {})]
+          (for [test-result test-results
+                :let [{test-type :type ns-str :ns var-str :var lnum :line} test-result]]
+            (if (and (not= test-type "fail")
+                     (not= test-type "error"))
+              {:result :passed
+               :ns ns-str
+               :var var-str
+               :text (test-message test-result)}
 
-             (let [filename (or (readable-filename (:file test-result))
-                                (when ns-path-op-supported?
-                                  (e.f.n.cider/ns-path!! nrepl ns-str))
-                                (:file test-result))
-                   error (cond-> {:filename filename
-                                  :text (test-message test-result)
-                                  :expected (or (some-> (:expected test-result)
-                                                        (str/trim))
-                                                "")
-                                  :ns ns-str
-                                  :var var-str}
-                           lnum (assoc :lnum lnum))]
-               (condp = test-type
-                 "fail"
-                 (for [actual-value (test-actual-values test-result)]
-                   (merge error
-                          actual-value
-                          {:result :failed}))
+              (let [filename (or (readable-filename (:file test-result))
+                                 (when ns-path-op-supported?
+                                   (e.f.n.cider/ns-path!! nrepl ns-str))
+                                 (:file test-result))
+                    error (cond-> {:filename filename
+                                   :text (test-message test-result)
+                                   :expected (or (some-> (:expected test-result)
+                                                         (str/trim))
+                                                 "")
+                                   :ns ns-str
+                                   :var var-str}
+                            lnum (assoc :lnum lnum))]
+                (condp = test-type
+                  "fail"
+                  (for [actual-value (test-actual-values test-result)]
+                    (merge error
+                           actual-value
+                           {:result :failed}))
 
-                 "error"
-                 (merge error
-                        {:result :failed
-                         :actual (or (:error test-result)
-                                     (:actual test-result))}))))))))))
+                  "error"
+                  (merge error
+                         {:result :failed
+                          :actual (or (:error test-result)
+                                      (:actual test-result))}))))))))))

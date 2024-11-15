@@ -64,15 +64,15 @@
 
 (defn- handler* [handler-map context]
   (-> (e.p.interceptor/execute
-       (:component/interceptor context) e.c.interceptor/handler context
-       (fn [{:as context :component/keys [host]}]
-         (let [handler-key (get-in context [:message :method])
-               resp (if-let [handler-fn (get handler-map handler-key)]
-                      (handler-fn context)
-                      (let [msg (format "Unknown handler: %s" handler-key)]
-                        (e.message/error host msg)
-                        msg))]
-           (assoc context :response resp))))
+        (:component/interceptor context) e.c.interceptor/handler context
+        (fn [{:as context :component/keys [host]}]
+          (let [handler-key (get-in context [:message :method])
+                resp (if-let [handler-fn (get handler-map handler-key)]
+                       (handler-fn context)
+                       (let [msg (format "Unknown handler: %s" handler-key)]
+                         (e.message/error host msg)
+                         msg))]
+            (assoc context :response resp))))
       (:response)
       (e.u.server/format)))
 

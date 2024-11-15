@@ -11,8 +11,8 @@
    [malli.core :as m]
    [taoensso.timbre :as timbre])
   (:import
-   java.io.PushbackInputStream
-   java.net.Socket))
+   (java.io PushbackInputStream)
+   (java.net Socket)))
 
 (m/=> bytes->str [:=> [:cat any?] e.schema/?NotBytes])
 (defn- bytes->str
@@ -29,9 +29,9 @@
 
     (map? v)
     (reduce-kv
-     (fn [accm k v]
-       (assoc accm (keyword k) (format-message v)))
-     {} v)
+      (fn [accm k v]
+        (assoc accm (keyword k) (format-message v)))
+      {} v)
 
     :else
     (bytes->str v)))
@@ -139,12 +139,12 @@
           (recur)))
 
       (map->Connection
-       {:host host
-        :port port
-        :socket sock
-        :read-stream read-stream
-        :write-stream write-stream
-        :raw-message-channel raw-message-channel
-        :response-manager response-manager}))
+        {:host host
+         :port port
+         :socket sock
+         :read-stream read-stream
+         :write-stream write-stream
+         :raw-message-channel raw-message-channel
+         :response-manager response-manager}))
     (catch Exception ex
       (e/fault {:message (ex-message ex)} ex))))

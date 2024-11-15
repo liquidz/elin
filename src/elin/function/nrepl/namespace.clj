@@ -47,8 +47,8 @@
                                                  (subs filename 0))]
                           (re-pattern (str "(?<!" only-name ")\\.clj[csd]?$"))))
           recent-file (e.u.file/find-file-in-parent-directories
-                       (.getAbsolutePath (.getParentFile file))
-                       find-regexp)
+                        (.getAbsolutePath (.getParentFile file))
+                        find-regexp)
           recent-file-path (.getAbsolutePath recent-file)
           ext (e.u.file/get-file-extension recent-file-path)
           recent-namespace (e/-> (slurp recent-file)

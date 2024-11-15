@@ -53,9 +53,9 @@
                  (->> (parse-code-to-ns-and-name code)
                       (apply e.f.lookup/lookup elin)))]
     (e.u.sexpr/extract-form-by-position
-     (slurp (:file resp))
-     (:line resp)
-     (:column resp))))
+      (slurp (:file resp))
+      (:line resp)
+      (:column resp))))
 
 (defn show-clojuredocs
   "Show clojuredocs of symbol at cursor position."

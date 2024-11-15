@@ -95,13 +95,13 @@
                                        e.c.nrepl/reload-all-op "Reloading all..."
                                        "Processing...")
                                 popup-id (async/<!
-                                          (e.p.host/open-popup!
-                                           host
-                                           text
-                                           {:line "bottom"
-                                            :col "right"
-                                            :border []
-                                            :filetype "help"}))]
+                                           (e.p.host/open-popup!
+                                             host
+                                             text
+                                             {:line "bottom"
+                                              :col "right"
+                                              :border []
+                                              :filetype "help"}))]
                             (swap! channel-store update id #(assoc %
                                                                    :timeouted true
                                                                    :popup-id popup-id)))

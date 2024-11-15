@@ -51,16 +51,16 @@
 (defn test-nrepl-connection
   [option]
   (map->TestNreplConnection
-   {:host "localhost"
-    :port 1234
-    :socket (java.net.Socket.)
-    :read-stream (java.io.PushbackInputStream.
-                  (java.io.ByteArrayInputStream. (.getBytes "")))
-    :write-stream (java.io.ByteArrayOutputStream.)
-    :raw-message-channel (async/chan)
-    :response-manager (atom {})
-    :connected-atom (atom true)
-    :option option}))
+    {:host "localhost"
+     :port 1234
+     :socket (java.net.Socket.)
+     :read-stream (java.io.PushbackInputStream.
+                    (java.io.ByteArrayInputStream. (.getBytes "")))
+     :write-stream (java.io.ByteArrayOutputStream.)
+     :raw-message-channel (async/chan)
+     :response-manager (atom {})
+     :connected-atom (atom true)
+     :option option}))
 
 (defn test-nrepl-client
   [option]
@@ -75,8 +75,8 @@
         interceptor (h.interceptor/test-interceptor option)
         client (test-nrepl-client (or (:client option) {}))
         nrepl (e.c.nrepl/new-nrepl
-               {:nrepl {:interceptor interceptor
-                        :lazy-host host}})]
+                {:nrepl {:interceptor interceptor
+                         :lazy-host host}})]
     (e.p.nrepl/add-client! nrepl client)
     (e.p.nrepl/switch-client! nrepl client)
     nrepl))

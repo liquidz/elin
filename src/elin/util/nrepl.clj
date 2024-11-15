@@ -4,7 +4,7 @@
    [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m])
   (:import
-   java.net.ServerSocket))
+   (java.net ServerSocket)))
 
 (def ^:private ?Messages
   [:sequential e.s.nrepl/?Message])
@@ -53,5 +53,5 @@
 (defn has-status?
   [message status]
   (boolean
-   (some #(= % status)
-         (:status message))))
+    (some #(= % status)
+          (:status message))))

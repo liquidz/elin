@@ -39,7 +39,7 @@
                                         (str/replace-first #"^#?'" "")
                                         (str/split #"/" 2))
         impls (e.f.clj-kondo/protocol-implementations
-               clj-kondo protocol-ns protocol-name (:name info-response))]
+                clj-kondo protocol-ns protocol-name (:name info-response))]
     (assoc info-response :protocol-implementations impls)))
 
 (m/=> lookup [:=> [:cat ?NreplAndCljKondo string? string?] e.s.nrepl/?Lookup])
@@ -83,10 +83,10 @@
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           [ns-str name-str] (e/error-or
-                             (e/let [ns-str (e.f.sexpr/get-namespace elin)
-                                     resp (lookup elin ns-str code)]
-                               [(:ns resp) (:name resp)])
-                             (str/split code #"/" 2))]
+                              (e/let [ns-str (e.f.sexpr/get-namespace elin)
+                                      resp (lookup elin ns-str code)]
+                                [(:ns resp) (:name resp)])
+                              (str/split code #"/" 2))]
     (or (e.f.n.cider/clojuredocs-lookup!! nrepl ns-str name-str export-edn-url)
         (e/not-found))))
 

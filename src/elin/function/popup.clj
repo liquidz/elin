@@ -26,10 +26,10 @@
    (open elin s default-popup-option))
   ([{:component/keys [host]} s option]
    (async/<!!
-    (e.p.host/open-popup!
-     host
-     s
-     (merge default-popup-option option)))))
+     (e.p.host/open-popup!
+       host
+       s
+       (merge default-popup-option option)))))
 
 (m/=> close [:-> e.s.handler/?Elin int? :nil])
 (defn close

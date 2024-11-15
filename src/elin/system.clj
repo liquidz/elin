@@ -17,45 +17,45 @@
    (new-system {:server {:port 0}}))
   ([config]
    (component/system-map
-    :lazy-host (e.c.lazy-host/new-lazy-host config)
+     :lazy-host (e.c.lazy-host/new-lazy-host config)
 
-    :plugin (component/using
-             (e.c.plugin/new-plugin config)
-             [:lazy-host])
+     :plugin (component/using
+               (e.c.plugin/new-plugin config)
+               [:lazy-host])
 
-    :session-storage (e.c.session-storage/new-session-storage config)
+     :session-storage (e.c.session-storage/new-session-storage config)
 
-    :interceptor (component/using
-                  (e.c.interceptor/new-interceptor config)
-                  [:lazy-host
-                   :plugin])
+     :interceptor (component/using
+                    (e.c.interceptor/new-interceptor config)
+                    [:lazy-host
+                     :plugin])
 
-    :nrepl (component/using
-            (e.c.nrepl/new-nrepl config)
-            [:clj-kondo
-             :interceptor
-             :lazy-host
-             :session-storage])
-
-    ;; NOTE clj-kondo component should not depend on nrepl component
-    :clj-kondo (component/using
-                (e.c.clj-kondo/new-clj-kondo config)
-                [:lazy-host])
-
-    :handler (component/using
-              (e.c.handler/new-handler config)
+     :nrepl (component/using
+              (e.c.nrepl/new-nrepl config)
               [:clj-kondo
                :interceptor
                :lazy-host
-               :nrepl
-               :plugin
                :session-storage])
 
-    :http-server (component/using
-                  (e.c.s.http/new-http-server config)
-                  [:handler])
+     ;; NOTE clj-kondo component should not depend on nrepl component
+     :clj-kondo (component/using
+                  (e.c.clj-kondo/new-clj-kondo config)
+                  [:lazy-host])
 
-    :server (component/using
-             (e.c.server/new-server config)
-             [:handler
-              :lazy-host]))))
+     :handler (component/using
+                (e.c.handler/new-handler config)
+                [:clj-kondo
+                 :interceptor
+                 :lazy-host
+                 :nrepl
+                 :plugin
+                 :session-storage])
+
+     :http-server (component/using
+                    (e.c.s.http/new-http-server config)
+                    [:handler])
+
+     :server (component/using
+               (e.c.server/new-server config)
+               [:handler
+                :lazy-host]))))

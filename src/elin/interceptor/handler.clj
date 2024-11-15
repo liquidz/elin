@@ -30,7 +30,7 @@
                                         :moved "any"}
                                        config)]
                     (async/<!!
-                     (e.p.host/open-popup! host response options)))))
+                      (e.p.host/open-popup! host response options)))))
               (ix/discard))})
 
 (def append-result-to-info-buffer

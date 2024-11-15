@@ -64,20 +64,20 @@
           linebreaked? (some-> right-zloc r.zip/node r.node/linebreak?)
           zloc (r.zip/insert-right zloc require-node)]
     (r.zip/root-string
-     (cond
-       linebreaked?
-       (-> zloc
-           (r.zip/insert-space-right 2)
-           (r.zip/insert-newline-right))
+      (cond
+        linebreaked?
+        (-> zloc
+            (r.zip/insert-space-right 2)
+            (r.zip/insert-newline-right))
 
-       (some? right-zloc)
-       (-> zloc
-           (r.zip/right)
-           (r.zip/insert-space-right 11)
-           (r.zip/insert-newline-right))
+        (some? right-zloc)
+        (-> zloc
+            (r.zip/right)
+            (r.zip/insert-space-right 11)
+            (r.zip/insert-newline-right))
 
-       :else
-       zloc))))
+        :else
+        zloc))))
 
 (m/=> add-import [:=> [:cat string? symbol?] (e.schema/error-or string?)])
 (defn add-import
@@ -98,20 +98,20 @@
           linebreaked? (some-> right-zloc r.zip/node r.node/linebreak?)
           zloc (r.zip/insert-right zloc import-node)]
     (r.zip/root-string
-     (cond
-       linebreaked?
-       (-> zloc
-           (r.zip/insert-space-right 2)
-           (r.zip/insert-newline-right))
+      (cond
+        linebreaked?
+        (-> zloc
+            (r.zip/insert-space-right 2)
+            (r.zip/insert-newline-right))
 
-       (some? right-zloc)
-       (-> zloc
-           (r.zip/right)
-           (r.zip/insert-space-right 11)
-           (r.zip/insert-newline-right))
+        (some? right-zloc)
+        (-> zloc
+            (r.zip/right)
+            (r.zip/insert-space-right 11)
+            (r.zip/insert-newline-right))
 
-       :else
-       zloc))))
+        :else
+        zloc))))
 
 (m/=> extract-form-by-position [:=> [:cat string? int? int?] (e.schema/error-or string?)])
 (defn extract-form-by-position
@@ -175,8 +175,8 @@
                 (r.zip/down)
                 (r.zip/sexpr))]
     (boolean
-     (when (symbol? sym)
-       (= "testing" (name sym))))))
+      (when (symbol? sym)
+        (= "testing" (name sym))))))
 
 (defn- sexpr-digest
   [zloc]
@@ -207,14 +207,14 @@
                                            (parent-testing-form-digests)
                                            (set))]
     (r.zip/root-string
-     (loop [zloc zloc]
-       (if-let [zloc (r.zip/find-next zloc r.zip/next testing-form?)]
-         (if (contains? parent-testing-form-digest-set
-                        (sexpr-digest zloc))
-           (recur zloc)
-           (recur (-> zloc
-                      (r.zip/edit* wrap-by-comment-form)
-                      (r.zip/next) ; comment symbol
-                      (r.zip/next) ; testing form
-                      (r.zip/next))))
-         zloc)))))
+      (loop [zloc zloc]
+        (if-let [zloc (r.zip/find-next zloc r.zip/next testing-form?)]
+          (if (contains? parent-testing-form-digest-set
+                         (sexpr-digest zloc))
+            (recur zloc)
+            (recur (-> zloc
+                       (r.zip/edit* wrap-by-comment-form)
+                       (r.zip/next) ; comment symbol
+                       (r.zip/next) ; testing form
+                       (r.zip/next))))
+          zloc)))))
