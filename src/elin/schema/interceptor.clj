@@ -117,5 +117,5 @@
        ;; ENTER
        [:code string?]
        ;; LEAVE
-       [:response {:optional true} boolean?]]
+       [:result {:optional true} boolean?]]
       (m.util/merge e.s.handler/?Components)))
