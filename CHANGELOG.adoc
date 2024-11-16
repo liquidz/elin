@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file. This change
 - Add elin#request_async vim function
 - Add elin#status function for vim
 - Add elin.interceptor.handler.namespace
+- Add elin.handler.lookup/open-javadoc
+- Add ElinOpenJavadoc command for vim
 
 === Changed
 
