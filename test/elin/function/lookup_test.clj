@@ -12,12 +12,7 @@
   (t/testing "positive"
     (t/testing "cider info"
       (t/testing "regular"
-        (let [info-resp {:ns "foo.bar"
-                         :name "baz"
-                         :file "./core.clj"
-                         :arglists-str ""
-                         :column 1
-                         :line 2}]
+        (let [info-resp (h/dummy-lookup-response)]
           (with-redefs [e.f.n.cider/info!! (constantly info-resp)]
             (t/is (= info-resp
                      (sut/lookup (h/test-elin) "foo.bar" "baz"))))))
@@ -27,8 +22,9 @@
 
     (t/testing "nrepl lookup"
       (t/testing "info does not respond namespace and var name"
-        (let [info-resp {:status ["done"]}]
+        (let [info-resp {:status ["done"]}
+              fallback-resp (h/dummy-lookup-response)]
           (with-redefs [e.f.n.cider/info!! (constantly info-resp)
-                        e.f.clj-kondo/lookup (constantly "FALLBACKED")]
-            (t/is (= "FALLBACKED"
+                        e.f.clj-kondo/lookup (constantly fallback-resp)]
+            (t/is (= fallback-resp
                      (sut/lookup (h/test-elin) "foo.bar" "baz")))))))))

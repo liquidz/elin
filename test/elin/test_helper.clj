@@ -74,3 +74,18 @@
    (host-get-namespace-sexpr!-config {} code))
   ([config code]
    (assoc-in config [:host :get-namespace-sexpr!] {:code code :lnum 0 :col 0})))
+
+(defn rand-str
+  [n]
+  (let [coll (range 97 123)]
+    (apply str (repeatedly n #(char (rand-nth coll))))))
+
+(defn dummy-lookup-response
+  [& [m]]
+  (merge {:ns (str (rand-str 5) "." (rand-str 5))
+          :name (rand-str 10)
+          :file (str "./" (rand-str 10) ".clj")
+          :arglists-str ""
+          :column (rand-int 10)
+          :line (rand-int 10)}
+         m))
