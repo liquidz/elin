@@ -37,6 +37,7 @@ All notable changes to this project will be documented in this file. This change
 - Fix lookup test
 - Fix unwrap-comment-form-test performance
 - Add reviewdog.yml
+- Fix test clj-kondo component
 
 === Removed
 
