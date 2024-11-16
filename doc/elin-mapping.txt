@@ -182,6 +182,11 @@ ElinCycleSourceAndTest
   Calls `elin.handler.navigate/cycle-source-and-test` handler.
   Key is mapped to |<Plug>(elin_cycle_source_and_test)|.
 
+                                                      *ElinCycleFunctionAndTest*
+ElinCycleFunctionAndTest
+  Calls `elin.handler.navigate/cycle-function-and-test` handler.
+  Key is mapped to |<Plug>(elin_cycle_function_and_test)|.
+
                                                           *ElinToggleInfoBuffer*
 ElinToggleInfoBuffer
   Calls `elin#internal#buffer#info#toggle()`.
@@ -338,6 +343,10 @@ MAPPINGS                                                         *elin-mappings*
 <Plug>(elin_cycle_source_and_test)
   Same as |ElinCycleSourceAndTest|.
 
+                                          *<Plug>(elin_cycle_function_and_test)*
+<Plug>(elin_cycle_function_and_test)
+  Same as |ElinCycleFunctionAndTest|.
+
                                                *<Plug>(elin_toggle_info_buffer)*
 <Plug>(elin_toggle_info_buffer)
   Same as |ElinToggleInfoBuffer|.
@@ -385,6 +394,7 @@ n      <Leader>tn    <Plug>(elin_test_in_ns)
 n      <Leader>tl    <Plug>(elin_test_last)
 n      <Leader>tr    <Plug>(elin_test_last_failed)
 n      tt            <Plug>(elin_cycle_source_and_test)
+n      TT            <Plug>(elin_cycle_function_and_test)
 n      <Leader>ss    <Plug>(elin_toggle_info_buffer)
 n      <Leader>sl    <Plug>(elin_clear_info_buffer)
 n      <Leader><Esc> <Plug>(elin_clear_virtual_texts)

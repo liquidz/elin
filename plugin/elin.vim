@@ -130,6 +130,7 @@ command! ElinTestInNs call elin#notify('elin.handler.test/run-tests-in-ns', [])
 command! ElinTestLast call elin#notify('elin.handler.test/rerun-last-tests', [])
 command! ElinTestLastFailed call elin#notify('elin.handler.test/rerun-last-failed-tests', [])
 command! ElinCycleSourceAndTest call elin#notify('elin.handler.navigate/cycle-source-and-test', [])
+command! ElinCycleFunctionAndTest call elin#notify('elin.handler.navigate/cycle-function-and-test', [])
 
 " Misc
 command! ElinToggleInfoBuffer call elin#internal#buffer#info#toggle()
@@ -189,6 +190,7 @@ nnoremap <silent> <Plug>(elin_test_in_ns) <Cmd>ElinTestInNs<CR>
 nnoremap <silent> <Plug>(elin_test_last) <Cmd>ElinTestLast<CR>
 nnoremap <silent> <Plug>(elin_test_last_failed) <Cmd>ElinTestLastFailed<CR>
 nnoremap <silent> <Plug>(elin_cycle_source_and_test) <Cmd>ElinCycleSourceAndTest<CR>
+nnoremap <silent> <Plug>(elin_cycle_function_and_test) <Cmd>ElinCycleFunctionAndTest<CR>
 
 " Misc
 nnoremap <silent> <Plug>(elin_toggle_info_buffer) <Cmd>ElinToggleInfoBuffer<CR>
@@ -269,6 +271,7 @@ function! s:default_key_mappings() abort
   call s:define_mapping('nmap', '<Leader>tl', '<Plug>(elin_test_last)')
   call s:define_mapping('nmap', '<Leader>tr', '<Plug>(elin_test_last_failed)')
   call s:define_mapping('nmap', 'tt', '<Plug>(elin_cycle_source_and_test)')
+  call s:define_mapping('nmap', 'TT', '<Plug>(elin_cycle_function_and_test)')
 
   " Misc
   call s:define_mapping('nmap', '<Leader>ss', '<Plug>(elin_toggle_info_buffer)')
