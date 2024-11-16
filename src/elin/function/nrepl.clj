@@ -147,3 +147,9 @@
         (async/<!!)
         (e.u.nrepl/merge-messages)
         (:completions)))
+
+(defn get-cycled-var-name
+  [var-name]
+  (if (str/ends-with? var-name "-test")
+    (str/replace var-name #"-test$" "")
+    (str var-name "-test")))
