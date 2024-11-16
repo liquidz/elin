@@ -3,6 +3,7 @@
    [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.error :as e]
+   [elin.function.evaluate :as e.f.evaluate]
    [elin.function.lookup :as e.f.lookup]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
@@ -65,3 +66,13 @@
           resp (e.f.lookup/clojuredocs-lookup elin export-edn-url)]
     (generate-doc {:clojuredocs (:format config)}
                   (e.f.lookup/get-clojuredocs-rendering-data resp))))
+
+(defn open-javadoc
+  "Open a browser window displaying the javadoc for a symbol a t cursor position."
+  [{:as elin :component/keys [host]}]
+  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
+          ns-str (e/error-or (e.f.sexpr/get-namespace elin))
+          {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
+          code (str `((requiring-resolve 'clojure.java.javadoc/javadoc) ~(symbol code)))]
+    (e.f.evaluate/evaluate-code elin code (when ns-str
+                                            {:ns ns-str}))))
