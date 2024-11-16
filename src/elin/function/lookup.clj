@@ -49,7 +49,9 @@
    sym-str]
   (try
     (let [res (e.f.n.cider/info!! nrepl ns-str sym-str)
-          error? (e/error? res)
+          error? (or (e/error? res)
+                     (not (:ns res))
+                     (not (:name res)))
           protocol-var-str (when-not error?
                              (:protocol res))
           proto-def (when (and (not error?)

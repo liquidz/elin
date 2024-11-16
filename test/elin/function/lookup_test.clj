@@ -1,6 +1,7 @@
 (ns elin.function.lookup-test
   (:require
    [clojure.test :as t]
+   [elin.function.clj-kondo :as e.f.clj-kondo]
    [elin.function.lookup :as sut]
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.test-helper :as h]))
@@ -24,6 +25,10 @@
       ;; TODO
       (t/testing "protocol"))
 
-    (t/testing "nrepl lookup"))
-
-  (t/testing "negative"))
+    (t/testing "nrepl lookup"
+      (t/testing "info does not respond namespace and var name"
+        (let [info-resp {:status ["done"]}]
+          (with-redefs [e.f.n.cider/info!! (constantly info-resp)
+                        e.f.clj-kondo/lookup (constantly "FALLBACKED")]
+            (t/is (= "FALLBACKED"
+                     (sut/lookup (h/test-elin) "foo.bar" "baz")))))))))
