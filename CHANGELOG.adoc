@@ -36,6 +36,7 @@ All notable changes to this project will be documented in this file. This change
 - Fix elin.function.lookup to fallback when info does not respond namespace and var name
 - Fix lookup test
 - Fix unwrap-comment-form-test performance
+- Add reviewdog.yml
 
 === Removed
 
