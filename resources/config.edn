@@ -6,16 +6,21 @@
 
  :http-server {:port #empty-port []}
 
+ :common {:template {;; NOTE {extension {:src "skeleton for source" :test "skeleton for test"}}
+                     :.clj {:src #resource "template/clj_src_skeleton.mustache"
+                            :test #resource "template/clj_test_skeleton.mustache"
+                            :test-var #resource "template/var_test_skeleton.mustache"}
+                     :.cljs {:src #resource "template/clj_src_skeleton.mustache"
+                             :test #resource "template/cljs_test_skeleton.mustache"
+                             :test-var #resource "template/var_test_skeleton.mustache"}
+                     :.cljc {:src #resource "template/clj_src_skeleton.mustache"
+                             :test #resource "template/cljc_test_skeleton.mustache"
+                             :test-var #resource "template/var_test_skeleton.mustache"}}}
+
  :interceptor {:uses [elin.interceptor.autocmd/deinitialize {}
                       elin.interceptor.autocmd/switch-connection {}
                       elin.interceptor.autocmd/ns-load {}
-                      elin.interceptor.autocmd/skeleton {;; NOTE {extension {:src "skeleton for source" :test "skeleton for test"}}
-                                                         :.clj {:src #resource "template/clj_src_skeleton.mustache"
-                                                                :test #resource "template/clj_test_skeleton.mustache"}
-                                                         :.cljs {:src #resource "template/clj_src_skeleton.mustache"
-                                                                 :test #resource "template/cljs_test_skeleton.mustache"}
-                                                         :.cljc {:src #resource "template/clj_src_skeleton.mustache"
-                                                                 :test #resource "template/cljc_test_skeleton.mustache"}}
+                      elin.interceptor.autocmd/skeleton #ref [:common :template]
                       elin.interceptor.autocmd/clj-kondo-analyzing {}
                       elin.interceptor.connect/connected {}
                       elin.interceptor.connect/raw-message-channel {}
@@ -95,6 +100,8 @@
                                                               :java-classes #include "java_classes.edn"
                                                               :interceptor {:includes [elin.interceptor.handler.namespace/show-result]}}
                   elin.handler.navigate/cycle-source-and-test {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
+                  elin.handler.navigate/cycle-function-and-test {:template #ref [:common :template]
+                                                                 :interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/jump-to-definition {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/local-references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}

@@ -1,10 +1,13 @@
 (ns elin.handler.navigate
   (:require
    [clojure.core.async :as async]
+   [clojure.java.io :as io]
    [clojure.string :as str]
    [elin.error :as e]
    [elin.function.clj-kondo :as e.f.clj-kondo]
+   [elin.function.evaluate :as e.f.evaluate]
    [elin.function.lookup :as e.f.lookup]
+   [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.quickfix :as e.f.quickfix]
    [elin.function.sexpr :as e.f.sexpr]
@@ -13,7 +16,8 @@
    [elin.schema.handler :as e.s.handler]
    [elin.util.file :as e.u.file]
    [elin.util.handler :as e.u.handler]
-   [malli.core :as m]))
+   [malli.core :as m]
+   [pogonos.core :as pogonos]))
 
 (defn- select-ns-and-sym-str [ns-str sym-str]
   (let [sym (symbol sym-str)]
@@ -85,6 +89,54 @@
         cycled-path (e.f.n.namespace/get-cycled-namespace-path
                       {:ns ns-str :path ns-path :file-separator file-sep})]
     (e.u.handler/jump-to-file-response cycled-path)))
+
+(defn cycle-function-and-test
+  [elin]
+  (e/let [{:keys [template]} (e.u.handler/config elin #'cycle-function-and-test)
+          {:keys [options]} (e.f.evaluate/get-var-name-from-current-top-list elin)
+          {ns-str :ns var-name :var-name path :file} options
+          file-sep (e.u.file/guess-file-separator path)
+          cycled-path (e.f.n.namespace/get-cycled-namespace-path
+                        {:ns ns-str :path path :file-separator file-sep})
+          cycled-ns-str (or (e.f.n.namespace/guess-namespace-from-path cycled-path)
+                            ;; TODO fallback to another process
+                            (e/fault))
+          var-name (-> var-name
+                       (str/split #"/" 2)
+                       (second))
+          cycled-var-name (e.f.nrepl/get-cycled-var-name var-name)
+          lookup-resp (e/error-or (e.f.lookup/lookup elin cycled-ns-str cycled-var-name))]
+    (if lookup-resp
+      (e.u.handler/jump-to-file-response (:file lookup-resp)
+                                         (:line lookup-resp)
+                                         (:column lookup-resp))
+      (if (not (str/ends-with? cycled-ns-str "-test"))
+        (e.u.handler/jump-to-file-response cycled-path)
+        (e/let [cycled-file (io/file cycled-path)
+                ext (e.u.file/get-file-extension cycled-path)
+                ns-template (or (get-in template [(keyword ext) :test])
+                                (e/not-found))
+                var-template (or (get-in template [(keyword ext) :test-var])
+                                 (e/not-found))
+                params {:path cycled-path
+                        :ns cycled-ns-str
+                        :source-ns ns-str
+                        :test? true
+                        :name cycled-var-name
+                        :source-name var-name}]
+          (when-not (.exists (io/file cycled-path))
+            (spit cycled-path
+                  (pogonos/render-string ns-template params)))
+
+          (let [tail-lnum (-> (slurp cycled-file)
+                              (str/split-lines)
+                              (count))]
+            (spit cycled-file
+                  (str "\n" (pogonos/render-string var-template params))
+                  :append true)
+            (e.u.handler/jump-to-file-response cycled-path
+                                               (+ 2 tail-lnum)
+                                               1)))))))
 
 ;; (m/=> references [:=> [:cat e.s.handler/?Elin] (e.schema/error-or e.s.handler/?JumpToFile)])
 (defn references
