@@ -90,6 +90,7 @@
                       {:ns ns-str :path ns-path :file-separator file-sep})]
     (e.u.handler/jump-to-file-response cycled-path)))
 
+(m/=> cycle-function-and-test [:=> [:cat e.s.handler/?Elin] e.s.handler/?JumpToFile])
 (defn cycle-function-and-test
   [elin]
   (e/let [{:keys [template]} (e.u.handler/config elin #'cycle-function-and-test)

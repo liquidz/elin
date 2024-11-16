@@ -14,8 +14,9 @@
 
 (t/deftest unwrap-comment-form-test
   (let [test-code (str '(comment (+ 1 2) (+ 3 4)))
+        test-elin (h/test-elin)
         unwrap-comment-form-test (fn [column]
-                                   (-> (h/test-elin)
+                                   (-> test-elin
                                        (assoc :code test-code
                                               :options {:line 1 :column 1 :cursor-line 1 :cursor-column column})
                                        (unwrap-comment-form-enter)
