@@ -144,6 +144,11 @@ ElinShowClojureDocs
   Calls `elin.handler.lookup/show-clojuredocs` handler.
   Key is mapped to |<Plug>(elin_show_clojuredocs)|.
 
+                                                               *ElinOpenJavadoc*
+ElinOpenJavadoc
+  Calls `elin.handler.lookup/open-javadoc` handler.
+  Key is mapped to |<Plug>(elin_open_javadoc)|.
+
                                                            *ElinTestUnderCursor*
 ElinTestUnderCursor
   Calls `elin.handler.test/run-test-under-cursor` handler.
@@ -305,6 +310,10 @@ MAPPINGS                                                         *elin-mappings*
 <Plug>(elin_show_clojuredocs)
   Same as |ElinShowClojureDocs|.
 
+                                                     *<Plug>(elin_open_javadoc)*
+<Plug>(elin_open_javadoc)
+  Same as |ElinOpenJavadoc|.
+
                                                 *<Plug>(elin_test_under_cursor)*
 <Plug>(elin_test_under_cursor)
   Same as |ElinTestUnderCursor|.
@@ -369,6 +378,7 @@ n      <Leader>blr   <Plug>(elin_local_references)
 n      K             <Plug>(elin_lookup)
 n      <Leader>hs    <Plug>(elin_show_source)
 n      <Leader>hc    <Plug>(elin_show_clojuredocs)
+n      <Leader>hj    <Plug>(elin_open_javadoc)
 n      <Leader>tt    <Plug>(elin_test_under_cursor)
 n      <Leader>tf    <Plug>(elin_test_focused_current_testing)
 n      <Leader>tn    <Plug>(elin_test_in_ns)
