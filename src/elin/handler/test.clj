@@ -1,7 +1,6 @@
 (ns elin.handler.test
   (:require
    [clojure.core.async :as async]
-   [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.error :as e]
@@ -17,28 +16,14 @@
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema.handler :as e.s.handler]
    [elin.util.map :as e.u.map]
-   [malli.core :as m]
-   [rewrite-clj.zip :as r.zip]))
-
-(defn- extract-multi-method-name
-  [code]
-  (let [zloc (-> (r.zip/of-string code)
-                 (r.zip/down))]
-    (when (contains? #{'defmulti 'defmethod} (r.zip/sexpr zloc))
-      (some-> zloc
-              (r.zip/next)
-              (r.zip/sexpr)
-              (str)))))
+   [malli.core :as m]))
 
 (m/=> run-test-under-cursor [:=> [:cat e.s.handler/?Elin] any?])
 (defn run-test-under-cursor
   "Run test under cursor."
   [{:as elin :component/keys [interceptor session-storage]}]
-  (e/let [{:keys [code response options]} (e.f.evaluate/evaluate-current-top-list elin)
-          {ns-str :ns} options
-          var-name (or (some->> (extract-multi-method-name code)
-                                (str ns-str "/"))
-                       (str/replace (:value response) #"^#'" ""))
+  (e/let [{:keys [options]} (e.f.evaluate/get-var-name-from-current-top-list elin)
+          {ns-str :ns var-name :var-name} options
           context (-> (e.u.map/select-keys-by-namespace elin :component)
                       (assoc :ns ns-str
                              :line (:line options)

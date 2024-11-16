@@ -7,7 +7,8 @@
    [elin.function.nrepl :as e.f.nrepl]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
-   [elin.util.nrepl :as e.u.nrepl]))
+   [elin.util.nrepl :as e.u.nrepl]
+   [rewrite-clj.zip :as r.zip]))
 
 (defn- eval!!
   [nrepl code options]
@@ -117,3 +118,22 @@
                     {})
           resp (e.f.nrepl/eval!! nrepl code' options)]
     resp))
+
+(defn- extract-multi-method-name
+  [code]
+  (let [zloc (-> (r.zip/of-string code)
+                 (r.zip/down))]
+    (when (contains? #{'defmulti 'defmethod} (r.zip/sexpr zloc))
+      (some-> zloc
+              (r.zip/next)
+              (r.zip/sexpr)
+              (str)))))
+
+(defn get-var-name-from-current-top-list
+  [elin]
+  (e/let [{:as resp :keys [code response options]} (evaluate-current-top-list elin)
+          {ns-str :ns} options]
+    (assoc-in resp [:options :var-name]
+              (or (some->> (extract-multi-method-name code)
+                           (str ns-str "/"))
+                  (str/replace (:value response) #"^#'" "")))))
