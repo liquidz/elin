@@ -86,6 +86,7 @@
                   elin.handler.lookup/show-clojuredocs {:export-edn-url "https://github.com/clojure-emacs/clojuredocs-export-edn/raw/master/exports/export.compact.edn"
                                                         :format #resource "template/clojuredocs.mustache"
                                                         :interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
+                  elin.handler.lookup/open-javadoc {}
                   elin.handler.namespace/add-libspec {:favorites #include "favorite_aliases.edn"
                                                       :java-classes #include "java_classes.edn"
                                                       :interceptor {:includes [elin.interceptor.handler.namespace/show-result
