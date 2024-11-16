@@ -13,11 +13,15 @@ All notable changes to this project will be documented in this file. This change
 - Add elin.interceptor.handler.namespace
 - Add elin.handler.lookup/open-javadoc
 - Add ElinOpenJavadoc command for vim
+- Add elin.function.nrepl/get-cycled-var-name
+- Add elin.handler.navigate/cycle-function-and-test
+- Add ElinCycleFunctionAndTest command for vim
 
 === Changed
 
 - Bump git-cliff-action to v4
 - Apply standard-clj
+- Move getting var-name function to elin.function.evaluate
 
 === Fixed
 
