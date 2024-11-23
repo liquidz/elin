@@ -8,8 +8,7 @@
    [elin.error :as e]
    [elin.protocol.host :as e.p.host]
    [elin.util.nrepl :as e.u.nrepl]
-   [elin.util.process :as e.u.process]
-   [taoensso.timbre :as timbre]))
+   [elin.util.process :as e.u.process]))
 
 (def ^:private elin-root-dir
   (-> (io/file *file*)
