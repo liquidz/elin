@@ -2,6 +2,7 @@
   (:require
    [clojure.core.async :as async]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.constant.nrepl :as e.c.nrepl]
    [elin.function.jack-in :as e.f.jack-in]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
@@ -17,7 +18,7 @@
 (defn- find-clojure-port-file
   [cwd]
   (when-let [file (e.u.file/find-file-in-parent-directories cwd ".nrepl-port")]
-    {:language "clojure"
+    {:language e.c.nrepl/lang-clojure
      :port-file (.getAbsolutePath file)
      :port (some->> file slurp Long/parseLong)}))
 
