@@ -96,9 +96,23 @@
                        [e.c.jack-in/deno-command "run" "-A" "npm:squint-cljs@latest"]
 
                        :else
-                       (e/not-found {:message "squint of deno command is not found"}))]
+                       (e/not-found {:message "squint of deno command is required"}))]
     {:language e.c.nrepl/lang-clojurescript
      :command (concat squint-cmd ["nrepl-server" ":port" (str port)])}))
+
+(defmethod generate-command e.c.jack-in/nbb
+  [_ port _]
+  (e/let [nbb-cmd (cond
+                    (e.u.process/executable? e.c.jack-in/nbb-command)
+                    [e.c.jack-in/nbb-command]
+
+                    (e.u.process/executable? e.c.jack-in/deno-command)
+                    [e.c.jack-in/deno-command "run" "-A" "npm:nbb@latest"]
+
+                    :else
+                    (e/not-found {:message "nbb or deno command is required"}))]
+    {:language e.c.nrepl/lang-clojure
+     :command (concat nbb-cmd ["nrepl-server" ":port" (str port)])}))
 
 (defn port->process-id
   [port]
