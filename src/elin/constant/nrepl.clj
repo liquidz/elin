@@ -1,5 +1,8 @@
 (ns elin.constant.nrepl)
 
+(def lang-clojure "clojure")
+(def lang-clojurescript "clojurescript")
+
 (def array-key-set
   #{"status" "sessions" "classpath"
     ;; cider-nrepl complete op
