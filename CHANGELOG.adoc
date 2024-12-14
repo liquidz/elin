@@ -1,6 +1,14 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
-== [unreleased]
+== [2024.12.0-alpha] - 2024-12-14
+
+=== Added
+
+- Add elin.util.process/executable?
+- Add squint support for instant connecting
+- Add nbb support for instant connecting
+
+== [0.0.2] - 2024-12-14
 
 === Added
 
@@ -20,8 +28,6 @@ All notable changes to this project will be documented in this file. This change
 === Changed
 
 - Bump git-cliff-action to v4
-- Apply standard-clj
-- Move getting var-name function to elin.function.evaluate
 - Bump malli to 0.17.0
 - Bump rewrite-clj to 1.1.49
 - Bump cider-nrepl to 0.50.3
@@ -31,16 +37,11 @@ All notable changes to this project will be documented in this file. This change
 - Fix evaluation handlers to return evaluated result value
 - Fix connection component to close socket when error occured in reading bencode loop
 - Fix nrepl component not to send request when disconnected
-- Fix elin.util.process tests
 - Fix to use Standard Clojure Style for code formatting
 - Fix to use elin.interceptor.handler.namespace
 - Update add-libspec, add-missing-libspec to use modify-code interceptor
 - Rename modify-code response to result
 - Fix elin.function.lookup to fallback when info does not respond namespace and var name
-- Fix lookup test
-- Fix unwrap-comment-form-test performance
-- Add reviewdog.yml
-- Fix test clj-kondo component
 - Fix not to throw error when callback id does not exists
 
 === Removed
