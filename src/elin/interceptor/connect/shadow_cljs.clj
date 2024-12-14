@@ -5,6 +5,7 @@
    [clojure.java.io :as io]
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.constant.nrepl :as e.c.nrepl]
    [elin.function.evaluate :as e.f.evaluate]
    [elin.function.select :as e.f.select]
    [elin.protocol.host :as e.p.host]
@@ -26,7 +27,7 @@
   (when-let [file (some-> (e.u.file/find-file-in-parent-directories cwd ".shadow-cljs")
                           (io/file "nrepl.port"))]
     (when (.exists file)
-      {:language "clojurescript"
+      {:language e.c.nrepl/lang-clojurescript
        :port-file (.getAbsolutePath file)
        :port (some->> file slurp Long/parseLong)})))
 
@@ -58,7 +59,8 @@
 
    :leave (-> (fn [{:as ctx :component/keys [nrepl]}]
                 (let [{:keys [language port-file]} (e.p.nrepl/current-client nrepl)]
-                  (when (and (= "clojurescript" language)
+                  (when (and (= e.c.nrepl/lang-clojurescript language)
+                             (string? port-file)
                              (str/includes? port-file "shadow-cljs"))
 
                     (let [build-id (-> (e.f.evaluate/evaluate-code ctx shadow-cljs-build-ids-code)

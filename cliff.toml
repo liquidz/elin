@@ -65,9 +65,9 @@ commit_parsers = [
   { message = "^deps", group = "Changed" },
   { message = "^breaking", group = "Removed" },
   { message = "^docs", skip = true },
-  { message = "^style", group = "Changed" },
-  { message = "^refactor", group = "Changed" },
-  { message = "^test", group = "Fixed" },
+  { message = "^style", skip = true },
+  { message = "^refactor", skip = true },
+  { message = "^test", skip = true },
   { message = "^chore", skip = true },
 ]
 # filter out the commits that are not matched by commit parsers

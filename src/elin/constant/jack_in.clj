@@ -3,5 +3,31 @@
 (def clojure-cli :clojure-cli)
 (def leiningen :leiningen)
 (def babashka :babashka)
+(def squint :squint)
+(def nbb :nbb)
 
-(def supported-project-types [clojure-cli babashka])
+(def supported-project-types
+  [clojure-cli
+   babashka
+   squint
+   nbb])
+
+(def clojure-command
+  (or (System/getenv "ELIN_REPL_CLOJURE_CLI_CMD")
+      "clj"))
+
+(def babashka-command
+  (or (System/getenv "ELIN_REPL_BABASHKA_CMD")
+      "bb"))
+
+(def squint-command
+  (or (System/getenv "ELIN_REPL_SQUINT_CMD")
+      "squint"))
+
+(def nbb-command
+  (or (System/getenv "ELIN_REPL_NBB_CMD")
+      "nbb"))
+
+(def deno-command
+  (or (System/getenv "ELIN_REPL_DENO_CMD")
+      "deno"))

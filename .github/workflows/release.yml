@@ -1,0 +1,43 @@
+name: release
+on: workflow_dispatch
+
+jobs:
+  tag_and_release:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Calendar Version
+        id: calendar-version
+        uses: harm-matthias-harms/calendar-version@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.calendar-version.outputs.new-tag }}-alpha
+          skipIfReleaseExists: true
+          generateReleaseNotes: true
+
+  changelog:
+    needs: [tag_and_release]
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.adoc
+          GITHUB_REPO: ${{ github.repository }}
+
+      - run: |
+          git diff
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "github-actions"
+          git add CHANGELOG.adoc
+          git commit -m "Update CHANGELOG" || exit 0
+          git push

@@ -21,11 +21,12 @@
 
 (defn connect
   [{:as elin :component/keys [interceptor]}
-   {:keys [hostname port wait?]}]
+   {:keys [hostname port language wait?]}]
   (let [context (-> elin
                     (e.u.map/select-keys-by-namespace :component)
                     (assoc :hostname hostname
                            :port port
+                           :language language
                            :wait? wait?))
         connect-fn (fn [{:as ctx :component/keys [nrepl]
                          :keys [error hostname port language port-file wait?]}]

@@ -27,3 +27,13 @@
   [process-id]
   (when-let [process (get @manager process-id)]
     (proc/destroy process)))
+
+(defn- executable?*
+  [command]
+  (try
+    (let [process (proc/process [command])]
+      (proc/destroy process)
+      true)
+    (catch Exception _
+      false)))
+(def executable? (memoize executable?*))

@@ -1,5 +1,6 @@
 (ns elin.schema.nrepl
   (:require
+   [elin.constant.nrepl :as e.c.nrepl]
    [elin.schema :as e.schema]
    [malli.util :as m.util])
   (:import
@@ -33,7 +34,9 @@
    [:initial-namespace [:maybe string?]]
    [:version [:map-of keyword? any?]]
    [:port-file [:maybe string?]]
-   [:language [:maybe [:enum "clojure" "clojurescript"]]]])
+   [:language [:maybe [:enum
+                       e.c.nrepl/lang-clojure
+                       e.c.nrepl/lang-clojurescript]]]])
 
 (def ?Manager
   [:map-of int? [:map
