@@ -22,6 +22,9 @@ All notable changes to this project will be documented in this file. This change
 - Bump git-cliff-action to v4
 - Apply standard-clj
 - Move getting var-name function to elin.function.evaluate
+- Bump malli to 0.17.0
+- Bump rewrite-clj to 1.1.49
+- Bump cider-nrepl to 0.50.3
 
 === Fixed
 
@@ -38,6 +41,7 @@ All notable changes to this project will be documented in this file. This change
 - Fix unwrap-comment-form-test performance
 - Add reviewdog.yml
 - Fix test clj-kondo component
+- Fix not to throw error when callback id does not exists
 
 === Removed
 
