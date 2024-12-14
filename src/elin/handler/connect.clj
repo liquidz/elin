@@ -78,7 +78,7 @@
   "Launch nREPL server according to the project detected from the current file and connect to it."
   [{:as elin :component/keys [host]}]
   (let [{:keys [language port]} (e.f.jack-in/launch-process elin)]
-    (e.message/info host (format "Wainting to connect to localhost:%s" port))
+    (e.message/info host (format "Waiting to connect to localhost:%s" port))
     (connect* elin {:hostname "localhost" :port port :language language :wait? true})))
 
 (def ^:private ?InstantParams
@@ -95,7 +95,7 @@
                                   (e.f.jack-in/launch-process elin {:forced-project (keyword project)}))]
     (if error
       (e.message/error host "Invalid parameter" error)
-      (do (e.message/info host (format "Wainting to connect to localhost:%s" port))
+      (do (e.message/info host (format "Waiting to connect to localhost:%s" port))
           (connect* elin {:hostname "localhost" :port port :language language :wait? true})))))
 
 (defn switch
