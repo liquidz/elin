@@ -5,7 +5,7 @@
         exoscale/interceptor {:mvn/version "0.1.17"}
         metosin/malli {:mvn/version "0.17.0"}
         pogonos/pogonos {:mvn/version "0.2.1"}
-        rewrite-clj/rewrite-clj {:mvn/version "1.1.48"}
+        rewrite-clj/rewrite-clj {:mvn/version "1.1.49"}
         org.clj-commons/digest {:mvn/version "1.4.100"}}
 
  :__elin_internal__
