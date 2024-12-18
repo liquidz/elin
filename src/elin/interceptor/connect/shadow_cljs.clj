@@ -36,8 +36,13 @@
    :enter (-> (fn [{:as ctx :component/keys [host] :keys [hostname port-file]}]
                 (let [{:keys [default-hostname]} (e.u.interceptor/config ctx #'detect-shadow-cljs-port)
                       cwd (async/<!! (e.p.host/get-current-working-directory! host))
-                      project-root (str (.getAbsolutePath (e.u.file/get-project-root-directory cwd))
-                                        (e.u.file/guess-file-separator cwd))
+                      file-sep (e.u.file/guess-file-separator cwd)
+                      project-root (try
+                                     (str (.getAbsolutePath (e.u.file/get-project-root-directory cwd))
+                                          file-sep)
+                                     (catch Exception _
+                                       (str cwd
+                                            file-sep)))
                       shadow-cljs-port-file (find-shadow-cljs-port-file cwd)
                       selected-port-file (when shadow-cljs-port-file
                                            (->> [port-file
