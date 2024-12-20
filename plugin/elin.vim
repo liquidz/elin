@@ -6,6 +6,7 @@ let g:loaded_vim_elin = 1
 let g:elin_home = expand('<sfile>:p:h:h')
 let g:elin_server_auto_connect = get(g:, 'elin_server_auto_connect', v:true)
 let g:elin_server_port = get(g:, 'elin_server_port', v:null)
+let g:elin_enable_omni_completion = get(g:, 'elin_enable_omni_completion', v:true)
 
 if !exists('g:elin_default_key_mapping_leader')
   let g:elin_default_key_mapping_leader = '<Leader>'
@@ -40,7 +41,9 @@ function! s:init() abort
 
   aug elin_autocmd_group
     au!
-    au FileType clojure setl omnifunc=elin#complete#omni
+    if g:elin_enable_omni_completion
+      au FileType clojure setl omnifunc=elin#complete#omni
+    endif
     au BufEnter *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufEnter')
     au BufNewFile *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufNewFile')
     au BufRead *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufRead')
