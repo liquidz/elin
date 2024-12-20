@@ -55,9 +55,11 @@
   [s]
   (when s
     (try
-      (with-out-str
-        (-> (read-string s)
-            (pp/pprint)))
+      (let [v (read-string s)]
+        (if (symbol? v)
+          s
+          (with-out-str
+            (pp/pprint v))))
       (catch Exception _
         s))))
 
