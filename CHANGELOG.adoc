@@ -1,5 +1,16 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2024.12.1-alpha] - 2024-12-20
+
+=== Added
+
+- Add g:elin_enable_omni_completion option
+
+=== Fixed
+
+- Fix detect-shadow-cljs-port interceptor not to throw an exception when the file is not managed by git
+- Fix append-test-result-to-info-buffer interceptor to append correct actual value
+
 == [2024.12.0-alpha] - 2024-12-14
 
 === Added
