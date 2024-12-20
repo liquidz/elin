@@ -4,7 +4,7 @@ endif
 let g:loaded_vim_elin = 1
 
 let g:elin_home = expand('<sfile>:p:h:h')
-let g:elin_auto_connect = get(g:, 'elin_auto_connect', v:true)
+let g:elin_server_auto_connect = get(g:, 'elin_server_auto_connect', v:true)
 let g:elin_server_port = get(g:, 'elin_server_port', v:null)
 
 if !exists('g:elin_default_key_mapping_leader')
@@ -31,7 +31,7 @@ function! s:init() abort
     call elin#server#start()
   endif
 
-  if g:elin_auto_connect is v:true
+  if g:elin_server_auto_connect is v:true
     call elin#server#connect(g:elin_server_port)
   endif
 
