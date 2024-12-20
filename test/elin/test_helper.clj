@@ -52,6 +52,10 @@
 (def test-interceptor #'h.interceptor/test-interceptor)
 
 (defn test-elin
+  "Create a test elin request
+
+  e.g. (-> (nrepl-eval-config (constantly 1))
+           (test-elin))"
   ([]
    (test-elin {}))
   ([option]
@@ -68,12 +72,6 @@
   ([config f]
    (assoc-in config [:nrepl :client :handler] #(when (= "eval" (:op %))
                                                  [{:value (f %)}]))))
-
-(defn host-get-namespace-sexpr!-config
-  ([code]
-   (host-get-namespace-sexpr!-config {} code))
-  ([config code]
-   (assoc-in config [:host :get-namespace-sexpr!] {:code code :lnum 0 :col 0})))
 
 (defn rand-str
   [n]

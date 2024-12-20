@@ -41,19 +41,6 @@
   (input! [_ _prompt _default]
     nil)
 
-  e.p.host/ISexpr
-  (get-top-list-sexpr! [_ _lnum _col]
-    (async/go (:get-top-list-sexpr! option)))
-  (get-list-sexpr! [_ _lnum _col]
-    (async/go (:get-list-sexpr! option)))
-  (get-single-sexpr! [_ _lnum _col]
-    (async/go (:get-single-sexpr! option)))
-  (get-namespace-sexpr! [_]
-    (async/go (:get-namespace-sexpr! option)))
-  (get-namespace-sexpr! [_ _path]
-    (async/go (:get-namespace-sexpr! option)))
-  (replace-list-sexpr! [_ _lnum _col _new-sexpr] (async/go nil))
-
   e.p.host/IQuickfix
   (set-quickfix-list [_ _qf-list]
     (async/go nil))
