@@ -1,5 +1,9 @@
 name: release
-on: workflow_dispatch
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
 
 jobs:
   tag_and_release:

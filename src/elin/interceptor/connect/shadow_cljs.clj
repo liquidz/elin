@@ -32,6 +32,11 @@
        :port (some->> file slurp Long/parseLong)})))
 
 (def detect-shadow-cljs-port
+  "Detect available `shadow-cljs` ports.
+  If there are multiple port candidates, prompt the user to select one.
+
+  When a `shadow-cljs` port is selected and there are multiple build IDs in `shadow-cljs`, prompt the user to select a build ID as well.
+  The selected build ID will be watched on `shadow-cljs`."
   {:kind e.c.interceptor/connect
    :enter (-> (fn [{:as ctx :component/keys [host] :keys [hostname port-file]}]
                 (let [{:keys [default-hostname]} (e.u.interceptor/config ctx #'detect-shadow-cljs-port)
@@ -64,10 +69,11 @@
 
    :leave (-> (fn [{:as ctx :component/keys [nrepl]}]
                 (let [{:keys [language port-file]} (e.p.nrepl/current-client nrepl)]
+                  ;; When shadow-cljs port is selected
                   (when (and (= e.c.nrepl/lang-clojurescript language)
                              (string? port-file)
                              (str/includes? port-file "shadow-cljs"))
-
+                    ;; Select the build ID
                     (let [build-id (-> (e.f.evaluate/evaluate-code ctx shadow-cljs-build-ids-code)
                                        (get-in [:response :value])
                                        (edn/read-string)

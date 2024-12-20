@@ -1,34 +1,45 @@
 (ns elin.function.sexpr-test
   (:require
+   [clojure.core.async :as async]
    [clojure.test :as t]
    [elin.error :as e]
    [elin.function.sexpr :as sut]
+   [elin.protocol.host :as e.p.host]
    [elin.test-helper :as h]
    [elin.test-helper.host]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 
-(defn- get-namespace-elin
+(defn- mock-get-namespace-sexpr!
   [ns-form]
-  (h/test-elin {:host {:get-namespace-sexpr! {:code ns-form :lnum 0 :col 0}}}))
+  (fn [& _]
+    (async/go
+      {:code ns-form :lnum 0 :col 0})))
 
 (t/deftest get-namespace-test
-  (t/testing "no metadata"
-    (t/is (= "foo.bar"
-             (sut/get-namespace (get-namespace-elin "(ns foo.bar)")))))
+  (let [test-elin (h/test-elin)]
+    (t/testing "no metadata"
+      (with-redefs [e.p.host/get-namespace-sexpr! (mock-get-namespace-sexpr! "(ns foo.bar)")]
+        (t/is (= "foo.bar"
+                 (sut/get-namespace test-elin)))))
 
-  (t/testing "with metadata"
-    (t/is (= "foo.bar"
-             (sut/get-namespace (get-namespace-elin "(ns ^:meta foo.bar)"))))
-    (t/is (= "foo.bar"
-             (sut/get-namespace (get-namespace-elin "(ns ^{:meta true} foo.bar)")))))
+    (t/testing "with metadata"
+      (with-redefs [e.p.host/get-namespace-sexpr! (mock-get-namespace-sexpr! "(ns ^:meta foo.bar)")]
+        (t/is (= "foo.bar"
+                 (sut/get-namespace test-elin))))
+      (with-redefs [e.p.host/get-namespace-sexpr! (mock-get-namespace-sexpr! "(ns ^{:meta true} foo.bar)")]
+        (t/is (= "foo.bar"
+                 (sut/get-namespace test-elin)))))
 
-  (t/testing "in-ns"
-    (t/is (= "foo.bar"
-             (sut/get-namespace (get-namespace-elin "(in-ns 'foo.bar)")))))
+    (t/testing "in-ns"
+      (with-redefs [e.p.host/get-namespace-sexpr! (mock-get-namespace-sexpr! "(in-ns 'foo.bar)")]
+        (t/is (= "foo.bar"
+                 (sut/get-namespace test-elin)))))
 
-  (t/testing "no namespace"
-    (t/is (e/not-found?
-            (sut/get-namespace (get-namespace-elin "(foo)"))))
-    (t/is (e/not-found?
-            (sut/get-namespace (get-namespace-elin ""))))))
+    (t/testing "no namespace"
+      (with-redefs [e.p.host/get-namespace-sexpr! (mock-get-namespace-sexpr! "(foo)")]
+        (t/is (e/not-found?
+                (sut/get-namespace test-elin))))
+      (with-redefs [e.p.host/get-namespace-sexpr! (mock-get-namespace-sexpr! "")]
+        (t/is (e/not-found?
+                (sut/get-namespace test-elin)))))))
