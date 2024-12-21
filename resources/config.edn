@@ -34,7 +34,9 @@
                       elin.interceptor.nrepl/eval-ns {}
                       elin.interceptor.nrepl/normalize-path {}
                       elin.interceptor.nrepl/progress {}
-                      elin.interceptor.output/print-output {}]
+                      elin.interceptor.output/print-output {}
+                      elin.interceptor.tap/initialize {}
+                      elin.interceptor.tap/access-tapped-values {}]
 
                :config-map {elin.interceptor.evaluate/set-eval-result-to-virtual-text {:format "=> {{{result}}}"
                                                                                        :highlight "DiffText"
