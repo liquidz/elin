@@ -94,9 +94,9 @@
 
 (defn print-last-result
   "Print last evaluation result to InfoBuffer."
-  [{:component/keys [host nrepl]}]
+  [{:component/keys [nrepl]}]
   (let [resp (e.f.nrepl/eval!! nrepl "(with-out-str (clojure.pprint/pprint *1))")]
-    (e.p.host/append-to-info-buffer host (read-string (:value resp)))))
+    (read-string (:value resp))))
 
 (defn reload
   "Reload all changed files with tonsky/clj-reload."
