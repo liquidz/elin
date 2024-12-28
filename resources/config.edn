@@ -107,6 +107,7 @@
                   elin.handler.navigate/jump-to-definition {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/local-references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
+                  elin.handler.tap/tapped {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.test/rerun-last-failed-tests {:interceptor #ref [:interceptor :preset :test]}
                   elin.handler.test/rerun-last-tests {:interceptor #ref [:interceptor :preset :test]}
                   elin.handler.test/run-test-under-cursor {:interceptor #ref [:interceptor :preset :test]}
