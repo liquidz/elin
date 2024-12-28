@@ -46,7 +46,8 @@
    e.c.interceptor/test e.s.interceptor/?TestContext
    e.c.interceptor/test-result e.s.interceptor/?TestResultContext
    e.c.interceptor/quickfix e.s.interceptor/?QuickfixContext
-   e.c.interceptor/modify-code e.s.interceptor/?ModifyCodeContext})
+   e.c.interceptor/modify-code e.s.interceptor/?ModifyCodeContext
+   e.c.interceptor/tap e.s.interceptor/?TapContext})
 
 (def interceptor-context-checking
   {:kind e.c.interceptor/all

@@ -34,7 +34,9 @@
                       elin.interceptor.nrepl/eval-ns {}
                       elin.interceptor.nrepl/normalize-path {}
                       elin.interceptor.nrepl/progress {}
-                      elin.interceptor.output/print-output {}]
+                      elin.interceptor.output/print-output {}
+                      elin.interceptor.tap/initialize {:max-store-size 10}
+                      elin.interceptor.tap/access-tapped-values {:var-name "*tapped*"}]
 
                :config-map {elin.interceptor.evaluate/set-eval-result-to-virtual-text {:format "=> {{{result}}}"
                                                                                        :highlight "DiffText"
@@ -72,7 +74,7 @@
                   elin.handler.evaluate/evaluate-namespace-form {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline]}}
                   elin.handler.evaluate/expand-1-current-list {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.evaluate/interrupt {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
-                  elin.handler.evaluate/print-last-result {}
+                  elin.handler.evaluate/print-last-result {:interceptor {:includes [elin.interceptor.handler/append-result-to-info-buffer]}}
                   elin.handler.evaluate/reload {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
                   elin.handler.evaluate/reload-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
                   elin.handler.evaluate/undef {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
@@ -105,6 +107,7 @@
                   elin.handler.navigate/jump-to-definition {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/local-references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
+                  elin.handler.tap/tapped {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.test/rerun-last-failed-tests {:interceptor #ref [:interceptor :preset :test]}
                   elin.handler.test/rerun-last-tests {:interceptor #ref [:interceptor :preset :test]}
                   elin.handler.test/run-test-under-cursor {:interceptor #ref [:interceptor :preset :test]}

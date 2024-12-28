@@ -19,7 +19,8 @@
    e.c.interceptor/test
    e.c.interceptor/test-result
    e.c.interceptor/quickfix
-   e.c.interceptor/modify-code])
+   e.c.interceptor/modify-code
+   e.c.interceptor/tap])
 
 (def ?Interceptor
   [:map
@@ -118,4 +119,12 @@
        [:code string?]
        ;; LEAVE
        [:result {:optional true} boolean?]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?TapContext
+  (-> [:map
+       ;; ENTER
+       [:value any?]
+       ;; LEAVE
+       [:value-str {:optional true} string?]]
       (m.util/merge e.s.handler/?Components)))
