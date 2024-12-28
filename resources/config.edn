@@ -35,8 +35,8 @@
                       elin.interceptor.nrepl/normalize-path {}
                       elin.interceptor.nrepl/progress {}
                       elin.interceptor.output/print-output {}
-                      elin.interceptor.tap/initialize {}
-                      elin.interceptor.tap/access-tapped-values {}]
+                      elin.interceptor.tap/initialize {:max-store-size 10}
+                      elin.interceptor.tap/access-tapped-values {:var-name "*tapped*"}]
 
                :config-map {elin.interceptor.evaluate/set-eval-result-to-virtual-text {:format "=> {{{result}}}"
                                                                                        :highlight "DiffText"
