@@ -26,7 +26,7 @@
   org.babashka/sci.impl.types {:mvn/version "0.0.2"},
   org.clj-commons/digest {:mvn/version "1.4.100"},
   org.clojure/clojure {:mvn/version "1.12.0"},
-  org.clojure/core.async {:mvn/version "1.6.673"},
+  org.clojure/core.async {:mvn/version "1.7.701"},
   org.clojure/core.match {:mvn/version "1.0.0"},
   org.clojure/core.rrb-vector {:mvn/version "0.1.2"},
   org.clojure/data.csv {:mvn/version "1.0.0"},
