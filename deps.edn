@@ -9,7 +9,7 @@
   babashka/fs {:mvn/version "0.5.22"},
   babashka/process {:mvn/version "0.5.22"},
   cheshire/cheshire {:mvn/version "5.13.0"},
-  clj-commons/clj-yaml {:mvn/version "1.0.28"},
+  clj-commons/clj-yaml {:mvn/version "1.0.29"},
   clojure-msgpack/clojure-msgpack {:mvn/version "1.2.1"},
   com.cognitect/transit-clj {:mvn/version "1.0.333"},
   com.stuartsierra/component {:mvn/version "1.1.0"},
