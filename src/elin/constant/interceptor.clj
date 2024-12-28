@@ -16,3 +16,4 @@
 (def quickfix ::quickfix)
 (def debug ::debug)
 (def modify-code ::modify-code)
+(def tap ::tap)

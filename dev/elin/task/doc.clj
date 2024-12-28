@@ -115,6 +115,7 @@
     e.c.interceptor/quickfix "Executed on setting quickfix."
     e.c.interceptor/debug "Executed on debugging."
     e.c.interceptor/modify-code "Executed on modifying code."
+    e.c.interceptor/tap "Executed on tapping some values."
     nil))
 
 (defn- generate-interceptor-document
