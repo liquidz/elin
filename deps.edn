@@ -21,7 +21,7 @@
   metosin/malli {:mvn/version "0.17.0"},
   nrepl/bencode {:mvn/version "1.2.0"},
   org.babashka/babashka.impl.java {:mvn/version "0.1.10"},
-  org.babashka/cli {:mvn/version "0.8.59"},
+  org.babashka/cli {:mvn/version "0.8.62"},
   org.babashka/http-client {:mvn/version "0.4.22"},
   org.babashka/sci.impl.types {:mvn/version "0.0.2"},
   org.clj-commons/digest {:mvn/version "1.4.100"},
