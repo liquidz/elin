@@ -1,5 +1,24 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2024.12.2-alpha] - 2024-12-28
+
+=== Added
+
+- Add elin.interceptor.tap
+- Enable interceptors in elin.interceptor.tap by default
+- Define tap interceptor kind as elin.constant.interceptor/tap
+- Add elin.handler.tap/tapped
+
+=== Changed
+
+- Bump clj-yaml to 1.0.29
+- Bump org.babashka/cli to 0.8.62
+- Bump core.async to 1.7.701
+
+=== Fixed
+
+- Update elin.interceptor.tap/initialize to call tap-handler for intercepting tapped values
+
 == [2024.12.1-alpha] - 2024-12-20
 
 === Added
