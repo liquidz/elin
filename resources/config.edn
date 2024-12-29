@@ -116,7 +116,11 @@
            :aliases {elin-alias-evaluate-current-list-in-context {:handler elin.handler.evaluate/evaluate-current-list
                                                                   :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}
                      elin-alias-run-test-focused-current-testing {:handler elin.handler.test/run-test-under-cursor
-                                                                  :config {:interceptor {:includes [elin.interceptor.test/focus-current-testing]}}}}
+                                                                  :config {:interceptor {:includes [elin.interceptor.test/focus-current-testing]}}}
+                     elin-alias-overview-current-list {:handler elin.handler.evaluate/evaluate-current-list
+                                                       :config {:interceptor {:includes [elin.interceptor.handler/overview]}}}
+                     elin-alias-overview-current-top-list {:handler elin.handler.evaluate/evaluate-current-top-list
+                                                           :config {:interceptor {:includes [elin.interceptor.handler/overview]}}}}
 
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 

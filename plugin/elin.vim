@@ -102,6 +102,9 @@ command! ElinEvalAtMark call elin#notify('elin.handler.evaluate/evaluate-at-mark
 command! ElinEvalInContext call elin#notify('elin-alias-evaluate-current-list-in-context', [])
 command! ElinPrintLastResult call elin#notify('elin.handler.evaluate/print-last-result', [])
 
+command! ElinOverviewCurrentList call elin#notify('elin-alias-overview-current-list', [])
+command! ElinOverviewCurrentTopList call elin#notify('elin-alias-overview-current-top-list', [])
+
 command! ElinInterrupt call elin#notify('elin.handler.evaluate/interrupt', [])
 command! ElinUndef call elin#notify('elin.handler.evaluate/undef', [])
 command! ElinUndefAll call elin#notify('elin.handler.evaluate/undef-all', [])
@@ -161,6 +164,9 @@ nnoremap <silent> <Plug>(elin_eval_ns_form) <Cmd>ElinEvalNsForm<CR>
 nnoremap <silent> <Plug>(elin_eval_at_mark) <Cmd>ElinEvalAtMark<CR>
 nnoremap <silent> <Plug>(elin_eval_in_context) <Cmd>ElinEvalInContext<CR>
 nnoremap <silent> <Plug>(elin_print_last_result) <Cmd>ElinPrintLastResult<CR>
+
+nnoremap <silent> <Plug>(elin_overview_current_list) <Cmd>ElinOverviewCurrentList<CR>
+nnoremap <silent> <Plug>(elin_overview_current_top_list) <Cmd>ElinOverviewCurrentTopList<CR>
 
 nnoremap <silent> <Plug>(elin_interrupt) <Cmd>ElinInterrupt<CR>
 nnoremap <silent> <Plug>(elin_undef) <Cmd>ElinUndef<CR>
@@ -242,6 +248,9 @@ function! s:default_key_mappings() abort
   call s:define_mapping('nmap', '<Leader>ea', '<Plug>(elin_eval_at_mark)')
   call s:define_mapping('nmap', '<Leader>ece', '<Plug>(elin_eval_in_context)')
   call s:define_mapping('nmap', '<Leader>ep', '<Plug>(elin_print_last_result)')
+
+  call s:define_mapping('nmap', '<Leader>oe', '<Plug>(elin_overview_current_list)')
+  call s:define_mapping('nmap', '<Leader>ot', '<Plug>(elin_overview_current_top_list)')
 
   call s:define_mapping('nmap', '<Leader>eq', '<Plug>(elin_interrupt)')
   call s:define_mapping('nmap', '<Leader>eu', '<Plug>(elin_undef)')
