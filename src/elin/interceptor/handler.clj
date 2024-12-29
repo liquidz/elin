@@ -2,12 +2,14 @@
   (:require
    [clojure.core.async :as async]
    [clojure.java.io :as io]
+   [clojure.pprint :as pp]
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.error :as e]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
    [elin.util.interceptor :as e.u.interceptor]
+   [elin.util.overview :as e.u.overview]
    [exoscale.interceptor :as ix]))
 
 (def handling-error
@@ -42,6 +44,37 @@
                   (let [config (or (e.u.interceptor/config ctx #'append-result-to-info-buffer)
                                    {})]
                     (e.p.host/append-to-info-buffer host response config))))
+              (ix/discard))})
+
+(def overview
+  "Interceptor to overview handler result.
+
+  .Configuration
+  [%autowidth.stretch]
+  |===
+  | key | type | description
+
+  | max-depth | integer | Max depth to overview data. Default value is `2`.
+  | max-list-length | integer | Max length to overview IPersistentList. Default value is `20`.
+  | max-vector-length | integer | Max length to overview IPersistentVector. Default value is `20`.
+  | max-set-length | integer | Max length to overview IPersistentSet. Default value is `20`.
+  | max-map-length | integer | Max length to overview IPersistentMap. Default value is `20`.
+  | max-string-length | integer | Max length to overview String. Default value is `20`.
+  |==="
+  {:kind e.c.interceptor/handler
+   :leave (-> (fn [{:as ctx :component/keys [host] :keys [response]}]
+                (let [config (e.u.interceptor/config ctx #'overview)
+                      sexpr (try
+                              (read-string response)
+                              (catch Exception _ nil))
+                      overviewed (e.u.overview/overview sexpr config)
+                      overviewed-str (or (when overviewed
+                                           (with-out-str
+                                             (pp/pprint overviewed)))
+                                         "")]
+                  (when (seq overviewed-str)
+                    (e.p.host/append-to-info-buffer
+                      host overviewed-str {:show-temporarily? true}))))
               (ix/discard))})
 
 (def jump-to-file
