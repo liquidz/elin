@@ -1,5 +1,17 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2024.12.3-alpha] - 2024-12-29
+
+=== Added
+
+- Add elin.util.overview
+- Add elin.interceptor.handler/overview interceptor for overviewing handler results
+- Add ElinOverviewCurrentList and ElinOverviewCurrentTopList commands for Vim/Neovim
+
+=== Fixed
+
+- Update append-result-to-info-buffer to support header and footer
+
 == [2024.12.2-alpha] - 2024-12-28
 
 === Added
