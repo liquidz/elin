@@ -36,14 +36,30 @@
               (ix/discard))})
 
 (def append-result-to-info-buffer
-  "Interceptor to show handler result temporarily."
+  "Interceptor to show handler result temporarily.
+
+  .Configuration
+  [%autowidth.stretch]
+  |===
+  | key | type | description
+
+  | show-temporarily? | boolean | If `true`, show result on temporal buffer also. Default value is `false`.
+  | header | string | Header of result. Default value is `nil`.
+  | footer | string | Footer of result. Default value is `nil`.
+  |==="
   {:kind e.c.interceptor/handler
    :leave (-> (fn [{:as ctx :component/keys [host] :keys [response]}]
                 (when (and (string? response)
                            (seq response))
-                  (let [config (or (e.u.interceptor/config ctx #'append-result-to-info-buffer)
-                                   {})]
-                    (e.p.host/append-to-info-buffer host response config))))
+                  (let [{:as config :keys [header footer]} (or (e.u.interceptor/config ctx #'append-result-to-info-buffer)
+                                                               {})
+                        text (if (and (string? header) (seq header))
+                               (str header response)
+                               response)
+                        text (if (and (string? footer) (seq footer))
+                               (str text footer)
+                               text)]
+                    (e.p.host/append-to-info-buffer host text config))))
               (ix/discard))})
 
 (def overview
