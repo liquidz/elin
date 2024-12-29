@@ -27,8 +27,10 @@
              (fn [v#]
                (cond
                  (map? v#) (update-vals v# datafy#)
-                 (list? v#) (map datafy# v#)
                  (vector? v#) (mapv datafy# v#)
+                 (sequential? v#) (map datafy# v#)
+                 (or (keyword? v#) (symbol? v#)) v#
+                 (instance? Object v#) (str v#)
                  :else (clojure.core.protocols/datafy v#)))
              x#))
 
