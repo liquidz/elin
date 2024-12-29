@@ -74,6 +74,22 @@ ElinPrintLastResult
   Calls `elin.handler.evaluate/print-last-result` handler.
   Key is mapped to |<Plug>(elin_print_last_result)|.
 
+                                                       *ElinOverviewCurrentList*
+ElinOverviewCurrentList
+  Calls `elin.handler.evaluate/evaluate-current-list` handler
+  with the following interceptors:
+  - `elin.interceptor.handler/overview`
+
+  Key is mapped to |<Plug>(elin_overview_current_list)|.
+
+                                                    *ElinOverviewCurrentTopList*
+ElinOverviewCurrentTopList
+  Calls `elin.handler.evaluate/evaluate-current-top-list` handler
+  with the following interceptors:
+  - `elin.interceptor.handler/overview`
+
+  Key is mapped to |<Plug>(elin_overview_current_top_list)|.
+
                                                                  *ElinInterrupt*
 ElinInterrupt
   Calls `elin.handler.evaluate/interrupt` handler.
@@ -259,6 +275,14 @@ MAPPINGS                                                         *elin-mappings*
 <Plug>(elin_print_last_result)
   Same as |ElinPrintLastResult|.
 
+                                            *<Plug>(elin_overview_current_list)*
+<Plug>(elin_overview_current_list)
+  Same as |ElinOverviewCurrentList|.
+
+                                        *<Plug>(elin_overview_current_top_list)*
+<Plug>(elin_overview_current_top_list)
+  Same as |ElinOverviewCurrentTopList|.
+
                                                         *<Plug>(elin_interrupt)*
 <Plug>(elin_interrupt)
   Same as |ElinInterrupt|.
@@ -373,6 +397,8 @@ n      <Leader>en    <Plug>(elin_eval_ns_form)
 n      <Leader>ea    <Plug>(elin_eval_at_mark)
 n      <Leader>ece   <Plug>(elin_eval_in_context)
 n      <Leader>ep    <Plug>(elin_print_last_result)
+n      <Leader>oe    <Plug>(elin_overview_current_list)
+n      <Leader>ot    <Plug>(elin_overview_current_top_list)
 n      <Leader>eq    <Plug>(elin_interrupt)
 n      <Leader>eu    <Plug>(elin_undef)
 n      <Leader>eU    <Plug>(elin_undef_all)

@@ -107,7 +107,8 @@
                   elin.handler.navigate/jump-to-definition {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/local-references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
-                  elin.handler.tap/tapped {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
+                  elin.handler.tap/tapped {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true
+                                                                                                                       :header ";; Tapped value\n"}]}}
                   elin.handler.test/rerun-last-failed-tests {:interceptor #ref [:interceptor :preset :test]}
                   elin.handler.test/rerun-last-tests {:interceptor #ref [:interceptor :preset :test]}
                   elin.handler.test/run-test-under-cursor {:interceptor #ref [:interceptor :preset :test]}
@@ -116,7 +117,11 @@
            :aliases {elin-alias-evaluate-current-list-in-context {:handler elin.handler.evaluate/evaluate-current-list
                                                                   :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}
                      elin-alias-run-test-focused-current-testing {:handler elin.handler.test/run-test-under-cursor
-                                                                  :config {:interceptor {:includes [elin.interceptor.test/focus-current-testing]}}}}
+                                                                  :config {:interceptor {:includes [elin.interceptor.test/focus-current-testing]}}}
+                     elin-alias-overview-current-list {:handler elin.handler.evaluate/evaluate-current-list
+                                                       :config {:interceptor {:includes [elin.interceptor.handler/overview]}}}
+                     elin-alias-overview-current-top-list {:handler elin.handler.evaluate/evaluate-current-top-list
+                                                           :config {:interceptor {:includes [elin.interceptor.handler/overview]}}}}
 
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 

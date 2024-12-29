@@ -29,3 +29,31 @@ The easiest way is to put `#dbg` to your code, and evaluate it.
 Once you evaluate `(fib 10)`, debugger will launch.
 
 This feature is implemented by the <<_interceptor_debugprocess_debugger>> interceptor.
+
+=== Tapped values
+
+In elin, values tapped with https://clojuredocs.org/clojure.core/tap%3E[tap>] are displayed in the <<Information buffer>>, regardless of where they were tapped, and can be used as a substitute for debug prints.
+Compared to debug prints like `println`, the advantage of using `tap>` is that you can inspect the tapped values in detail later.
+
+Specifically, in elin, the value `tap>` is applied to can be referenced from an elin-specific var named `*tapped*` by default.
+This allows you to use `tap>` as a substitute for a debug print, letting you refer to the value as needed.
+
+[source,clojure]
+----
+(tap> [:random-uuid (random-uuid)])
+;; => true
+
+(-> *tapped* first)
+;; => {:id "0f307a48-82ff-4a31-80b9-9c67ff856464", :time "2112-09-03T11:22:33.123456", :value [:random-uuid #uuid "0d3a1159-5563-4530-8fe8-ae07768395c5"]}
+
+(-> *tapped* first :value second)
+;; => #uuid "0d3a1159-5563-4530-8fe8-ae07768395c5"
+----
+
+This var name is defined in <<_interceptor_tapaccess_tapped_values>> interceptor and can be freely <<_server_configuration_files,changed>>.
+
+
+[source,clojure]
+----
+{:interceptor {:config-map {elin.interceptor.tap/access-tapped-values {:var-name "foobar"}}}}
+----
