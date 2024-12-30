@@ -15,24 +15,53 @@
 (def ^:private tapped-atom-sym
   (gensym "elin-tapped"))
 
+(defn- convert-to-edn-compliant-data-fn-code
+  "Return a code for converting data to EDN-compliant data
+  cf. https://github.com/edn-format/edn?tab=readme-ov-file#built-in-elements"
+  []
+  `(fn datafy# [x#]
+     (clojure.walk/prewalk
+       (fn [v#]
+         (cond
+           ;; no conversion
+           (or
+             (nil? v#)
+             (boolean? v#)
+             (char? v#)
+             (symbol? v#)
+             (keyword? v#)
+             (number? v#)
+             (inst? v#)
+             (uuid? v#))
+           v#
+           ;; vectors
+           (vector? v#)
+           (mapv datafy# v#)
+           ;; maps
+           (map? v#)
+           (update-vals v# datafy#)
+           ;; sets
+           (set? v#)
+           (set (map datafy# v#))
+           ;; lists
+           (sequential? v#)
+           (map datafy# v#)
+
+           :else
+           (let [datafied# (clojure.core.protocols/datafy v#)]
+             (if (not= datafied# v#)
+               datafied#
+               (str v#)))))
+       x#)))
+
 (defn- initialize-code
   [{:keys [http-server-port max-store-size]}]
   (str
     `(do (in-ns '~ns-sym)
          (refer-clojure)
 
-         (defn datafy#
-           [x#]
-           (clojure.walk/prewalk
-             (fn [v#]
-               (cond
-                 (map? v#) (update-vals v# datafy#)
-                 (vector? v#) (mapv datafy# v#)
-                 (sequential? v#) (map datafy# v#)
-                 (or (keyword? v#) (symbol? v#)) v#
-                 (instance? Object v#) (str v#)
-                 :else (clojure.core.protocols/datafy v#)))
-             x#))
+         (def convert-to-edn-compliant-data#
+           ~(convert-to-edn-compliant-data-fn-code))
 
          (defn tap-handler-request#
            [value#]
@@ -59,7 +88,7 @@
 
          (defn ~tap-fn-sym
            [x#]
-           (let [value# (datafy# x#)]
+           (let [value# (convert-to-edn-compliant-data# x#)]
              (tap-handler-request# value#)
              (when (<= ~max-store-size (count (deref ~tapped-atom-sym)))
                (swap! ~tapped-atom-sym (fn [v#] (drop-last 1 v#))))
