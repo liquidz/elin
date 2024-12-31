@@ -86,152 +86,149 @@
       :else (throw (ex-info "interceptor should be only once" {})))))
 
 (t/deftest configure-test
-  (t/is (= {:handler {:includes [] :excludes []}
-            :interceptor {:includes [] :excludes []}}
+  (t/is (= {}
            (sut/configure {} {})))
 
   (t/testing "handler"
     (t/testing "includes"
-      (t/is (= {:handler {:includes ['foo] :excludes []}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes ['foo] :excludes []}}
                (sut/configure {}
                               {:handler {:includes ['foo]}})))
 
-      (t/is (= {:handler {:includes ['foo] :excludes []}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes ['foo] :excludes []}}
                (sut/configure {:handler {:includes ['foo]}}
                               {:handler {:includes ['foo]}})))
 
-      (t/is (= {:handler {:includes ['foo 'bar] :excludes []}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes ['foo 'bar] :excludes []}}
                (sut/configure {:handler {:includes ['foo]}}
                               {:handler {:includes ['bar]}}))))
 
     (t/testing "exclude"
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes [] :excludes []}}
                (sut/configure {:handler {:includes ['foo]}}
                               {:handler {:excludes ['foo]}}))))
 
     (t/testing "includes and excludes"
-      (t/is (= {:handler {:includes ['foo] :excludes []}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes ['foo] :excludes []}}
                (sut/configure {}
                               {:handler {:includes ['foo] :excludes ['foo]}}))))
 
     (t/testing "config-map"
-      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 1}}}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 1}}}}
                (sut/configure {}
                               {:handler {:config-map {'foo {:a 1}}}})))
 
-      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 1}}}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 1}}}}
                (sut/configure {:handler {:config-map {'foo {:a 1}}}}
                               {:handler {:config-map {'foo {:a 1}}}})))
 
-      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 10}}}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 10}}}}
                (sut/configure {:handler {:config-map {'foo {:a 1}}}}
                               {:handler {:config-map {'foo {:a 10}}}})))
 
       (t/is (= {:handler {:includes [] :excludes [] :config-map {'foo {:a 1}
-                                                                 'bar {:b 2}}}
-                :interceptor {:includes [] :excludes []}}
+                                                                 'bar {:b 2}}}}
                (sut/configure {:handler {:config-map {'foo {:a 1}}}}
-                              {:handler {:config-map {'bar {:b 2}}}}))))
+                              {:handler {:config-map {'bar {:b 2}}}})))
+
+      (t/testing "interceptor config-map"
+        (t/testing "includes"
+          (t/is (= {:handler {:includes []
+                              :excludes []
+                              :config-map {'foo {:interceptor {:includes '[bar baz]
+                                                               :excludes []}}}}}
+                   (sut/configure {:handler {:config-map {'foo {:interceptor {:includes ['bar]}}}}}
+                                  {:handler {:config-map {'foo {:interceptor {:includes ['baz]}}}}}))))
+
+        (t/testing "excludes"
+          (t/is (= {:handler {:includes []
+                              :excludes []
+                              :config-map {'foo {:interceptor {:includes '[bar]
+                                                               :excludes '[baz]}}}}}
+                   (sut/configure {:handler {:config-map {'foo {:interceptor {:includes ['bar]}}}}}
+                                  {:handler {:config-map {'foo {:interceptor {:excludes ['baz]}}}}})))
+
+          (t/is (= {:handler {:includes []
+                              :excludes []
+                              :config-map {'foo {:interceptor {:includes []
+                                                               :excludes '[bar]}}}}}
+                   (sut/configure {:handler {:config-map {'foo {:interceptor {:includes ['bar]}}}}}
+                                  {:handler {:config-map {'foo {:interceptor {:excludes ['bar]}}}}}))))))
 
     (t/testing "uses"
-      (t/is (= {:handler {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}}
                (sut/configure {}
                               {:handler {:uses ['foo {:a 1}]}})))
 
-      (t/is (= {:handler {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}}
                (sut/configure {:handler {:includes ['foo] :config-map {'foo {:a 1}}}}
                               {:handler {:uses ['foo {:a 1}]}})))
 
-      (t/is (= {:handler {:includes ['foo] :excludes [] :config-map {'foo {:a 10}}}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:handler {:includes ['foo] :excludes [] :config-map {'foo {:a 10}}}}
                (sut/configure {:handler {:includes ['foo] :config-map {'foo {:a 1}}}}
                               {:handler {:uses ['foo {:a 10}]}})))
 
       (t/is (= {:handler {:includes ['foo 'bar] :excludes [] :config-map {'foo {:a 1}
-                                                                          'bar {:b 2}}}
-                :interceptor {:includes [] :excludes []}}
+                                                                          'bar {:b 2}}}}
                (sut/configure {:handler {:includes ['foo] :config-map {'foo {:a 1}}}}
                               {:handler {:uses ['bar {:b 2}]}})))))
 
   (t/testing "interceptor"
     (t/testing "includes"
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes ['foo] :excludes []}}
+      (t/is (= {:interceptor {:includes ['foo] :excludes []}}
                (sut/configure {}
                               {:interceptor {:includes ['foo]}})))
 
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes ['foo] :excludes []}}
+      (t/is (= {:interceptor {:includes ['foo] :excludes []}}
                (sut/configure {:interceptor {:includes ['foo]}}
                               {:interceptor {:includes ['foo]}})))
 
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes ['foo 'bar] :excludes []}}
+      (t/is (= {:interceptor {:includes ['foo 'bar] :excludes []}}
                (sut/configure {:interceptor {:includes ['foo]}}
                               {:interceptor {:includes ['bar]}}))))
 
     (t/testing "excludes"
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes [] :excludes []}}
+      (t/is (= {:interceptor {:includes [] :excludes []}}
                (sut/configure {:interceptor {:includes ['foo]}}
                               {:interceptor {:excludes ['foo]}}))))
 
     (t/testing "includes and excludes"
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes ['foo] :excludes []}}
+      (t/is (= {:interceptor {:includes ['foo] :excludes []}}
                (sut/configure {}
                               {:interceptor {:includes ['foo] :excludes ['foo]}}))))
 
     (t/testing "config-map"
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes [] :excludes [] :config-map {'foo {:a 1}}}}
+      (t/is (= {:interceptor {:includes [] :excludes [] :config-map {'foo {:a 1}}}}
                (sut/configure {}
                               {:interceptor {:config-map {'foo {:a 1}}}})))
 
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes [] :excludes [] :config-map {'foo {:a 1}}}}
+      (t/is (= {:interceptor {:includes [] :excludes [] :config-map {'foo {:a 1}}}}
                (sut/configure {:interceptor {:config-map {'foo {:a 1}}}}
                               {:interceptor {:config-map {'foo {:a 1}}}})))
 
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes [] :excludes [] :config-map {'foo {:a 10}}}}
+      (t/is (= {:interceptor {:includes [] :excludes [] :config-map {'foo {:a 10}}}}
                (sut/configure {:interceptor {:config-map {'foo {:a 1}}}}
                               {:interceptor {:config-map {'foo {:a 10}}}})))
 
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes [] :excludes [] :config-map {'foo {:a 1}
+      (t/is (= {:interceptor {:includes [] :excludes [] :config-map {'foo {:a 1}
                                                                      'bar {:b 2}}}}
                (sut/configure {:interceptor {:config-map {'foo {:a 1}}}}
                               {:interceptor {:config-map {'bar {:b 2}}}}))))
 
     (t/testing "uses"
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}}
+      (t/is (= {:interceptor {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}}
                (sut/configure {}
                               {:interceptor {:uses ['foo {:a 1}]}})))
 
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}}
+      (t/is (= {:interceptor {:includes ['foo] :excludes [] :config-map {'foo {:a 1}}}}
                (sut/configure {:interceptor {:includes ['foo] :config-map {'foo {:a 1}}}}
                               {:interceptor {:uses ['foo {:a 1}]}})))
 
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes ['foo] :excludes [] :config-map {'foo {:a 10}}}}
+      (t/is (= {:interceptor {:includes ['foo] :excludes [] :config-map {'foo {:a 10}}}}
                (sut/configure {:interceptor {:includes ['foo] :config-map {'foo {:a 1}}}}
                               {:interceptor {:uses ['foo {:a 10}]}})))
 
-      (t/is (= {:handler {:includes [] :excludes []}
-                :interceptor {:includes ['foo 'bar] :excludes [] :config-map {'foo {:a 1}
+      (t/is (= {:interceptor {:includes ['foo 'bar] :excludes [] :config-map {'foo {:a 1}
                                                                               'bar {:b 2}}}}
                (sut/configure {:interceptor {:includes ['foo] :config-map {'foo {:a 1}}}}
                               {:interceptor {:uses ['bar {:b 2}]}}))))))

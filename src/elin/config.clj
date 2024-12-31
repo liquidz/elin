@@ -13,6 +13,8 @@
   (:import
    (java.net ServerSocket)))
 
+(declare configure)
+
 (defmethod aero/reader 'empty-port
   [_opts _tag _value]
   (with-open [sock (ServerSocket. 0)]
@@ -74,15 +76,27 @@
 
 (defn- configure-handler*
   [base-handler-config target-handler-config]
-  (let [{:keys [includes excludes]} target-handler-config
+  (let [{:keys [includes excludes config-map]} target-handler-config
         exclude-set (set/union (set (or excludes []))
-                               (set (or includes [])))]
+                               (set (or includes [])))
+        has-config-map? (contains? base-handler-config :config-map)]
     (-> base-handler-config
         (merge-configs (assoc target-handler-config
                               :includes []
                               :excludes []))
         (update :includes #(-> (remove exclude-set %)
-                               (concat includes))))))
+                               (concat includes)))
+        (cond->
+          has-config-map?
+          (update :config-map (fn [base-config-map]
+                                (reduce-kv
+                                  (fn [accm handler-key base-handler-config-map]
+                                    (assoc accm handler-key
+                                      (if-let [target-handler-config-map (get config-map handler-key)]
+                                        (configure base-handler-config-map target-handler-config-map)
+                                        base-handler-config-map)))
+                                  {}
+                                  base-config-map)))))))
 
 (defn- configure-interceptor*
   [base-interceptor-config target-interceptor-config]
@@ -140,11 +154,17 @@
                         interceptor)))
 
 (defn configure
-  [base-config target-config]
-  (-> base-config
-      (merge-configs (dissoc target-config :handler :interceptor))
+  [base-config
+   target-config]
+  (let [{base-handler :handler base-interceptor :interceptor} base-config
+        {target-handler :handler target-interceptor :interceptor} target-config]
+    (cond-> (merge-configs base-config
+                           (dissoc target-config :handler :interceptor))
+      (or base-handler target-handler)
       (update :handler #(configure-handler % (:handler target-config)))
-      (update :interceptor #(configure-interceptor % (:interceptor target-config)))))
+
+      (or base-interceptor target-interceptor)
+      (update :interceptor #(configure-interceptor % (:interceptor target-config))))))
 
 (defn- load-default-config
   []
