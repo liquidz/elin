@@ -54,11 +54,11 @@
                                (edn/read-string))
         this-config  (cond-> handler-config
                        message-config
-                       (e.config/configure-handler message-config))
+                       (e.config/configure message-config))
         interceptor' (when this-config
                        (e.p.config/configure interceptor this-config))]
     (cond-> context
-      this-config
+      interceptor'
       (assoc :component/interceptor interceptor'
              :component/nrepl (assoc nrepl :interceptor interceptor')))))
 
