@@ -103,7 +103,7 @@
                (sut/configure {:handler {:includes ['foo]}}
                               {:handler {:includes ['bar]}}))))
 
-    (t/testing "exclude"
+    (t/testing "excludes"
       (t/is (= {:handler {:includes [] :excludes []}}
                (sut/configure {:handler {:includes ['foo]}}
                               {:handler {:excludes ['foo]}}))))
@@ -188,12 +188,12 @@
                               {:interceptor {:includes ['bar]}}))))
 
     (t/testing "excludes"
-      (t/is (= {:interceptor {:includes [] :excludes []}}
+      (t/is (= {:interceptor {:includes [] :excludes ['foo]}}
                (sut/configure {:interceptor {:includes ['foo]}}
                               {:interceptor {:excludes ['foo]}}))))
 
     (t/testing "includes and excludes"
-      (t/is (= {:interceptor {:includes ['foo] :excludes []}}
+      (t/is (= {:interceptor {:includes ['foo] :excludes ['foo]}}
                (sut/configure {}
                               {:interceptor {:includes ['foo] :excludes ['foo]}}))))
 

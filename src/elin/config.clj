@@ -108,7 +108,11 @@
                               :includes []
                               :excludes []))
         (update :includes #(-> (remove exclude-set %)
-                               (concat includes))))))
+                               (concat includes)
+                               (distinct)))
+        ;; Retain the :excludes settings to be able to exclude global interceptors
+        (update :excludes #(-> (concat % excludes)
+                               (distinct))))))
 
 #_(m/=> expand-uses [:=> [:cat [:* [:cat symbol? map?]]]
                      [:map [:includes [:sequential symbol?]]
