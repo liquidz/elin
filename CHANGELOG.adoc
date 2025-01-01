@@ -1,5 +1,14 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.1.0-alpha] - 2025-01-01
+
+=== Fixed
+
+- Fix elin.config/configure to merge config-map correctly
+- Fix configure to retain the :excludes settings for excluding global interceprots
+- Fix a bug where interceptors could not be excluded via handler options
+- Tweak overview handlers to exclude unnecessary interceptors
+
 == [2024.12.4-alpha] - 2024-12-30
 
 === Fixed
