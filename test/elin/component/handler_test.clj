@@ -83,9 +83,22 @@
             (t/is (= 13 (call-test-handler' #'test-configured-interceptor-handler))))
 
           (t/testing "Requested interceptor"
-            (let [options {:config (pr-str {:interceptor {:includes [(symbol #'test-requst-interceptor)]}})}]
-              (t/is (= 5 (call-test-handler' #'test-global-interceptor-handler [] options)))
-              (t/is (= 17 (call-test-handler' #'test-configured-interceptor-handler [] options))))))
+            (t/testing "includes"
+              (let [options {:config (pr-str {:interceptor {:includes [(symbol #'test-requst-interceptor)]}})}]
+                (t/is (= 5 (call-test-handler' #'test-global-interceptor-handler [] options)))
+                (t/is (= 17 (call-test-handler' #'test-configured-interceptor-handler [] options)))))
+
+            (t/testing "excludes"
+              (t/is (= 0 (->> {:config (pr-str {:interceptor {:excludes [(symbol #'test-global-interceptor)]}})}
+                              (call-test-handler' #'test-global-interceptor-handler []))))
+
+              (t/is (= 1 (->> {:config (pr-str {:interceptor {:excludes [(symbol #'test-configured-interceptor)]}})}
+                              (call-test-handler' #'test-global-interceptor-handler []))))
+
+              (t/is (= 12 (->> {:config (pr-str {:interceptor {:excludes [(symbol #'test-global-interceptor)]}})}
+                               (call-test-handler' #'test-configured-interceptor-handler []))))
+              (t/is (= 11 (->> {:config (pr-str {:interceptor {:excludes [(symbol #'test-configured-interceptor)]}})}
+                               (call-test-handler' #'test-configured-interceptor-handler [])))))))
 
         (finally
           (component/stop-system sys))))))

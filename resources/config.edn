@@ -119,9 +119,15 @@
                      elin-alias-run-test-focused-current-testing {:handler elin.handler.test/run-test-under-cursor
                                                                   :config {:interceptor {:includes [elin.interceptor.test/focus-current-testing]}}}
                      elin-alias-overview-current-list {:handler elin.handler.evaluate/evaluate-current-list
-                                                       :config {:interceptor {:includes [elin.interceptor.handler/overview]}}}
+                                                       :config {:interceptor {:includes [elin.interceptor.handler/overview]
+                                                                              :excludes [elin.interceptor.evaluate/output-eval-result-to-cmdline
+                                                                                         elin.interceptor.evaluate/set-eval-result-to-virtual-text
+                                                                                         elin.interceptor.evaluate/yank-eval-result]}}}
                      elin-alias-overview-current-top-list {:handler elin.handler.evaluate/evaluate-current-top-list
-                                                           :config {:interceptor {:includes [elin.interceptor.handler/overview]}}}}
+                                                           :config {:interceptor {:includes [elin.interceptor.handler/overview]
+                                                                                  :excludes [elin.interceptor.evaluate/output-eval-result-to-cmdline
+                                                                                             elin.interceptor.evaluate/set-eval-result-to-virtual-text
+                                                                                             elin.interceptor.evaluate/yank-eval-result]}}}}
 
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 
