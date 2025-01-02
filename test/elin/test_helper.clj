@@ -1,6 +1,7 @@
 (ns elin.test-helper
   (:require
    [babashka.nrepl.server :as b.n.server]
+   [clojure.core.async :as async]
    [elin.component.session-storage :as e.c.session-storage]
    [elin.config :as e.config]
    [elin.test-helper.clj-kondo :as h.clj-kondo]
@@ -87,3 +88,7 @@
           :column (rand-int 10)
           :line (rand-int 10)}
          m))
+
+(defn async-constantly [v]
+  (fn [& _]
+    (async/go v)))
