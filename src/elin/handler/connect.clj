@@ -50,7 +50,17 @@
 
 (m/=> connect [:=> [:cat e.s.handler/?Elin] any?])
 (defn connect
-  "Connect to nREPL server."
+  "Connect to nREPL server.
+
+  .Available parameters
+  [%autowidth,cols=\"a,a\"]
+  |===
+  | Parameter | Description
+
+  | `[]` | the port number and the hostname will be detected by interceptors automatically.
+  | `[port]` | `localhost` will be used as the hostname.
+  | `[hostname port]` | the specified hostname and port number will be used for connection.
+  |==="
   [{:as elin :component/keys [host] :keys [message]}]
   (let [[{:keys [hostname port]} error] (e.u.param/parse ?ConnectParams (:params message))]
     (if error
