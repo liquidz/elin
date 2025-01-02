@@ -94,13 +94,35 @@
 (def ^:private ?InstantParams
   [:catn
    [:project
-    (apply vector :enum
-           (map name e.c.jack-in/supported-project-types))]])
+    (->> (map name e.c.jack-in/supported-project-types)
+         (cons "")
+         (apply vector :enum))]])
+
+(defn- select-instant-connect-project
+  [elin]
+  (if-let [selected (->> (map name e.c.jack-in/supported-project-types)
+                         (e.f.select/select-from-candidates elin))]
+    [selected nil]
+    [nil "No project is selected."]))
 
 (defn instant
-  "Launch nREPL server of the specified project and connect to it."
+  "Launch nREPL server of the specified project and connect to it.
+
+  .Available parameters
+  [%autowidth,cols=\"a,a\"]
+  |===
+  | Parameter | Description
+
+  | `[]` | Select a project to launch nREPL server and connect to it.
+  | `[project]` | Connect to the nREPL server of the specified project.
+  |==="
   [{:as elin :component/keys [host] :keys [message]}]
   (let [[{:keys [project]} error] (e.u.param/parse ?InstantParams (:params message))
+        [project error] (if (and (or (not project)
+                                     (= "" project))
+                                 (not error))
+                          (select-instant-connect-project elin)
+                          [project error])
         {:keys [port language]} (when-not error
                                   (e.f.jack-in/launch-process elin {:forced-project (keyword project)}))]
     (if error
