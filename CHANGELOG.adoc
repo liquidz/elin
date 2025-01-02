@@ -1,5 +1,18 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.1.1-alpha] - 2025-01-02
+
+=== Changed
+
+- Bump cider-nrepl to 0.51.0
+- Bump nrepl to 1.3.1
+
+=== Fixed
+
+- Fix error-or not to evaluate all expressions
+- Fix clojuredocs-lookup to return correct error when failed to lookup
+- Update ElinInstantConnect command to accept no argument and select a project to connect to
+
 == [2025.1.0-alpha] - 2025-01-01
 
 === Fixed
