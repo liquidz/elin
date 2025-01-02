@@ -81,6 +81,7 @@
       (e/fault {:message (pr-str e)}))))
 
 (defn clojuredocs-lookup
+  "Returns a result of looking up the help of the function under the cursor in clojuredocs."
   [{:as elin :component/keys [host nrepl]} export-edn-url]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
@@ -89,7 +90,7 @@
                                       resp (lookup elin ns-str code)]
                                 [(:ns resp) (:name resp)])
                               (str/split code #"/" 2))]
-    (or (e.f.n.cider/clojuredocs-lookup!! nrepl ns-str name-str export-edn-url)
+    (or (e/error-or (e.f.n.cider/clojuredocs-lookup!! nrepl ns-str name-str export-edn-url))
         (e/not-found))))
 
 (m/=> get-java-rendering-data [:-> e.s.nrepl/?Lookup e.s.nrepl/?LookupJavaRenderingData])

@@ -86,7 +86,7 @@ endif
 
 " Connection
 command! -nargs=? ElinConnect call elin#notify('elin.handler.connect/connect', <q-args> ? [str2nr(<q-args>)] : [])
-command! -nargs=1 ElinInstantConnect call elin#notify('elin.handler.connect/instant', [<q-args>])
+command! -nargs=? ElinInstantConnect call elin#notify('elin.handler.connect/instant', [<q-args>])
 command! ElinDisconnect call elin#notify('elin.handler.connect/disconnect', [])
 command! ElinJackIn call elin#notify('elin.handler.connect/jack-in', [])
 command! ElinSwitchConnection call elin#notify('elin.handler.connect/switch', [])

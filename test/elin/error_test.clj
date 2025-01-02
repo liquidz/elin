@@ -7,4 +7,10 @@
   (t/is (= 1 (sut/error-or 1)))
   (t/is (= 1 (sut/error-or 1 (sut/fault) 2)))
   (t/is (= 2 (sut/error-or (sut/fault) 2)))
-  (t/is (nil? (sut/error-or (sut/fault)))))
+  (t/is (nil? (sut/error-or (sut/fault))))
+
+  (let [called? (atom false)]
+    (t/is (= 1 (sut/error-or 1
+                             (do (reset! called? true)
+                                 (sut/fault)))))
+    (t/is (false? @called?))))
