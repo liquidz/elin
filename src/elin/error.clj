@@ -148,9 +148,15 @@
     `(let [~@(interleave (repeat sym) bindings)]
        ~sym)))
 
-(defn error-or [& vs]
-  (some
-    #(when (and %
-                (not (error? %)))
-       %)
-    vs))
+(defmacro error-or
+  "Evaluates exprs one at a time, from left to right.
+  If a form returns a logical true and not error value,
+  returns that value and doesn't evaluate any of the other expressions,
+  otherwise it returns the value of the last expression.
+  (or) returns nil."
+  [& vs]
+  (cons 'or
+    (map (fn [v]
+           `(when (and ~v (not (error? ~v)))
+              ~v))
+         vs)))
