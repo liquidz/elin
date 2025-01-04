@@ -20,7 +20,9 @@
    e.c.interceptor/test-result
    e.c.interceptor/quickfix
    e.c.interceptor/modify-code
-   e.c.interceptor/tap])
+   e.c.interceptor/tap
+   e.c.interceptor/http-route
+   e.c.interceptor/http-request])
 
 (def ?Interceptor
   [:map
@@ -127,4 +129,18 @@
        [:value any?]
        ;; LEAVE
        [:value-str {:optional true} string?]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?HttpRouteContext
+  (-> [:map
+       [:routes map?]]
+      (m.util/merge e.s.handler/?Components)))
+
+(def ?HttpRequestContext
+  (-> [:map
+       ;; ENTER
+       [:routes map?]
+       [:request any?]
+       ;; LEAVE
+       [:response {:optional true} any?]]
       (m.util/merge e.s.handler/?Components)))
