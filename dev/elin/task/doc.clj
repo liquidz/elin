@@ -116,6 +116,8 @@
     e.c.interceptor/debug "Executed on debugging."
     e.c.interceptor/modify-code "Executed on modifying code."
     e.c.interceptor/tap "Executed on tapping some values."
+    e.c.interceptor/http-route "Executed on creating http routes."
+    e.c.interceptor/http-request "Executed on handling requests for HTTP server."
     nil))
 
 (defn- generate-interceptor-document

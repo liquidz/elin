@@ -17,3 +17,5 @@
 (def debug ::debug)
 (def modify-code ::modify-code)
 (def tap ::tap)
+(def http-route ::http-route)
+(def http-request ::http-request)
