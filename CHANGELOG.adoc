@@ -1,5 +1,21 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.1.2-alpha] - 2025-01-04
+
+=== Added
+
+- Add `http-route` and `http-request` interceptor kinds
+- Add elin.util.http
+- Add elin.interceptor.http/api-route for handling API request
+
+=== Changed
+
+- Bump cider-nrepl to 0.51.1
+
+=== Fixed
+
+- Fix HTTP server component to use http-route and http-request interceptors
+
 == [2025.1.1-alpha] - 2025-01-02
 
 === Changed
