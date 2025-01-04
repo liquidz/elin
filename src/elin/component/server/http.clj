@@ -1,85 +1,70 @@
 (ns elin.component.server.http
   (:require
-   [cheshire.core :as json]
-   [clojure.java.io :as io]
    [com.stuartsierra.component :as component]
-   [elin.protocol.host.rpc :as e.p.h.rpc]
+   [elin.constant.interceptor :as e.c.interceptor]
+   [elin.protocol.interceptor :as e.p.interceptor]
+   [elin.util.http :as e.u.http]
    [org.httpkit.server :as h.server])
   (:import
    (java.net URLDecoder)))
 
-(defn- valid-request?
-  [{:keys [request-method headers]}]
-  (and (= :post request-method)
-       (= "application/json" (get headers "content-type"))))
-
 (defprotocol IHttpHandler
-  (new-message [this request params])
   (handle [this request]))
 
-(defrecord ApiMessage
-  [host message method params]
-  e.p.h.rpc/IRpcMessage
-  (request? [_] true)
-  (response? [_] false)
-  (parse-message [_]
-    {:id -1
-     :method method
-     :params params}))
-
-(defn- ok
-  [resp]
-  {:body resp})
-
-(defn- bad-request
-  [& [m]]
-  (merge {:status 400 :body "Bad request"}
-         m))
-
-(defn- not-found
-  [& [m]]
-  (merge {:status 404 :body "Not found"}
-         m))
-
 (defrecord HttpServer
-  [handler host port stop-server]
+  [handler server-host port
+   ;; Parameters set at start
+   stop-server
+   context
+   routes]
   component/Lifecycle
   (start [this]
-    (assoc this :stop-server (h.server/run-server
-                               #(handle this %)
-                               {:port port})))
+    (let [context {;; Other components
+                   :component/nrepl (:nrepl handler)
+                   :component/interceptor (:interceptor handler)
+                   :component/host (:lazy-host handler)
+                   :component/handler handler
+                   :component/session-storage (:session-storage handler)
+                   :component/clj-kondo (:clj-kondo handler)
+                   ;; This component parameters
+                   :server-host server-host
+                   :port port}
+          routes (:routes (e.p.interceptor/execute
+                            (:interceptor handler)
+                            e.c.interceptor/http-route
+                            (assoc context :routes {})
+                            identity))
+          this' (assoc this
+                       :context context
+                       :routes routes)]
+      (assoc this' :stop-server (h.server/run-server
+                                  #(handle this' %)
+                                  {:port port}))))
   (stop [this]
     (stop-server)
-    (dissoc this :stop-server))
+    (dissoc this :stop-server :context))
 
   IHttpHandler
-  (new-message [_ method params]
-    (map->ApiMessage {:host host
-                      :message []
-                      :method (keyword method)
-                      :params (or params [])}))
-
-  (handle [this {:as req :keys [uri body]}]
-    (let [uri (URLDecoder/decode uri)]
-      (condp = uri
-        "/api/v1"
-        (if-not (valid-request? req)
-          (not-found)
-          (let [handler' (:handler handler)
-                {:keys [method params]} (json/parse-stream (io/reader body) keyword)]
-            (if (not method)
-              (bad-request)
-              (-> (new-message this
-                               (keyword method)
-                               (or params []))
-                  (handler')
-                  (json/generate-string)
-                  (ok)))))
-
-        (not-found)))))
+  (handle [_ request]
+    (let [context' (assoc context
+                          :routes routes
+                          :request request)]
+      (:response
+        (e.p.interceptor/execute
+          (:interceptor handler)
+          e.c.interceptor/http-request
+          context'
+          (fn [{:as ctx :keys [routes request]}]
+            (let [uri (URLDecoder/decode (:uri request))
+                  route-fn (get routes uri)]
+              (assoc ctx :response
+                (if (and route-fn
+                         (fn? route-fn))
+                  (route-fn ctx)
+                  (e.u.http/not-found))))))))))
 
 (defn new-http-server
   [config]
   (-> (or (:http-server config) {})
-      (merge {:host (get-in config [:server :host])})
+      (merge {:server-host (get-in config [:server :host])})
       (map->HttpServer)))
