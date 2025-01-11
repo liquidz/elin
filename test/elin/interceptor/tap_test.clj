@@ -8,12 +8,12 @@
 (t/use-fixtures :once h/malli-instrument-fixture)
 (t/use-fixtures :once h/warn-log-level-fixture)
 
-(defmacro define-convert-to-edn-compliant-data-fn []
-  (#'sut/convert-to-edn-compliant-data-fn-code))
+(defmacro define-convert-to-edn-compliant-data-fn [max-depth]
+  (#'sut/convert-to-edn-compliant-data-fn-code max-depth))
 
 (t/deftest convert-to-edn-compliant-data-test
   ;; https://github.com/edn-format/edn?tab=readme-ov-file#built-in-elements
-  (let [convert (define-convert-to-edn-compliant-data-fn)]
+  (let [convert (define-convert-to-edn-compliant-data-fn 5)]
     (t/testing "nil"
       (t/is (= nil (convert nil))))
 
@@ -71,6 +71,20 @@
       (t/is (str/starts-with? (convert inc)
                               "clojure.core$inc@")
             "Should be stringified"))
+
+    (t/testing "max-depth"
+      (t/testing "lists"
+        (t/is (= '(1 (2 (3 (4 (5 (...))))))
+                 (convert '(1 (2 (3 (4 (5 (6))))))))))
+      (t/testing "vectors"
+        (t/is (= '[1 [2 [3 [4 [5 [...]]]]]]
+                 (convert [1 [2 [3 [4 [5 [6]]]]]]))))
+      (t/testing "maps"
+        (t/is (= '{:1 {:2 {:3 {:4 {:5 {... ...}}}}}}
+                 (convert {:1 {:2 {:3 {:4 {:5 {:6 :7}}}}}}))))
+      (t/testing "sets"
+        (t/is (= #{1 #{2 #{3 #{4 #{5 #{'...}}}}}}
+                 (convert #{1 #{2 #{3 #{4 #{5 #{6}}}}}})))))
 
     (t/testing "datafiable"
       (t/testing "Exception"
