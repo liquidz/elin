@@ -1,6 +1,7 @@
 (ns elin.interceptor.test-test
   (:require
    [clojure.test :as t]
+   [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.cider.test :as e.f.n.c.test]
    [elin.function.quickfix :as e.f.quickfix]
    [elin.interceptor.test :as sut]
@@ -167,3 +168,24 @@
 
 ;; TODO
 ;; (t/deftest focus-current-testing-test)
+
+(def ^:private correct-test-vars-automatically-enter
+  (:enter sut/correct-test-vars-automatically))
+
+(t/deftest correct-test-vars-automatically-test
+  (t/testing "Source namespace"
+    (let [ctx (assoc (h/test-elin)
+                     :ns "foo.bar"
+                     :file "/foo/bar.clj")]
+      (with-redefs [e.f.nrepl/load-file!! (constantly nil)
+                    slurp (constantly "")]
+        (t/is (= (assoc ctx
+                        :ns "foo.bar-test"
+                        :file "/foo/bar_test.clj")
+                 (correct-test-vars-automatically-enter ctx))))))
+
+  (t/testing "Test namespace"
+    (let [ctx (assoc (h/test-elin)
+                     :ns "foo.bar-test"
+                     :file "/foo/bar_test.clj")]
+      (t/is (= ctx (correct-test-vars-automatically-enter ctx))))))

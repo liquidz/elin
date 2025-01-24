@@ -6,7 +6,9 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.function.evaluate :as e.f.evaluate]
+   [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.cider.test :as e.f.n.c.test]
+   [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.quickfix :as e.f.quickfix]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.function.storage.test :as e.f.s.test]
@@ -14,6 +16,7 @@
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.util.file :as e.u.file]
    [elin.util.map :as e.u.map]
    [elin.util.sexpr :as e.u.sexpr]
    [exoscale.interceptor :as ix]
@@ -162,3 +165,19 @@
                     (timbre/debug "Failed to focus on the current testing form" ex)
                     (e.message/error host (format "Failed to focus on the current testing form: %s" (ex-message ex))))))
               (ix/discard))})
+
+(def correct-test-vars-automatically
+  "Replace the test target namespace that does not end with `-test` with the test for `-test`."
+  {:kind e.c.interceptor/test
+   :enter (fn [{ns-str :ns ns-path :file, :as ctx}]
+            (if (str/ends-with? ns-str "-test")
+              ctx
+              (let [file-sep (e.u.file/guess-file-separator ns-path)
+                    cycled-path (e.f.n.namespace/get-cycled-namespace-path
+                                  {:ns ns-str :path ns-path :file-separator file-sep})]
+                (e.f.nrepl/load-file!! (:component/nrepl ctx)
+                                       cycled-path
+                                       [(slurp cycled-path)])
+                (assoc ctx
+                       :ns (str ns-str "-test")
+                       :file cycled-path))))})
