@@ -87,6 +87,9 @@
        ;; ENTER
        [:ns string?]
        [:vars [:sequential string?]]
+       [:line integer?]
+       [:column integer?]
+       [:file string?]
        ;; LEAVE
        [:response {:optional true} map?]]
       (m.util/merge e.s.handler/?Components)))

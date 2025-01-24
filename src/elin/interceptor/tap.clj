@@ -18,50 +18,57 @@
 (defn- convert-to-edn-compliant-data-fn-code
   "Return a code for converting data to EDN-compliant data
   cf. https://github.com/edn-format/edn?tab=readme-ov-file#built-in-elements"
-  []
-  `(fn datafy# [x#]
-     (clojure.walk/prewalk
-       (fn [v#]
-         (cond
-           ;; no conversion
-           (or
-             (nil? v#)
-             (boolean? v#)
-             (char? v#)
-             (symbol? v#)
-             (keyword? v#)
-             (number? v#)
-             (inst? v#)
-             (uuid? v#))
-           v#
-           ;; vectors
-           (vector? v#)
-           (mapv datafy# v#)
-           ;; maps
-           (map? v#)
-           (update-vals v# datafy#)
-           ;; sets
-           (set? v#)
-           (set (map datafy# v#))
-           ;; lists
-           (sequential? v#)
-           (map datafy# v#)
+  [max-depth]
+  `(fn datafy#
+     ([x#]
+      (datafy# 0 x#))
+     ([depth# x#]
+      (if (> depth# ~max-depth)
+        '...
+        (clojure.walk/prewalk
+          (fn [v#]
+            (cond
+              ;; no conversion
+              (or
+                (nil? v#)
+                (boolean? v#)
+                (char? v#)
+                (symbol? v#)
+                (keyword? v#)
+                (number? v#)
+                (inst? v#)
+                (uuid? v#))
+              v#
+              ;; vectors
+              (vector? v#)
+              (mapv (partial datafy# (inc depth#)) v#)
+              ;; maps
+              (map? v#)
+              (update-vals v# (partial datafy# (inc depth#)))
+              ;; sets
+              (set? v#)
+              (set (map (partial datafy# (inc depth#)) v#))
+              ;; lists
+              (sequential? v#)
+              (map (partial datafy# (inc depth#)) v#)
 
-           :else
-           (let [datafied# (clojure.core.protocols/datafy v#)]
-             (if (not= datafied# v#)
-               datafied#
-               (str v#)))))
-       x#)))
+              :else
+              (try
+                (let [datafied# (clojure.core.protocols/datafy v#)]
+                  (if (not= datafied# v#)
+                    datafied#
+                    (str v#)))
+                (catch Exception _# (str v#)))))
+          x#)))))
 
 (defn- initialize-code
-  [{:keys [http-server-port max-store-size]}]
+  [{:keys [http-server-port max-store-size max-datafy-depth]}]
   (str
     `(do (in-ns '~ns-sym)
          (refer-clojure)
 
          (def convert-to-edn-compliant-data#
-           ~(convert-to-edn-compliant-data-fn-code))
+           ~(convert-to-edn-compliant-data-fn-code max-datafy-depth))
 
          (defn tap-handler-request#
            [value#]
@@ -87,15 +94,15 @@
            (catch Exception _# nil))
 
          (defn ~tap-fn-sym
-           [x#]
-           (let [value# (convert-to-edn-compliant-data# x#)]
-             (tap-handler-request# value#)
+           [original-value#]
+           (let [display-value# (convert-to-edn-compliant-data# original-value#)]
+             (tap-handler-request# display-value#)
              (when (<= ~max-store-size (count (deref ~tapped-atom-sym)))
                (swap! ~tapped-atom-sym (fn [v#] (drop-last 1 v#))))
              (swap! ~tapped-atom-sym (fn [v#]
                                        (cons {:id (str (random-uuid))
                                               :time (str (java.time.LocalDateTime/now))
-                                              :value value#}
+                                              :value original-value#}
                                              v#)))))
          (try
            (add-tap ~tap-fn-sym)
@@ -110,12 +117,14 @@
   | key | type | description
 
   | max-store-size | integer | The maximum number of values to store when tapped. Defautl value is `10`.
+  | max-datafy-depth | integer | The maximum depth to datafy tapped value. Datafied value is used for intercepting tapped value. Defautl value is `5`.
   |==="
   {:kind e.c.interceptor/connect
    :leave (-> (fn [{:as ctx :component/keys [handler]}]
                 (let [config (e.u.interceptor/config ctx #'initialize)
                       http-server-port (get-in handler [:initialize :export "g:elin_http_server_port"])
                       code (initialize-code {:max-store-size (:max-store-size config)
+                                             :max-datafy-depth (:max-datafy-depth config)
                                              :http-server-port http-server-port})]
                   (e.f.evaluate/evaluate-code ctx code)))
               (ix/discard))})
