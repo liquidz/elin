@@ -50,7 +50,8 @@
                                                 elin.interceptor.evaluate/unwrap-comment-form
                                                 elin.interceptor.evaluate/yank-eval-result]}
 
-                        :test {:includes [elin.interceptor.test/parse-test-result
+                        :test {:includes [elin.interceptor.test/correct-test-vars-automatically
+                                          elin.interceptor.test/parse-test-result
                                           elin.interceptor.test/update-test-result-sign
                                           elin.interceptor.test/append-test-result-to-info-buffer
                                           elin.interceptor.test/apply-test-result-to-quickfix
