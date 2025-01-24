@@ -6,7 +6,6 @@
    [elin.error :as e]
    [elin.function.connect :as e.f.connect]
    [elin.function.evaluate :as e.f.evaluate]
-   [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.namespace :as e.f.n.namespace]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.handler.evaluate :as e.h.evaluate]
@@ -14,6 +13,7 @@
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.nrepl :as e.p.nrepl]
+   [elin.protocol.storage :as e.p.storage]
    [elin.util.file :as e.u.file]
    [elin.util.interceptor :as e.u.interceptor]
    [exoscale.interceptor :as ix]
@@ -35,40 +35,24 @@
               (ix/when #(= "VimLeave" (:autocmd-type %)))
               (ix/discard))})
 
-(defn- ns-not-created?
-  [{:component/keys [host nrepl]}]
-  (and (not (e.p.nrepl/disconnected? nrepl))
-       (nil? (async/<!! (e.p.host/get-variable! host ns-created-var-name)))))
-
 (defn- bufread-or-bufenter?
   [{:keys [autocmd-type]}]
   (contains? #{"BufRead" "BufEnter"} autocmd-type))
 
-(def ns-create
-  {:kind e.c.interceptor/autocmd
-   :enter (-> (fn [{:as ctx :component/keys [host nrepl]}]
-                (e/let [ns-str (e.f.sexpr/get-namespace ctx)
-                        ns-sym (or (symbol ns-str)
-                                   (e/incorrect))]
-                  (->> `(when-not (clojure.core/find-ns '~ns-sym)
-                          (clojure.core/create-ns '~ns-sym)
-                          (clojure.core/in-ns '~ns-sym)
-                          (clojure.core/refer-clojure))
-                       (str)
-                       (e.f.nrepl/eval!! nrepl))
-                  (async/<!! (e.p.host/set-variable! host ns-created-var-name true))))
-              (ix/when #(and (bufread-or-bufenter? %)
-                             (ns-not-created? %)))
-              (ix/discard))})
-
 (def ns-load
+  "Load namespace of current buffer.
+  When the namespace is already loaded, skip loading."
   {:kind e.c.interceptor/autocmd
-   :enter (-> (fn [{:as ctx :component/keys [host]}]
-                (e.h.evaluate/evaluate-current-buffer ctx)
-                (e.p.host/set-variable! host ns-created-var-name true))
-              (ix/when #(and (bufread-or-bufenter? %)
-                             (ns-not-created? %)))
-              (ix/discard))})
+   :enter (-> (fn [{:as ctx :component/keys [nrepl session-storage]}]
+                (e/let [ns-str (e.f.sexpr/get-namespace ctx)
+                        session (e.p.nrepl/current-session nrepl)
+                        cache-key (str session ":" ns-str)]
+                  (when-not (e.p.storage/contains? session-storage cache-key)
+                    (e.h.evaluate/evaluate-current-buffer ctx)
+                    (e.p.storage/set session-storage cache-key true))))
+            (ix/when #(and (bufread-or-bufenter? %)
+                           (e.u.interceptor/connected? %)))
+            (ix/discard))})
 
 (defn- empty-buffer?
   [{:component/keys [host] :keys [autocmd-type]}]

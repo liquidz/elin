@@ -92,3 +92,7 @@
 (defn async-constantly [v]
   (fn [& _]
     (async/go v)))
+
+(def must-not-be-called
+  (fn [& _]
+    (throw (ex-info "Must not be called" {}))))
