@@ -1,5 +1,22 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.1.3-alpha] - 2025-01-24
+
+=== Added
+
+- Add elin.function.clj-kondo/traverse-usages
+- Add elin.interceptor.test/correct-test-vars-automatically
+- Enable correct-test-vars-automatically interceptor by default
+
+=== Changed
+
+- Bump cider-nrepl to 0.52.0
+
+=== Fixed
+
+- Update elin.interceptor.tap/initialize interceptor adding max-datafy-depth parameter
+- Fix ns-load interceptor to load when the nREPL session is different
+
 == [2025.1.2-alpha] - 2025-01-04
 
 === Added
