@@ -71,3 +71,14 @@
              (->> (sut/protocol-implementations
                     c 'elin.protocol.clj-kondo 'ICljKondo 'analyze)
                   (map #(select-keys % [:impl-ns :filename :defined-by])))))))
+
+(t/deftest traverse-usages-test
+  (let [c (h/test-clj-kondo)]
+    (t/is (= '[elin.interceptor.nrepl/progress]
+             (sut/traverse-usages c "elin.util.id" "next-id")))
+
+    (t/is (= '[elin.handler.namespace/add-libspec
+               elin.handler.namespace/add-missing-libspec
+               elin.handler.namespace/add-missing-libspec*
+               elin.handler.namespace/add-missing-require*]
+             (sut/traverse-usages c "elin.util.sexpr" "add-require")))))

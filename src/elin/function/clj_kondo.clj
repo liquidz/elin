@@ -266,6 +266,80 @@
              (filter #(= ns-sym (:from %)))
              (map :to))))
 
+(defn- using?
+  ([qualified-symbol usage]
+   (if (qualified-symbol? qualified-symbol)
+     (using? (symbol (namespace qualified-symbol))
+             (symbol (name qualified-symbol))
+             usage)
+     false))
+  ([ns-sym name-sym usage]
+   (and (= ns-sym (:to usage))
+        (= name-sym (:name usage))
+        ;; Exclude those that are not used from anywhere
+        (:from-var usage))))
+
+(defn- recursive-usage?
+  [usage]
+  (and (= (:from usage) (:to usage))
+       (= (:from-var usage) (:name usage))))
+
+(defn- traverse-usages*
+  [all-usages base-usages]
+  (loop [usage-deps (->> base-usages
+                         (mapv #(vector % [])))
+         traversed-usages (set base-usages)]
+    (let [next-usage-deps (->> usage-deps
+                               (mapcat (fn [usage-dep]
+                                         (if-let [base-usage (first usage-dep)]
+                                           (let [child-usages (->> all-usages
+                                                                   (filter #(using? (:from base-usage) (:from-var base-usage) %))
+                                                                   (distinct)
+                                                                   (remove #(or (recursive-usage? %)
+                                                                                (contains? traversed-usages %))))]
+
+                                             (if (seq child-usages)
+                                               (mapv #(vector % usage-dep) child-usages)
+                                               [[nil usage-dep]]))
+                                           [usage-dep])))
+                               (vec))]
+      (if (every? (comp nil? first) next-usage-deps)
+        (map second next-usage-deps)
+        (recur next-usage-deps
+               (->> next-usage-deps
+                    (map first)
+                    (concat traversed-usages)
+                    (set)))))))
+
+(defn- extract-qualified-from-var
+  [[first-elm :as coll]]
+  (cond
+    (empty? coll)
+    []
+
+    (sequential? first-elm)
+    (map extract-qualified-from-var coll)
+
+    (map? first-elm)
+    [(symbol (name (:from first-elm))
+             (name (:from-var first-elm)))
+     (extract-qualified-from-var (second coll))]))
+
+(defn traverse-usages
+  [clj-kondo ns-str var-str]
+  (let [all-usages (var-usages clj-kondo)
+        ns-sym (symbol ns-str)
+        var-sym (symbol var-str)]
+    (->> all-usages
+         (filter #(and (= ns-sym (:to %))
+                       (= var-sym (:name %))
+                       ;; Exclude those that are not used from anywhere
+                       (:from-var %)))
+         (traverse-usages* all-usages)
+         (extract-qualified-from-var)
+         (flatten)
+         (distinct))))
+
 (comment
   (def clj-kondo (elin.dev/$ :clj-kondo))
   (e.p.clj-kondo/analyzing? (elin.dev/$ :clj-kondo))
