@@ -92,6 +92,16 @@
                                                         :connected "🍏"}}
                   elin.handler.lookup/lookup {:format {:clojure #resource "template/lookup_clojure.mustache"
                                                        :java #resource "template/lookup_java.mustache"}
+                                              :replace-string {#re "</?p>\n?" ""
+                                                               #re "</?note>\n?" ""
+                                                               #re "</?code>" "`"
+                                                               #re "</?dl>\n?" ""
+                                                               #re "</?dt>\n?" ""
+                                                               #re "</?dd>\n?" ""
+                                                               #re "</?ul>\n?" ""
+                                                               #re "</?li>\n?" ""
+                                                               #re "</?b>" "**"
+                                                               #re "</?i>" "*"}
                                               :interceptor {:uses [elin.interceptor.handler/show-result-as-popup {:filetype "help" :moved "current-line"}]}}
                   elin.handler.lookup/show-source {:interceptor {:includes [elin.interceptor.handler/show-result-as-popup]}}
                   elin.handler.lookup/show-clojuredocs {:export-edn-url "https://github.com/clojure-emacs/clojuredocs-export-edn/raw/master/exports/export.compact.edn"
