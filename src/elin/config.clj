@@ -40,6 +40,10 @@
         :always (slurp))
       (catch Exception _ nil))))
 
+(defmethod aero/reader 're
+  [_opts _tag value]
+  (re-pattern value))
+
 (def ^:private config-transformer
   (mt/transformer
     mt/default-value-transformer))
