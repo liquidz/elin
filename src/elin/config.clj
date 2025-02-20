@@ -22,7 +22,6 @@
 
 (defmethod aero/reader 'spit-appender
   [_opts _tag value]
-  #_{:clj-kondo/ignore [:unresolved-var]}
   (timbre/spit-appender value))
 
 (defmethod aero/reader 'resource
