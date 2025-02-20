@@ -69,7 +69,8 @@
                      e.c.nrepl/load-file-op
                      e.c.nrepl/test-var-query-op
                      e.c.nrepl/reload-op
-                     e.c.nrepl/reload-all-op}
+                     e.c.nrepl/reload-all-op
+                     e.c.nrepl/info-op}
         channel-store (atom {})]
     {:kind e.c.interceptor/nrepl
      :enter (-> (fn [{:as ctx :component/keys [host] :keys [request]}]
