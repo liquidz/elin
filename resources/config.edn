@@ -32,6 +32,7 @@
                       elin.interceptor.handler/handling-error {}
                       elin.interceptor.http/api-route {}
                       elin.interceptor.nrepl/nrepl-output {}
+                      elin.interceptor.nrepl/cider-nrepl-status-message {}
                       elin.interceptor.nrepl/eval-ns {}
                       elin.interceptor.nrepl/normalize-path {}
                       elin.interceptor.nrepl/progress {}
