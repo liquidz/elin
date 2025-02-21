@@ -7,6 +7,7 @@ let g:elin_home = expand('<sfile>:p:h:h')
 let g:elin_server_auto_connect = get(g:, 'elin_server_auto_connect', v:true)
 let g:elin_server_port = get(g:, 'elin_server_port', v:null)
 let g:elin_enable_omni_completion = get(g:, 'elin_enable_omni_completion', v:true)
+let g:elin_debug = get(g:, 'elin_debug', v:false)
 
 if !exists('g:elin_default_key_mapping_leader')
   let g:elin_default_key_mapping_leader = '<Leader>'
