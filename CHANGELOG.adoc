@@ -1,5 +1,21 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.2.0-alpha] - 2025-02-21
+
+=== Added
+
+- Enable download-sources-jar option in info op for cider-nrepl (#23)
+- Add cider-nrepl-status-message interceptor (#23)
+
+=== Fixed
+
+- Fix elin command to work correctly
+- Fix looking up java document correctly
+- Fix print-last-result to show its result temporarily
+- Update progress interceptor to show info op progress
+- Update lookup handler to support replace HTML tags
+- Fix not to show 'Callback id does not exists' message by default
+
 == [2025.1.3-alpha] - 2025-01-24
 
 === Added
