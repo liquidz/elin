@@ -69,7 +69,8 @@
                      e.c.nrepl/load-file-op
                      e.c.nrepl/test-var-query-op
                      e.c.nrepl/reload-op
-                     e.c.nrepl/reload-all-op}
+                     e.c.nrepl/reload-all-op
+                     e.c.nrepl/info-op}
         channel-store (atom {})]
     {:kind e.c.interceptor/nrepl
      :enter (-> (fn [{:as ctx :component/keys [host] :keys [request]}]
@@ -141,4 +142,16 @@
                         (assoc :output output)
                         (->> (e.p.interceptor/execute interceptor e.c.interceptor/output))))))
               (ix/when #(:message %))
+              (ix/discard))})
+
+(def cider-nrepl-status-message
+  "Interceptor to show cider-nrepl's status messages."
+  {:kind e.c.interceptor/raw-nrepl
+   :leave (-> (fn [{:component/keys [host] :keys [message]}]
+                (when (e.u.nrepl/has-status? message  "download-sources-jar")
+                  ;; e.g. {:coords {:artifact "s3", :group "software.amazon.awssdk", :version "2.28.23"} :status ["download-sources-jar"]}
+                  (e.p.host/echo-message host (format "Downloading sources: %s/%s@%s"
+                                                      (get-in message [:coords :group])
+                                                      (get-in message [:coords :artifact])
+                                                      (get-in message [:coords :version])))))
               (ix/discard))})

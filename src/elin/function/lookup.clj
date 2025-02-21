@@ -49,9 +49,7 @@
    sym-str]
   (try
     (let [res (e.f.n.cider/info!! nrepl ns-str sym-str)
-          error? (or (e/error? res)
-                     (not (:ns res))
-                     (not (:name res)))
+          error? (e/error? res)
           protocol-var-str (when-not error?
                              (:protocol res))
           proto-def (when (and (not error?)
@@ -68,7 +66,12 @@
                          (format "%s/%s" (:protocol-ns proto-def) (:protocol-name proto-def))
                          res)
 
-        (not error?)
+        (and (not error?)
+             (or
+               ;; clojure
+               (contains? res :name)
+               ;; java
+               (contains? res :class)))
         res
 
         :else

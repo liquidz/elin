@@ -51,25 +51,25 @@ jobs:
           git rebase main
           git push origin dev
 
-  create_pull_request:
-    needs: [changelog]
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-      - name: Create a pull request
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const headRef = '${{ steps.pull_request_head.outputs.ref }}'
-            const createParams = {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              base: 'main',
-              head: 'dev',
-              title: 'Next release'
-            }
-            const { data } = await github.rest.pulls.create(createParams)
-            return data
+  # create_pull_request:
+  #   needs: [changelog]
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     pull-requests: write
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Create a pull request
+  #       uses: actions/github-script@v7
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         script: |
+  #           const headRef = '${{ steps.pull_request_head.outputs.ref }}'
+  #           const createParams = {
+  #             owner: context.repo.owner,
+  #             repo: context.repo.repo,
+  #             base: 'main',
+  #             head: 'dev',
+  #             title: 'Next release'
+  #           }
+  #           const { data } = await github.rest.pulls.create(createParams)
+  #           return data

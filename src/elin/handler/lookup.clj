@@ -39,9 +39,14 @@
           resp (if ns-str
                  (e.f.lookup/lookup elin ns-str code)
                  (->> (parse-code-to-ns-and-name code)
-                      (apply e.f.lookup/lookup elin)))]
-    (generate-doc (:format config)
-                  (e.f.lookup/get-lookup-rendering-data resp))))
+                      (apply e.f.lookup/lookup elin)))
+          doc-str (generate-doc (:format config)
+                    (e.f.lookup/get-lookup-rendering-data resp))]
+    (reduce
+      (fn [accm [from to]]
+        (str/replace accm from to))
+      doc-str
+      (:replace-string config))))
 
 (defn show-source
   "Show source code of symbol at cursor position."

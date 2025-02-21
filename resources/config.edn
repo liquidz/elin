@@ -32,6 +32,7 @@
                       elin.interceptor.handler/handling-error {}
                       elin.interceptor.http/api-route {}
                       elin.interceptor.nrepl/nrepl-output {}
+                      elin.interceptor.nrepl/cider-nrepl-status-message {}
                       elin.interceptor.nrepl/eval-ns {}
                       elin.interceptor.nrepl/normalize-path {}
                       elin.interceptor.nrepl/progress {}
@@ -77,7 +78,7 @@
                   elin.handler.evaluate/evaluate-namespace-form {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline]}}
                   elin.handler.evaluate/expand-1-current-list {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.evaluate/interrupt {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
-                  elin.handler.evaluate/print-last-result {:interceptor {:includes [elin.interceptor.handler/append-result-to-info-buffer]}}
+                  elin.handler.evaluate/print-last-result {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.evaluate/reload {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
                   elin.handler.evaluate/reload-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
                   elin.handler.evaluate/undef {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
@@ -91,6 +92,16 @@
                                                         :connected "🍏"}}
                   elin.handler.lookup/lookup {:format {:clojure #resource "template/lookup_clojure.mustache"
                                                        :java #resource "template/lookup_java.mustache"}
+                                              :replace-string {#re "</?p>\n?" ""
+                                                               #re "</?note>\n?" ""
+                                                               #re "</?code>" "`"
+                                                               #re "</?dl>\n?" ""
+                                                               #re "</?dt>\n?" ""
+                                                               #re "</?dd>\n?" ""
+                                                               #re "</?ul>\n?" ""
+                                                               #re "</?li>\n?" ""
+                                                               #re "</?b>" "**"
+                                                               #re "</?i>" "*"}
                                               :interceptor {:uses [elin.interceptor.handler/show-result-as-popup {:filetype "help" :moved "current-line"}]}}
                   elin.handler.lookup/show-source {:interceptor {:includes [elin.interceptor.handler/show-result-as-popup]}}
                   elin.handler.lookup/show-clojuredocs {:export-edn-url "https://github.com/clojure-emacs/clojuredocs-export-edn/raw/master/exports/export.compact.edn"

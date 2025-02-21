@@ -22,7 +22,6 @@
 
 (defmethod aero/reader 'spit-appender
   [_opts _tag value]
-  #_{:clj-kondo/ignore [:unresolved-var]}
   (timbre/spit-appender value))
 
 (defmethod aero/reader 'resource
@@ -39,6 +38,10 @@
         (not absolute-path?) (io/file base-dir)
         :always (slurp))
       (catch Exception _ nil))))
+
+(defmethod aero/reader 're
+  [_opts _tag value]
+  (re-pattern value))
 
 (def ^:private config-transformer
   (mt/transformer

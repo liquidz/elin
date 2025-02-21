@@ -57,7 +57,7 @@
         ;; TODO apply options to force protject-type
         [project-type _] (e.f.jack-in/select-project {} cwd)
         port (e.u.nrepl/get-free-port)
-        commands (e.f.jack-in/generate-command project-type port rest-args)]
+        commands (:command (e.f.jack-in/generate-command project-type port rest-args))]
     (if (:dry-run options)
       (println (str/join " " commands))
       (apply b.process/shell {:out :inherit :in :inherit} commands))))

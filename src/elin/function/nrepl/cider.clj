@@ -31,7 +31,8 @@
     (e.f.nrepl/lookup!! nrepl ns-str sym-str)
     (e/let [res (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/info-op
                                                 :ns ns-str
-                                                :sym sym-str})
+                                                :sym sym-str
+                                                :download-sources-jar 1})
                       (async/<!!)
                       (e.u.nrepl/merge-messages))]
       (if (or (e.u.nrepl/has-status? res "no-info")

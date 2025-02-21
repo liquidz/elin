@@ -15,7 +15,9 @@ endfunction
 
 function! elin#callback#call(id, ...) abort
   if !has_key(s:registry, a:id)
-    echo printf('Callback id does not exists: %s', a:id)
+    if g:elin_debug
+      echo printf('Callback id does not exists: %s', a:id)
+    endif
     return
   endif
   let ret = call(s:registry[a:id], a:000)
