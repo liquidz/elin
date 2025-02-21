@@ -3,6 +3,8 @@
    [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.function.nrepl.cider :as e.f.n.cider]
+   [elin.function.nrepl.cider.stacktrace :as e.f.n.c.stacktrace]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.storage :as e.p.storage]
    [elin.util.interceptor :as e.u.interceptor]
@@ -94,3 +96,13 @@
                     (assoc ctx :code (format "(clojure.core/let [%s] %s)"
                                              context code)))
                 ctx)))})
+
+(def show-last-stacktrace
+  "Show last stacktrace."
+  {:kind e.c.interceptor/evaluate
+   :leave (-> (fn [{:as ctx :component/keys [host nrepl] :keys [response]}]
+                (when (seq (:ex response))
+                  (let [config (e.u.interceptor/config ctx #'show-last-stacktrace)
+                        resp (e.f.n.cider/analyze-last-stacktrace!! nrepl)]
+                    (e.p.host/append-to-info-buffer host (e.f.n.c.stacktrace/analyzed-last-stacktrace->str resp config)))))
+              (ix/discard))})
