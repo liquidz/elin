@@ -1,9 +1,13 @@
 (ns elin.util.file-test
   (:require
+   [clojure.java.io :as io]
    [clojure.string :as str]
    [clojure.test :as t]
+   [elin.error :as e]
    [elin.test-helper :as h]
-   [elin.util.file :as sut]))
+   [elin.util.file :as sut])
+  (:import
+   (java.io File)))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 
@@ -55,3 +59,33 @@
            (sut/decode-path "foo::")))
   (t/is (= {:path "foo:" :lnum 2 :col 1}
            (sut/decode-path "foo::2"))))
+
+(t/deftest slurp-zipfile-test
+  (let [zip-path (-> "resources/slurp-zipfile.zip"
+                     (io/resource)
+                     (io/file)
+                     (File/.getAbsolutePath))]
+    (t/testing "Positive"
+      (t/is (= "foo content"
+               (sut/slurp-zipfile (format "zipfile:%s::%s" zip-path "foo.txt"))))
+      (t/is (= "bar content"
+               (sut/slurp-zipfile (format "zipfile:%s::%s" zip-path "bar.txt")))))
+
+    (t/testing "Negative"
+      (t/testing "Invalid path"
+        (t/is (e/incorrect?
+                (sut/slurp-zipfile "invalid-path")))
+        (t/is (e/incorrect?
+                (sut/slurp-zipfile (format "zipfile:%s::%s" "" ""))))
+        (t/is (e/incorrect?
+                (sut/slurp-zipfile (format "zipfile:%s::%s" "" "foo.txt"))))
+        (t/is (e/incorrect?
+                (sut/slurp-zipfile (format "zipfile:%s::%s" zip-path "")))))
+
+      (t/testing "Zip file is not found"
+        (t/is (e/not-found?
+                (sut/slurp-zipfile (format "zipfile:%s::%s" "non-existing" "foo.txt")))))
+
+      (t/testing "Zip entry is not found"
+        (t/is (e/not-found?
+                (sut/slurp-zipfile (format "zipfile:%s::%s" zip-path "non-existing"))))))))

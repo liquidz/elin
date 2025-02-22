@@ -3,11 +3,12 @@
    [clojure.java.io :as io]
    [clojure.string :as str]
    [elin.constant.project :as e.c.project]
+   [elin.error :as e]
    [elin.schema :as e.schema]
    [elin.util.os :as e.u.os]
    [malli.core :as m])
   (:import
-   (java.io FileInputStream)
+   (java.io FileInputStream FileNotFoundException)
    (java.util.zip ZipEntry ZipInputStream)))
 
 (m/=> find-file-in-parent-directories-by-string
@@ -129,17 +130,27 @@
               1)}
     {:path path :lnum 1 :col 1}))
 
+(m/=> zipfile-path? [:=> [:cat string?] boolean?])
 (defn zipfile-path?
   [path]
   (str/starts-with? path "zipfile:"))
 
+(m/=> slurp-zipfile [:=> [:cat string?] (e.schema/error-or string?)])
 (defn slurp-zipfile
   "Expected a string like 'zipfile:/path/to/jar.jar::path/to/entry.clj' as path."
   [path]
-  (let [[_ jar-file entry-name] (first (re-seq #"^zipfile:(.+?)::(.+?)$" path))]
-    (with-open [zis (ZipInputStream. (FileInputStream. jar-file))]
-      (loop [entry (ZipInputStream/.getNextEntry zis)]
-        (when entry
-          (if (= entry-name (ZipEntry/.getName entry))
-            (slurp (io/reader zis))
-            (recur (ZipInputStream/.getNextEntry zis))))))))
+  (e/let [[_ jar-file entry-name] (first (re-seq #"^zipfile:(.+?)::(.+?)$" path))
+          _ (or (seq jar-file) (e/incorrect))
+          _ (or (seq entry-name) (e/incorrect))]
+    (try
+      (with-open [zis (ZipInputStream. (FileInputStream. jar-file))]
+        (or (loop [entry (ZipInputStream/.getNextEntry zis)]
+              (when entry
+                (if (= entry-name (ZipEntry/.getName entry))
+                  (slurp (io/reader zis))
+                  (recur (ZipInputStream/.getNextEntry zis)))))
+            (e/not-found)))
+      (catch FileNotFoundException ex
+        (e/not-found {} ex))
+      (catch Exception ex
+        (e/fault {} ex)))))
