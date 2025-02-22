@@ -5,7 +5,10 @@
    [elin.constant.project :as e.c.project]
    [elin.schema :as e.schema]
    [elin.util.os :as e.u.os]
-   [malli.core :as m]))
+   [malli.core :as m])
+  (:import
+   (java.io FileInputStream)
+   (java.util.zip ZipEntry ZipInputStream)))
 
 (m/=> find-file-in-parent-directories-by-string
       [:=> [:cat string? string?] [:maybe e.schema/?File]])
@@ -125,3 +128,18 @@
      :col (or (some-> col parse-long)
               1)}
     {:path path :lnum 1 :col 1}))
+
+(defn zipfile-path?
+  [path]
+  (str/starts-with? path "zipfile:"))
+
+(defn slurp-zipfile
+  "Expected a string like 'zipfile:/path/to/jar.jar::path/to/entry.clj' as path."
+  [path]
+  (let [[_ jar-file entry-name] (first (re-seq #"^zipfile:(.+?)::(.+?)$" path))]
+    (with-open [zis (ZipInputStream. (FileInputStream. jar-file))]
+      (loop [entry (ZipInputStream/.getNextEntry zis)]
+        (when entry
+          (if (= entry-name (ZipEntry/.getName entry))
+            (slurp (io/reader zis))
+            (recur (ZipInputStream/.getNextEntry zis))))))))
