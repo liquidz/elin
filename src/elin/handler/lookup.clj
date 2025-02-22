@@ -9,6 +9,7 @@
    [elin.protocol.host :as e.p.host]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.nrepl :as e.s.nrepl]
+   [elin.util.file :as e.u.file]
    [elin.util.handler :as e.u.handler]
    [elin.util.sexpr :as e.u.sexpr]
    [malli.core :as m]
@@ -57,9 +58,13 @@
           resp (if ns-str
                  (e.f.lookup/lookup elin ns-str code)
                  (->> (parse-code-to-ns-and-name code)
-                      (apply e.f.lookup/lookup elin)))]
+                      (apply e.f.lookup/lookup elin)))
+          path (:file resp)
+          content (if (e.u.file/zipfile-path? path)
+                    (e.u.file/slurp-zipfile path)
+                    (slurp path))]
     (e.u.sexpr/extract-form-by-position
-      (slurp (:file resp))
+      content
       (:line resp)
       (:column resp))))
 
