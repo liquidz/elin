@@ -1,4 +1,5 @@
 (ns elin.util.file
+  (:refer-clojure :exclude [slurp])
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
@@ -147,10 +148,22 @@
         (or (loop [entry (ZipInputStream/.getNextEntry zis)]
               (when entry
                 (if (= entry-name (ZipEntry/.getName entry))
-                  (slurp (io/reader zis))
+                  (clojure.core/slurp (io/reader zis))
                   (recur (ZipInputStream/.getNextEntry zis)))))
             (e/not-found)))
       (catch FileNotFoundException ex
-        (e/not-found {} ex))
+        (e/not-found {:message (ex-message ex)} ex))
       (catch Exception ex
-        (e/fault {} ex)))))
+        (e/fault {:message (ex-message ex)} ex)))))
+
+(m/=> slurp [:=> [:cat string?] (e.schema/error-or string?)])
+(defn slurp
+  [path]
+  (if (zipfile-path? path)
+    (slurp-zipfile path)
+    (try
+      (clojure.core/slurp path)
+      (catch FileNotFoundException ex
+        (e/not-found {:message (ex-message ex)} ex))
+      (catch Exception ex
+        (e/fault {:message (ex-message ex)} ex)))))
