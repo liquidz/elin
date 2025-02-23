@@ -1,5 +1,19 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.2.1-alpha] - 2025-02-23
+
+=== Added
+
+- Add elin.function.nrepl.cider.stacktrace/analyzed-last-stacktrace->str
+- Add elin.interceptor.evaluate/show-last-stacktrace interceptor
+- Add elin.util.file/slurp-zipfile
+- Add elin.util.file/slurp
+
+=== Fixed
+
+- Fix elin.handler.lookup/show-source to work with third-party libraries
+- Update elin.handler.lookup/show-source to use elin.util.file/slurp
+
 == [2025.2.0-alpha] - 2025-02-21
 
 === Added
