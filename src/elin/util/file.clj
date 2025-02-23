@@ -1,11 +1,16 @@
 (ns elin.util.file
+  (:refer-clojure :exclude [slurp])
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
    [elin.constant.project :as e.c.project]
+   [elin.error :as e]
    [elin.schema :as e.schema]
    [elin.util.os :as e.u.os]
-   [malli.core :as m]))
+   [malli.core :as m])
+  (:import
+   (java.io FileInputStream FileNotFoundException)
+   (java.util.zip ZipEntry ZipInputStream)))
 
 (m/=> find-file-in-parent-directories-by-string
       [:=> [:cat string? string?] [:maybe e.schema/?File]])
@@ -125,3 +130,40 @@
      :col (or (some-> col parse-long)
               1)}
     {:path path :lnum 1 :col 1}))
+
+(m/=> zipfile-path? [:=> [:cat string?] boolean?])
+(defn zipfile-path?
+  [path]
+  (str/starts-with? path "zipfile:"))
+
+(m/=> slurp-zipfile [:=> [:cat string?] (e.schema/error-or string?)])
+(defn slurp-zipfile
+  "Expected a string like 'zipfile:/path/to/jar.jar::path/to/entry.clj' as path."
+  [path]
+  (e/let [[_ jar-file entry-name] (first (re-seq #"^zipfile:(.+?)::(.+?)$" path))
+          _ (or (seq jar-file) (e/incorrect))
+          _ (or (seq entry-name) (e/incorrect))]
+    (try
+      (with-open [zis (ZipInputStream. (FileInputStream. jar-file))]
+        (or (loop [entry (ZipInputStream/.getNextEntry zis)]
+              (when entry
+                (if (= entry-name (ZipEntry/.getName entry))
+                  (clojure.core/slurp (io/reader zis))
+                  (recur (ZipInputStream/.getNextEntry zis)))))
+            (e/not-found)))
+      (catch FileNotFoundException ex
+        (e/not-found {:message (ex-message ex)} ex))
+      (catch Exception ex
+        (e/fault {:message (ex-message ex)} ex)))))
+
+(m/=> slurp [:=> [:cat string?] (e.schema/error-or string?)])
+(defn slurp
+  [path]
+  (if (zipfile-path? path)
+    (slurp-zipfile path)
+    (try
+      (clojure.core/slurp path)
+      (catch FileNotFoundException ex
+        (e/not-found {:message (ex-message ex)} ex))
+      (catch Exception ex
+        (e/fault {:message (ex-message ex)} ex)))))

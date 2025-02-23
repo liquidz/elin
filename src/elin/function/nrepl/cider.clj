@@ -142,3 +142,9 @@
         (async/<!!)
         (e.u.nrepl/merge-messages)
         (:clojuredocs)))
+
+(defn analyze-last-stacktrace!!
+  [nrepl]
+  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/analyze-last-stacktrace-op})
+        (async/<!!)
+        (e.u.nrepl/merge-messages)))

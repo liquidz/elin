@@ -44,12 +44,14 @@
                :config-map {elin.interceptor.evaluate/set-eval-result-to-virtual-text {:format "=> {{{result}}}"
                                                                                        :highlight "DiffText"
                                                                                        :align "after"
-                                                                                       :close-after 3000}}
+                                                                                       :close-after 3000}
+                            elin.interceptor.evaluate/show-last-stacktrace {:ignoring-vars #include "ignoring_stacktrace_vars.edn"}}
 
                :preset {:evaluation {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline
                                                 elin.interceptor.evaluate/set-eval-result-to-virtual-text
                                                 elin.interceptor.evaluate/unwrap-comment-form
-                                                elin.interceptor.evaluate/yank-eval-result]}
+                                                elin.interceptor.evaluate/yank-eval-result
+                                                elin.interceptor.evaluate/show-last-stacktrace]}
 
                         :test {:includes [elin.interceptor.test/correct-test-vars-automatically
                                           elin.interceptor.test/parse-test-result

@@ -36,6 +36,7 @@
 (def log-remove-appender "cider/log-remove-appender")
 (def log-search "cider/log-search")
 (def clojuredocs-lookup "clojuredocs-lookup")
+(def analyze-last-stacktrace-op "analyze-last-stacktrace")
 
 ;; refactor-nrepl ops
 
