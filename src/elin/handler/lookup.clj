@@ -7,6 +7,7 @@
    [elin.function.lookup :as e.f.lookup]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
+   [elin.schema :as e.schema]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.nrepl :as e.s.nrepl]
    [elin.util.file :as e.u.file]
@@ -49,6 +50,7 @@
       doc-str
       (:replace-string config))))
 
+(m/=> show-source [:=> [:cat e.s.handler/?Elin] (e.schema/error-or string?)])
 (defn show-source
   "Show source code of symbol at cursor position."
   [{:as elin :component/keys [host]}]
@@ -60,9 +62,7 @@
                  (->> (parse-code-to-ns-and-name code)
                       (apply e.f.lookup/lookup elin)))
           path (:file resp)
-          content (if (e.u.file/zipfile-path? path)
-                    (e.u.file/slurp-zipfile path)
-                    (slurp path))]
+          content (e.u.file/slurp path)]
     (e.u.sexpr/extract-form-by-position
       content
       (:line resp)
