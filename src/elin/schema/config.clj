@@ -26,10 +26,6 @@
   [:map
    [:level {:default :info} ?LogLevel]])
 
-(def ^:private ?Plugin
-  [:map
-   [:edn-files {:default []} [:sequential string?]]])
-
 (def ^:private ?Server
   [:map
    [:host string?]
@@ -41,5 +37,4 @@
    [:handler {:default {}} ?Handler]
    [:interceptor {:default {}} ?Interceptor]
    [:log {:default {}} ?Log]
-   [:plugin {:default {}} ?Plugin]
    [:server ?Server]])
