@@ -28,6 +28,10 @@
         (clojure.walk/prewalk
           (fn [v#]
             (cond
+              ;; java.time.Instant
+              (instance? java.time.Instant v#)
+              (clojure.instant/read-instant-date (str v#))
+
               ;; no conversion
               (or
                 (nil? v#)
