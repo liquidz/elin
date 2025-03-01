@@ -2,13 +2,13 @@
   (:require
    [elin.protocol.clj-kondo :as e.p.clj-kondo]
    [elin.protocol.interceptor :as e.p.interceptor]
+   [elin.protocol.lazy-host :as e.p.lazy-host]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.protocol.storage :as e.p.storage]
    [elin.schema :as e.schema]))
 
 (def ?LazyHost
-  [:map
-   [:host-store e.schema/?Atom]])
+  (e.schema/?protocol e.p.lazy-host/ILazyHost))
 
 (def ?Interceptor
   (e.schema/?protocol e.p.interceptor/IInterceptor))

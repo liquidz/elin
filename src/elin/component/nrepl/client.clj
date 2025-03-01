@@ -54,7 +54,7 @@
     [:map
      [:host [:maybe string?]]
      [:port [:maybe int?]]]
-    (-> e.s.nrepl/?Client
+    (-> e.s.nrepl/?PortFile
         (m.util/select-keys [:port-file :language])
         (m.util/optional-keys [:port-file :language]))))
 

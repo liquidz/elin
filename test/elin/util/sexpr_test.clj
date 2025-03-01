@@ -74,6 +74,26 @@
   (t/testing "no namespace form"
     (t/is (e/not-found? (sut/add-import "" 'java.lang.String)))))
 
+(t/deftest extract-form-by-position-test
+  (let [code "(defn- foo [a b] (+ a b))"]
+    (t/is (= code
+             (sut/extract-form-by-position code 1 1)))
+    (t/is (= "defn-"
+             (sut/extract-form-by-position code 1 2)))
+    (t/is (= "foo"
+             (sut/extract-form-by-position code 1 8)))
+    (t/is (= "[a b]"
+             (sut/extract-form-by-position code 1 12)))
+    (t/is (= "(+ a b)"
+             (sut/extract-form-by-position code 1 18)))))
+
+(t/deftest extract-local-binding-by-position-test
+  (let [code "(let [a (inc 1) b (* 2 3)] (+ a b))"]
+    (t/is (= "a (inc 1)"
+             (sut/extract-local-binding-by-position code 1 7)))
+    (t/is (= "b (* 2 3)"
+             (sut/extract-local-binding-by-position code 1 17)))))
+
 (t/deftest apply-cider-coordination-test
   (let [code "(defn- foo [a b] #dbg (+ b (+ a 1)))"]
     (t/is (= {:code "b" :position [0 25]}

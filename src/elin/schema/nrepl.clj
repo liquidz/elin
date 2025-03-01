@@ -1,12 +1,9 @@
 (ns elin.schema.nrepl
   (:require
    [elin.constant.nrepl :as e.c.nrepl]
+   [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema :as e.schema]
-   [malli.util :as m.util])
-  (:import
-   (clojure.lang Atom)
-   (java.io OutputStream PushbackInputStream)
-   (java.net Socket)))
+   [malli.util :as m.util]))
 
 (def ?Message
   [:map-of keyword? any?])
@@ -17,26 +14,11 @@
    [:text string?]])
 
 (def ?Connection
-  [:map
-   [:host string?]
-   [:port int?]
-   [:socket (e.schema/?instance Socket)]
-   [:read-stream (e.schema/?instance PushbackInputStream)]
-   [:write-stream (e.schema/?instance OutputStream)]
-   [:raw-message-channel e.schema/?ManyToManyChannel]
-   [:response-manager (e.schema/?instance Atom)]])
+  (e.schema/?protocol e.p.nrepl/IConnection))
 
 (def ?Client
-  [:map
-   [:connection ?Connection]
-   [:session string?]
-   [:supported-ops [:set keyword?]]
-   [:initial-namespace [:maybe string?]]
-   [:version [:map-of keyword? any?]]
-   [:port-file [:maybe string?]]
-   [:language [:maybe [:enum
-                       e.c.nrepl/lang-clojure
-                       e.c.nrepl/lang-clojurescript]]]])
+  (e.schema/?protocol e.p.nrepl/IConnection
+                      e.p.nrepl/IClient))
 
 (def ?Manager
   [:map-of int? [:map
@@ -44,10 +26,12 @@
                  [:channel e.schema/?ManyToManyChannel]]])
 
 (def ?PortFile
-  (m.util/merge
-    [:map [:port int?]]
-    (-> ?Client
-        (m.util/select-keys [:port-file :language]))))
+  [:map
+   [:port int?]
+   [:port-file [:maybe string?]]
+   [:language [:maybe [:enum
+                       e.c.nrepl/lang-clojure
+                       e.c.nrepl/lang-clojurescript]]]])
 
 (def ?Lookup
   [:map
@@ -59,7 +43,9 @@
    [:line int?]
    [:doc {:optional true} string?]
    ;; cider-nrepl's info op
-   [:arglists {:optional true} [:maybe string?]]])
+   [:arglists {:optional true} [:maybe string?]]
+   ;; Used in elin.function.lookup/local-lookup
+   [:local? {:optional true} boolean?]])
 
 (def ?LookupJavaRenderingData
   [:map {:closed? true}

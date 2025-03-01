@@ -25,6 +25,7 @@
    e.c.interceptor/http-request])
 
 (def ?Interceptor
+  "Schema for user-defined interceptor"
   [:map
    [:name qualified-symbol?]
    [:kind ?Kind]

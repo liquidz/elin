@@ -25,3 +25,11 @@
            (sut/render "a{{a}}" {:a 1})))
   (t/is (= "a"
            (sut/render "a{{a}}" {:a nil}))))
+
+(t/deftest trim-indent-test
+  (t/is (= "foo"
+           (sut/trim-indent 0 "foo")))
+  (t/is (= "foo\nbar"
+           (sut/trim-indent 1 " foo\n bar")))
+  (t/is (= " foo\nbar"
+           (sut/trim-indent 1 " foo\n bar" 1))))

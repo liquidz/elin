@@ -63,10 +63,15 @@
                       (apply e.f.lookup/lookup elin)))
           path (:file resp)
           content (e.u.file/slurp path)]
-    (e.u.sexpr/extract-form-by-position
-      content
-      (:line resp)
-      (:column resp))))
+    (if (:local? resp)
+      (e.u.sexpr/extract-local-binding-by-position
+        content
+        (:line resp)
+        (:column resp))
+      (e.u.sexpr/extract-form-by-position
+        content
+        (:line resp)
+        (:column resp)))))
 
 (defn show-clojuredocs
   "Show clojuredocs of symbol at cursor position."

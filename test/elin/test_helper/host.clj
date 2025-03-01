@@ -3,6 +3,7 @@
    [clojure.core.async :as async]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.host.rpc :as e.p.h.rpc]
+   [elin.protocol.lazy-host :as e.p.lazy-host]
    [elin.protocol.rpc :as e.p.rpc]
    [elin.schema.component :as e.s.component]
    [elin.util.id :as e.u.id]
@@ -49,7 +50,10 @@
 
   e.p.rpc/IFunction
   (call-function [this method params]
-    (e.p.h.rpc/request! this ["test_call_function" [method params]])))
+    (e.p.h.rpc/request! this ["test_call_function" [method params]]))
+
+  e.p.lazy-host/ILazyHost
+  (set-host! [_ _] nil))
 
 (defn get-outputs [test-host]
   @(:outputs test-host))
