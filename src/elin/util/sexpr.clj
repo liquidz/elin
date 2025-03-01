@@ -115,6 +115,8 @@
 
 (m/=> extract-form-by-position [:=> [:cat string? int? int?] (e.schema/error-or string?)])
 (defn extract-form-by-position
+  "Extract a form at the given position.
+  line and column are 1-based."
   [code line col]
   (try
     (-> (r.zip/of-string code {:track-position? true})
