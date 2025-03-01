@@ -1,5 +1,21 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.3.0-alpha] - 2025-03-01
+
+=== Added
+
+- Add elin.util.string/trim-indent
+- Add elin.util.sexpr/extract-local-binding-by-position
+
+=== Changed
+
+- Bump cider-nrepl to 0.52.1
+
+=== Fixed
+
+- Fixed to allow java.time.Instant to be processed by the interceptor
+- Update to support showing local binding sources on elin.handler.lookup/show-source handler
+
 == [2025.2.1-alpha] - 2025-02-23
 
 === Added
