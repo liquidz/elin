@@ -15,13 +15,23 @@
 (t/deftest show-source-test
   (let [elin (h/test-elin)]
     (t/testing "Positive"
-      (with-redefs [e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
-                    e.f.sexpr/get-expr (constantly {:code "foo/bar"})
-                    e.f.sexpr/get-namespace (constantly "foo")
-                    e.f.lookup/lookup (constantly {:file "foo.txt" :line 1 :column 1})
-                    e.u.file/slurp (constantly "(foo bar)")]
-        (t/is (= "(foo bar)"
-                 (sut/show-source elin)))))
+      (t/testing "Defined vars"
+        (with-redefs [e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
+                      e.f.sexpr/get-expr (constantly {:code "foo/bar"})
+                      e.f.sexpr/get-namespace (constantly "foo")
+                      e.f.lookup/lookup (constantly {:file "foo.txt" :line 1 :column 1})
+                      e.u.file/slurp (constantly "(foo bar)")]
+          (t/is (= "(foo bar)"
+                   (sut/show-source elin)))))
+
+      (t/testing "Local bindings"
+        (with-redefs [e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
+                      e.f.sexpr/get-expr (constantly {:code "foo/bar"})
+                      e.f.sexpr/get-namespace (constantly "foo")
+                      e.f.lookup/lookup (constantly {:file "foo.txt" :line 1 :column 7 :local? true})
+                      e.u.file/slurp (constantly "(let [foo (bar\n            baz)]\n  foo)")]
+          (t/is (= "foo (bar\n      baz)"
+                   (sut/show-source elin))))))
 
     (t/testing "Negative"
       (with-redefs [e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
