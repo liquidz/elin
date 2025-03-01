@@ -4,6 +4,7 @@
    [clojure.string :as str]
    [elin.error :as e]
    [elin.schema :as e.schema]
+   [elin.util.string :as e.u.string]
    [malli.core :as m]
    [rewrite-clj.node :as r.node]
    [rewrite-clj.parser :as r.parser]
@@ -122,6 +123,21 @@
     (-> (r.zip/of-string code {:track-position? true})
         (r.zip/find-last-by-pos [line col])
         (r.zip/string))
+    (catch Exception ex
+      (e/not-found {:message (ex-message ex)}))))
+
+(m/=> extract-local-binding-by-position [:=> [:cat string? int? int?] (e.schema/error-or string?)])
+(defn extract-local-binding-by-position
+  "Extract a local binding at the given position.
+  line and column are 1-based."
+  [code line col]
+  (try
+    (let [zloc (-> (r.zip/of-string code {:track-position? true})
+                   (r.zip/find-last-by-pos [line col]))
+          s (str (r.zip/string zloc)
+                 " "
+                 (r.zip/string (r.zip/right zloc)))]
+      (e.u.string/trim-indent (dec col) s 1))
     (catch Exception ex
       (e/not-found {:message (ex-message ex)}))))
 

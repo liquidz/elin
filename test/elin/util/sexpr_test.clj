@@ -87,6 +87,13 @@
     (t/is (= "(+ a b)"
              (sut/extract-form-by-position code 1 18)))))
 
+(t/deftest extract-local-binding-by-position-test
+  (let [code "(let [a (inc 1) b (* 2 3)] (+ a b))"]
+    (t/is (= "a (inc 1)"
+             (sut/extract-local-binding-by-position code 1 7)))
+    (t/is (= "b (* 2 3)"
+             (sut/extract-local-binding-by-position code 1 17)))))
+
 (t/deftest apply-cider-coordination-test
   (let [code "(defn- foo [a b] #dbg (+ b (+ a 1)))"]
     (t/is (= {:code "b" :position [0 25]}
