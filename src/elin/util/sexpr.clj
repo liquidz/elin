@@ -126,6 +126,14 @@
     (catch Exception ex
       (e/not-found {:message (ex-message ex)}))))
 
+(defn- up-until-top-level-binding
+  [zloc]
+  (loop [zloc zloc]
+    (when-let [zloc' (some-> zloc r.zip/up)]
+      (if (r.zip/list? (r.zip/up zloc'))
+        zloc
+        (recur zloc')))))
+
 (m/=> extract-local-binding-by-position [:=> [:cat string? int? int?] (e.schema/error-or string?)])
 (defn extract-local-binding-by-position
   "Extract a local binding at the given position.
@@ -134,10 +142,19 @@
   (try
     (let [zloc (-> (r.zip/of-string code {:track-position? true})
                    (r.zip/find-last-by-pos [line col]))
-          s (str (r.zip/string zloc)
+          destructuring? (some-> zloc
+                                 (r.zip/up)
+                                 (r.zip/up)
+                                 (r.zip/list?)
+                                 (not))
+          zloc' (if destructuring?
+                  (up-until-top-level-binding zloc)
+                  zloc)
+          [_ col'] (r.zip/position zloc')
+          s (str (r.zip/string zloc')
                  " "
-                 (r.zip/string (r.zip/right zloc)))]
-      (e.u.string/trim-indent (dec col) s 1))
+                 (r.zip/string (r.zip/right zloc')))]
+      (e.u.string/trim-indent (dec col') s 1))
     (catch Exception ex
       (e/not-found {:message (ex-message ex)}))))
 

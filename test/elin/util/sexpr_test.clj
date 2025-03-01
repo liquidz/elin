@@ -88,11 +88,21 @@
              (sut/extract-form-by-position code 1 18)))))
 
 (t/deftest extract-local-binding-by-position-test
-  (let [code "(let [a (inc 1) b (* 2 3)] (+ a b))"]
-    (t/is (= "a (inc 1)"
-             (sut/extract-local-binding-by-position code 1 7)))
-    (t/is (= "b (* 2 3)"
-             (sut/extract-local-binding-by-position code 1 17)))))
+  (let [code "(let [a (+ 1\n           2)]\n  (+ a 1))"]
+    (t/is (= "a (+ 1\n     2)"
+             (sut/extract-local-binding-by-position code 1 7))))
+
+  (let [code "(let [[a b] [1\n             2]]\n  (+ a b))"]
+    (t/is (= "[a b] [1\n       2]"
+             (sut/extract-local-binding-by-position code 1 8))))
+
+  (let [code "(let [[[a] [b]] [[1]\n                 [2]]]\n  (+ a b))"]
+    (t/is (= "[[a] [b]] [[1]\n           [2]]"
+             (sut/extract-local-binding-by-position code 1 9))))
+
+  (let [code "(let [{:keys [a b]} {:a 1\n                     :b 2}]\n  (+ a b))"]
+    (t/is (= "{:keys [a b]} {:a 1\n               :b 2}"
+             (sut/extract-local-binding-by-position code 1 15)))))
 
 (t/deftest apply-cider-coordination-test
   (let [code "(defn- foo [a b] #dbg (+ b (+ a 1)))"]
