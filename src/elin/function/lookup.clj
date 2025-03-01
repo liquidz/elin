@@ -15,6 +15,7 @@
 (def ?NreplAndCljKondo
   (m.util/select-keys e.s.handler/?Components [:component/nrepl :component/clj-kondo]))
 
+(m/=> local-lookup [:=> [:cat ?NreplAndCljKondo string? string?] e.s.nrepl/?Lookup])
 (defn- local-lookup
   [{:as elin :component/keys [host clj-kondo]} ns-str sym-str]
   (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
@@ -29,7 +30,8 @@
      :file path
      :arglists-str ""
      :line (+ base-lnum (- lnum (count (str/split-lines ns-code)) 1))
-     :column (+ base-col (dec col))}))
+     :column (+ base-col (dec col))
+     :local? true}))
 
 (defn- protocol-lookup
   [{:component/keys [clj-kondo]}

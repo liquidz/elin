@@ -12,7 +12,7 @@
 (t/use-fixtures :once h/malli-instrument-fixture)
 
 (t/deftest lookup-test
-  (t/testing "positive"
+  (t/testing "Positive"
     (t/testing "cider info"
       (t/testing "regular"
         (let [info-resp (h/dummy-lookup-response)]
@@ -30,7 +30,27 @@
           (with-redefs [e.f.n.cider/info!! (constantly info-resp)
                         e.f.clj-kondo/lookup (constantly fallback-resp)]
             (t/is (= fallback-resp
-                     (sut/lookup (h/test-elin) "foo.bar" "baz")))))))))
+                     (sut/lookup (h/test-elin) "foo.bar" "baz")))))))
+
+    ;; TODO
+    (t/testing "clj-kondo lookup")
+
+    (t/testing "local lookup"
+      (with-redefs [e.f.n.cider/info!! (constantly (e/fault))
+                    e.f.clj-kondo/lookup (constantly (e/fault))
+                    e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
+                    e.f.sexpr/get-namespace-sexpr (constantly {:code "(ns foo)"})
+                    e.f.sexpr/get-top-list (constantly {:code "(bar)" :lnum 1 :col 1})
+                    e.p.host/get-current-file-path! (h/async-constantly "/path/to/file.txt")
+                    e.f.clj-kondo/local-lookup (constantly {:line 1 :column 1})]
+        (t/is (= {:ns "foo.bar"
+                  :name "baz"
+                  :file "/path/to/file.txt"
+                  :arglists-str ""
+                  :line 0
+                  :column 1
+                  :local? true}
+                 (sut/lookup (h/test-elin) "foo.bar" "baz")))))))
 
 (t/deftest clojuredocs-lookup
   (let [elin (h/test-elin)

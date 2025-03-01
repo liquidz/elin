@@ -43,7 +43,9 @@
    [:line int?]
    [:doc {:optional true} string?]
    ;; cider-nrepl's info op
-   [:arglists {:optional true} [:maybe string?]]])
+   [:arglists {:optional true} [:maybe string?]]
+   ;; Used in elin.function.lookup/local-lookup
+   [:local? {:optional true} boolean?]])
 
 (def ?LookupJavaRenderingData
   [:map {:closed? true}
