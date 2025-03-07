@@ -7,6 +7,7 @@
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
+   [elin.schema :as e.schema]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m]
@@ -15,7 +16,7 @@
 (def ?NreplAndCljKondo
   (m.util/select-keys e.s.handler/?Components [:component/nrepl :component/clj-kondo]))
 
-(m/=> local-lookup [:=> [:cat ?NreplAndCljKondo string? string?] e.s.nrepl/?Lookup])
+(m/=> local-lookup [:=> [:cat ?NreplAndCljKondo string? string?] (e.schema/error-or e.s.nrepl/?Lookup)])
 (defn- local-lookup
   [{:as elin :component/keys [host clj-kondo]} ns-str sym-str]
   (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
@@ -84,7 +85,7 @@
     (catch Exception e
       (e/fault {:message (pr-str e)}))))
 
-(m/=> lookup [:=> [:cat ?NreplAndCljKondo string? string? ?LookupConfig] e.s.nrepl/?Lookup])
+(m/=> lookup [:=> [:cat ?NreplAndCljKondo string? string? ?LookupConfig] (e.schema/error-or e.s.nrepl/?Lookup)])
 (defn lookup
   [{:as elin :component/keys [clj-kondo]}
    ns-str
