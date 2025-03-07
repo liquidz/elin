@@ -11,46 +11,73 @@
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 
+(def ^:private lookup-config
+  {:order [:nrepl :clj-kondo :local]})
+
 (t/deftest lookup-test
   (t/testing "Positive"
-    (t/testing "cider info"
+    (t/testing "nrepl lookup"
       (t/testing "regular"
         (let [info-resp (h/dummy-lookup-response)]
           (with-redefs [e.f.n.cider/info!! (constantly info-resp)]
             (t/is (= info-resp
-                     (sut/lookup (h/test-elin) "foo.bar" "baz"))))))
+                     (sut/lookup (h/test-elin) "foo.bar" "baz" lookup-config))))))
 
       ;; TODO
       (t/testing "protocol"))
 
-    (t/testing "nrepl lookup"
-      (t/testing "info does not respond namespace and var name"
-        (let [info-resp {:status ["done"]}
+    (t/testing "clj-kondo lookup"
+      (t/testing "fallback from nrepl lookup"
+        (let [;; info does not respond namespace and var name
+              info-resp {:status ["done"]}
               fallback-resp (h/dummy-lookup-response)]
           (with-redefs [e.f.n.cider/info!! (constantly info-resp)
                         e.f.clj-kondo/lookup (constantly fallback-resp)]
             (t/is (= fallback-resp
-                     (sut/lookup (h/test-elin) "foo.bar" "baz")))))))
+                     (sut/lookup (h/test-elin) "foo.bar" "baz" lookup-config))))))
 
-    ;; TODO
-    (t/testing "clj-kondo lookup")
+      (t/testing "ordered"
+        (let [resp (h/dummy-lookup-response)]
+          (with-redefs [e.f.clj-kondo/lookup (constantly resp)]
+            (t/is (= resp
+                     (sut/lookup (h/test-elin) "foo.bar" "baz" {:order [:clj-kondo]})))))))
 
     (t/testing "local lookup"
-      (with-redefs [e.f.n.cider/info!! (constantly (e/fault))
-                    e.f.clj-kondo/lookup (constantly (e/fault))
-                    e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
-                    e.f.sexpr/get-namespace-sexpr (constantly {:code "(ns foo)"})
-                    e.f.sexpr/get-top-list (constantly {:code "(bar)" :lnum 1 :col 1})
-                    e.p.host/get-current-file-path! (h/async-constantly "/path/to/file.txt")
-                    e.f.clj-kondo/local-lookup (constantly {:line 1 :column 1})]
-        (t/is (= {:ns "foo.bar"
-                  :name "baz"
-                  :file "/path/to/file.txt"
-                  :arglists-str ""
-                  :line 0
-                  :column 1
-                  :local? true}
-                 (sut/lookup (h/test-elin) "foo.bar" "baz")))))))
+      (t/testing "fallback from clj-kondo lookup"
+        (with-redefs [e.f.n.cider/info!! (constantly (e/fault))
+                      e.f.clj-kondo/lookup (constantly (e/fault))
+                      e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
+                      e.f.sexpr/get-namespace-sexpr (constantly {:code "(ns foo)"})
+                      e.f.sexpr/get-top-list (constantly {:code "(bar)" :lnum 1 :col 1})
+                      e.p.host/get-current-file-path! (h/async-constantly "/path/to/file.txt")
+                      e.f.clj-kondo/local-lookup (constantly {:line 1 :column 1})]
+          (t/is (= {:ns "foo.bar"
+                    :name "baz"
+                    :file "/path/to/file.txt"
+                    :arglists-str ""
+                    :line 0
+                    :column 1
+                    :local? true}
+                   (sut/lookup (h/test-elin) "foo.bar" "baz" lookup-config)))))
+
+      (t/testing "ordered"
+        (with-redefs [e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
+                      e.f.sexpr/get-namespace-sexpr (constantly {:code "(ns foo)"})
+                      e.f.sexpr/get-top-list (constantly {:code "(bar)" :lnum 1 :col 1})
+                      e.p.host/get-current-file-path! (h/async-constantly "/path/to/file.txt")
+                      e.f.clj-kondo/local-lookup (constantly {:line 1 :column 1})]
+          (t/is (= {:ns "foo.bar"
+                    :name "baz"
+                    :file "/path/to/file.txt"
+                    :arglists-str ""
+                    :line 0
+                    :column 1
+                    :local? true}
+                   (sut/lookup (h/test-elin) "foo.bar" "baz" {:order [:local]})))))))
+
+  (t/testing "Negative"
+    (t/testing "Not ordered"
+      (t/is (e/not-found? (sut/lookup (h/test-elin) "foo.bar" "baz" {:order []}))))))
 
 (t/deftest clojuredocs-lookup
   (let [elin (h/test-elin)
@@ -67,19 +94,19 @@
                                                          "SUCCESS"
                                                          (e/not-found)))]
         (t/is (= "SUCCESS"
-                 (sut/clojuredocs-lookup elin test-url)))))
+                 (sut/clojuredocs-lookup elin test-url lookup-config)))))
 
     (t/testing "Negative"
       (t/testing "Failed to get cursor position"
         (with-redefs [e.p.host/get-cursor-position! (h/async-constantly (e/fault {:message "test error"}))]
-          (let [resp (sut/clojuredocs-lookup elin test-url)]
+          (let [resp (sut/clojuredocs-lookup elin test-url lookup-config)]
             (t/is (true? (e/fault? resp)))
             (t/is (= "test error" (ex-message resp))))))
 
       (t/testing "Failed to get expression"
         (with-redefs [e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
                       e.f.sexpr/get-expr (constantly (e/fault {:message "test error"}))]
-          (let [resp (sut/clojuredocs-lookup elin test-url)]
+          (let [resp (sut/clojuredocs-lookup elin test-url lookup-config)]
             (t/is (true? (e/fault? resp)))
             (t/is (= "test error" (ex-message resp))))))
 
@@ -89,5 +116,5 @@
                       e.f.sexpr/get-namespace (constantly "foo")
                       sut/lookup (constantly {:ns "foo" :name "bar"})
                       e.f.n.cider/clojuredocs-lookup!! (constantly (e/fault))]
-          (let [resp (sut/clojuredocs-lookup elin test-url)]
+          (let [resp (sut/clojuredocs-lookup elin test-url lookup-config)]
             (t/is (true? (e/not-found? resp)))))))))
