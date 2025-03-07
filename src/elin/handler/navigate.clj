@@ -48,13 +48,14 @@
 (defn jump-to-definition
   "Jump to the definition of the symbol under the cursor."
   [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
+  (e/let [{:keys [lookup-config]} (e.u.handler/config elin #'jump-to-definition)
+          {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e/error-or (e.f.sexpr/get-namespace elin)
                              "")
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           code (normalize-var-code code)
           {:keys [ns-str sym-str]} (select-ns-and-sym-str ns-str code)
-          {:keys [file line column protocol-implementations]} (e.f.lookup/lookup elin ns-str sym-str)]
+          {:keys [file line column protocol-implementations]} (e.f.lookup/lookup elin ns-str sym-str lookup-config)]
     (cond
       (seq protocol-implementations)
       (do (e.p.host/echo-text host "Multiple implementations found. See location list.")

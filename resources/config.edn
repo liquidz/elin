@@ -130,7 +130,10 @@
                   elin.handler.navigate/cycle-source-and-test {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/cycle-function-and-test {:template #ref [:common :template]
                                                                  :interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
-                  elin.handler.navigate/jump-to-definition {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
+                  elin.handler.navigate/jump-to-definition {:lookup-config {;; NOTE
+                                                                            ;; `:local` is prioritized because we'd like to see the local definition first.
+                                                                            :order [:local :nrepl :clj-kondo]}
+                                                            :interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/local-references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.tap/tapped {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true
