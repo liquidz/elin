@@ -7,6 +7,7 @@
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.protocol.host :as e.p.host]
+   [elin.schema :as e.schema]
    [elin.schema.handler :as e.s.handler]
    [elin.schema.nrepl :as e.s.nrepl]
    [malli.core :as m]
@@ -15,7 +16,7 @@
 (def ?NreplAndCljKondo
   (m.util/select-keys e.s.handler/?Components [:component/nrepl :component/clj-kondo]))
 
-(m/=> local-lookup [:=> [:cat ?NreplAndCljKondo string? string?] e.s.nrepl/?Lookup])
+(m/=> local-lookup [:=> [:cat ?NreplAndCljKondo string? string?] (e.schema/error-or e.s.nrepl/?Lookup)])
 (defn- local-lookup
   [{:as elin :component/keys [host clj-kondo]} ns-str sym-str]
   (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
@@ -44,21 +45,25 @@
                 clj-kondo protocol-ns protocol-name (:name info-response))]
     (assoc info-response :protocol-implementations impls)))
 
-(m/=> lookup [:=> [:cat ?NreplAndCljKondo string? string?] e.s.nrepl/?Lookup])
-(defn lookup
+(def ^:private ?LookupOrder
+  [:sequential
+   [:enum :nrepl :clj-kondo :local]])
+
+(def ^:private ?LookupConfig
+  [:map
+   [:order ?LookupOrder]])
+
+(defn- nrepl-lookup
   [{:as elin :component/keys [nrepl clj-kondo]}
    ns-str
    sym-str]
   (try
-    (let [res (e.f.n.cider/info!! nrepl ns-str sym-str)
-          error? (e/error? res)
-          protocol-var-str (when-not error?
-                             (:protocol res))
-          proto-def (when (and (not error?)
-                               (not protocol-var-str)
-                               (:ns res)
-                               (:name res))
-                      (e.f.clj-kondo/protocol-definition clj-kondo (:ns res) (:name res)))]
+    (e/let [res (e.f.n.cider/info!! nrepl ns-str sym-str)
+            protocol-var-str (:protocol res)
+            proto-def (when (and (not protocol-var-str)
+                                 (:ns res)
+                                 (:name res))
+                        (e.f.clj-kondo/protocol-definition clj-kondo (:ns res) (:name res)))]
       (cond
         protocol-var-str
         (protocol-lookup elin protocol-var-str res)
@@ -68,31 +73,50 @@
                          (format "%s/%s" (:protocol-ns proto-def) (:protocol-name proto-def))
                          res)
 
-        (and (not error?)
-             (or
-               ;; clojure
-               (contains? res :name)
-               ;; java
-               (contains? res :class)))
+        (or
+          ;; clojure
+          (contains? res :name)
+          ;; java
+          (contains? res :class))
         res
 
         :else
-        (let [res (e.f.clj-kondo/lookup clj-kondo ns-str sym-str)]
-          (if-not (e/error? res)
-            res
-            (local-lookup elin ns-str sym-str)))))
-
+        (e/not-found)))
     (catch Exception e
       (e/fault {:message (pr-str e)}))))
 
+(m/=> lookup [:=> [:cat ?NreplAndCljKondo string? string? ?LookupConfig] (e.schema/error-or e.s.nrepl/?Lookup)])
+(defn lookup
+  [{:as elin :component/keys [clj-kondo]}
+   ns-str
+   sym-str
+   config]
+  (loop [[next-order & rest-orders] (:order config)]
+    (if-not next-order
+      (e/not-found)
+      (let [resp (condp = next-order
+                   :nrepl
+                   (nrepl-lookup elin ns-str sym-str)
+
+                   :clj-kondo
+                   (e.f.clj-kondo/lookup clj-kondo ns-str sym-str)
+
+                   :local
+                   (local-lookup elin ns-str sym-str)
+
+                   (e/unsupported {:message (str "Unsupported order: " next-order)}))]
+        (if-not (e/error? resp)
+          resp
+          (recur rest-orders))))))
+
 (defn clojuredocs-lookup
   "Returns a result of looking up the help of the function under the cursor in clojuredocs."
-  [{:as elin :component/keys [host nrepl]} export-edn-url]
+  [{:as elin :component/keys [host nrepl]} export-edn-url config]
   (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           [ns-str name-str] (e/error-or
                               (e/let [ns-str (e.f.sexpr/get-namespace elin)
-                                      resp (lookup elin ns-str code)]
+                                      resp (lookup elin ns-str code config)]
                                 [(:ns resp) (:name resp)])
                               (str/split code #"/" 2))]
     (or (e/error-or (e.f.n.cider/clojuredocs-lookup!! nrepl ns-str name-str export-edn-url))

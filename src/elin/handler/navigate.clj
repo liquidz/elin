@@ -48,13 +48,14 @@
 (defn jump-to-definition
   "Jump to the definition of the symbol under the cursor."
   [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
+  (e/let [{:keys [lookup-config]} (e.u.handler/config elin #'jump-to-definition)
+          {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           ns-str (e/error-or (e.f.sexpr/get-namespace elin)
                              "")
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           code (normalize-var-code code)
           {:keys [ns-str sym-str]} (select-ns-and-sym-str ns-str code)
-          {:keys [file line column protocol-implementations]} (e.f.lookup/lookup elin ns-str sym-str)]
+          {:keys [file line column protocol-implementations]} (e.f.lookup/lookup elin ns-str sym-str lookup-config)]
     (cond
       (seq protocol-implementations)
       (do (e.p.host/echo-text host "Multiple implementations found. See location list.")
@@ -93,7 +94,8 @@
 (m/=> cycle-function-and-test [:=> [:cat e.s.handler/?Elin] e.s.handler/?JumpToFile])
 (defn cycle-function-and-test
   [elin]
-  (e/let [{:keys [template]} (e.u.handler/config elin #'cycle-function-and-test)
+  (e/let [{:as config :keys [template]} (e.u.handler/config elin #'cycle-function-and-test)
+          lookup-config (or (get config 'elin.function.lookup/lookup) {})
           {:keys [options]} (e.f.evaluate/get-var-name-from-current-top-list elin)
           {ns-str :ns var-name :var-name path :file} options
           file-sep (e.u.file/guess-file-separator path)
@@ -106,7 +108,7 @@
                        (str/split #"/" 2)
                        (second))
           cycled-var-name (e.f.nrepl/get-cycled-var-name var-name)
-          lookup-resp (e/error-or (e.f.lookup/lookup elin cycled-ns-str cycled-var-name))]
+          lookup-resp (e/error-or (e.f.lookup/lookup elin cycled-ns-str cycled-var-name lookup-config))]
     (if lookup-resp
       (e.u.handler/jump-to-file-response (:file lookup-resp)
                                          (:line lookup-resp)

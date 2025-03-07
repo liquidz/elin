@@ -32,16 +32,26 @@
 
 (m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
-  "Look up symbol at cursor position."
+  "Look up symbol at cursor position.
+
+  .Configuration
+  [%autowidth.stretch]
+  |===
+  | key | type | description
+
+  | format | todo |  todo
+  | replace-string | todo |  todo
+  | lookup-config | todo |  todo
+  |==="
   [{:as elin :component/keys [host]}]
-  (e/let [config (e.u.handler/config elin #'lookup)
+  (e/let [{:as config :keys [lookup-config]} (e.u.handler/config elin #'lookup)
           {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           ns-str (e/error-or (e.f.sexpr/get-namespace elin))
           resp (if ns-str
-                 (e.f.lookup/lookup elin ns-str code)
-                 (->> (parse-code-to-ns-and-name code)
-                      (apply e.f.lookup/lookup elin)))
+                 (e.f.lookup/lookup elin ns-str code lookup-config)
+                 (let [[ns-str sym-str] (parse-code-to-ns-and-name code)]
+                   (e.f.lookup/lookup elin ns-str sym-str lookup-config)))
           doc-str (generate-doc (:format config)
                     (e.f.lookup/get-lookup-rendering-data resp))]
     (reduce
@@ -54,13 +64,14 @@
 (defn show-source
   "Show source code of symbol at cursor position."
   [{:as elin :component/keys [host]}]
-  (e/let [{:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
+  (e/let [{:keys [lookup-config]} (e.u.handler/config elin #'show-source)
+          {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           ns-str (e/error-or (e.f.sexpr/get-namespace elin))
           resp (if ns-str
-                 (e.f.lookup/lookup elin ns-str code)
-                 (->> (parse-code-to-ns-and-name code)
-                      (apply e.f.lookup/lookup elin)))
+                 (e.f.lookup/lookup elin ns-str code lookup-config)
+                 (let [[ns-str sym-str] (parse-code-to-ns-and-name code)]
+                   (e.f.lookup/lookup elin ns-str sym-str lookup-config)))
           path (:file resp)
           content (e.u.file/slurp path)]
     (if (:local? resp)
@@ -76,9 +87,9 @@
 (defn show-clojuredocs
   "Show clojuredocs of symbol at cursor position."
   [elin]
-  (e/let [config (e.u.handler/config elin #'show-clojuredocs)
+  (e/let [{:as config :keys [lookup-config]} (e.u.handler/config elin #'show-clojuredocs)
           export-edn-url (:export-edn-url (e.u.handler/config elin #'show-clojuredocs))
-          resp (e.f.lookup/clojuredocs-lookup elin export-edn-url)]
+          resp (e.f.lookup/clojuredocs-lookup elin export-edn-url lookup-config)]
     (generate-doc {:clojuredocs (:format config)}
                   (e.f.lookup/get-clojuredocs-rendering-data resp))))
 

@@ -66,6 +66,13 @@
       (catch Exception _
         s))))
 
+(def register-started-at
+  "Register the time when the test started.
+  `started-at` is stored in the context."
+  {:kind e.c.interceptor/test
+   :enter (fn [ctx]
+            (assoc ctx :started-at (System/currentTimeMillis)))})
+
 (def parse-test-result
   {:kind e.c.interceptor/test
    :leave (fn [{:as ctx :component/keys [nrepl interceptor] :keys [response]}]
@@ -143,10 +150,17 @@
 
 (def output-test-result-to-cmdline
   {:kind e.c.interceptor/test-result
-   :enter (-> (fn [{:component/keys [host] :keys [succeeded? summary]}]
-                (if succeeded?
-                  (e.message/info host summary)
-                  (e.message/error host summary)))
+   :enter (-> (fn [{:component/keys [host] :keys [succeeded? summary started-at]}]
+                (let [elapsed (when started-at
+                                (-> (System/currentTimeMillis)
+                                    (- started-at)
+                                    (/ 1000)
+                                    (double)
+                                    (->> (format " (%.3fs)"))))
+                      summary' (str summary elapsed)]
+                  (if succeeded?
+                    (e.message/info host summary')
+                    (e.message/error host summary'))))
               (ix/discard))})
 
 (def focus-current-testing
