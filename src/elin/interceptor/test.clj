@@ -150,10 +150,17 @@
 
 (def output-test-result-to-cmdline
   {:kind e.c.interceptor/test-result
-   :enter (-> (fn [{:component/keys [host] :keys [succeeded? summary]}]
-                (if succeeded?
-                  (e.message/info host summary)
-                  (e.message/error host summary)))
+   :enter (-> (fn [{:component/keys [host] :keys [succeeded? summary started-at]}]
+                (let [elapsed (when started-at
+                                (-> (System/currentTimeMillis)
+                                    (- started-at)
+                                    (/ 1000)
+                                    (double)
+                                    (->> (format " (%.3fs)"))))
+                      summary' (str summary elapsed)]
+                  (if succeeded?
+                    (e.message/info host summary')
+                    (e.message/error host summary'))))
               (ix/discard))})
 
 (def focus-current-testing
