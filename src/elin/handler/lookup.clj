@@ -32,16 +32,26 @@
 
 (m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
-  "Look up symbol at cursor position."
+  "Look up symbol at cursor position.
+
+  .Configuration
+  [%autowidth.stretch]
+  |===
+  | key | type | description
+
+  | format | todo |  todo
+  | replace-string | todo |  todo
+  | lookup-config | todo |  todo
+  |==="
   [{:as elin :component/keys [host]}]
-  (e/let [config (e.u.handler/config elin #'lookup)
+  (e/let [{:as config :keys [lookup-config]} (e.u.handler/config elin #'lookup)
           {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))
           {:keys [code]} (e.f.sexpr/get-expr elin lnum col)
           ns-str (e/error-or (e.f.sexpr/get-namespace elin))
           resp (if ns-str
-                 (e.f.lookup/lookup elin ns-str code)
-                 (->> (parse-code-to-ns-and-name code)
-                      (apply e.f.lookup/lookup elin)))
+                 (e.f.lookup/lookup elin ns-str code lookup-config)
+                 (let [[ns-str sym-str] (parse-code-to-ns-and-name code)]
+                   (e.f.lookup/lookup elin ns-str sym-str lookup-config)))
           doc-str (generate-doc (:format config)
                     (e.f.lookup/get-lookup-rendering-data resp))]
     (reduce

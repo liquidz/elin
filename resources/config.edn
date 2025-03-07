@@ -105,6 +105,9 @@
                                                                #re "</?li>\n?" ""
                                                                #re "</?b>" "**"
                                                                #re "</?i>" "*"}
+                                              :lookup-config {;; NOTE
+                                                              ;; `:local` is not included in the order because it is not necessary to look up the documentation.
+                                                              :order [:nrepl :clj-kondo]}
                                               :interceptor {:uses [elin.interceptor.handler/show-result-as-popup {:filetype "help" :moved "current-line"}]}}
                   elin.handler.lookup/show-source {:interceptor {:includes [elin.interceptor.handler/show-result-as-popup]}}
                   elin.handler.lookup/show-clojuredocs {:export-edn-url "https://github.com/clojure-emacs/clojuredocs-export-edn/raw/master/exports/export.compact.edn"
