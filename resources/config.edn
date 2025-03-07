@@ -115,6 +115,9 @@
                                                    :interceptor {:includes [elin.interceptor.handler/show-result-as-popup]}}
                   elin.handler.lookup/show-clojuredocs {:export-edn-url "https://github.com/clojure-emacs/clojuredocs-export-edn/raw/master/exports/export.compact.edn"
                                                         :format #resource "template/clojuredocs.mustache"
+                                                        :lookup-config {;; NOTE
+                                                                        ;; `:local` is not included in the order because it is not necessary to look up clojuredocs.
+                                                                        :order [:nrepl :clj-kondo]}
                                                         :interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.lookup/open-javadoc {}
                   elin.handler.namespace/add-libspec {:favorites #include "favorite_aliases.edn"

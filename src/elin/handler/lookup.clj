@@ -87,9 +87,9 @@
 (defn show-clojuredocs
   "Show clojuredocs of symbol at cursor position."
   [elin]
-  (e/let [config (e.u.handler/config elin #'show-clojuredocs)
+  (e/let [{:as config :keys [lookup-config]} (e.u.handler/config elin #'show-clojuredocs)
           export-edn-url (:export-edn-url (e.u.handler/config elin #'show-clojuredocs))
-          resp (e.f.lookup/clojuredocs-lookup elin export-edn-url)]
+          resp (e.f.lookup/clojuredocs-lookup elin export-edn-url lookup-config)]
     (generate-doc {:clojuredocs (:format config)}
                   (e.f.lookup/get-clojuredocs-rendering-data resp))))
 
