@@ -66,6 +66,13 @@
       (catch Exception _
         s))))
 
+(def register-started-at
+  "Register the time when the test started.
+  `started-at` is stored in the context."
+  {:kind e.c.interceptor/test
+   :enter (fn [ctx]
+            (assoc ctx :started-at (System/currentTimeMillis)))})
+
 (def parse-test-result
   {:kind e.c.interceptor/test
    :leave (fn [{:as ctx :component/keys [nrepl interceptor] :keys [response]}]
