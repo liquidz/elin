@@ -128,7 +128,10 @@
                                                               :java-classes #include "java_classes.edn"
                                                               :interceptor {:includes [elin.interceptor.handler.namespace/show-result]}}
                   elin.handler.navigate/cycle-source-and-test {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
-                  elin.handler.navigate/cycle-function-and-test {:template #ref [:common :template]
+                  elin.handler.navigate/cycle-function-and-test {:lookup-config {;; NOTE
+                                                                                 ;; `:local` is not included in the order because it is not a var.
+                                                                                 :order [:nrepl :clj-kondo]}
+                                                                 :template #ref [:common :template]
                                                                  :interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.navigate/jump-to-definition {:lookup-config {;; NOTE
                                                                             ;; `:local` is prioritized because we'd like to see the local definition first.
