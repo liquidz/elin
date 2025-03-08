@@ -226,7 +226,12 @@
                                                                                                                  :component/clj-kondo :any}}
                                                                                                           :sequential],
                                                                                                    :ret :any}}}},
-                                        elin.function.sexpr {get-top-list {:arities {3 {:args [{:op :keys,
+                                        elin.function.sexpr {validate-code-and-position {:arities {1 {:args [{:op :keys,
+                                                                                                              :req {:code :string,
+                                                                                                                    :lnum :int,
+                                                                                                                    :col :int}}],
+                                                                                                      :ret :any}}},
+                                                             get-top-list {:arities {3 {:args [{:op :keys,
                                                                                                 :req {:message {:op :keys,
                                                                                                                 :req {:method :keyword}},
                                                                                                       :component/nrepl :any,
