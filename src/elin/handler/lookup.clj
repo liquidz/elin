@@ -32,17 +32,7 @@
 
 (m/=> lookup [:=> [:cat e.s.handler/?Elin] any?])
 (defn lookup
-  "Look up symbol at cursor position.
-
-  .Configuration
-  [%autowidth.stretch]
-  |===
-  | key | type | description
-
-  | format | todo |  todo
-  | replace-string | todo |  todo
-  | lookup-config | todo |  todo
-  |==="
+  "Look up symbol at cursor position."
   [{:as elin :component/keys [host]}]
   (e/let [{:as config :keys [lookup-config]} (e.u.handler/config elin #'lookup)
           {:keys [lnum col]} (async/<!! (e.p.host/get-cursor-position! host))

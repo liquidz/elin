@@ -1,5 +1,21 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.3.2-alpha] - 2025-03-07
+
+=== Added
+
+- Add elin.interceptor.test/register-started-at interceptor
+
+=== Fixed
+
+- Update elin.interceptor.test/output-test-result-to-cmdline to show elapsed time
+- Update elin.function.lookup/lookup to support ordered lookup
+- Update elin.handler.lookup/lookup to use lookup-config
+- Update elin.handler.lookup/show-source to use lookup-config
+- Elin.handler.lookup/show-clojuredocs to use lookup-config
+- Update elin.handler.navigate/jump-to-definition to use lookup-config
+- Update elin.handler.navigate/cycle-function-and-test to use lookup-config
+
 == [2025.3.1-alpha] - 2025-03-01
 
 === Fixed
