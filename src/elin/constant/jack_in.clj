@@ -8,6 +8,7 @@
 
 (def supported-project-types
   [clojure-cli
+   leiningen
    babashka
    squint
    nbb])
@@ -15,6 +16,10 @@
 (def clojure-command
   (or (System/getenv "ELIN_REPL_CLOJURE_CLI_CMD")
       "clj"))
+
+(def leiningen-command
+  (or (System/getenv "ELIN_REPL_LEININGEN_CLI_CMD")
+      "lein"))
 
 (def babashka-command
   (or (System/getenv "ELIN_REPL_BABASHKA_CMD")

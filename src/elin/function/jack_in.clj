@@ -79,6 +79,15 @@
                "--middleware" (pr-str (:middlewares command-config))
                "--interactive"])})
 
+(defmethod generate-command e.c.jack-in/leiningen
+  [_ port _]
+  {:language e.c.nrepl/lang-clojure
+   :command [e.c.jack-in/leiningen-command
+             "repl"
+             ":start"
+             ":port"
+             port]})
+
 (defmethod generate-command e.c.jack-in/babashka
   [_ port _]
   {:language e.c.nrepl/lang-clojure
