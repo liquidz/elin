@@ -12,14 +12,23 @@
 (t/use-fixtures :once h/malli-instrument-fixture)
 (t/use-fixtures :once h/warn-log-level-fixture)
 
+(defn- mock-lookup
+  [resp]
+  (fn [_ _ _ config]
+    (when-not config
+      (throw (ex-info "lookup config is not passed" {})))
+    resp))
+
 (t/deftest show-source-test
-  (let [elin (h/test-elin)]
+  (let [elin (assoc-in (h/test-elin)
+                       [:component/handler :config-map (symbol #'sut/show-source)]
+                       {:lookup-config {:order [:nrepl]}})]
     (t/testing "Positive"
       (t/testing "Defined vars"
         (with-redefs [e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
                       e.f.sexpr/get-expr (constantly {:code "foo/bar"})
                       e.f.sexpr/get-namespace (constantly "foo")
-                      e.f.lookup/lookup (constantly {:file "foo.txt" :line 1 :column 1})
+                      e.f.lookup/lookup (mock-lookup {:file "foo.txt" :line 1 :column 1})
                       e.u.file/slurp (constantly "(foo bar)")]
           (t/is (= "(foo bar)"
                    (sut/show-source elin)))))
@@ -28,7 +37,7 @@
         (with-redefs [e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
                       e.f.sexpr/get-expr (constantly {:code "foo/bar"})
                       e.f.sexpr/get-namespace (constantly "foo")
-                      e.f.lookup/lookup (constantly {:file "foo.txt" :line 1 :column 7 :local? true})
+                      e.f.lookup/lookup (mock-lookup {:file "foo.txt" :line 1 :column 7 :local? true})
                       e.u.file/slurp (constantly "(let [foo (bar\n            baz)]\n  foo)")]
           (t/is (= "foo (bar\n      baz)"
                    (sut/show-source elin))))))
@@ -37,6 +46,6 @@
       (with-redefs [e.p.host/get-cursor-position! (h/async-constantly {:lnum 1 :col 1})
                     e.f.sexpr/get-expr (constantly {:code "foo/bar"})
                     e.f.sexpr/get-namespace (constantly "foo")
-                    e.f.lookup/lookup (constantly {:file "foo.txt" :line 1 :column 1})
+                    e.f.lookup/lookup (mock-lookup {:file "foo.txt" :line 1 :column 1})
                     e.u.file/slurp (constantly (e/not-found))]
         (t/is (e/not-found? (sut/show-source elin)))))))
