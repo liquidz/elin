@@ -20,7 +20,7 @@
    [pogonos.core :as pogonos]
    [taoensso.timbre :as timbre]))
 
-(def ^:priavte ns-created-var-name
+(def ^:private ns-created-var-name
   "b:elin_ns_created")
 
 (def deinitialize
