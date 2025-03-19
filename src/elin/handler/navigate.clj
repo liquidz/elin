@@ -94,8 +94,7 @@
 (m/=> cycle-function-and-test [:=> [:cat e.s.handler/?Elin] e.s.handler/?JumpToFile])
 (defn cycle-function-and-test
   [elin]
-  (e/let [{:as config :keys [template]} (e.u.handler/config elin #'cycle-function-and-test)
-          lookup-config (or (get config 'elin.function.lookup/lookup) {})
+  (e/let [{:keys [template lookup-config]} (e.u.handler/config elin #'cycle-function-and-test)
           {:keys [options]} (e.f.evaluate/get-var-name-from-current-top-list elin)
           {ns-str :ns var-name :var-name path :file} options
           file-sep (e.u.file/guess-file-separator path)
