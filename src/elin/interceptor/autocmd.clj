@@ -20,9 +20,6 @@
    [pogonos.core :as pogonos]
    [taoensso.timbre :as timbre]))
 
-(def ^:private ns-created-var-name
-  "b:elin_ns_created")
-
 (def deinitialize
   {:kind e.c.interceptor/autocmd
    :enter (-> (fn [{:as ctx :component/keys [nrepl]}]
