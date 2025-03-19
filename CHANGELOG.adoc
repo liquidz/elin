@@ -1,5 +1,19 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.3.4-alpha] - 2025-03-19
+
+=== Changed
+
+- Bump cider-nrepl to 0.53.0
+
+=== Fixed
+
+- Fix cycle-function-and-test handler to work correctly
+
+=== Build
+
+- Fix access control metadata typo
+
 == [2025.3.3-alpha] - 2025-03-08
 
 === Fixed
