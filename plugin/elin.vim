@@ -50,7 +50,7 @@ function! s:init() abort
     au BufRead *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufRead')
     au BufWritePost *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufWritePost')
     au BufWritePre *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_request('BufWritePre')
-    au CursorMovedI *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_request('CursorMovedI')
+    au CursorMovedI *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('CursorMovedI')
     au VimLeave * call s:deinit()
   aug END
 endfunction
