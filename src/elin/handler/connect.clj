@@ -85,7 +85,12 @@
     (e.message/warning host "Not connected.")))
 
 (defn jack-in
-  "Launch nREPL server according to the project detected from the current file and connect to it."
+  "Launch nREPL server according to the project detected from the current file and connect to it.
+
+  Currently, the following project types are supported:
+  * Clojure CLI (deps.edn)
+  * Leiningen (project.clj)
+  * Babashka (bb.edn)"
   [{:as elin :component/keys [host]}]
   (let [{:keys [language port]} (e.f.jack-in/launch-process elin)]
     (e.message/info host (format "Waiting to connect to localhost:%s" port))
