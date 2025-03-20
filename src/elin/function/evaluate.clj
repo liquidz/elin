@@ -28,6 +28,19 @@
        :options options
        :response resp})))
 
+(defn- get-base-params
+  [{:as elin :component/keys [host]}]
+  (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
+          ns-str (e/error-or (e.f.sexpr/get-namespace elin))
+          path (async/<!! (e.p.host/get-current-file-path! host))]
+    (cond-> {:cursor-line cur-lnum
+             :cursor-column cur-col
+             :line cur-lnum
+             :column cur-col
+             :file path}
+      ns-str
+      (assoc :ns ns-str))))
+
 (defn evaluate-code
   ([elin code]
    (evaluate-code elin code {}))
@@ -37,53 +50,35 @@
 (defn evaluate-current-top-list
   ([elin]
    (evaluate-current-top-list elin {}))
-  ([{:as elin :component/keys [nrepl host]} options]
-   (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
-           ns-str (e/error-or (e.f.sexpr/get-namespace elin))
-           path (async/<!! (e.p.host/get-current-file-path! host))
-           {:keys [code lnum col]} (e.f.sexpr/get-top-list elin cur-lnum cur-col)
-           params (cond-> {:line lnum
-                           :column col
-                           :cursor-line cur-lnum
-                           :cursor-column cur-col
-                           :file path}
-                    ns-str
-                    (assoc :ns ns-str))]
-     (eval!! nrepl code (merge options params)))))
+  ([{:as elin :component/keys [nrepl]} options]
+   (e/let [{:as base-params :keys [cursor-line cursor-column]} (get-base-params elin)
+           {:keys [code lnum col]} (e.f.sexpr/get-top-list elin cursor-line cursor-column)]
+     (->> (merge options
+                 base-params
+                 {:line lnum :column col})
+          (eval!! nrepl code)))))
 
 (defn evaluate-current-list
   ([elin]
    (evaluate-current-list elin {}))
-  ([{:as elin :component/keys [nrepl host]} options]
-   (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
-           ns-str (e/error-or (e.f.sexpr/get-namespace elin))
-           path (async/<!! (e.p.host/get-current-file-path! host))
-           {:keys [code lnum col]} (e.f.sexpr/get-list elin cur-lnum cur-col)
-           params (cond-> {:line lnum
-                           :column col
-                           :cursor-line cur-lnum
-                           :cursor-column cur-col
-                           :file path}
-                    ns-str
-                    (assoc :ns ns-str))]
-     (eval!! nrepl code (merge options params)))))
+  ([{:as elin :component/keys [nrepl]} options]
+   (e/let [{:as base-params :keys [cursor-line cursor-column]} (get-base-params elin)
+           {:keys [code lnum col]} (e.f.sexpr/get-list elin cursor-line cursor-column)]
+     (->> (merge options
+                 base-params
+                 {:line lnum :column col})
+          (eval!! nrepl code)))))
 
 (defn evaluate-current-expr
   ([elin]
    (evaluate-current-expr elin {}))
-  ([{:as elin :component/keys [nrepl host]} options]
-   (e/let [{cur-lnum :lnum cur-col :col} (async/<!! (e.p.host/get-cursor-position! host))
-           ns-str (e/error-or (e.f.sexpr/get-namespace elin))
-           path (async/<!! (e.p.host/get-current-file-path! host))
-           {:keys [code lnum col]} (e.f.sexpr/get-expr elin cur-lnum cur-col)
-           params (cond-> {:line lnum
-                           :column col
-                           :cursor-line cur-lnum
-                           :cursor-column cur-col
-                           :file path}
-                    ns-str
-                    (assoc :ns ns-str))]
-     (eval!! nrepl code (merge options params)))))
+  ([{:as elin :component/keys [nrepl]} options]
+   (e/let [{:as base-params :keys [cursor-line cursor-column]} (get-base-params elin)
+           {:keys [code lnum col]} (e.f.sexpr/get-expr elin cursor-line cursor-column)]
+     (->> (merge options
+                 base-params
+                 {:line lnum :column col})
+          (eval!! nrepl code)))))
 
 (defn evaluate-namespace-form
   ([elin]
