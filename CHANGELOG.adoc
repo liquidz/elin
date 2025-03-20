@@ -1,5 +1,12 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.3.6-alpha] - 2025-03-20
+
+=== Added
+
+- Support jack-in with Leiningen projects
+- Support deps, middleware override in lein jack-in
+
 == [2025.3.4-alpha] - 2025-03-19
 
 === Changed
