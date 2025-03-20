@@ -82,11 +82,20 @@
 (defmethod generate-command e.c.jack-in/leiningen
   [_ port _]
   {:language e.c.nrepl/lang-clojure
-   :command [e.c.jack-in/leiningen-command
-             "repl"
-             ":start"
-             ":port"
-             port]})
+   :command (concat [e.c.jack-in/leiningen-command
+                     "update-in" ":dependencies" "conj"]
+                    (->> (:deps command-config)
+                         (map (fn [[lib {:mvn/keys [version]}]]
+                                (format "[%s \"%s\"]"
+                                        lib
+                                        version))))
+                    ["--"
+                     "update-in" "[:repl-options, :nrepl-middleware]" "conj"]
+                    (->> (:middlewares command-config)
+                         (map #(format "%s" %)))
+                    ["--"
+                     "repl" ":start" ":port"
+                     port])})
 
 (defmethod generate-command e.c.jack-in/babashka
   [_ port _]
