@@ -210,6 +210,7 @@ nnoremap <silent> <Plug>(elin_clear_virtual_texts) <Cmd>ElinClearVirtualTexts<CR
 
 " Operators {{{
 nnoremap <silent> <Plug>(elin_op_eval) :<C-u>set opfunc=ElinOperatorEval<CR>g@
+nnoremap <silent> <Plug>(elin_op_eval_in_context) :<C-u>set opfunc=ElinOperatorEvalInContext<CR>g@
 nnoremap <silent> <Plug>(elin_op_macroexpand_1) :<C-u>set opfunc=ElinOperatorMacroExpand1<CR>g@
 " }}}
 
