@@ -1,5 +1,6 @@
 (ns elin.handler.evaluate
   (:require
+   [cheshire.core :as json]
    [clojure.core.async :as async]
    [clojure.pprint :as pp]
    [elin.constant.interceptor :as e.c.interceptor]
@@ -30,11 +31,11 @@
 (defn evaluate
   "Evaluate specified code."
   [{:as elin :keys [message]}]
-  (let [code (->> message
-                  (:params)
-                  (first))]
-    (e/->> {:middleware (evaluate-interceptor-middleware elin)}
-           (e.f.evaluate/evaluate-code elin code)
+  (let [[code option-json] (:params message)
+        option (merge (when (string? option-json)
+                        (json/parse-string option-json keyword))
+                      {:middleware (evaluate-interceptor-middleware elin)})]
+    (e/->> (e.f.evaluate/evaluate-code elin code option)
            (:response)
            (:value))))
 

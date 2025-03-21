@@ -44,8 +44,12 @@
 (defn evaluate-code
   ([elin code]
    (evaluate-code elin code {}))
-  ([{:component/keys [nrepl]} code options]
-   (eval!! nrepl code options)))
+  ([{:as elin :component/keys [nrepl]} code options]
+   (e/let [base-params (when (:use-base-params options)
+                         (get-base-params elin))]
+     (->> (merge options
+                 base-params)
+          (eval!! nrepl code)))))
 
 (defn evaluate-current-top-list
   ([elin]
