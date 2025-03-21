@@ -128,6 +128,17 @@
   (e/let [ns-str (e.f.sexpr/get-namespace elin)]
     (e.f.n.cider/undef-all!! nrepl ns-str)))
 
+(defn expand-1
+  "Expand macro code once."
+  [{:as elin :keys [message]}]
+  (e/let [[code] (:params message)
+          ns-str (e/error-or (e.f.sexpr/get-namespace elin))
+          resp (e.f.evaluate/expand-1 elin ns-str code)]
+    (with-out-str
+      (-> (:value resp)
+          (read-string)
+          (pp/pprint)))))
+
 (defn expand-1-current-list
   "Expand macro once."
   [{:as elin :component/keys [host]}]
