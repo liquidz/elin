@@ -208,6 +208,10 @@ nnoremap <silent> <Plug>(elin_clear_info_buffer) <Cmd>ElinClearInfoBuffer<CR>
 nnoremap <silent> <Plug>(elin_clear_virtual_texts) <Cmd>ElinClearVirtualTexts<CR>
 " }}}
 
+" Operators {{{
+nnoremap <silent> <Plug>(elin_op_eval) :<C-u>set opfunc=ElinOperatorEval<CR>g@
+" }}}
+
 " Default key mappings {{{
 if exists('g:elin_enable_default_key_mappings')
       \ && g:elin_enable_default_key_mappings
