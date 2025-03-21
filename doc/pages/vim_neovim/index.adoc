@@ -1,0 +1,38 @@
+=== Commands
+include::../generated/commands.adoc[]
+
+=== Operators
+
+Elin provides following operators.
+
+[%autowidth,cols="a,a"]
+|===
+| Operator | Description
+
+| `<Plug>(elin_op_eval)`
+| Evaluate codes.
+This operator uses <<_handler_evaluateevaluate>> handler.
+
+| `<Plug>(elin_op_eval_in_context)`
+| Evaludate codes in context.
+This operator uses <<_handler_evaluateevaluate>> handler with <<_interceptor_evaluateeval_with_context>> interceptor.
+
+| `<Plug>(elin_op_macroexpand_1)`
+| Exapnd macro once.
+This operator uses <<_handler_evaluateexpand_1>> handler.
+
+|===
+
+It is useful to combinate these operators with vim-sexp's motions like follows. (Change the mapping key as you like)
+
+.Example
+[source,vim]
+----
+aug MyElinOperatorSetting
+  au!
+  au FileType clojure nmap <buffer> <Leader>exe
+      \ <Plug>(elin_op_eval)<Plug>(sexp_outer_list)``
+aug END
+----
+
+

@@ -248,7 +248,7 @@
                                (->> interceptor
                                     (map #(format "* %s" (asciidoc/anchor (interceptor-title %)))))]
                               (format "Calls %s handler." (asciidoc/anchor title)))]
-                   [(format "===== %s" command)
+                   [(format "==== %s" command)
                     ""
                     body
                     ""]))))
