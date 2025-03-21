@@ -79,6 +79,7 @@
                   elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
                   elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}
                   elin.handler.evaluate/evaluate-namespace-form {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline]}}
+                  elin.handler.evaluate/expand-1 {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.evaluate/expand-1-current-list {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.evaluate/interrupt {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
                   elin.handler.evaluate/print-last-result {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
@@ -159,7 +160,10 @@
                                                            :config {:interceptor {:includes [elin.interceptor.handler/overview]
                                                                                   :excludes [elin.interceptor.evaluate/output-eval-result-to-cmdline
                                                                                              elin.interceptor.evaluate/set-eval-result-to-virtual-text
-                                                                                             elin.interceptor.evaluate/yank-eval-result]}}}}
+                                                                                             elin.interceptor.evaluate/yank-eval-result]}}}
+                     ;; Used in operator
+                     elin-alias-evaluate-in-context {:handler elin.handler.evaluate/evaluate
+                                                     :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}}
 
            :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
 

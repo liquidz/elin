@@ -119,12 +119,8 @@ Interceptors intercept various processes and change their behavior.
 === Built-in Interceptors
 include::./generated/interceptors.adoc[]
 
-
-== Host
-=== Vim/Neovim
-==== Commands
-include::./generated/commands.adoc[]
-
+== Vim/Neovim
+include::./vim_neovim/index.adoc[]
 
 // == Tips
 // include::./tips/index.adoc[]

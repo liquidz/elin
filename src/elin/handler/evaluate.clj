@@ -1,5 +1,6 @@
 (ns elin.handler.evaluate
   (:require
+   [cheshire.core :as json]
    [clojure.core.async :as async]
    [clojure.pprint :as pp]
    [elin.constant.interceptor :as e.c.interceptor]
@@ -30,11 +31,11 @@
 (defn evaluate
   "Evaluate specified code."
   [{:as elin :keys [message]}]
-  (let [code (->> message
-                  (:params)
-                  (first))]
-    (e/->> {:middleware (evaluate-interceptor-middleware elin)}
-           (e.f.evaluate/evaluate-code elin code)
+  (let [[code option-json] (:params message)
+        option (merge (when (string? option-json)
+                        (json/parse-string option-json keyword))
+                      {:middleware (evaluate-interceptor-middleware elin)})]
+    (e/->> (e.f.evaluate/evaluate-code elin code option)
            (:response)
            (:value))))
 
@@ -126,6 +127,17 @@
   [{:as elin :component/keys [nrepl]}]
   (e/let [ns-str (e.f.sexpr/get-namespace elin)]
     (e.f.n.cider/undef-all!! nrepl ns-str)))
+
+(defn expand-1
+  "Expand macro code once."
+  [{:as elin :keys [message]}]
+  (e/let [[code] (:params message)
+          ns-str (e/error-or (e.f.sexpr/get-namespace elin))
+          resp (e.f.evaluate/expand-1 elin ns-str code)]
+    (with-out-str
+      (-> (:value resp)
+          (read-string)
+          (pp/pprint)))))
 
 (defn expand-1-current-list
   "Expand macro once."

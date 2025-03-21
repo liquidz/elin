@@ -383,6 +383,18 @@ MAPPINGS                                                         *elin-mappings*
 <Plug>(elin_clear_virtual_texts)
   Same as |ElinClearVirtualTexts|.
 
+                                                          *<Plug>(elin_op_eval)*
+<Plug>(elin_op_eval)
+  Same as |ElinOperatorEval|.
+
+                                               *<Plug>(elin_op_eval_in_context)*
+<Plug>(elin_op_eval_in_context)
+  Same as |ElinOperatorEvalInContext|.
+
+                                                 *<Plug>(elin_op_macroexpand_1)*
+<Plug>(elin_op_macroexpand_1)
+  Same as |ElinOperatorMacroExpand1|.
+
 ------------------------------------------------------------------------------
 DEFAULT MAPPINGS                                         *elin-default-mappings*
 
