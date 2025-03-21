@@ -91,8 +91,7 @@
                                         version))))
                     ["--"
                      "update-in" "[:repl-options, :nrepl-middleware]" "conj"]
-                    (->> (:middlewares command-config)
-                         (map #(format "%s" %)))
+                    (:middlewares command-config)
                     ["--"
                      "repl" ":start" ":port"
                      port])})
