@@ -52,3 +52,47 @@ The contents output to standard output are displayed on the <<Information buffer
 
 <<_interceptor_evaluateyank_eval_result>> will yank the evaluated result to https://vim-jp.org/vimdoc-en/change.html#quote_number[numbered registers].
 Like vim’s behavior, elin shifts the previous result of register 1 into register 2, 2 into 3, and so forth.
+
+==== Context [[evaluate_in_context]]
+
+There are times when you want to evaluate the contents of a function for confirmation.
+
+[source,clojure]
+----
+(defn greet [s]
+  ;; We'd like to evaluate the following code!
+  (str "hello " s))
+----
+
+It is tired to bind arguments separately,
+or to write function calls in the comment form every time.
+
+[source,clojure]
+----
+(comment (def s "elin"))
+;; or
+(comment (greet "elin"))
+----
+
+This is where evaluating codes in context help you.
+There is a default key bindings to evaluate code in a context.
+
+
+[%autowidth,cols="a,a"]
+|===
+| Feature | Default key mapping
+
+| Evaluate current list in context
+| `{ElinEvalInContext-default-mapping}`
+|===
+
+With this mapping, the context input will be required.
+
+The context is `clojure.core/let` style.
+For example, the context `s "elin"` will be expanded to the following code.
+
+[source,clojure]
+----
+(clojure.core/let [s "elin"]
+  (str "hello " s))
+----

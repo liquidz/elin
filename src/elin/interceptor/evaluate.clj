@@ -86,6 +86,8 @@
                 ctx)))})
 
 (def eval-with-context
+  "Add context to the code being evaluated.
+  See <<evaluate_in_context,evaluation in context>> for more information."
   {:kind e.c.interceptor/evaluate
    :enter (fn [{:as ctx :interceptor/keys [kind] :component/keys [host session-storage] :keys [code]}]
             (let [last-context (or (e.p.storage/get session-storage kind)
