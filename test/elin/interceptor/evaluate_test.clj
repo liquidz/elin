@@ -2,6 +2,7 @@
   (:require
    [clojure.test :as t]
    [elin.interceptor.evaluate :as sut]
+   [elin.protocol.host :as e.p.host]
    [elin.test-helper :as h]))
 
 (t/use-fixtures :once h/malli-instrument-fixture)
@@ -45,3 +46,11 @@
                (drop-while #(<= (first %) 24))
                (map second)
                (every? #(= (str '(do (+ 1 2) (+ 3 4))) %))))))
+
+(t/deftest eval-with-context-test
+  (let [elin (-> (h/test-elin)
+                 (assoc :code "(inc a)"))
+        {:keys [enter]} sut/eval-with-context]
+    (with-redefs [e.p.host/input! (h/async-constantly "a 1")]
+      (t/is (= "(clojure.core/let [a 1] (inc a))"
+               (:code (enter elin)))))))
