@@ -13,3 +13,8 @@ function! ElinOperatorEval(type) abort
   let opt = json_encode({'use-base-params': 1})
   return elin#notify('elin.handler.evaluate/evaluate', [code, opt])
 endfunction
+
+function! ElinOperatorMacroExpand1(type) abort
+  let code = s:get_code()
+  return elin#notify('elin.handler.evaluate/expand-1', [code])
+endfunction
