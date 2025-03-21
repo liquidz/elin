@@ -1,5 +1,18 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.3.7-alpha] - 2025-03-21
+
+=== Added
+
+- Add vim operator mapping for evaluating code
+- Add elin.handler.evaluate/expand-1 handler
+- Add vim operator mapping for macroexpand-1
+- Add vim operator mapping for evaluating code in context
+
+=== Fixed
+
+- Fix elin.handler.evaluate/evaluate to add options to use base params
+
 == [2025.3.6-alpha] - 2025-03-20
 
 === Added
