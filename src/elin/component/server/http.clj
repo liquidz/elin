@@ -56,10 +56,11 @@
           context'
           (fn [{:as ctx :keys [routes request]}]
             (let [uri (URLDecoder/decode (:uri request))
-                  route-fn (get routes uri)]
+                  route-fn (get-in routes [uri (:request-method request)])]
               (assoc ctx :response
                 (if (and route-fn
-                         (fn? route-fn))
+                         (or (fn? route-fn)
+                             (var? route-fn)))
                   (route-fn ctx)
                   (e.u.http/not-found))))))))))
 
