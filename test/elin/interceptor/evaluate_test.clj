@@ -6,20 +6,15 @@
 
 (t/use-fixtures :once h/malli-instrument-fixture)
 
-(def ^:private unwrap-comment-form-enter
-  (:enter sut/unwrap-comment-form))
-
-(comment
-  (def test-code (str '(comment (+ 1 2) (+ 3 4)))))
-
 (t/deftest unwrap-comment-form-test
   (let [test-code (str '(comment (+ 1 2) (+ 3 4)))
-        test-elin (h/test-elin)
+        elin (assoc (h/test-elin)
+                    :code test-code)
+        {:keys [enter]} sut/unwrap-comment-form
         unwrap-comment-form-test (fn [column]
-                                   (-> test-elin
-                                       (assoc :code test-code
-                                              :options {:line 1 :column 1 :cursor-line 1 :cursor-column column})
-                                       (unwrap-comment-form-enter)
+                                   (-> elin
+                                       (assoc :options {:line 1 :column 1 :cursor-line 1 :cursor-column column})
+                                       (enter)
                                        (:code)))
         results (->> (range 1 (inc (count test-code)))
                      (map #(vector % (unwrap-comment-form-test %))))]
