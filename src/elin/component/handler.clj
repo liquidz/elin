@@ -125,7 +125,12 @@
   component/Lifecycle
   (start [this]
     (let [exported-config (get-in plugin [:loaded-plugin :export config-key])
-          {:keys [includes excludes config-map initialize aliases]} (e.config/configure-handler base-config exported-config)
+          {:keys [handler-config]} (e.p.interceptor/execute interceptor e.c.interceptor/configure-handler
+                                                            {:base-config base-config
+                                                             :exported-config exported-config}
+                                                            (fn [{:as ctx :keys [base-config exported-config]}]
+                                                              (assoc ctx :handler-config (e.config/configure-handler base-config exported-config))))
+          {:keys [includes excludes config-map initialize aliases]} handler-config
           handler-map (->> (or includes [])
                            (build-handler-map lazy-host))
           this' (assoc this
