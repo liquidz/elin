@@ -70,16 +70,15 @@
 (defn- usage-destination?
   [usage]
   (some?
-   (when-let [from (:from usage)]
-     (re-seq #"^elin\.(handler|interceptor)\."
-             (name from)))))
+    (when-let [from (:from usage)]
+      (re-seq #"^elin\.(handler|interceptor)\."
+              (name from)))))
 
 (defn- interceptor-execute-usage->interceptor-kind
   [{:keys [filename row col]}]
   (let [content (slurp filename)
         zloc (-> (r.zip/of-string content {:track-position? true})
                  (r.zip/find-last-by-pos [row col]))]
-
     (some-> (if (qualified-symbol? (r.zip/sexpr zloc))
               zloc
               (r.zip/down zloc))
@@ -107,9 +106,9 @@
         (recur next-usages (concat dest-usages next-dest-usages))
         (concat dest-usages next-dest-usages)))))
 
-
 (def handler-using-interceptor-kind-dict
   (->> interceptor-execute-usages
+       (remove #(str/starts-with? (str (:from %)) "elin.component."))
        (mapcat (fn [usage]
                  (if (usage->qualified-symbol usage)
                    (let [kind (interceptor-execute-usage->interceptor-kind usage)]
