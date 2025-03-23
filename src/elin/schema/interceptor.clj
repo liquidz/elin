@@ -9,20 +9,21 @@
   [:enum
    e.c.interceptor/all
    e.c.interceptor/autocmd
+   e.c.interceptor/configure-handler
    e.c.interceptor/connect
    e.c.interceptor/disconnect
    e.c.interceptor/evaluate
    e.c.interceptor/handler
-   e.c.interceptor/nrepl
-   e.c.interceptor/raw-nrepl
-   e.c.interceptor/output
-   e.c.interceptor/test
-   e.c.interceptor/test-result
-   e.c.interceptor/quickfix
-   e.c.interceptor/modify-code
-   e.c.interceptor/tap
+   e.c.interceptor/http-request
    e.c.interceptor/http-route
-   e.c.interceptor/http-request])
+   e.c.interceptor/modify-code
+   e.c.interceptor/nrepl
+   e.c.interceptor/output
+   e.c.interceptor/quickfix
+   e.c.interceptor/raw-nrepl
+   e.c.interceptor/tap
+   e.c.interceptor/test
+   e.c.interceptor/test-result])
 
 (def ?Interceptor
   "Schema for user-defined interceptor"
@@ -148,3 +149,11 @@
        ;; LEAVE
        [:response {:optional true} any?]]
       (m.util/merge e.s.handler/?Components)))
+
+(def ?ConfigureHandlerContext
+  [:map
+   ;; ENTER
+   [:base-config map?]
+   [:exported-config [:maybe map?]]
+   ;; LEAVE
+   [:handler-config {:optional true} map?]])

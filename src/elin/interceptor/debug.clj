@@ -49,7 +49,8 @@
    e.c.interceptor/modify-code e.s.interceptor/?ModifyCodeContext
    e.c.interceptor/tap e.s.interceptor/?TapContext
    e.c.interceptor/http-route e.s.interceptor/?HttpRouteContext
-   e.c.interceptor/http-request e.s.interceptor/?HttpRequestContext})
+   e.c.interceptor/http-request e.s.interceptor/?HttpRequestContext
+   e.c.interceptor/configure-handler e.s.interceptor/?ConfigureHandlerContext})
 
 (def interceptor-context-checking
   {:kind e.c.interceptor/all

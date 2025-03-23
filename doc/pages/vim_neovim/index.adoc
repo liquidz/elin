@@ -16,6 +16,7 @@ This operator uses <<_handler_evaluateevaluate>> handler.
 | `<Plug>(elin_op_eval_in_context)`
 | Evaludate codes in context.
 This operator uses <<_handler_evaluateevaluate>> handler with <<_interceptor_evaluateeval_with_context>> interceptor.
+See <<evaluate_in_context,evaluation in context>> for more information.
 
 | `<Plug>(elin_op_macroexpand_1)`
 | Exapnd macro once.

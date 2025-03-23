@@ -52,4 +52,4 @@
   curl -XPOST -H \"Content-Type: application/json\" -d '{\"method\": \"elin.handler.complete/complete\", \"params\": [\"ma\"]}' http://localhost:12345/api/v1
   ----"
   {:kind e.c.interceptor/http-route
-   :enter #(assoc-in % [:routes "/api/v1"] handle-api)})
+   :enter #(assoc-in % [:routes "/api/v1" :post] handle-api)})
