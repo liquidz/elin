@@ -60,15 +60,19 @@
 
 (m/=> reload!! [:=> [:cat e.s.component/?Nrepl] (e.schema/error-or e.s.nrepl/?Message)])
 (defn reload!!
-  [nrepl]
-  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/reload-op})
+  [nrepl before-sym-str after-sym-str]
+  (e/-> (e.p.nrepl/request nrepl (cond-> {:op e.c.nrepl/reload-op}
+                                   before-sym-str (assoc :before before-sym-str)
+                                   after-sym-str (assoc :after after-sym-str)))
         (async/<!!)
         (e.u.nrepl/merge-messages)))
 
 (m/=> reload-all!! [:=> [:cat e.s.component/?Nrepl] (e.schema/error-or e.s.nrepl/?Message)])
 (defn reload-all!!
-  [nrepl]
-  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/reload-all-op})
+  [nrepl before-sym-str after-sym-str]
+  (e/-> (e.p.nrepl/request nrepl (cond-> {:op e.c.nrepl/reload-all-op}
+                                   before-sym-str (assoc :before before-sym-str)
+                                   after-sym-str (assoc :after after-sym-str)))
         (async/<!!)
         (e.u.nrepl/merge-messages)))
 

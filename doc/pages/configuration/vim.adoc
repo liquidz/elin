@@ -16,6 +16,24 @@ If you want to change it to `<LocalLeader>`, set `g:elin_default_key_mapping_lea
 let g:elin_default_key_mapping_leader = '<LocalLeader>'
 ----
 
+==== Reload
+
+Elin provides <<ElinReload>> and <<ElinReloadAll>> commands for code reloading
+similarly to
+https://docs.cider.mx/cider/usage/code_reloading.html#using-clj-reload[cider-ns-refresh with clj-reload].
+To support
+https://www.cognitect.com/blog/2013/06/04/clojure-workflow-reloaded["reloaded" workflows],
+set the provided before/after hook variables to qualified (namespaced),
+zero-arity function names as in the following example:
+
+[source,vim]
+----
+let g:elin#internal#nrepl#reload_before_fn = 'user/stop'
+let g:elin#internal#nrepl#reload_after_fn = 'user/start'
+----
+
+The specified functions will then be evaluated before and after code reloading.
+
 ==== Selectors
 
 To choose an item from multiple candidates, Elin uses a selector.
@@ -41,7 +59,6 @@ Therefore, you can use your preferred plugin to modify the behavior of `vim.ui.s
 ====
 * https://github.com/nvim-telescope/telescope-ui-select.nvim
 ====
-
 
 ==== Status line
 

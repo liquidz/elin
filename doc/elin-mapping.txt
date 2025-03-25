@@ -110,10 +110,18 @@ ElinReload
   Calls `elin.handler.evaluate/reload` handler.
   Key is mapped to |<Plug>(elin_reload)|.
 
+  See also:
+  - |g:elin#internal#nrepl#reload_before_fn|
+  - |g:elin#internal#nrepl#reload_after_fn|
+
                                                                  *ElinReloadAll*
 ElinReloadAll
   Calls `elin.handler.evaluate/reload-all` handler.
   Key is mapped to |<Plug>(elin_reload_all)|.
+
+  See also:
+  - |g:elin#internal#nrepl#reload_before_fn|
+  - |g:elin#internal#nrepl#reload_after_fn|
 
                                                    *ElinMacroExpand1CurrentList*
 ElinMacroExpand1CurrentList
