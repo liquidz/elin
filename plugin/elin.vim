@@ -110,8 +110,8 @@ command! ElinInterrupt call elin#notify('elin.handler.evaluate/interrupt', [])
 command! ElinUndef call elin#notify('elin.handler.evaluate/undef', [])
 command! ElinUndefAll call elin#notify('elin.handler.evaluate/undef-all', [])
 
-command! ElinReload call elin#notify('elin.handler.evaluate/reload', [])
-command! ElinReloadAll call elin#notify('elin.handler.evaluate/reload-all', [])
+command! ElinReload call elin#internal#nrepl#reload()
+command! ElinReloadAll call elin#internal#nrepl#reload_all()
 
 command! ElinMacroExpand1CurrentList call elin#notify('elin.handler.evaluate/expand-1-current-list', [])
 

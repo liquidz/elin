@@ -101,13 +101,13 @@
 
 (defn reload
   "Reload all changed files with tonsky/clj-reload."
-  [{:component/keys [nrepl]}]
-  (e.f.n.cider/reload!! nrepl))
+  [{:component/keys [nrepl] {[{:strs [before after]}] :params} :message}]
+  (e.f.n.cider/reload!! nrepl before after))
 
 (defn reload-all
   "Reload all files."
-  [{:component/keys [nrepl]}]
-  (e.f.n.cider/reload-all!! nrepl))
+  [{:component/keys [nrepl] {[{:strs [before after]}] :params} :message}]
+  (e.f.n.cider/reload-all!! nrepl before after))
 
 (defn interrupt
   "Interrupt running evaluation."
