@@ -4,6 +4,7 @@ endif
 let g:loaded_vim_elin = 1
 
 let g:elin_home = expand('<sfile>:p:h:h')
+let g:elin_config = get(g:, 'elin_config', {})
 let g:elin_server_auto_connect = get(g:, 'elin_server_auto_connect', v:true)
 let g:elin_server_port = get(g:, 'elin_server_port', v:null)
 let g:elin_enable_omni_completion = get(g:, 'elin_enable_omni_completion', v:true)

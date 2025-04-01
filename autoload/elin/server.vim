@@ -13,12 +13,14 @@ endfunction
 
 function! s:start(port) abort
   let s:port = a:port
-  let config = json_encode({
-        \ 'env': {'cwd': expand('%:p:h')},
-        \ 'plugin': {'edn-files': elin#internal#plugin#search()},
-        \ 'server': {'host': s:host, 'port': str2nr(a:port)},
-        \ })
-  let command = [g:elin#babashka, '-m', 'elin.core', config]
+  let config = extend(
+        \   g:elin_config,
+        \   {'env': {'cwd': expand('%:p:h')},
+        \    'plugin': {'edn-files': elin#internal#plugin#search()},
+        \    'server': {'host': s:host, 'port': str2nr(a:port)}},
+        \ )
+  let json_config = json_encode(config)
+  let command = [g:elin#babashka, '-m', 'elin.core', json_config]
   let options = {
         \ 'cwd': g:elin_home,
         \ 'err_cb': funcref('s:error_callback'),
