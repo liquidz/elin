@@ -248,6 +248,11 @@
       (t/is (qualified-symbol? sample-handler))
       (t/is (qualified-symbol? sample-interceptor))
 
+      (t/testing "default-config does not override server-config"
+        (with-redefs [sut/load-default-config (constantly {:env {:cwd "dummy"}})]
+          (t/is (= {:cwd "."}
+                   (:env (test-load-config))))))
+
       (t/testing "user-config can override default-config"
         (with-redefs [sut/load-user-config (constantly {:env {:cwd "foo"}})]
           (t/is (= {:cwd "foo"}
