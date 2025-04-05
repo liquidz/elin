@@ -1,5 +1,21 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.4.0-alpha] - 2025-04-05
+
+=== Added
+
+- Add g:elin_config variable for configuration from vim
+- Add elin.interceptor.handler.evaluate/hook interceptor
+
+=== Changed
+
+- Bump cider-nrepl to 0.54.0
+
+=== Fixed
+
+- Fix elin.config/load-config not to override server-config
+- Fix to format the config received at server startup to match the `config` definition
+
 == [2025.3.8-alpha] - 2025-03-23
 
 === Added
