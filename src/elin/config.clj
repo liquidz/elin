@@ -212,8 +212,7 @@
   (let [default-config (load-default-config)
         user-config (load-user-config)
         project-local-config (load-project-local-config dir)
-        config (-> server-config
-                   (merge-configs default-config)
+        config (-> (merge-configs default-config server-config)
                    (configure user-config)
                    (configure project-local-config))]
     (m/coerce e.s.config/?Config

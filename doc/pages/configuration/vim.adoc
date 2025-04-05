@@ -16,6 +16,16 @@ If you want to change it to `<LocalLeader>`, set `g:elin_default_key_mapping_lea
 let g:elin_default_key_mapping_leader = '<LocalLeader>'
 ----
 
+==== Overriding default behaviors from Vim script
+
+In elin, configuration is basically done using EDN files, which is the recommended approach.
+However, for cases where you want to make configurations like <<Overriding default behaviors>> from Vim script, a variable called `g:elin_config` is provided.
+
+.e.g.
+```vim
+let g:elin_config = {'handler': {'config-map': {'elin.handler.evaluate/reload': {'interceptor': {'uses': ['elin.interceptor.handler.evaluate/hook', {'before': '(user/stop)', 'after': '(user/start)'}]}}}}}
+```
+
 ==== Selectors
 
 To choose an item from multiple candidates, Elin uses a selector.

@@ -1,0 +1,83 @@
+In the configuration file, settings are primarily written on a per-component basis.
+
+
+[source,clojure]
+----
+{;; Log settings
+ :log { ... }
+
+ ;; HTTP server component settings
+ :http-server { ... }
+
+ ;; Interceptor component settings
+ :interceptor { ... }
+
+ ;; Handler component settings
+ :handler { ... }
+
+ ;; Clj-kondo component settings
+ :clj-kondo { ... }}
+----
+
+==== Handler and Interceptor
+
+
+As a user, you will configure mainly Handler and Interceptor, which are the core components of Elin.
+Both are configured using four keys: <<includes>>, <<excludes>>, <<config-map>>, or <<uses>>.
+
+===== includes [[includes]]
+
+`:includes` enables the specified handlers/interceptors.
+
+.e.g.
+[source,clojure]
+----
+{:handler {:includes [elin.handler.connect/connect]}}
+----
+
+===== excludes [[excludes]]
+
+`:excludes` disables handlers/interceptors that were enabled by previously loaded settings.
+If both `:includes` and `:excludes` are specified within the same configuration, `:includes` should be prioritized.
+
+.e.g.
+[source,clojure]
+----
+{:handler {:excludes [elin.handler.connect/connect]}}
+----
+
+===== config-map [[config-map]]
+
+`:config-map` specifies the settings related to handlers/interceptors.
+
+.e.g.
+[source,clojure]
+----
+{:handler {:config-map {elin.handler.connect/connect {:param "value"}}}}
+----
+
+In the case of handlers, you can specify interceptors that are only active when the handler is being processed.
+
+[source,clojure]
+----
+{:handler {:config-map {elin.handler.connect/connect {:interceptor {:includes [dummy/interceptor]}}}}}
+----
+
+
+===== uses [[uses]]
+
+`:uses` is syntactic sugar for `:includes` and `:config-map`, and the following two are equivalent.
+
+.uses
+[source,clojure]
+----
+{:uses [foo {:bar "baz"}]}
+----
+
+.includes and config-map
+[source,clojure]
+----
+{:includes [foo]
+ :config-map {foo {:bar "baz"}}}
+----
+

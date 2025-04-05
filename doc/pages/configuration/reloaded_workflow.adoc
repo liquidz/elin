@@ -1,0 +1,21 @@
+If you are managing lifecycle of components with https://github.com/stuartsierra/component[Stuart Sierra's component], https://github.com/weavejester/integrant[integrant] or etc, following configurations are useful.
+
+==== CIDER way
+
+
+elin provides <<ElinReload>> command as same as the https://docs.cider.mx/cider/usage/misc_features.html#reloading-code[cider-ns-refresh] feature.
+
+And since elin also provides an <<_interceptor_handler_evaluatehook>> interceptor, by combining these as shown below, you can restart various components when executing <<ElinReload>>.
+
+.config.edn
+[source,clojure]
+----
+{:handler
+ {:config-map
+  {elin.handler.evaluate/reload
+   {:interceptor
+    {:uses [elin.interceptor.handler.evaluate/hook {:before (user/stop)
+                                                    :after (user/start)}]}}}}}
+----
+
+Of course, the <<_interceptor_handler_evaluatehook>> interceptor can be set for any handler, so it can also be used to evaluate specific expressions before and after executing commands other than <<ElinReload>>.

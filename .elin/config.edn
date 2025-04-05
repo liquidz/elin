@@ -3,5 +3,6 @@
  :interceptor {:includes [elin.interceptor.debug/interceptor-context-checking
                           elin.interceptor.debug/nrepl-debug]
                :config-map {elin.interceptor.autocmd/skeleton {:.clj {:test #slurp "./test_template.mustache"}}}}
- :handler {:config-map {elin.handler.lookup/lookup {:interceptor {:includes [elin.interceptor.nrepl.malli/lookup-schema]}}}}
+ :handler {:config-map {elin.handler.lookup/lookup {:interceptor {:includes [elin.interceptor.nrepl.malli/lookup-schema]}}
+                        elin.handler.evaluate/reload {:interceptor {:uses [elin.interceptor.handler.evaluate/hook {:after (elin.dev/go)}]}}}}
  :env {:cwd "."}}

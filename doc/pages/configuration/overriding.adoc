@@ -1,0 +1,38 @@
+As explained in <<Server configuration files>>, the default settings can be overridden by user or project-local configurations.
+
+
+==== Overriding config-map
+
+Let's focus on the feature that displays evaluation results as virtual text.
+By default, the highlight setting for results displayed as virtual text is `DiffText`, so you can override this configuration with your preferred highlight setting.
+
+First, you need to investigate how this feature is configured.
+By tracing the handler from <<ElinEvalCurrentTopList>>, you will find that <<_handler_evaluateevaluate_current_top_list>> handler is called.
+In the help section under `Using interceptors`, you can see that <<_interceptor_evaluateset_eval_result_to_virtual_text>> is set as the interceptor to be executed.
+
+Looking at the help for the interceptor, you'll discover that you can change the highlight setting using the `highlight` key.
+Now, following <<Server configuration files>>, create a user configuration file and save it with the following content.
+This will change the default highlight setting from `DiffText` to `Title` in <<_interceptor_evaluateset_eval_result_to_virtual_text>>.
+
+[source,clojure]
+----
+{:interceptor {:config-map {elin.interceptor.evaluate/set-eval-result-to-virtual-text {:highlight "Title"}}}}
+----
+
+==== Replacing the interceptor
+
+<<ElinLookup>> displays results in a popup by default, but you can change it to append them to the <<Information buffer>> instead.
+
+By tracing the handler from <<ElinLookup>>, you will find that <<_handler_lookuplookup>> handler is called.
+In the help section under `Using interceptors`, you can see that <<_interceptor_handlershow_result_as_popup>> is set as the interceptor to be executed.
+
+On the other hand, <<Built-in Interceptors>> includes <<_interceptor_handlerappend_result_to_info_buffer>>.
+Similar to <<_interceptor_handlershow_result_as_popup>>, this interceptor is executed on calling handlers, so by replacing it, you can change the behavior of <<ElinLookup>>.
+
+[source,clojure]
+----
+{:handler {:uses [elin.handler.lookup/lookup
+                  {:interceptor {:excludes [elin.interceptor.handler/show-result-as-popup]
+                                 :uses [elin.interceptor.handler/append-result-to-info-buffer
+                                        {:show-temporarily? true}]}}]}}
+----

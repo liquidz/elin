@@ -148,7 +148,8 @@
                                                   (get-in [:interceptor :includes]))))
         interceptor-syms (->> (concat global-interceptor-syms
                                       handler-using-interceptor-syms
-                                      alias-interceptor-syms)
+                                      alias-interceptor-syms
+                                      '[elin.interceptor.handler.evaluate/hook])
                               (distinct)
                               (sort))]
     (doseq [interceptor-sym interceptor-syms]
