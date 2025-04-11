@@ -145,7 +145,8 @@
                   elin.handler.test/rerun-last-failed-tests {:interceptor #ref [:interceptor :preset :test]}
                   elin.handler.test/rerun-last-tests {:interceptor #ref [:interceptor :preset :test]}
                   elin.handler.test/run-test-under-cursor {:interceptor #ref [:interceptor :preset :test]}
-                  elin.handler.test/run-tests-in-ns {:interceptor #ref [:interceptor :preset :test]}]
+                  elin.handler.test/run-tests-in-ns {:interceptor #ref [:interceptor :preset :test]}
+                  elin.handler.test/run-all-tests {:interceptor #ref [:interceptor :preset :test]}]
 
            :aliases {elin-alias-evaluate-current-list-in-context {:handler elin.handler.evaluate/evaluate-current-list
                                                                   :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}
