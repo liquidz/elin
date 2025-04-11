@@ -43,14 +43,20 @@
     nil)
 
   e.p.host/IQuickfix
+  (get-quickfix-list [_]
+    (async/go []))
   (set-quickfix-list [_ _qf-list]
     (async/go nil))
+  (get-location-list [_]
+    (async/go []))
   (set-location-list [_ _window-id _loc-list]
     (async/go nil))
 
   e.p.rpc/IFunction
   (call-function [this method params]
     (e.p.h.rpc/request! this ["test_call_function" [method params]]))
+  (notify-function [_ _ _]
+    nil)
 
   e.p.lazy-host/ILazyHost
   (set-host! [_ _] nil))
