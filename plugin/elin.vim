@@ -8,6 +8,8 @@ let g:elin_config = get(g:, 'elin_config', {})
 let g:elin_server_auto_connect = get(g:, 'elin_server_auto_connect', v:true)
 let g:elin_server_port = get(g:, 'elin_server_port', v:null)
 let g:elin_enable_omni_completion = get(g:, 'elin_enable_omni_completion', v:true)
+" FIXME This is a workaround
+let g:elin_notify_on_bufwrite_pre = get(g:, 'elin_notify_on_bufwrite_pre', v:false)
 let g:elin_debug = get(g:, 'elin_debug', v:false)
 
 if !exists('g:elin_default_key_mapping_leader')
@@ -50,7 +52,11 @@ function! s:init() abort
     au BufNewFile *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufNewFile')
     au BufRead *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufRead')
     au BufWritePost *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufWritePost')
-    au BufWritePre *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_request('BufWritePre')
+    if g:elin_notify_on_bufwrite_pre
+      au BufWritePre *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufWritePre')
+    else
+      au BufWritePre *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_request('BufWritePre')
+    endif
     au CursorMovedI *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('CursorMovedI')
     au VimLeave * call s:deinit()
   aug END
