@@ -90,7 +90,8 @@
 (defn- run-tests-by-query
   [{:as elin :component/keys [interceptor]} query]
   (let [context (-> (e.u.map/select-keys-by-namespace elin :component)
-                    (assoc :ns (or (:ns query) "")
+                    (assoc :project? (or (:project? query) false)
+                           :ns (or (:ns query) "")
                            :line (or (:base-line query) 0)
                            :column 0
                            :file (or (:current-file query) "")
@@ -101,6 +102,9 @@
         (let [test-var-query-supported? (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
               query (if test-var-query-supported?
                       (cond-> {}
+                        (:project? ctx)
+                        (assoc :ns-query {:project? "true" :load-project-ns? "true"})
+
                         (:ns ctx)
                         (assoc :ns-query {:exactly [(:ns ctx)]})
 
