@@ -1,5 +1,21 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.4.1-alpha] - 2025-04-11
+
+=== Added
+
+- Add elin.handler.test/run-all-tests handler (#45)
+- Add ElinTestAll command and its mapping (#45)
+
+=== Changed
+
+- Bump cider-nrepl to 0.55.0
+
+=== Fixed
+
+- Fix error handling on correct-test-vars-automatically interceptor
+- Fix elin.handler.test/rerun-last-tests to support project? query (#45)
+
 == [2025.4.0-alpha] - 2025-04-05
 
 === Added
