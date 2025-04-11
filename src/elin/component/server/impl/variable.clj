@@ -25,7 +25,7 @@
       (async/<! (e.c.s.function/execute! host (format "let %s = %s" var-name value')))
       nil)))
 
-(extend-protocol e.p.host/IIo
+(extend-protocol e.p.host/IVariable
   elin.component.server.vim.VimHost
   (get-variable! [this var-name] (get-variable!* this var-name))
   (set-variable! [this var-name value] (set-variable!* this var-name value))

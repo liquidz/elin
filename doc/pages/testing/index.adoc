@@ -17,6 +17,10 @@ Elin can integrate with https://clojure.github.io/clojure/clojure.test-api.html[
 | `{ElinTestInNs-default-mapping}`
 | Run all tests in current namespace
 
+| <<ElinTestAll>>
+| `{ElinTestAll-default-mapping}`
+| Run all tests in a project
+
 | <<ElinTestLast>>
 | `{ElinTestLast-default-mapping}`
 | Rerun the last tests

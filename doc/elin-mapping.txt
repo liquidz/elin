@@ -183,6 +183,11 @@ ElinTestInNs
   Calls `elin.handler.test/run-tests-in-ns` handler.
   Key is mapped to |<Plug>(elin_test_in_ns)|.
 
+                                                                   *ElinTestAll*
+ElinTestAll
+  Calls `elin.handler.test/run-all-tests` handler.
+  Key is mapped to |<Plug>(elin_test_all)|.
+
                                                                   *ElinTestLast*
 ElinTestLast
   Calls `elin.handler.test/rerun-last-tests` handler.
@@ -355,6 +360,10 @@ MAPPINGS                                                         *elin-mappings*
 <Plug>(elin_test_in_ns)
   Same as |ElinTestInNs|.
 
+                                                         *<Plug>(elin_test_all)*
+<Plug>(elin_test_all)
+  Same as |ElinTestAll|.
+
                                                         *<Plug>(elin_test_last)*
 <Plug>(elin_test_last)
   Same as |ElinTestLast|.
@@ -429,6 +438,7 @@ n      <Leader>hj    <Plug>(elin_open_javadoc)
 n      <Leader>tt    <Plug>(elin_test_under_cursor)
 n      <Leader>tf    <Plug>(elin_test_focused_current_testing)
 n      <Leader>tn    <Plug>(elin_test_in_ns)
+n      <Leader>tp    <Plug>(elin_test_all)
 n      <Leader>tl    <Plug>(elin_test_last)
 n      <Leader>tr    <Plug>(elin_test_last_failed)
 n      tt            <Plug>(elin_cycle_source_and_test)

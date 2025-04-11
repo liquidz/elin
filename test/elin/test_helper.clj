@@ -45,6 +45,7 @@
 
 (def test-message #'h.message/test-message)
 (def get-outputs #'h.host/get-outputs)
+(def clear-outputs #'h.host/clear-outputs)
 (def test-host #'h.host/test-host)
 (def test-nrepl-connection #'h.nrepl/test-nrepl-connection)
 (def test-nrepl-client #'h.nrepl/test-nrepl-client)

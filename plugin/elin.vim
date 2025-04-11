@@ -135,6 +135,7 @@ command! ElinOpenJavadoc call elin#notify('elin.handler.lookup/open-javadoc', []
 command! ElinTestUnderCursor call elin#notify('elin.handler.test/run-test-under-cursor', [])
 command! ElinTestFocusedCurrentTesting call elin#notify('elin-alias-run-test-focused-current-testing', [])
 command! ElinTestInNs call elin#notify('elin.handler.test/run-tests-in-ns', [])
+command! ElinTestAll call elin#notify('elin.handler.test/run-all-tests', [])
 command! ElinTestLast call elin#notify('elin.handler.test/rerun-last-tests', [])
 command! ElinTestLastFailed call elin#notify('elin.handler.test/rerun-last-failed-tests', [])
 command! ElinCycleSourceAndTest call elin#notify('elin.handler.navigate/cycle-source-and-test', [])
@@ -198,6 +199,7 @@ nnoremap <silent> <Plug>(elin_open_javadoc) <Cmd>ElinOpenJavadoc<CR>
 nnoremap <silent> <Plug>(elin_test_under_cursor) <Cmd>ElinTestUnderCursor<CR>
 nnoremap <silent> <Plug>(elin_test_focused_current_testing) <Cmd>ElinTestFocusedCurrentTesting<CR>
 nnoremap <silent> <Plug>(elin_test_in_ns) <Cmd>ElinTestInNs<CR>
+nnoremap <silent> <Plug>(elin_test_all) <Cmd>ElinTestAll<CR>
 nnoremap <silent> <Plug>(elin_test_last) <Cmd>ElinTestLast<CR>
 nnoremap <silent> <Plug>(elin_test_last_failed) <Cmd>ElinTestLastFailed<CR>
 nnoremap <silent> <Plug>(elin_cycle_source_and_test) <Cmd>ElinCycleSourceAndTest<CR>
@@ -288,6 +290,7 @@ function! s:default_key_mappings() abort
   call s:define_mapping('nmap', '<Leader>tt', '<Plug>(elin_test_under_cursor)')
   call s:define_mapping('nmap', '<Leader>tf', '<Plug>(elin_test_focused_current_testing)')
   call s:define_mapping('nmap', '<Leader>tn', '<Plug>(elin_test_in_ns)')
+  call s:define_mapping('nmap', '<Leader>tp', '<Plug>(elin_test_all)')
   call s:define_mapping('nmap', '<Leader>tl', '<Plug>(elin_test_last)')
   call s:define_mapping('nmap', '<Leader>tr', '<Plug>(elin_test_last_failed)')
   call s:define_mapping('nmap', 'tt', '<Plug>(elin_cycle_source_and_test)')

@@ -90,7 +90,8 @@
 (defn- run-tests-by-query
   [{:as elin :component/keys [interceptor]} query]
   (let [context (-> (e.u.map/select-keys-by-namespace elin :component)
-                    (assoc :ns (or (:ns query) "")
+                    (assoc :project? (or (:project? query) false)
+                           :ns (or (:ns query) "")
                            :line (or (:base-line query) 0)
                            :column 0
                            :file (or (:current-file query) "")
@@ -101,6 +102,9 @@
         (let [test-var-query-supported? (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
               query (if test-var-query-supported?
                       (cond-> {}
+                        (:project? ctx)
+                        (assoc :ns-query {:project? "true" :load-project-ns? "true"})
+
                         (:ns ctx)
                         (assoc :ns-query {:exactly [(:ns ctx)]})
 
@@ -130,3 +134,32 @@
              (seq (:vars query)))
       (run-tests-by-query elin query)
       (e.message/warning host "There are no failed tests to rerun."))))
+
+(m/=> run-all-tests [:=> [:cat e.s.handler/?Elin] any?])
+(defn run-all-tests
+  "Run all tests in a project.
+  This feature is only available in cider-nrepl for now."
+  [{:as elin :component/keys [host interceptor session-storage]}]
+  (e/let [ns-str (e.f.sexpr/get-namespace elin)
+          path (async/<!! (e.p.host/get-current-file-path! host))
+          context (-> (e.u.map/select-keys-by-namespace elin :component)
+                      (assoc :ns ns-str
+                             :line 0
+                             :column 0
+                             :file path
+                             :vars []))]
+    (e.p.interceptor/execute
+      interceptor e.c.interceptor/test context
+      (fn [{:as ctx :component/keys [host nrepl]}]
+        (if (e.p.nrepl/supported-op? nrepl e.c.nrepl/test-var-query-op)
+          ;; cider-nrepl
+          (let [query {:ns-query {:project? "true" :load-project-ns? "true"}}]
+            (e.f.s.test/set-last-test-query session-storage {:project? true
+                                                             :ns (:ns ctx)
+                                                             :vars []
+                                                             :current-file (:file ctx)
+                                                             :base-line (:line ctx)})
+            (assoc ctx :response (e.f.n.cider/test-var-query!! nrepl query)))
+
+          ;; plain
+          (e.message/warning host "This feature is not supported in plain nREPL."))))))
