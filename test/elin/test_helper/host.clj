@@ -58,6 +58,9 @@
 (defn get-outputs [test-host]
   @(:outputs test-host))
 
+(defn clear-outputs [test-host]
+  (reset! (:outputs test-host) []))
+
 (m/=> test-host
       [:function
        [:=> :cat  e.s.component/?LazyHost]
