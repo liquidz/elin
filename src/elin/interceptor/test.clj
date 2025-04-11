@@ -188,10 +188,15 @@
               ctx
               (let [file-sep (e.u.file/guess-file-separator ns-path)
                     cycled-path (e.f.n.namespace/get-cycled-namespace-path
-                                  {:ns ns-str :path ns-path :file-separator file-sep})]
+                                  {:ns ns-str :path ns-path :file-separator file-sep})
+                    content (try
+                              (slurp cycled-path)
+                              (catch java.io.FileNotFoundException _
+                                ;; Leave error handling to load-file!!
+                                ""))]
                 (e.f.nrepl/load-file!! (:component/nrepl ctx)
                                        cycled-path
-                                       [(slurp cycled-path)])
+                                       [content])
                 (assoc ctx
                        :ns (str ns-str "-test")
                        :file cycled-path))))})

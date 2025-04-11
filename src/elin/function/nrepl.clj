@@ -92,12 +92,14 @@
    (load-file!! nrepl file-path contents {}))
   ([nrepl file-path contents options]
    (let [session (e.p.nrepl/current-session nrepl)
-         file (io/file file-path)]
+         file (when (string? file-path)
+                (io/file file-path))]
      (cond
        (not session)
        (e/unavailable {:message "Not connected"})
 
-       (not (.exists file))
+       (or (not file)
+           (not (.exists file)))
        (e/not-found {:message (str "File not found: " file-path)})
 
        :else
