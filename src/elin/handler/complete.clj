@@ -68,11 +68,13 @@
       (cond
         ;; cider-nrepl
         (e.p.nrepl/supported-op? nrepl :complete)
-        (cider-nrepl-complete elin prefix)
+        (e/error-or (cider-nrepl-complete elin prefix)
+                    [])
 
         ;; nrepl
         (e.p.nrepl/supported-op? nrepl :completions)
-        (nrepl-completions elin prefix)
+        (e/error-or (nrepl-completions elin prefix)
+                    [])
 
         :else
         []))))
