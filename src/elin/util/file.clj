@@ -28,8 +28,8 @@
   (loop [dir (io/file cwd)]
     (when dir
       (if-let [target-file (->> (file-seq dir)
-                                (filter #(re-seq file-name-pattern (.getName %)))
-                                (first))]
+                                (some #(and (re-seq file-name-pattern (.getName %))
+                                            %)))]
         target-file
         (recur (.getParentFile dir))))))
 
