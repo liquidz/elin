@@ -17,6 +17,11 @@ local function get_code(node)
     return { code = table.concat(node_text, "\n"); lnum = start_row + 1; col = start_col + 1 }
 end
 
+local function get_range(node)
+    local start_row, start_col, end_row, end_col = node:range()
+    return { start_row = start_row, start_col = start_col, end_row = end_row, end_col = end_col }
+end
+
 local function find_list_lit(node)
     while (node and node:type() ~= 'list_lit') do
         node = node:parent()
@@ -32,26 +37,59 @@ local function find_top_list_lit(node)
     return node
 end
 
-local get_top_list  = function(cursor_row, cursor_col)
+local get_top_list_node = function(cursor_row, cursor_col)
     local node = get_node_from_cursor_position(cursor_row, cursor_col)
-    local top_node = node and find_top_list_lit(node) or nil
+    return node and find_top_list_lit(node) or nil
+end
+
+local get_list_node = function(cursor_row, cursor_col)
+    local node = get_node_from_cursor_position(cursor_row, cursor_col)
+    return node and find_list_lit(node) or nil
+end
+
+local get_expr_node = function(cursor_row, cursor_col)
+    return get_node_from_cursor_position(cursor_row, cursor_col)
+end
+
+
+
+local get_top_list = function(cursor_row, cursor_col)
+    local top_node = get_top_list_node(cursor_row, cursor_col)
     return top_node and get_code(top_node) or nil
 end
 
 local get_list = function(cursor_row, cursor_col)
-    local node = get_node_from_cursor_position(cursor_row, cursor_col)
-    local list_node = node and find_list_lit(node) or nil
+    local list_node = get_list_node(cursor_row, cursor_col)
     return list_node and get_code(list_node) or nil
 end
 
 local get_expr = function(cursor_row, cursor_col)
-    local node = get_node_from_cursor_position(cursor_row, cursor_col)
+    local node = get_expr_node(cursor_row, cursor_col)
     return node and get_code(node) or nil
+end
+
+local get_top_list_range = function(cursor_row, cursor_col)
+    local top_node = get_top_list_node(cursor_row, cursor_col)
+    return top_node and get_range(top_node) or nil
+end
+
+local get_list_range = function(cursor_row, cursor_col)
+    local list_node = get_list_node(cursor_row, cursor_col)
+    return list_node and get_range(list_node) or nil
+end
+
+local get_expr_range = function(cursor_row, cursor_col)
+    local node = get_expr_node(cursor_row, cursor_col)
+    return node and get_range(node) or nil
 end
 
 return {
     get_top_list = get_top_list,
     get_list = get_list,
     get_expr = get_expr,
+
+    get_top_list_range = get_top_list_range,
+    get_list_range = get_list_range,
+    get_expr_range = get_expr_range,
 }
 

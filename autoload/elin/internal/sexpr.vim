@@ -60,6 +60,14 @@ if has('nvim') && exists('*nvim_get_runtime_file') && len(nvim_get_runtime_file(
     endtry
   endfunction
 
+  function! s:get_top_list_range(lnum, col) abort
+    try
+      return luaeval('require("elin.sexpr").get_top_list_range(_A[1], _A[2])', [a:lnum - 1, a:col - 1])
+    catch
+      return {'start_col': -1, 'start_row': -1, 'end_col': -1, 'end_row': -1}
+    endtry
+  endfunction
+
 else
 
   function! s:get_top_list(lnum, col) abort
@@ -101,7 +109,27 @@ else
     return {'code': join(lines, "\n"), 'lnum': start_pos[0], 'col': start_pos[1]}
   endfunction
 
+  function! s:get_top_list_range(lnum, col) abort
+
+    "if getline(a:lnum)[0] !=# '('
+    "  let is_cancelled = v:true
+    "  return
+    "endif
+    "call cursor(a:lnum, a:col)
+    "keepjumps silent normal! vaby
+
+    " FIXME
+    return {'start_col': -1, 'start_row': -1, 'end_col': -1, 'end_row': -1}
+  endfunction
+
 endif
+
+function! s:set_visual_marks(range) abort
+  "call setpos("'<", [0, get(a:range, 'start_row', 0) + 1, get(a:range, 'start_col', 0) + 1, 0])
+  call setpos("'<", [0, get(a:range, 'start_row', 0) + 1, get(a:range, 'start_col', 0), 0])
+  "call setpos("'>", [0, get(a:range, 'end_row', 0) + 1, get(a:range, 'end_col', 0) + 1, 0])
+  call setpos("'>", [0, get(a:range, 'end_row', 0) + 1, get(a:range, 'end_col', 0), 0])
+endfunction
 
 function! elin#internal#sexpr#replace_list_sexpr(lnum, col, new_sexpr) abort
   let context = elin#internal#context#save()
@@ -112,14 +140,15 @@ function! elin#internal#sexpr#replace_list_sexpr(lnum, col, new_sexpr) abort
   let signs = elin#internal#sign#list_in_buffer()
 
   try
-    if getline(a:lnum)[0] !=# '('
+    let top_list_range = s:get_top_list_range(a:lnum, a:col)
+    echom printf('FIXME range %s', top_list_range)
+    if get(top_list_range, 'start_col', -1) == -1 && get(top_list_range, 'start_row', -1) == -1
       let is_cancelled = v:true
       return
     endif
+    call s:set_visual_marks(top_list_range)
+    keepjumps silent normal! gvy
 
-    call cursor(a:lnum, a:col)
-
-    keepjumps silent normal! vaby
     let before_sexpr = @@
     if before_sexpr ==# ''
       let is_cancelled = v:true
