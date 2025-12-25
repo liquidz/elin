@@ -19,6 +19,12 @@
             (recur))
         res))))
 
+(defn- has-active-connection?
+  [nrepl hostname port]
+  (if-let [client (e.p.nrepl/get-client nrepl hostname port)]
+    (not (e.p.nrepl/disconnected? client))
+    false))
+
 (defn connect
   [{:as elin :component/keys [interceptor]}
    {:keys [hostname port language wait?]}]
@@ -37,7 +43,7 @@
                        (or (not hostname) (not port))
                        (assoc ctx :error (e/fault))
 
-                       (e.p.nrepl/get-client nrepl hostname port)
+                       (has-active-connection? nrepl hostname port)
                        (assoc ctx :error (e/conflict))
 
                        :else
