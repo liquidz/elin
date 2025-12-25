@@ -56,6 +56,10 @@
                                                 (map #(str/replace-first % project-root ""))
                                                 (e.f.select/select-from-candidates ctx)))]
                   (cond
+                    ;; no shadow-cljs port found
+                    (not shadow-cljs-port-file)
+                    ctx
+
                     ;; not selected
                     (not selected-port-file)
                     (assoc ctx
