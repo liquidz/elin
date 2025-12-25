@@ -33,6 +33,8 @@
 
 (defn warn-log-level-fixture
   [f]
+  ;; with-min-level is recommended but cannot be used in babashka, so ignore the deprecation
+  #_{:clj-kondo/ignore [:deprecated-var]}
   (timbre/with-level :warn (f)))
 
 (defn call-function? [msg fn-name]
