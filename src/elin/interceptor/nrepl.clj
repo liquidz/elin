@@ -88,13 +88,7 @@
                     (async/go
                       (let [[_ ch] (async/alts! [timeout-ch result-ch])]
                         (if (= timeout-ch ch)
-                          (let [text (condp = (:op request)
-                                       e.c.nrepl/eval-op "Evaluating..."
-                                       e.c.nrepl/load-file-op "Loading..."
-                                       e.c.nrepl/test-var-query-op "Testing..."
-                                       e.c.nrepl/reload-op "Reloading..."
-                                       e.c.nrepl/reload-all-op "Reloading all..."
-                                       "Processing...")
+                          (let [text (e.u.nrepl/progress-text (:op request))
                                 popup-id (async/<!
                                            (e.p.host/open-popup!
                                              host

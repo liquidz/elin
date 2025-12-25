@@ -55,3 +55,14 @@
   (boolean
     (some #(= % status)
           (:status message))))
+
+(m/=> progress-text [:=> [:cat string?] string?])
+(defn progress-text
+  [op]
+  (condp = op
+    e.c.nrepl/eval-op "Evaluating..."
+    e.c.nrepl/load-file-op "Loading..."
+    e.c.nrepl/test-var-query-op "Testing..."
+    e.c.nrepl/reload-op "Reloading..."
+    e.c.nrepl/reload-all-op "Reloading all..."
+    "Processing..."))
