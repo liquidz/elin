@@ -28,6 +28,7 @@
   {"repl" {:force-leiningen {:coerce :boolean}
            :force-shadow-cljs {:coerce :boolean}
            :dry-run {:coerce :boolean}
+           :port {:coerce :long :validate pos?}
            :instant {:coerce :boolean}
            :help {:default false :coerce :boolean}}})
 
@@ -42,9 +43,18 @@
                        #{})
         cli-options (or (get cli-options-map sub-command)
                         {})
-        {elin-args true rest-args false} (group-by #(contains? option-set %) args)]
+        cli-option? #(boolean (some (fn [option]
+                                      (str/starts-with? % option))
+                                    option-set))
+        {elin-args true rest-args false} (group-by cli-option? args)]
     {:options (cli/parse-opts elin-args cli-options)
      :rest-args rest-args}))
+
+(defn- show-help
+  [sub-command]
+  (let [spec (get cli/parse-opts sub-command)]
+    (cli/format-opts (merge {:spec spec}
+                            {:order (vec (keys spec))}))))
 
 (defmulti dispatch first)
 (defmethod dispatch :default
@@ -53,14 +63,18 @@
 
 (defmethod dispatch "repl"
   [args]
-  (let [{:keys [options rest-args]} (parse-opts args)
-        ;; TODO apply options to force protject-type
-        [project-type _] (e.f.jack-in/select-project {} cwd)
-        port (e.u.nrepl/get-free-port)
-        commands (:command (e.f.jack-in/generate-command project-type port rest-args))]
-    (if (:dry-run options)
-      (println (str/join " " commands))
-      (apply b.process/shell {:out :inherit :in :inherit} commands))))
+  (let [sub-command (first args)
+        {:keys [options rest-args]} (parse-opts args)]
+    (if (:help options)
+      (println (show-help sub-command))
+      (let [;; TODO apply options to force protject-type
+            [project-type _] (e.f.jack-in/select-project {} cwd)
+            port (or (:port options)
+                     (e.u.nrepl/get-free-port))
+            commands (:command (e.f.jack-in/generate-command project-type port rest-args))]
+        (if (:dry-run options)
+          (println (str/join " " commands))
+          (apply b.process/shell {:out :inherit :in :inherit} commands))))))
 
 (defn -main [& args]
   (try
