@@ -19,7 +19,7 @@
   http-kit/http-kit {:mvn/version "2.9.0-beta1"},
   insn/insn {:mvn/version "0.5.2"},
   io.github.nextjournal/markdown {:mvn/version "0.7.222"},
-  metosin/malli {:mvn/version "0.19.1"},
+  metosin/malli {:mvn/version "0.20.0"},
   nrepl/bencode {:mvn/version "1.2.0"},
   org.babashka/babashka.impl.java {:mvn/version "0.1.11"},
   org.babashka/cli {:mvn/version "0.8.67"},
