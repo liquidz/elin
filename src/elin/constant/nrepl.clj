@@ -17,6 +17,7 @@
 (def load-file-op "load-file")
 (def lookup-op "lookup")
 (def ls-sessions-op "ls-sessions")
+(def forward-system-output-op "forward-system-output")
 
 ;; cider-nrepl ops
 
