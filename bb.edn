@@ -44,7 +44,10 @@
         :org.babashka/cli {:coerce {:nses [:symbol]
                                     :vars [:symbol]}}}
 
+  clj-kondo-import {:doc "Import clj-kondo configurations"
+                    :task (shell "clj-kondo --lint '$(clojure -Spath)' --copy-configs --skip-lint")}
   clj-kondo-emit {:doc "Emit clj-kondo configurations by malli"
+                  :depends [clj-kondo-import]
                   :extra-paths ["test"]
                   :extra-deps {org.clojure/tools.namespace {:mvn/version "1.5.0"}}
                   :requires ([malli.clj-kondo :as mc]
@@ -98,4 +101,7 @@
                    check-documents lint format-check test]}
 
   outdated {:doc "Check outdated dependencies"
-            :task (clojure "-Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -M -m antq.core --upgrade --skip=clojure-cli")}}}
+            :task (clojure "-Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -M -m antq.core --upgrade --skip=clojure-cli")}
+
+  clean {:doc "Clean generated files"
+         :task (do (shell "rm -rf .clj-kondo/imports .clj-kondo/.cache .cpcache"))}}}
