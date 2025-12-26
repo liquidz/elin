@@ -11,7 +11,7 @@
  :__elin_internal__
  {:command {:deps {nrepl/nrepl {:mvn/version "1.5.1"}
                    refactor-nrepl/refactor-nrepl {:mvn/version "3.11.0"}
-                   cider/cider-nrepl {:mvn/version "0.57.0"}}
+                   cider/cider-nrepl {:mvn/version "0.58.0"}}
             :middlewares [cider.nrepl/cider-middleware
                           refactor-nrepl.middleware/wrap-refactor]}}
 
