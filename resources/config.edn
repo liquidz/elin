@@ -89,7 +89,7 @@
                   elin.handler.evaluate/undef-all {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
                   elin.handler.internal/error {}
                   elin.handler.internal/healthcheck {:log {:min-level :error}}
-                  elin.handler.internal/initialize {}
+                  elin.handler.internal/initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}
                   elin.handler.internal/intercept {}
                   elin.handler.internal/status {:log {:min-level :error}
                                                 :label {:disconnected ""
@@ -164,9 +164,7 @@
                                                                                              elin.interceptor.evaluate/yank-eval-result]}}}
                      ;; Used in operator
                      elin-alias-evaluate-in-context {:handler elin.handler.evaluate/evaluate
-                                                     :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}}
-
-           :initialize {:export {"g:elin_http_server_port" #ref [:http-server :port]}}}
+                                                     :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}}}
 
  :clj-kondo {:command "clj-kondo"
              :config {:output {:analysis {:protocol-impls true
