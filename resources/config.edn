@@ -15,7 +15,22 @@
                              :test-var #resource "template/var_test_skeleton.mustache"}
                      :.cljc {:src #resource "template/clj_src_skeleton.mustache"
                              :test #resource "template/cljc_test_skeleton.mustache"
-                             :test-var #resource "template/var_test_skeleton.mustache"}}}
+                             :test-var #resource "template/var_test_skeleton.mustache"}}
+
+          :interceptor {:preset {:evaluation {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline
+                                                         elin.interceptor.evaluate/set-eval-result-to-virtual-text
+                                                         elin.interceptor.evaluate/unwrap-comment-form
+                                                         elin.interceptor.evaluate/yank-eval-result
+                                                         elin.interceptor.evaluate/show-last-stacktrace]}
+
+                                 :test {:includes [elin.interceptor.test/correct-test-vars-automatically
+                                                   elin.interceptor.test/register-started-at
+                                                   elin.interceptor.test/parse-test-result
+                                                   elin.interceptor.test/update-test-result-sign
+                                                   elin.interceptor.test/append-test-result-to-info-buffer
+                                                   elin.interceptor.test/apply-test-result-to-quickfix
+                                                   elin.interceptor.test/store-last-failed-test-query
+                                                   elin.interceptor.test/output-test-result-to-cmdline]}}}}
 
  :interceptor {:uses [elin.interceptor.autocmd/deinitialize {}
                       elin.interceptor.autocmd/switch-connection {}
@@ -45,22 +60,7 @@
                                                                                        :highlight "DiffText"
                                                                                        :align "after"
                                                                                        :close-after 3000}
-                            elin.interceptor.evaluate/show-last-stacktrace {:ignoring-vars #include "ignoring_stacktrace_vars.edn"}}
-
-               :preset {:evaluation {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline
-                                                elin.interceptor.evaluate/set-eval-result-to-virtual-text
-                                                elin.interceptor.evaluate/unwrap-comment-form
-                                                elin.interceptor.evaluate/yank-eval-result
-                                                elin.interceptor.evaluate/show-last-stacktrace]}
-
-                        :test {:includes [elin.interceptor.test/correct-test-vars-automatically
-                                          elin.interceptor.test/register-started-at
-                                          elin.interceptor.test/parse-test-result
-                                          elin.interceptor.test/update-test-result-sign
-                                          elin.interceptor.test/append-test-result-to-info-buffer
-                                          elin.interceptor.test/apply-test-result-to-quickfix
-                                          elin.interceptor.test/store-last-failed-test-query
-                                          elin.interceptor.test/output-test-result-to-cmdline]}}}
+                            elin.interceptor.evaluate/show-last-stacktrace {:ignoring-vars #include "ignoring_stacktrace_vars.edn"}}}
 
  :handler {:uses [elin.handler.callback/callback {}
                   elin.handler.complete/complete {:log {:min-level :error}}
@@ -73,11 +73,11 @@
                   elin.handler.debug/enable-debug-log {}
                   elin.handler.debug/disable-debug-log {}
                   elin.handler.evaluate/evaluate {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline]}}
-                  elin.handler.evaluate/evaluate-at-mark {:interceptor #ref [:interceptor :preset :evaluation]}
+                  elin.handler.evaluate/evaluate-at-mark {:interceptor #ref [:common :interceptor :preset :evaluation]}
                   elin.handler.evaluate/evaluate-current-buffer {:interceptor {:includes [elin.interceptor.nrepl/output-result-to-cmdline]}}
-                  elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:interceptor :preset :evaluation]}
-                  elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:interceptor :preset :evaluation]}
-                  elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:interceptor :preset :evaluation]}
+                  elin.handler.evaluate/evaluate-current-expr {:interceptor #ref [:common :interceptor :preset :evaluation]}
+                  elin.handler.evaluate/evaluate-current-list {:interceptor #ref [:common :interceptor :preset :evaluation]}
+                  elin.handler.evaluate/evaluate-current-top-list {:interceptor #ref [:common :interceptor :preset :evaluation]}
                   elin.handler.evaluate/evaluate-namespace-form {:interceptor {:includes [elin.interceptor.evaluate/output-eval-result-to-cmdline]}}
                   elin.handler.evaluate/expand-1 {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
                   elin.handler.evaluate/expand-1-current-list {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true}]}}
@@ -142,11 +142,11 @@
                   elin.handler.navigate/local-references {:interceptor {:includes [elin.interceptor.handler/jump-to-file]}}
                   elin.handler.tap/tapped {:interceptor {:uses [elin.interceptor.handler/append-result-to-info-buffer {:show-temporarily? true
                                                                                                                        :header ";; Tapped value\n"}]}}
-                  elin.handler.test/rerun-last-failed-tests {:interceptor #ref [:interceptor :preset :test]}
-                  elin.handler.test/rerun-last-tests {:interceptor #ref [:interceptor :preset :test]}
-                  elin.handler.test/run-test-under-cursor {:interceptor #ref [:interceptor :preset :test]}
-                  elin.handler.test/run-tests-in-ns {:interceptor #ref [:interceptor :preset :test]}
-                  elin.handler.test/run-all-tests {:interceptor #ref [:interceptor :preset :test]}]
+                  elin.handler.test/rerun-last-failed-tests {:interceptor #ref [:common :interceptor :preset :test]}
+                  elin.handler.test/rerun-last-tests {:interceptor #ref [:common :interceptor :preset :test]}
+                  elin.handler.test/run-test-under-cursor {:interceptor #ref [:common :interceptor :preset :test]}
+                  elin.handler.test/run-tests-in-ns {:interceptor #ref [:common :interceptor :preset :test]}
+                  elin.handler.test/run-all-tests {:interceptor #ref [:common :interceptor :preset :test]}]
 
            :aliases {elin-alias-evaluate-current-list-in-context {:handler elin.handler.evaluate/evaluate-current-list
                                                                   :config {:interceptor {:includes [elin.interceptor.evaluate/eval-with-context]}}}
