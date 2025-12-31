@@ -236,7 +236,7 @@
 (t/deftest load-config-test
   (with-redefs [sut/load-user-config (constantly {})
                 sut/load-project-local-config (constantly {})]
-    (let [server-config {:server {:host "" :port 0}
+    (let [server-config {:server {:host "" :port 0 :entrypoints {}}
                          :env {:cwd "."}}
           test-load-config #(sut/load-config "." server-config)
           base-config (test-load-config)
