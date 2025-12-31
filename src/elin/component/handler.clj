@@ -107,6 +107,8 @@
                     (assoc :message message' :config-map config-map)
                     (construct-handler-parameter))]
     (if-let [log-level (get-in config-map [(symbol method) :log :min-level])]
+      ;; with-min-level is recommended but cannot be used in babashka, so ignore the deprecation
+      #_{:clj-kondo/ignore [:deprecated-var]}
       (timbre/with-level log-level (handler* handler-map context))
       (handler* handler-map context))))
 

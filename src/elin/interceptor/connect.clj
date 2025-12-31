@@ -4,6 +4,7 @@
    [elin.constant.interceptor :as e.c.interceptor]
    [elin.constant.nrepl :as e.c.nrepl]
    [elin.function.jack-in :as e.f.jack-in]
+   [elin.function.nrepl :as e.f.nrepl]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
    [elin.schema.nrepl :as e.s.nrepl]
@@ -66,6 +67,13 @@
                 (e.u.map/select-keys-by-namespace :component)
                 (assoc :autocmd-type "BufEnter")
                 (->> (e.p.interceptor/execute interceptor e.c.interceptor/autocmd)))
+            ctx)})
+
+(def forward-system-output
+  "Enable forwarding of System/out and System/err output to client."
+  {:kind e.c.interceptor/connect
+   :leave (fn [{:as ctx :component/keys [nrepl]}]
+            (e.f.nrepl/forward-system-output!! nrepl)
             ctx)})
 
 (def cleanup-jacked-in-process

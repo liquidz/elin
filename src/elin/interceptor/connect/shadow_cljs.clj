@@ -55,14 +55,28 @@
                                                 (remove nil?)
                                                 (map #(str/replace-first % project-root ""))
                                                 (e.f.select/select-from-candidates ctx)))]
-                  (if (and selected-port-file
-                           (str/ends-with? (:port-file shadow-cljs-port-file)
-                                           selected-port-file))
+                  (cond
+                    ;; no shadow-cljs port found
+                    (not shadow-cljs-port-file)
+                    ctx
+
+                    ;; not selected
+                    (not selected-port-file)
+                    (assoc ctx
+                           :hostname nil
+                           :port 0)
+
+                    ;; shadow-cljs is selected
+                    (str/ends-with? (:port-file shadow-cljs-port-file)
+                                    selected-port-file)
                     (assoc ctx
                            :hostname (or hostname default-hostname)
                            :port (:port shadow-cljs-port-file)
                            :language (:language shadow-cljs-port-file)
                            :port-file (:port-file shadow-cljs-port-file))
+
+                    ;; default nrepl is selected
+                    :else
                     ctx)))
               ;; Do nothing if the hostname and port number are specified, not automatically detected
               (ix/when #(not (and (:hostname %) (:port %) (not (:port-file %))))))

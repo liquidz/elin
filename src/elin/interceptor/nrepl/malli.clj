@@ -71,7 +71,7 @@
   (condp = (:type parsed)
     :function
     (->> (:fns parsed)
-         (mapcat convert-parsed-function-schema-to-sexpr))
+         (mapcat (comp convert-parsed-function-schema-to-sexpr :values)))
 
     :=>
     [{:input (->> (:input parsed)
@@ -136,6 +136,7 @@
                                     (edn/read-string))
                         doc' (when doc
                                (-> (m/parse ?FunctionSchema doc)
+                                   (:values)
                                    (convert-parsed-function-schema-to-sexpr)
                                    (document-str)))
                         response' (cond->> response

@@ -114,7 +114,6 @@
          (filter supported)
          (map #(format "(%s)%s" (reversed-supported-input-types %) %))
          (str/join ", "))))
-(comment (println (generate-debug-text sample)))
 
 (defn- generate-debug-text
   [{:keys [debug-value locals]}]

@@ -215,6 +215,7 @@
 
 (defn- sexpr-digest
   [zloc]
+  #_{:clj-kondo/ignore [:unresolved-var]}
   (digest/md5 (r.zip/string zloc)))
 
 (defn- parent-testing-form-digests

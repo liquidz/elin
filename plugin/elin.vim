@@ -9,80 +9,11 @@ let g:elin_server_auto_connect = get(g:, 'elin_server_auto_connect', v:true)
 let g:elin_server_port = get(g:, 'elin_server_port', v:null)
 let g:elin_enable_omni_completion = get(g:, 'elin_enable_omni_completion', v:true)
 let g:elin_debug = get(g:, 'elin_debug', v:false)
+let g:elin_support_files = get(g:, 'elin_support_files', {})
 
 if !exists('g:elin_default_key_mapping_leader')
   let g:elin_default_key_mapping_leader = '<Leader>'
 endif
-
-" Initialize {{{
-function! s:init() abort
-  if &ft !=# 'clojure' || exists('g:initialized_vim_elin')
-    return
-  endif
-  let g:initialized_vim_elin = 1
-
-  " Initialize internal buffers
-  try
-    let &eventignore = 'WinEnter,WinLeave,BufEnter,BufLeave'
-    call elin#internal#buffer#info#ready()
-    call elin#internal#buffer#temp#ready()
-  finally
-    let &eventignore = ''
-  endtry
-
-  if g:elin_server_port is v:null
-    call elin#server#start()
-  endif
-
-  if g:elin_server_auto_connect is v:true
-    call elin#server#connect(g:elin_server_port)
-  endif
-
-  " FIXME this should be configurable by .elin.edn
-  exe ':sign define elin_error text=🔥 texthl=ErrorMsg'
-
-  aug elin_autocmd_group
-    au!
-    if g:elin_enable_omni_completion
-      au FileType clojure setl omnifunc=elin#complete#omni
-    endif
-    au BufEnter *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufEnter')
-    au BufNewFile *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufNewFile')
-    au BufRead *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufRead')
-    au BufWritePost *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufWritePost')
-    au BufWritePre *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_request('BufWritePre')
-    au CursorMovedI *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('CursorMovedI')
-    au VimLeave * call s:deinit()
-  aug END
-endfunction
-
-function! s:deinit() abort
-  call elin#intercept_request('VimLeave')
-  call elin#server#disconnect()
-  if g:elin_server_port is v:null
-    call elin#server#stop()
-  endif
-endfunction
-
-function! s:startup() abort
-  call s:init()
-  aug elin_initializing_group
-    au!
-    au FileType clojure call s:init()
-  aug END
-endfunction
-
-if has('vim_starting')
-  aug elin_starting_group
-    au!
-    au VimEnter * call s:startup()
-  aug END
-else
-  if &ft ==# 'clojure'
-    call s:startup()
-  endif
-endif
-" }}}
 
 " Commands {{{
 
@@ -218,14 +149,14 @@ nnoremap <silent> <Plug>(elin_op_macroexpand_1) :<C-u>set opfunc=ElinOperatorMac
 " }}}
 
 " Default key mappings {{{
-if exists('g:elin_enable_default_key_mappings')
-      \ && g:elin_enable_default_key_mappings
-  silent! call s:default_key_mappings()
-  aug elin_default_key_mappings
-    au!
-    au FileType clojure call s:default_key_mappings()
-  aug END
-endif
+"if exists('g:elin_enable_default_key_mappings')
+"      \ && g:elin_enable_default_key_mappings
+"  silent! call s:default_key_mappings()
+"  aug elin_default_key_mappings
+"    au!
+"    au FileType clojure call s:default_key_mappings()
+"  aug END
+"endif
 
 function! s:define_mapping(map_type, default_keys, plug_name) abort
   if !hasmapto(a:plug_name)
@@ -301,6 +232,114 @@ function! s:default_key_mappings() abort
   call s:define_mapping('nmap', '<Leader>sl', '<Plug>(elin_clear_info_buffer)')
   call s:define_mapping('nmap', '<Leader><Esc>', '<Plug>(elin_clear_virtual_texts)')
 endfunction
+" }}}
+
+" Initialize {{{
+function! s:init() abort
+  let s:elin_support_files = extend({
+        \ 'clojure': ['clj', 'cljs', 'cljc', 'cljd'],
+        \ }, g:elin_support_files)
+
+  if index(keys(s:elin_support_files), &ft) == -1 || exists('g:initialized_vim_elin')
+    return
+  endif
+  let g:initialized_vim_elin = 1
+
+  " Initialize internal buffers
+  try
+    let &eventignore = 'WinEnter,WinLeave,BufEnter,BufLeave'
+    call elin#internal#buffer#info#ready()
+    call elin#internal#buffer#temp#ready()
+  finally
+    let &eventignore = ''
+  endtry
+
+  if g:elin_server_port is v:null
+    call elin#server#start()
+  endif
+
+  if g:elin_server_auto_connect is v:true
+    call elin#server#connect(g:elin_server_port)
+  endif
+
+  " FIXME this should be configurable by .elin.edn
+  exe ':sign define elin_error text=🔥 texthl=ErrorMsg'
+
+  aug elin_autocmd_group
+    au!
+    "for ft in keys(s:elin_support_files)
+    "  let exts = get(s:elin_support_files, ft, [])
+    "endfor
+
+    if g:elin_enable_omni_completion
+      for ft in keys(s:elin_support_files)
+        execute printf('au FileType %s setl omnifunc=elin#complete#omni', ft)
+      endfor
+      "au FileType clojure setl omnifunc=elin#complete#omni
+    endif
+
+    let all_exts = join(map(flatten(values(s:elin_support_files)), { _, v -> printf('*.%s', v) }), ',')
+    execute printf('au BufEnter %s call elin#intercept_notify("BufEnter")', all_exts)
+    execute printf('au BufNewFile %s call elin#intercept_notify("BufNewFile")', all_exts)
+    execute printf('au BufRead %s call elin#intercept_notify("BufRead")', all_exts)
+    execute printf('au BufWritePost %s call elin#intercept_notify("BufWritePost")', all_exts)
+    execute printf('au BufWritePre %s call elin#intercept_request("BufWritePre")', all_exts)
+    execute printf('au CursorMovedI %s call elin#intercept_notify("CursorMovedI")', all_exts)
+
+    "au BufEnter *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufEnter')
+    "au BufNewFile *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufNewFile')
+    "au BufRead *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufRead')
+    "au BufWritePost *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('BufWritePost')
+    "au BufWritePre *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_request('BufWritePre')
+    "au CursorMovedI *.clj,*.cljs,*.cljc,*.cljd call elin#intercept_notify('CursorMovedI')
+    au VimLeave * call s:deinit()
+  aug END
+
+  if exists('g:elin_enable_default_key_mappings')
+        \ && g:elin_enable_default_key_mappings
+    silent! call s:default_key_mappings()
+    aug elin_default_key_mappings
+      au!
+
+      for ft in keys(s:elin_support_files)
+        execute printf('au FileType %s call s:default_key_mappings()', ft)
+      endfor
+    aug END
+  endif
+
+endfunction
+
+function! s:deinit() abort
+  call elin#intercept_request('VimLeave')
+  call elin#server#disconnect()
+  if g:elin_server_port is v:null
+    call elin#server#stop()
+  endif
+endfunction
+
+function! s:startup() abort
+  call s:init()
+  aug elin_initializing_group
+    au!
+    au FileType * call s:init()
+  aug END
+endfunction
+
+aug elin_starting_group
+  au!
+  au VimEnter * call s:startup()
+aug END
+
+"if has('vim_starting')
+"  aug elin_starting_group
+"    au!
+"    au VimEnter * call s:startup()
+"  aug END
+"else
+"  if &ft ==# 'clojure'
+"    call s:startup()
+"  endif
+"endif
 " }}}
 
 " vim:fdl=0:

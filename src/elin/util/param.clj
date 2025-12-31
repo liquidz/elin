@@ -7,4 +7,4 @@
   (let [ret (m/parse ?schema value)]
     (if (= ::m/invalid ret)
       [nil (m.error/humanize (m/explain ?schema value))]
-      [ret])))
+      [(:values ret)])))

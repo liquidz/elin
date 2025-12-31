@@ -1,0 +1,3 @@
+{:lint-as {elin.error/let clojure.core/let
+           elin.error/-> clojure.core/->
+           elin.error/->> clojure.core/->>}}

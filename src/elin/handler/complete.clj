@@ -62,17 +62,18 @@
 (defn complete
   "Returns comletion candidates."
   [{:as elin :component/keys [nrepl] :keys [message]}]
-  (let [prefix (first (:params message))]
-    (if (e.p.nrepl/disconnected? nrepl)
-      []
-      (cond
-        ;; cider-nrepl
-        (e.p.nrepl/supported-op? nrepl :complete)
-        (cider-nrepl-complete elin prefix)
+  (let [prefix (first (:params message))
+        resp (cond
+               (e.p.nrepl/disconnected? nrepl)
+               []
 
-        ;; nrepl
-        (e.p.nrepl/supported-op? nrepl :completions)
-        (nrepl-completions elin prefix)
+               ;; cider-nrepl
+               (e.p.nrepl/supported-op? nrepl :complete)
+               (cider-nrepl-complete elin prefix)
 
-        :else
-        []))))
+               (e.p.nrepl/supported-op? nrepl :completions)
+               (nrepl-completions elin prefix)
+
+               ;; nrepl
+               :else [])]
+    (e/error-or resp [])))

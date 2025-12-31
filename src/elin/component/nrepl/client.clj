@@ -67,7 +67,8 @@
                      :port nil}))
   ([conn {:keys [language port-file]}]
    (let [clone-resp (e.u.nrepl/merge-messages
-                      (async/<!! (e.p.nrepl/request conn {:op "clone"})))
+                      (async/<!! (e.p.nrepl/request conn {:op "clone"
+                                                          :client-name "elin"})))
          describe-resp (e.u.nrepl/merge-messages
                          (async/<!! (e.p.nrepl/request conn {:op "describe"})))
          ns-eval-resp (e.u.nrepl/merge-messages

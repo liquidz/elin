@@ -150,6 +150,13 @@
         (e.u.nrepl/merge-messages)
         (:completions)))
 
+(defn forward-system-output!!
+  "cf. https://github.com/nrepl/nrepl/pull/393"
+  [nrepl]
+  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/forward-system-output-op})
+        (async/<!!)
+        (e.u.nrepl/merge-messages)))
+
 (defn get-cycled-var-name
   [var-name]
   (if (str/ends-with? var-name "-test")
