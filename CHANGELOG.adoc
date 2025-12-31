@@ -1,5 +1,36 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.12.0-alpha] - 2025-12-31
+
+=== Added
+
+- Add --port option to elin repl command
+- Add support for custom file types in elin.vim
+- Update to support forward-system-output op in nREPL
+- Add forward-system-output interceptor
+
+=== Changed
+
+- Bump babashka v1.12.208
+- Bump rewrite-clj to 1.2.50
+- Bump internal deps
+- Bump malli to 0.19.1
+- Update babashka
+- Bump malli to 0.20.0.
+- Bump nrepl to 1.5.1
+- Bump cider-nrepl to 0.58.0
+- Bump nrepl to 1.5.2
+- Exclude specific version of a dependency
+
+=== Fixed
+
+- Fix shadow-cljs port file selection logic
+- Add default port and host for dev server
+- Fix reconnection logic to allow reconnecting to already disconnected ports
+- Handle missing shadow-cljs port file
+- Fallback to Vimscript sexpr parsing if Tree-sitter fails
+- Fix to handle error responses in completion handler
+
 == [2025.4.1-alpha] - 2025-04-11
 
 === Added
