@@ -1,7 +1,7 @@
 {:paths ["src" "resources"]
  :deps {aero/aero {:mvn/version "1.1.6"}
         clojure-msgpack/clojure-msgpack {:mvn/version "1.2.1"}
-        com.stuartsierra/component {:mvn/version "1.1.0"}
+        com.stuartsierra/component ^{:antq/exclude ["1.2.0"]} {:mvn/version "1.1.0"}
         exoscale/interceptor {:mvn/version "0.1.17"}
         metosin/malli {:mvn/version "0.20.0"}
         pogonos/pogonos {:mvn/version "0.2.1"}
