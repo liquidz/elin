@@ -5,12 +5,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: DeLaGuardo/setup-clojure@master
         with:
           bb: latest
           clj-kondo: latest
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ~/.m2
           key: test-m2-${{ hashFiles('bb.edn') }}
