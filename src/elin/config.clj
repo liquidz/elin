@@ -8,6 +8,7 @@
    [elin.schema.config :as e.s.config]
    [elin.util.file :as e.u.file]
    [malli.core :as m]
+   [malli.error :as me]
    [malli.transform :as mt]
    [taoensso.timbre :as timbre])
   (:import
@@ -218,6 +219,16 @@
     (m/coerce e.s.config/?Config
               config
               config-transformer)))
+
+(m/=> lint-config [:=> [:cat string?] [:maybe map?]])
+(defn lint-config
+  [dir]
+  (let [dummy-server-config {:plugin {:edn-files []}
+                             :env {:cwd dir}
+                             :server {:host "dummy" :port 12345}}
+        conf (load-config dir dummy-server-config)]
+    (-> (m/explain e.s.config/?ConfigLinter conf)
+        (me/humanize))))
 
 (comment
   (def config (load-config "." {:server {:host "" :port 0}

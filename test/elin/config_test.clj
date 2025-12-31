@@ -313,3 +313,11 @@
           (with-redefs [sut/load-user-config (constantly {:interceptor {:includes [random-symbol]}})
                         sut/load-project-local-config (constantly {:interceptor {:excludes [random-symbol]}})]
             (t/is (nil? (find-included-interceptor (test-load-config) random-symbol)))))))))
+
+(t/deftest lint-config-test
+  (with-redefs [sut/load-project-local-config (constantly {})]
+    (t/is (nil? (sut/lint-config "."))))
+
+  (with-redefs [sut/load-project-local-config (constantly {:handler {:invalid "foo"}})]
+    (t/is (= {:handler {:invalid ["disallowed key"]}}
+             (sut/lint-config ".")))))
