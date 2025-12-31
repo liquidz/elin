@@ -26,13 +26,20 @@
   '[elin.function.jack-in :as e.f.jack-in]
   '[elin.util.nrepl :as e.u.nrepl])
 
+(def ^:private global-cli-options
+   {:help {:default false :coerce :boolean}})
+
 (def ^:private cli-options-map
-  {"repl" {:force-leiningen {:coerce :boolean}
-           :force-shadow-cljs {:coerce :boolean}
-           :dry-run {:coerce :boolean}
-           :port {:coerce :long :validate pos?}
-           :instant {:coerce :boolean}
-           :help {:default false :coerce :boolean}}})
+  {"repl" ^{:doc "Start a REPL session in the current project."}
+   {:force-leiningen {:coerce :boolean}
+    :force-shadow-cljs {:coerce :boolean}
+    :dry-run {:coerce :boolean}
+    :port {:coerce :long :validate pos?}
+    :instant {:coerce :boolean}
+    :help {:default false :coerce :boolean}}
+
+   "lint" ^{:doc "Lint the elin configuration in the current project."}
+   {:help {:default false :coerce :boolean}}})
 
 (def ^:private elin-option-map
   (update-vals cli-options-map #(->> (keys %)
@@ -54,29 +61,45 @@
 
 (defn- show-help
   [sub-command]
-  (let [spec (get cli/parse-opts sub-command)]
+  (let [spec (get cli-options-map sub-command)]
     (cli/format-opts (merge {:spec spec}
                             {:order (vec (keys spec))}))))
 
+(defn- show-available-sub-commands
+  []
+  (str "Available sub-commands:\n"
+       (->> cli-options-map
+           (map (fn [[cmd options]]
+                  (let [desc (or (:doc (meta options)) "")]
+                    (format "  %s\t%s" cmd desc))))
+           (str/join "\n"))))
+
 (defmulti dispatch first)
 (defmethod dispatch :default
-  [_]
-  (throw (ex-info "Unknown command" {})))
+  [args]
+  (let [options (cli/parse-opts args global-cli-options)]
+    (if (:help options)
+      (println (show-available-sub-commands))
+      (throw (ex-info "Unknown command" {})))))
 
 (defmethod dispatch "lint"
-  [_]
-  (let [dir (System/getProperty "user.dir")]
-    (if-let [result (e.config/lint-config dir)]
-      (do
-        (doseq [[root-key errors] result]
-          (println (format "### %s" (name root-key)))
-          (->> errors
-               (mapcat (fn [[k vs]]
-                         (map #(hash-map :key k :error %) vs)))
-               (pp/print-table))
-          (println ""))
-        (System/exit 1))
-      (println "Configuration lint passed."))))
+  [args]
+  (let [dir (System/getProperty "user.dir")
+        sub-command (first args)
+        {:keys [options]} (parse-opts args)]
+    (if (:help options)
+      (println (show-help sub-command))
+      (if-let [result (e.config/lint-config dir)]
+        (do
+          (doseq [[root-key errors] result]
+            (println (format "### %s" (name root-key)))
+            (->> errors
+                 (mapcat (fn [[k vs]]
+                           (map #(hash-map :key k :error %) vs)))
+                 (pp/print-table))
+            (println ""))
+          (System/exit 1))
+        (println "Configuration lint passed.")))))
 
 (defmethod dispatch "repl"
   [args]
