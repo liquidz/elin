@@ -16,12 +16,14 @@
 
 (m/=> initialize [:=> [:cat e.s.handler/?Elin] any?])
 (defn initialize
-  [{:component/keys [handler host clj-kondo]}]
+  [{:as elin :component/keys [host clj-kondo]}]
   (e.p.host/on-connect host)
   (e.p.clj-kondo/restore clj-kondo)
-  (doseq [[export-name export-value] (or (get-in handler [:initialize :export]) {})]
-    (timbre/debug (format "Exporting %s as %s" export-value export-name))
-    (e.p.host/set-variable! host export-name export-value))
+
+  (let [{:keys [export]} (e.u.handler/config elin #'initialize)]
+    (doseq [[export-name export-value] (or export {})]
+      (timbre/debug (format "Exporting %s as %s" export-value export-name))
+      (e.p.host/set-variable! host export-name export-value)))
   true)
 
 (m/=> intercept [:=> [:cat e.s.handler/?Elin] any?])
