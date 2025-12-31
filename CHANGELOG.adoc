@@ -1,5 +1,14 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2025.12.1-alpha] - 2025-12-31
+
+=== Added
+
+- Add ?ConfigLinter schema to config.clj
+- Add lint-config function to validate configuration files
+- Add lint subcommand to validate configuration files
+- Add 'lint' sub-command to elin CLI for configuration validation
+
 == [2025.12.0-alpha] - 2025-12-31
 
 === Added
