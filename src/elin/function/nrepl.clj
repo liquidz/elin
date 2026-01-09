@@ -38,6 +38,18 @@
     middleware-caught-keys
     middleware-print-keys))
 
+(m/=> clone!! [:function
+               [:=> [:cat e.s.component/?NreplConnection] any?]
+               [:=> [:cat e.s.component/?NreplConnection [:maybe string?]] any?]])
+(defn clone!!
+  ([nrepl]
+   (clone!! nrepl nil))
+  ([nrepl session]
+   (let [msg (cond-> {:op e.c.nrepl/clone-op
+                      :client-name e.c.nrepl/client-name}
+               session (assoc :session session))]
+     (async/<!! (e.p.nrepl/request nrepl msg)))))
+
 (m/=> close!! [:function
                [:=> [:cat e.s.component/?Nrepl] any?]
                [:=> [:cat e.s.component/?Nrepl string?] any?]])
