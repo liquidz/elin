@@ -11,8 +11,8 @@
     [{:value (str "code:" code)}]))
 
 (defn- test-middleware [eval-fn]
-  (fn [code option]
-    (eval-fn (str code "!") option)))
+  (fn [nrepl code option]
+    (eval-fn nrepl (str code "!") option)))
 
 (t/deftest eval!!-test
   (let [nrepl (h/test-nrepl {:client {:handler test-handler}})]

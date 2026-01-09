@@ -18,14 +18,15 @@
 (defn- evaluate-interceptor-middleware
   [{:as elin :component/keys [interceptor]}]
   (fn [eval-fn]
-    (fn [code options]
+    (fn [nrepl code options]
       (let [context (-> (e.u.map/select-keys-by-namespace elin :component)
-                        (assoc :code code
+                        (assoc :component/nrepl nrepl
+                               :code code
                                :options options))]
         (:response
           (e.p.interceptor/execute interceptor e.c.interceptor/evaluate context
-                                   (fn [{:as ctx :keys [code options]}]
-                                     (assoc ctx :response (eval-fn code options)))))))))
+                                   (fn [{:as ctx :component/keys [nrepl] :keys [code options]}]
+                                     (assoc ctx :response (eval-fn nrepl code options)))))))))
 
 (m/=> evaluate [:=> [:cat e.s.handler/?Elin] any?])
 (defn evaluate
