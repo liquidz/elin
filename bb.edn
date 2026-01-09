@@ -103,5 +103,14 @@
   outdated {:doc "Check outdated dependencies"
             :task (clojure "-Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -M -m antq.core --upgrade --skip=clojure-cli")}
 
+  docker-build {:doc "Build Docker image"
+                :task (shell "docker build -t elin:nvim .")}
+  clean-check {:doc "Check in minimal Docker environment"
+               :depends [docker-build]
+               :task (shell "docker run --rm -it -w /root/.config/nvim/pack/elin/start/elin elin:nvim bb check")}
+  minimal-env {:doc "Start a shell in minimal Docker environment"
+               :depends [docker-build]
+               :task (shell "docker run --rm -it -w /root elin:nvim bash")}
+
   clean {:doc "Clean generated files"
          :task (do (shell "rm -rf .clj-kondo/imports .clj-kondo/.cache .cpcache"))}}}
