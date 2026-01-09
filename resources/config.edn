@@ -23,7 +23,8 @@
                                                          elin.interceptor.evaluate/yank-eval-result
                                                          elin.interceptor.evaluate/show-last-stacktrace]}
 
-                                 :test {:includes [elin.interceptor.test/correct-test-vars-automatically
+                                 :test {:includes [elin.interceptor.test/isolated-session
+                                                   elin.interceptor.test/correct-test-vars-automatically
                                                    elin.interceptor.test/register-started-at
                                                    elin.interceptor.test/parse-test-result
                                                    elin.interceptor.test/update-test-result-sign
