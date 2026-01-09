@@ -12,6 +12,7 @@
    [elin.function.quickfix :as e.f.quickfix]
    [elin.function.sexpr :as e.f.sexpr]
    [elin.function.storage.test :as e.f.s.test]
+   [elin.interceptor.evaluate :as e.i.evaluate]
    [elin.message :as e.message]
    [elin.protocol.host :as e.p.host]
    [elin.protocol.interceptor :as e.p.interceptor]
@@ -203,3 +204,7 @@
                 (assoc ctx
                        :ns (str ns-str "-test")
                        :file cycled-path))))})
+
+(def isolated-session
+  "Run the tests in an isolated nREPL session."
+  (assoc e.i.evaluate/isolated-session :kind e.c.interceptor/test))
