@@ -107,10 +107,12 @@
   {:kind e.c.interceptor/test-result
    :enter (-> (fn [{:component/keys [host] :keys [failed summary]}]
                 (let [s (->> failed
-                             (mapcat (fn [{:as failed-result :keys [text lnum expected actual]}]
+                             (mapcat (fn [{:as failed-result :keys [text filename lnum expected actual]}]
                                        (if (empty? actual)
                                          []
-                                         [(format ";; %s%s" text lnum)
+                                         [(when (seq text)
+                                            (format ";; %s" text))
+                                          (format ";; %s:%s" filename lnum)
                                           (if (seq expected)
                                             (-> failed-result
                                                 (update :expected pprint-str)
@@ -118,6 +120,7 @@
                                                 (e.u.map/map->str [:expected :actual :diffs]))
                                             actual)
                                           ""])))
+                             (remove nil?)
                              (str/join "\n"))]
                   (e.p.host/append-to-info-buffer host s {:show-temporarily? true})
                   (e.p.host/append-to-info-buffer host summary)))
