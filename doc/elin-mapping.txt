@@ -74,6 +74,14 @@ ElinPrintLastResult
   Calls `elin.handler.evaluate/print-last-result` handler.
   Key is mapped to |<Plug>(elin_print_last_result)|.
 
+                                                 *ElinEvalCurrentListIsolatedly*
+ElinEvalCurrentListIsolatedly
+  Calls `elin.handler.evaluate/evaluate-current-list` handler
+  with the following interceptors:
+  - `elin.interceptor.evaluate/isolated-session`
+
+  Key is mapped to |null|.
+
                                                        *ElinOverviewCurrentList*
 ElinOverviewCurrentList
   Calls `elin.handler.evaluate/evaluate-current-list` handler

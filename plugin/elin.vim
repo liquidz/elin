@@ -34,6 +34,7 @@ command! ElinEvalNsForm call elin#notify('elin.handler.evaluate/evaluate-namespa
 command! ElinEvalAtMark call elin#notify('elin.handler.evaluate/evaluate-at-mark', [nr2char(getchar())])
 command! ElinEvalInContext call elin#notify('elin-alias-evaluate-current-list-in-context', [])
 command! ElinPrintLastResult call elin#notify('elin.handler.evaluate/print-last-result', [])
+command! ElinEvalCurrentListIsolatedly call elin#notify('elin-alias-evaluate-current-list-isolatedly', [])
 
 command! ElinOverviewCurrentList call elin#notify('elin-alias-overview-current-list', [])
 command! ElinOverviewCurrentTopList call elin#notify('elin-alias-overview-current-top-list', [])
