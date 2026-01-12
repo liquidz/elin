@@ -38,6 +38,6 @@ If you'd like to support this project, you can do so via https://github.com/spon
 
 == License
 
-Copyright (c) 2024 https://scrapbox.io/uochan/uochan[Masashi Iizuka]
+Copyright (c) 2024-2026 https://scrapbox.io/uochan/uochan[Masashi Iizuka]
 
 Distributed under the MIT License.
