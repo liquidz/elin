@@ -3,6 +3,7 @@
    [clojure.core.async :as async]
    [elin.component.nrepl.connection :as e.c.n.connection]
    [elin.error :as e]
+   [elin.function.nrepl :as e.f.nrepl]
    [elin.protocol.nrepl :as e.p.nrepl]
    [elin.schema :as e.schema]
    [elin.schema.nrepl :as e.s.nrepl]
@@ -67,8 +68,7 @@
                      :port nil}))
   ([conn {:keys [language port-file]}]
    (let [clone-resp (e.u.nrepl/merge-messages
-                      (async/<!! (e.p.nrepl/request conn {:op "clone"
-                                                          :client-name "elin"})))
+                      (e.f.nrepl/clone!! conn))
          describe-resp (e.u.nrepl/merge-messages
                          (async/<!! (e.p.nrepl/request conn {:op "describe"})))
          ns-eval-resp (e.u.nrepl/merge-messages

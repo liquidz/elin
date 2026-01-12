@@ -8,8 +8,11 @@
     ;; cider-nrepl complete op
     "completions"})
 
+(def client-name "elin")
+
 ;; nrepl built-in ops
 
+(def clone-op "clone")
 (def close-op "close")
 (def completions-op "completions")
 (def eval-op "eval")

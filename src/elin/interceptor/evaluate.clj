@@ -3,11 +3,14 @@
    [clojure.core.async :as async]
    [clojure.string :as str]
    [elin.constant.interceptor :as e.c.interceptor]
+   [elin.function.nrepl :as e.f.nrepl]
    [elin.function.nrepl.cider :as e.f.n.cider]
    [elin.function.nrepl.cider.stacktrace :as e.f.n.c.stacktrace]
    [elin.protocol.host :as e.p.host]
+   [elin.protocol.nrepl :as e.p.nrepl]
    [elin.protocol.storage :as e.p.storage]
    [elin.util.interceptor :as e.u.interceptor]
+   [elin.util.nrepl :as e.u.nrepl]
    [exoscale.interceptor :as ix]
    [pogonos.core :as pogonos]
    [rewrite-clj.zip :as r.zip]))
@@ -108,3 +111,22 @@
                         resp (e.f.n.cider/analyze-last-stacktrace!! nrepl)]
                     (e.p.host/append-to-info-buffer host (e.f.n.c.stacktrace/analyzed-last-stacktrace->str resp config)))))
               (ix/discard))})
+
+(def isolated-session
+  "Evaluate code in an isolated nREPL session."
+  {:kind e.c.interceptor/evaluate
+   :enter (fn [{:as ctx :component/keys [nrepl]}]
+            (if-let [current-session (e.p.nrepl/current-session nrepl)]
+              (let [cloned-session (-> (e.f.nrepl/clone!! nrepl current-session)
+                                       (e.u.nrepl/merge-messages)
+                                       (:new-session))]
+                (-> ctx
+                    (e.u.interceptor/override-session cloned-session)
+                    (assoc ::temporal-session cloned-session)))
+              ctx))
+
+   :leave (fn [{:as ctx :component/keys [nrepl] :keys [options]}]
+            (if-let [temporal-session (::temporal-session ctx)]
+              (do (e.f.nrepl/close!! nrepl temporal-session)
+                  (assoc ctx :options (dissoc options :session)))
+              ctx))})

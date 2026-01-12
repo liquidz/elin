@@ -23,6 +23,26 @@ call dein#add('liquidz/elin')
 Elin does not map any keys by default.
 If you want to use the default key mappings, see <<Key mappings>>.
 
+==== (OPTIONAL) Enabling elin command [[elin-command]]
+
+`elin` is a utility command for Elin.
+To setting up, just add the `bin` directory under the installed elin directory to `$PATH` environmental variable.
+
+[source,shell]
+----
+# For bash or zsh
+$ export PATH=$PATH:/path/to/elin/bin
+
+# For fish
+$ set -x PATH /path/to/elin/bin $PATH
+----
+
+To confirm setup, run the following command.
+
+[source,shell]
+----
+$ elin --help
+----
 
 === Quick start
 

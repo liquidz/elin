@@ -18,3 +18,8 @@
 (defn connected?
   [{:component/keys [nrepl]}]
   (not (e.p.nrepl/disconnected? nrepl)))
+
+(defn override-session
+  [{:as context :component/keys [nrepl]} new-session]
+  (let [overrided-nrepl (e.p.nrepl/set-override-session nrepl new-session)]
+    (assoc context :component/nrepl overrided-nrepl)))

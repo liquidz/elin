@@ -5,7 +5,7 @@
         exoscale/interceptor {:mvn/version "0.1.17"}
         metosin/malli {:mvn/version "0.20.0"}
         pogonos/pogonos {:mvn/version "0.2.1"}
-        rewrite-clj/rewrite-clj {:mvn/version "1.2.50"}
+        rewrite-clj/rewrite-clj {:mvn/version "1.2.51"}
         org.clj-commons/digest {:mvn/version "1.4.100"}}
 
  :__elin_internal__
@@ -29,10 +29,10 @@
         :task (shell "clj-kondo --lint src:test")}
 
   format-check {:doc "Check code formats"
-                :task (shell "npx @chrisoakman/standard-clojure-style check src test")}
+                :task (shell "npx --yes @chrisoakman/standard-clojure-style check src test")}
 
   format-fix {:doc "Fix code formats"
-              :task (shell "npx @chrisoakman/standard-clojure-style fix src test")}
+              :task (shell "npx --yes @chrisoakman/standard-clojure-style fix src test")}
 
   test {:doc "Run unit tests"
         :extra-paths ["dev" "test"]
@@ -49,7 +49,7 @@
   clj-kondo-emit {:doc "Emit clj-kondo configurations by malli"
                   :depends [clj-kondo-import]
                   :extra-paths ["test"]
-                  :extra-deps {org.clojure/tools.namespace {:mvn/version "1.5.0"}}
+                  :extra-deps {org.clojure/tools.namespace {:mvn/version "1.5.1"}}
                   :requires ([malli.clj-kondo :as mc]
                              [clojure.tools.namespace.find :as ctnf]
                              [clojure.java.io :as io])
@@ -102,6 +102,15 @@
 
   outdated {:doc "Check outdated dependencies"
             :task (clojure "-Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -M -m antq.core --upgrade --skip=clojure-cli")}
+
+  docker-build {:doc "Build Docker image"
+                :task (shell "docker build -t elin:nvim .")}
+  clean-check {:doc "Check in minimal Docker environment"
+               :depends [docker-build]
+               :task (shell "docker run --rm -it -w /root/.config/nvim/pack/elin/start/elin elin:nvim bb check")}
+  minimal-env {:doc "Start a shell in minimal Docker environment"
+               :depends [docker-build]
+               :task (shell "docker run --rm -it -w /root elin:nvim bash")}
 
   clean {:doc "Clean generated files"
          :task (do (shell "rm -rf .clj-kondo/imports .clj-kondo/.cache .cpcache"))}}}

@@ -13,6 +13,9 @@
 (def ?Interceptor
   (e.schema/?protocol e.p.interceptor/IInterceptor))
 
+(def ?NreplConnection
+  (e.schema/?protocol e.p.nrepl/IConnection))
+
 (def ?Nrepl
   (e.schema/?protocol e.p.nrepl/IClientManager
                       e.p.nrepl/IClient

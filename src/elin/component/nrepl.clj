@@ -41,6 +41,14 @@
     (timbre/info "Nrepl component: Stopped")
     (dissoc this :client-manager))
 
+  e.p.nrepl/IOverride
+  (set-override-session
+    [this new-session]
+    (with-meta this {::override-session new-session}))
+  (get-override-session
+    [this]
+    (::override-session (meta this)))
+
   e.p.nrepl/IClientManager
   (add-client!
     [this client]
@@ -95,8 +103,10 @@
       (e.p.nrepl/supported-op? client op)))
 
   (current-session [this]
-    (when-let [client (e.p.nrepl/current-client this)]
-      (e.p.nrepl/current-session client)))
+    (or
+      (e.p.nrepl/get-override-session this)
+      (when-let [client (e.p.nrepl/current-client this)]
+        (e.p.nrepl/current-session client))))
 
   (version [this]
     (when-let [client (e.p.nrepl/current-client this)]

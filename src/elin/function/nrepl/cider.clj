@@ -53,10 +53,13 @@
 
 (defn test-var-query!!
   [nrepl var-query]
-  (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/test-var-query-op
-                                  :var-query var-query})
-        (async/<!!)
-        (e.u.nrepl/merge-messages)))
+  (if-let [session (e.p.nrepl/current-session nrepl)]
+    (e/-> (e.p.nrepl/request nrepl {:op e.c.nrepl/test-var-query-op
+                                    :var-query var-query
+                                    :session session})
+          (async/<!!)
+          (e.u.nrepl/merge-messages))
+    (e/unavailable {:message "Not connected"})))
 
 (m/=> reload!! [:=> [:cat e.s.component/?Nrepl] (e.schema/error-or e.s.nrepl/?Message)])
 (defn reload!!

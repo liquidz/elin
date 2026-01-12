@@ -27,7 +27,7 @@
                             ns' (some-> @testing-var namespace)
                             var' (some-> @testing-var name)
                             file' (or (when-let [file (:file m)]
-                                        (when (not= "<expr>" file)
+                                        (when-not (contains? #{"<expr>" "NO_SOURCE_PATH"} file)
                                           file))
                                       ~current-file)
                             line' (when-let [line (:line m)]

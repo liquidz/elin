@@ -1,0 +1,9 @@
+Configuration files can be a bit complex, so using the `elin` command to validate them can help you spot mistakes more easily.
+
+To enable `elin` command, see <<elin-command>>.
+
+[source,bash]
+----
+# Linting configuration files in the current directory
+elin lint
+----

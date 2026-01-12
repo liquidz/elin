@@ -38,6 +38,18 @@
     middleware-caught-keys
     middleware-print-keys))
 
+(m/=> clone!! [:function
+               [:=> [:cat e.s.component/?NreplConnection] any?]
+               [:=> [:cat e.s.component/?NreplConnection [:maybe string?]] any?]])
+(defn clone!!
+  ([nrepl]
+   (clone!! nrepl nil))
+  ([nrepl session]
+   (let [msg (cond-> {:op e.c.nrepl/clone-op
+                      :client-name e.c.nrepl/client-name}
+               session (assoc :session session))]
+     (async/<!! (e.p.nrepl/request nrepl msg)))))
+
 (m/=> close!! [:function
                [:=> [:cat e.s.component/?Nrepl] any?]
                [:=> [:cat e.s.component/?Nrepl string?] any?]])
@@ -56,19 +68,20 @@
   ([nrepl code]
    (eval!! nrepl code {}))
   ([nrepl code options]
-   (if-let [session (e.p.nrepl/current-session nrepl)]
+   (if (e.p.nrepl/disconnected? nrepl)
+     (e/unavailable {:message "Not connected"})
      (let [{:keys [middleware]} options
-           eval-fn (fn [code' options']
-                     (e/->> (merge (select-keys options' eval-option-keys)
-                                   {:op e.c.nrepl/eval-op :session session  :code code'})
-                            (e.p.nrepl/request nrepl)
-                            (async/<!!)
-                            (e.u.nrepl/merge-messages)))
+           eval-fn (fn [nrepl' code' options']
+                     (let [session (e.p.nrepl/current-session nrepl')]
+                       (e/->> (merge (select-keys options' eval-option-keys)
+                                     {:op e.c.nrepl/eval-op :session session :code code'})
+                              (e.p.nrepl/request nrepl')
+                              (async/<!!)
+                              (e.u.nrepl/merge-messages))))
            eval-fn' (if middleware
                       (middleware eval-fn)
                       eval-fn)]
-       (eval-fn' code options))
-     (e/unavailable {:message "Not connected"}))))
+       (eval-fn' nrepl code options)))))
 
 (m/=> interrupt!! [:function
                    [:=> [:cat e.s.component/?Nrepl] any?]

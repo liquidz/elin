@@ -34,3 +34,9 @@
     [this])
   (all-clients
     [this]))
+
+(defprotocol IOverride
+  (set-override-session
+    [this new-session])
+  (get-override-session
+    [this]))
