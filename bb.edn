@@ -49,7 +49,7 @@
   clj-kondo-emit {:doc "Emit clj-kondo configurations by malli"
                   :depends [clj-kondo-import]
                   :extra-paths ["test"]
-                  :extra-deps {org.clojure/tools.namespace {:mvn/version "1.5.0"}}
+                  :extra-deps {org.clojure/tools.namespace {:mvn/version "1.5.1"}}
                   :requires ([malli.clj-kondo :as mc]
                              [clojure.tools.namespace.find :as ctnf]
                              [clojure.java.io :as io])
