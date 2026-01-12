@@ -1,5 +1,27 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of http://keepachangelog.com/[keepachangelog.com].
 
+== [2026.01.0-alpha] - 2026-01-12
+
+=== Added
+
+- Add ability to override current nREPL session in Nrepl component
+- Add interceptor utility to override current nREPL session
+- Add isolated nREPL session interceptor
+- Add ElinEvalCurrentListIsolatedly command
+- Add isolated session iterceptor for tests
+
+=== Changed
+
+- Bump rewrite-clj to 1.2.51
+- Bump tools.namespace to 1.5.1
+
+=== Fixed
+
+- Fix to show source file path correctly in nREPL test results
+- Fixed to pass the same nrepl component instance to middleware and interceptor during evaluation
+- Fix test-var-query!! to handle session ID
+- Update tests to use isolated sessions by default
+
 == [2025.12.1-alpha] - 2025-12-31
 
 === Added
