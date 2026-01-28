@@ -111,7 +111,7 @@
             [project-type _] (e.f.jack-in/select-project {} cwd)
             port (or (:port options)
                      (e.u.nrepl/get-free-port))
-            commands (:command (e.f.jack-in/generate-command project-type port rest-args))]
+            commands (:command (e.f.jack-in/generate-command project-type port rest-args {}))]
         (if (:dry-run options)
           (println (str/join " " commands))
           (apply b.process/shell {:out :inherit :in :inherit} commands))))))

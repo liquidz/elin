@@ -61,18 +61,18 @@
       (get-in [:__elin_internal__ :command])))
 
 (defmulti generate-command
-  (fn [project-type _port _optional-args]
+  (fn [project-type _port _additional-args _options]
     project-type))
 
 (defmethod generate-command :default
-  [_ _ _]
+  [_ _ _ _]
   (e/unsupported))
 
 (defmethod generate-command e.c.jack-in/clojure-cli
-  [_ port optional-args]
+  [_ port additional-args _options]
   {:language e.c.nrepl/lang-clojure
    :command (concat [e.c.jack-in/clojure-command]
-              optional-args
+              additional-args
               ["-Sdeps" (pr-str {:deps (:deps command-config)})
                "-M" "-m" "nrepl.cmdline"
                "--port" (str port)
@@ -80,7 +80,7 @@
                "--interactive"])})
 
 (defmethod generate-command e.c.jack-in/leiningen
-  [_ port _]
+  [_ port _ _]
   {:language e.c.nrepl/lang-clojure
    :command (concat [e.c.jack-in/leiningen-command
                      "update-in" ":dependencies" "conj"]
@@ -97,14 +97,14 @@
                      port])})
 
 (defmethod generate-command e.c.jack-in/babashka
-  [_ port _]
+  [_ port _ _]
   {:language e.c.nrepl/lang-clojure
    :command [e.c.jack-in/babashka-command
              "nrepl-server"
              (str "localhost:" port)]})
 
 (defmethod generate-command e.c.jack-in/squint
-  [_ port _]
+  [_ port _ _]
   (e/let [squint-cmd (cond
                        (e.u.process/executable? e.c.jack-in/squint-command)
                        [e.c.jack-in/squint-command]
@@ -118,7 +118,7 @@
      :command (concat squint-cmd ["nrepl-server" ":port" (str port)])}))
 
 (defmethod generate-command e.c.jack-in/nbb
-  [_ port _]
+  [_ port _ _]
   (e/let [nbb-cmd (cond
                     (e.u.process/executable? e.c.jack-in/nbb-command)
                     [e.c.jack-in/nbb-command]
@@ -144,7 +144,7 @@
            [project-type project-file] (select-project options path)
            project-root-dir (parent-absolute-path project-file)
            port (e.u.nrepl/get-free-port)
-           {:keys [language command]} (generate-command project-type port [])
+           {:keys [language command]} (generate-command project-type port [] options)
            args (cons {:dir project-root-dir} command)]
      (e.u.process/start (port->process-id port) args)
      {:language language :port port})))
