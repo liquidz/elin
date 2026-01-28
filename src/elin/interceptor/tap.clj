@@ -126,7 +126,10 @@
   {:kind e.c.interceptor/connect
    :leave (-> (fn [{:as ctx :component/keys [handler]}]
                 (let [config (e.u.interceptor/config ctx #'initialize)
-                      http-server-port (get-in handler [:initialize :export "g:elin_http_server_port"])
+                      http-server-port (get-in handler [:config-map
+                                                        'elin.handler.internal/initialize
+                                                        :export
+                                                        "g:elin_http_server_port"])
                       code (initialize-code {:max-store-size (:max-store-size config)
                                              :max-datafy-depth (:max-datafy-depth config)
                                              :http-server-port http-server-port})]
