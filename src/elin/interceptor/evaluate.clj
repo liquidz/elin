@@ -121,8 +121,8 @@
                                        (e.u.nrepl/merge-messages)
                                        (:new-session))]
                 (-> ctx
-                    (e.u.interceptor/override-session cloned-session)
-                    (assoc ::temporal-session cloned-session)))
+                    (assoc :component/nrepl (e.p.nrepl/set-override-session nrepl cloned-session)
+                           ::temporal-session cloned-session)))
               ctx))
 
    :leave (fn [{:as ctx :component/keys [nrepl] :keys [options]}]
