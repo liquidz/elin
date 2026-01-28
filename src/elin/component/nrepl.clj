@@ -45,6 +45,9 @@
   (set-override-session
     [this new-session]
     (with-meta this {::override-session new-session}))
+  (clear-override-session
+    [this]
+    (with-meta this {::override-session nil}))
   (get-override-session
     [this]
     (::override-session (meta this)))

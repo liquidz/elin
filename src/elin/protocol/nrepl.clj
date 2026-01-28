@@ -38,5 +38,7 @@
 (defprotocol IOverride
   (set-override-session
     [this new-session])
+  (clear-override-session
+    [this])
   (get-override-session
     [this]))
