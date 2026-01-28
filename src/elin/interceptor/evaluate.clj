@@ -129,4 +129,5 @@
             (if-let [temporal-session (::temporal-session ctx)]
               (do (e.f.nrepl/close!! nrepl temporal-session)
                   (assoc ctx :options (dissoc options :session)))
-              ctx))})
+              (-> ctx
+                  (assoc :component/nrepl (e.p.nrepl/clear-override-session nrepl)))))})
