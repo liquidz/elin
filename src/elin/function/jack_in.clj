@@ -60,6 +60,16 @@
       (edn/read-string)
       (get-in [:__elin_internal__ :command])))
 
+(defn ^:private get-dependencies
+  [options]
+  (merge (:deps command-config)
+         (or (get options :dependencies) {})))
+
+(defn ^:private get-middlewares
+  [options]
+  (concat (:middlewares command-config)
+          (or (get options :middlewares) [])))
+
 (defmulti generate-command
   (fn [project-type _port _additional-args _options]
     project-type))
@@ -69,29 +79,29 @@
   (e/unsupported))
 
 (defmethod generate-command e.c.jack-in/clojure-cli
-  [_ port additional-args _options]
+  [_ port additional-args options]
   {:language e.c.nrepl/lang-clojure
    :command (concat [e.c.jack-in/clojure-command]
               additional-args
-              ["-Sdeps" (pr-str {:deps (:deps command-config)})
+              ["-Sdeps" (pr-str {:deps (get-dependencies options)})
                "-M" "-m" "nrepl.cmdline"
                "--port" (str port)
-               "--middleware" (pr-str (:middlewares command-config))
+               "--middleware" (pr-str (get-middlewares options))
                "--interactive"])})
 
 (defmethod generate-command e.c.jack-in/leiningen
-  [_ port _ _]
+  [_ port _ options]
   {:language e.c.nrepl/lang-clojure
    :command (concat [e.c.jack-in/leiningen-command
                      "update-in" ":dependencies" "conj"]
-                    (->> (:deps command-config)
+                    (->> (get-dependencies options)
                          (map (fn [[lib {:mvn/keys [version]}]]
                                 (format "[%s \"%s\"]"
                                         lib
                                         version))))
                     ["--"
                      "update-in" "[:repl-options, :nrepl-middleware]" "conj"]
-                    (:middlewares command-config)
+                    (get-middlewares options)
                     ["--"
                      "repl" ":start" ":port"
                      port])})
